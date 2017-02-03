@@ -1,6 +1,7 @@
 package main
 
 import (
+  "os"
   "fmt"
   "log"
   "flag"
@@ -8,25 +9,30 @@ import (
   "time"
   "runtime"
   "net/http"
+  "./models"
   "./library/https"
   "./brokers/tradier"
+  "github.com/jinzhu/gorm"
+  "github.com/joho/godotenv"
   "github.com/gorilla/websocket"
   "golang.org/x/crypto/acme/autocert"
+  _ "github.com/go-sql-driver/mysql"
 )
 
 var ( 
   mu sync.Mutex
   localDevMode = flag.Bool("local", false, "localhost development")
 
-  
   ws Websockets
+  db *gorm.DB
+ 
   brokerFeeds = make(map[string]*BrokerFeed)
   
   // Channels
   websocketSendChannel = make(chan string)
   websocketSendQuoteChannel = make(chan string)
 )
-    
+        
 //
 // Main....
 //
@@ -34,12 +40,29 @@ func main() {
   
   // Parse flags
   flag.Parse()
-  
-  // Lets get started
-  println("App Started.....")
- 
+   
   // Setup CPU stuff.
   runtime.GOMAXPROCS(runtime.NumCPU())  
+   
+  // Load .env file 
+  err := godotenv.Load()
+  if err != nil {
+    log.Fatal("Error loading .env file")
+  }        
+    
+  // Lets get started
+  fmt.Println("App Started: " + os.Getenv("APP_ENV"))    
+    
+  // Connect to database and run Migrations.
+  db = DbConnect()
+  
+  // Just for testing.
+  go func() {
+    for {
+      db.Create(&models.User{FirstName: "Spicer", LastName: "Matthews", Email: "spicer@options.cafe"})
+      time.Sleep(time.Second * 60)
+    }
+  }()
     
   // Setup websocket connections.
   ws.connections = make(map[*websocket.Conn]*WebsocketConnection)
@@ -85,6 +108,30 @@ func main() {
     
   }
 	  
+}
+
+//
+// Connect to the db and run migrations.
+//
+func DbConnect() (*gorm.DB) {
+  
+  var err error
+    
+  // Connect to Mysql
+  conn, err := gorm.Open("mysql", os.Getenv("DB_USERNAME") + ":" + os.Getenv("DB_PASSWORD") + "@/" + os.Getenv("DB_DATABASE") + "?charset=utf8&parseTime=True&loc=Local")
+  
+  if err != nil {
+    panic("failed to connect database")
+  }
+
+  // Enable
+  //conn.LogMode(true)
+  //conn.SetLogger(log.New(os.Stdout, "\r\n", 0))
+
+  // Migrate the schemas (one per table).
+  conn.AutoMigrate(&models.User{})
+  
+  return conn   
 }
 
 //
