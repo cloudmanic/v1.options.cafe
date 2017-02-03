@@ -1,0 +1,22 @@
+/* ------------------------------------------------------------ *\
+	Tabs
+\* ------------------------------------------------------------ */
+
+.tabs .nav-tabs { display: flex; justify-content: space-between; padding: 0 29px 0 0; border-bottom: none; margin-bottom: 0; background: none; }
+.tabs .nav-tabs:before,
+.tabs .nav-tabs:after { display: none; }
+
+.tabs .nav-tabs > li > a { padding: 8px 0; border: none; border-radius: 0; margin-right: 0; font-size: 13px; color: $color-lightgrey; font-weight: 900; text-transform: uppercase; transition: color .4s; }
+.tabs .nav-tabs > li { float: none; margin: 0; }
+
+.tabs .nav-tabs > li > a:hover,
+.tabs .nav-tabs > li.active > a,
+.tabs .nav-tabs > li.active > a:focus,
+.tabs .nav-tabs > li.active > a:hover { border: none; background: none; color: $color-red; }
+
+/* Tablet Portrait */
+
+$breakpoint-tablet-portrait {
+	.tabs .nav-tabs { padding-right: 0; }
+	.tabs .nav-tabs > li > a { font-size: 11px; }
+}

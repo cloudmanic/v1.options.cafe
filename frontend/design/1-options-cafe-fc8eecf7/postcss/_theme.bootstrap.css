@@ -1,0 +1,97 @@
+/* ------------------------------------------------------------ *\
+	Bootstrap
+\* ------------------------------------------------------------ */
+
+/* ------------------------------------------------------------ *\
+	Colors
+\* ------------------------------------------------------------ */
+
+.text-dark { color: $color-dark; }
+.text-muted { color: $color-grey; }
+.text-primary { color: $color-darkgreen; }
+.text-white { color: $color-light; }
+.text-success { color: $color-green; }
+.text-danger { color: $color-red; }
+.text-warning { color: $color-orange; }
+.text-info { color: $color-blue; }
+.text-faded { color: $color-lightestgrey; }
+.text-inverse { color: $color-grey-tertiary; }
+
+.bg-dark { background: $color-dark; }
+.bg-muted { background: $color-grey; }
+.bg-primary { background: $color-darkgreen; }
+.bg-white { background: $color-light; }
+.bg-success { background: $color-green; }
+.bg-info { background: $color-blue; }
+.bg-warning { background: $color-orange; }
+.bg-danger { background: $color-red; }
+.bg-inverse { background: $color-grey-tertiary; }
+.bg-faded { background: $color-lightestgrey; }
+
+/* ------------------------------------------------------------ *\
+	Form
+\* ------------------------------------------------------------ */
+
+form { margin-bottom: 20px; }
+
+label { font-weight: 500; }
+
+.form-control { color: $color-lightgrey; }
+
+/* ------------------------------------------------------------ *\
+	Table
+\* ------------------------------------------------------------ */
+
+.table > tbody > tr > th { color: $color-dark; font-weight: 900; }
+
+/* ------------------------------------------------------------ *\
+	Accordion
+\* ------------------------------------------------------------ */
+
+.panel-heading { padding: 0; }
+
+.panel-default > .panel-heading { background: $color-lightestgrey; color: $color-dark; }
+
+.panel-title > a { display: block; padding: 10px 15px; font-weight: 500; }
+.panel-title > a:hover,
+.panel-title > a:focus { text-decoration: none; }
+
+/* ------------------------------------------------------------ *\
+	Buttons
+\* ------------------------------------------------------------ */
+
+.btn-default { border-color: #dee5e7; background: $color-lightestgrey; color: $color-lightgrey; }
+.btn-default:hover,
+.btn-default:focus { border-color: $color-lightgrey; background: $color-lightgrey; color: $color-lightestgrey; }
+
+.btn-primary { border-color: $color-darkgreen; background: $color-darkgreen; }
+.btn-primary:hover,
+.btn-primary:focus { border-color: #009184; background: #009184; }
+
+.btn-success { border-color: $color-green; background: $color-green; color: $color-light; }
+.btn-success:hover,
+.btn-success:focus { border-color: $color-green; background: #60b1a8; color: $color-light; }
+
+.btn-info { border-color: $color-blue; background: $color-blue; }
+
+.btn-warning { border-color: $color-orange; background: $color-orange; }
+
+.btn-danger { border-color: $color-red; background: $color-red; }
+.btn-danger:hover,
+.btn-danger:focus { border-color: #b81d32; background: #b81d32; }
+
+.btn-dark { border-color: $color-dark; background: $color-dark; color: $color-light; }
+.btn-dark:hover,
+.btn-dark:focus { border-color: $color-grey; background: $color-grey; color: $color-light; }
+
+.btn-muted { border-color: $color-grey; background: $color-grey; color: $color-light; }
+.btn-muted:hover,
+.btn-muted:focus { border-color: $color-lightgrey; background: $color-lightgrey; color: $color-light; }
+
+.btn-faded { border-color: $color-lightestgrey; background: $color-lightestgrey; }
+.btn-faded:hover,
+.btn-faded:focus { border-color: $color-light; background: $color-light; }
+
+.btn-inverse { border-color: $color-grey-tertiary; background: $color-grey-tertiary; color: $color-light; }
+.btn-inverse:hover,
+.btn-inverse:focus { border-color: $color-grey; background: $color-grey; color: $color-light; }

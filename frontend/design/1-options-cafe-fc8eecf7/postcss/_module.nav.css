@@ -1,0 +1,19 @@
+/* ------------------------------------------------------------ *\
+	Nav
+\* ------------------------------------------------------------ */
+
+.nav {}
+
+/* ------------------------------------------------------------ *\
+	Nav Utilities
+\* ------------------------------------------------------------ */
+
+.nav-utilities ul { list-style: none outside none; }
+.nav-utilities li ~ li { margin-top: 30px; }
+.nav-utilities a { display: block; color: $color-dark; font-weight: 500; transition: color .4s; }
+.nav-utilities a:focus,
+.nav-utilities a:hover { color: $color-red; text-decoration: none; }
+.nav-utilities a span { display: inline-block; min-width: 22px; padding-left: 2px; font-size: 0; vertical-align: middle; }
+
+/*  Nav Utilities Secondary  */
+.nav-utilities-secondary li ~ li { margin-top: 20px; }

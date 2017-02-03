@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+	<!--#include virtual="head.shtml" -->
+<body>
+<div class="wrapper">
+	<header class="header">
+		<div class="container-fluid">
+			<div class="header-body">
+				<a href="#" class="logo"></a>
+
+				<div class="header-content">
+					<h4>GARPR Online Report Tool</h4>
+				</div><!-- /.header-content -->
+
+				<div class="header-inner">
+					<div class="profile">
+						<a href="#">
+							<div class="profile-body">
+								<div class="profile-content">
+									<h5>Welcome, Sima</h5>
+							
+									<p class="text-xsmall-tertiary">Version : Release 2.2.2.38</p><!-- /.text-xsmall-tertiary -->
+								</div><!-- /.profile-content -->
+							
+								<div class="profile-image">
+									<img src="css/images/temp/profile-image@2x.png" height="34" width="34" alt="">
+								</div><!-- /.profile-image -->
+							</div><!-- /.profile-body -->
+						</a>
+					</div><!-- /.profile -->
+				</div><!-- /.header-inner -->
+			</div><!-- /.header-body -->
+		</div><!-- /.container-fluid -->
+	</header><!-- /.header -->

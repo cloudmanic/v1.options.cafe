@@ -1,0 +1,45 @@
+/* ------------------------------------------------------------ *\
+	Widget
+\* ------------------------------------------------------------ */
+
+.widgets { list-style: none outside none; }
+
+.widget { margin-bottom: 41px; }
+.widget:last-child { margin-bottom: 0; }
+
+.widget .widget-head { margin-bottom: 24px; }
+
+.widget .widget-title { font-size: 10px; color: $color-lightgrey; font-weight: 900; text-transform: uppercase; }
+
+/* ------------------------------------------------------------ *\
+	Widget Account
+\* ------------------------------------------------------------ */
+
+.widget-account .widget-head { margin-bottom: 20px; }
+
+/* ------------------------------------------------------------ *\
+	Widget Primary
+\* ------------------------------------------------------------ */
+
+.widget-primary { min-height: 100px; border-radius: 3px; margin-bottom: 24px; background: $color-light; }
+
+.widget-primary .widget-body { padding: 8px 15px; }
+
+.widget-primary .widget-content { display: flex; }
+.widget-primary .widget-content-icon { flex: 0 0 17px; padding-top: 3px; }
+.widget-primary .widget-content-inner h2 { margin-bottom: 2px; }
+.widget-primary .widget-content-inner p { font-weight: 900; }
+
+.widget-green { background: $color-green; color: $color-light; }
+.widget-beige { background: $color-beige; color: $color-light; }
+
+.widget-green h2,
+.widget-beige h2,
+.widget-green h4,
+.widget-beige h4 { color: inherit; }
+
+/* Small Desktop */
+
+$breakpoint-small-desktop {
+	.widget-primary .widget-body { padding-left: 10px; padding-right: 10px; }
+}

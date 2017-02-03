@@ -1,0 +1,45 @@
+<div class="panel-group">
+  <div class="panel panel-default">
+  	<div class="panel-heading" role="tab" id="headingOne">
+  		<h4 class="panel-title">
+  			<a role="button" data-toggle="collapse" href="#collapseOrders">
+  				Orders
+  			</a>
+  		</h4>
+  	</div>
+  	
+  	<div id="collapseOrders" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+  		<div class="panel-body">
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Symbols</th>
+              <th>Last</th>
+              <th>Quantity</th>
+              <th>Duration</th>
+              <th>Type</th>
+              <th>Price</th>
+              <th>Filled</th>
+              <th>Status</th>        
+            </tr>
+          </thead>
+        
+          <tbody>
+            <tr *ngFor="let row of orders">
+              <td>{{ row.Symbol }}</td>
+              <td>$4.44</td>
+              <td>{{ row.Quantity }}</td>
+              <td>{{ row.Duration }}</td>
+              <td>{{ row.Type }}</td>
+              <td>${{ row.Price }}</td>
+              <td>${{ row.AvgFillPrice }}</td>
+              <td>{{ row.Status }}</td> 
+            </tr>
+          </tbody>
+        </table>
+
+  		</div>
+  	</div>
+  </div>
+</div>

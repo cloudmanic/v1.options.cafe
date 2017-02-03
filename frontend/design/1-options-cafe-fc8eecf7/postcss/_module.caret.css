@@ -1,0 +1,13 @@
+/* ------------------------------------------------------------ *\
+	Caret
+\* ------------------------------------------------------------ */
+
+.caret { border-left: 4px solid transparent; border-right: 4px solid transparent; border-top-width: 5px; }
+
+.caret-up { transform: rotate(180deg); }
+
+.caret-green { border-top-color: $color-green; }
+
+.caret-red { border-top-color: $color-red; }
+
+.caret-white { border-top-color: $color-light; }

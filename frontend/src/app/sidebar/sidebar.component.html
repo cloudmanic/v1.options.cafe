@@ -1,0 +1,63 @@
+<div class="sidebar">
+	<ul class="widgets">
+		<li class="widget widget-main">
+			<div class="widget-head">
+				<h5 class="widget-title">Main</h5>
+			</div>
+			
+			<div class="widget-body">
+				<nav class="nav-utilities">
+					<ul>
+						<li>
+							<a href="#">
+								<span>
+									<i class="ico-indicator"></i>
+								</span>
+								Trading
+							</a>
+						</li>
+						
+						<li>
+							<a href="#">
+								<span>
+									<i class="ico-report"></i>
+								</span>
+
+								Reports
+							</a>
+						</li>
+					</ul>
+				</nav><!-- /.nav-utilities -->
+			</div><!-- /.widget-body -->
+		</li><!-- /.widget -->
+		
+		<li class="widget widget-account">
+			<div class="widget-head">
+				<h5 class="widget-title">Account</h5>
+			</div>
+			
+			<div class="widget-body">
+  			
+				<nav class="nav-utilities nav-utilities-secondary">
+					<ul>
+						<li>
+  		        <oc-accounts></oc-accounts>
+						</li>
+					</ul>
+				</nav>
+				
+			</div><!-- /.widget-body -->
+		</li>
+		
+		<li class="widget">			
+			<div class="widget-body">
+  			<strong>US Stock Market</strong> <br />  			
+  			<span [ngSwitch]="marketStatus?.state">
+  			  <span *ngSwitchCase="'open'">Open</span>
+  			  <span *ngSwitchDefault>Closed</span>
+  			</span>
+			</div>				
+		</li>
+		
+	</ul><!-- /.widgets -->
+</div><!-- /.sidebar -->

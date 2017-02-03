@@ -1,0 +1,37 @@
+<header class="header">
+  <div class="container-fluid">
+  	<div class="header-body">
+    	<div class="logo-cont">
+    	  <img src="assets/css/images/stockpeer_logo.jpg" width="40" height="40" />
+    	</div>
+    	
+  		<div class="header-content">
+        <div class="row">
+          
+          <div class="col-md-3 text-center">
+    			  <strong>Dow</strong> {{ quotes['$DJI']?.last | currency:'USD':true:'1.2-2' }} <br />
+            <span class="{{ quotes['$DJI']?.classColor() }}">{{ quotes['$DJI']?.dailyChange() | currency:'USD':true:'1.2-2' }} ({{ quotes['$DJI']?.percentChange() | number:'1.2-2' }}%)</span>
+    			</div>
+    			
+    			<div class="col-md-3  text-center">
+    			  <strong>S&P 500</strong> {{ quotes['SPX']?.last | currency:'USD':true:'1.2-2' }}<br />
+    			 <span class="{{ quotes['SPX']?.classColor() }}">{{ quotes['SPX']?.dailyChange() | currency:'USD':true:'1.2-2' }} ({{ quotes['SPX']?.percentChange() | number:'1.2-2' }}%)</span>
+    			</div>
+
+    			<div class="col-md-3  text-center">
+    			  <strong>Nasdaq</strong> {{ quotes['COMP']?.last | currency:'USD':true:'1.2-2' }}<br />
+            <span class="{{ quotes['COMP']?.classColor() }}">{{ quotes['COMP']?.dailyChange() | currency:'USD':true:'1.2-2' }} ({{ quotes['COMP']?.percentChange() | number:'1.2-2' }}%)</span>
+    			</div>
+
+    			<div class="col-md-3 text-center">
+    			  <strong>VIX</strong> {{ quotes['VIX']?.last | currency:'USD':true:'1.2-2' }}<br />
+            <span class="{{ quotes['VIX']?.classColor() }}">{{ quotes['VIX']?.dailyChange() | currency:'USD':true:'1.2-2' }} ({{ quotes['VIX']?.percentChange() | number:'1.2-2' }}%)</span>
+    			</div>
+	    			
+  			</div>
+  			  			
+  		</div><!-- /.header-content -->  		
+  		
+  	</div><!-- /.header-body -->
+  </div><!-- /.container-fluid -->
+</header><!-- /.header -->

@@ -1,0 +1,35 @@
+/* ------------------------------------------------------------ *\
+	Details
+\* ------------------------------------------------------------ */
+
+.details { display: flex; justify-content: space-between; }
+
+.detail { display: flex; align-items: center; }
+
+.detail .detail-circle { position: relative; margin-right: 20px; font-size: 0; }
+
+.detail .detail-circle-content { position: absolute; top: 32px; left: 0; width: 100%; z-index: 6; color: $color-dark; text-align: center; }
+.detail .detail-circle-content span:not(.caret) { display: block; margin-bottom: 1px; font-size: 18px; font-weight: 900; }
+.detail .detail-circle-content small { display: inline-block; padding-bottom: 1px; border-bottom: 1px dotted $color-lightgrey; margin-bottom: 9px; font-size: 12px; font-weight: 500; }
+.detail .detail-circle-content .caret { display: block; margin: 0 auto; }
+
+.detail-chart { position: relative; display: inline-block; border-radius: 50%; background: $color-lightergrey; font-size: 0; }
+
+.detail-chart:before { position: absolute; top: 4px; left: 4px; bottom: 4px; right: 4px; z-index: 5; border-radius: 50%; background: #ffffff; content: ''; }
+
+.detail-chart > svg { position: relative; z-index: 3; width: 106px; height: 106px; background: none; border-radius: 50%; -ms-transform: rotate(-90deg); transform: rotate(-90deg); }
+.detail-chart > svg > circle { stroke: $color-orange; stroke-width: 32; fill: none; }
+
+.detail-chart.green > svg > circle { stroke: $color-green; }
+
+/* Small Desktop */
+
+$breakpoint-small-desktop {
+	.detail .detail-circle { margin-right: 6px; }
+}
+
+/* Tablet Portrait */
+
+$breakpoint-tablet-portrait {
+	.detail .detail-circle { margin-right: 20px; }
+}

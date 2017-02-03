@@ -1,0 +1,5 @@
+<div class="select">
+  <select [(ngModel)]="selectedAccount" (ngModelChange)="onAccountChange()">
+    <option [ngValue]="row" *ngFor="let row of userProfile?.Accounts">{{ row.AccountNumber }}</option>
+  </select>
+</div>

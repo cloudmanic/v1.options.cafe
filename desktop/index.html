@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+  	<base href="https://cdn.options.cafe/0.0.1/" />
+  	<meta charset="utf-8" />
+  
+  	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+  
+  	<title>Options Cafe</title>
+  
+  	<link rel="shortcut icon" type="image/x-icon" href="assets/css/images/favicon.ico" />
+  	<link rel="icon" type="image/png" href="assets/css/images/favicon-32x32.png" sizes="32x32" />
+  	<link rel="icon" type="image/png" href="assets/css/images/favicon-16x16.png" sizes="16x16" />
+  	
+  	<link rel="stylesheet" href="assets/vendor/bootstrap-3.3.7-dist/css/bootstrap.min.css" type="text/css" media="all" />
+  	<link rel="stylesheet" href="assets/css/style.css" />  
+  	
+    <script type="text/javascript">
+      
+      var ws_server = "wss://app.options.cafe";
+      //var ws_server = "ws://127.0.0.1:7652";
+      
+      window.jQuery = window.$ = require('jquery');
+      var Config = require('electron-config');
+      var config = new Config();
+      var tradier_api_key = config.get('tradier_api_key');    
+    </script>  		
+  </head>
+  <body>
+    <div class="wrapper">
+      <oc-root>Loading...</oc-root>
+    </div>
+
+    <script type="text/javascript" src="assets/vendor/bootstrap-3.3.7-dist/js/bootstrap.min.js" defer></script>
+    <script type="text/javascript" src="assets/js/functions.js" defer></script>
+    <script type="text/javascript" src="inline.bundle.js"></script>
+    <script type="text/javascript" src="vendor.bundle.js"></script>
+    <script type="text/javascript" src="main.bundle.js"></script><        
+  </body>
+</html>

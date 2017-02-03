@@ -1,0 +1,16 @@
+{
+  "name": "OptionsCafe",
+  
+  "version": "0.0.1",
+  
+  "main": "main.js",
+  
+  "devDependencies": {
+    "electron": "^1.4.15"
+  },
+  
+  "dependencies": {
+    "electron-config": "^0.2.1",
+    "jquery": "^3.1.1"
+  }
+}

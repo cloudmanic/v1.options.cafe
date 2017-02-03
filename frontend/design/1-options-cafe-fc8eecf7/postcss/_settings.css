@@ -1,0 +1,42 @@
+$font-size-base:                    14px;
+$line-height-base:                  1.36;
+
+
+$shell-max-width:                   1200px;
+$shell-gutter:                      10px;
+
+
+$font-family-sans-serif:            'Arial', 'Helvetica', sans-serif;
+$font-family-serif:                 'Times', serif;
+$font-avenir: 		                'Avenir', sans-serif;
+$font-avenir-book:                  'Avenir Roman', sans-serif;
+
+
+$color-dark: 						#000000;
+$color-light: 						#ffffff;
+$color-red: 						#d02139;
+$color-grey: 						#333333;
+$color-lightgrey: 					#6d6f72;
+$color-lightergrey: 				#eceff4;
+$color-lightestgrey: 				#f6f8f8;
+$color-grey-secondary: 				#eeeeee;
+$color-grey-tertiary: 				#979797;
+$color-green: 						#70c8be;
+$color-darkgreen: 					#00a99a;
+$color-blue: 						#78a7b7;
+$color-darkblue: 					#6f8f9d;
+$color-orange: 						#f15b40;
+$color-beige: 						#cdc884;
+
+
+$responsive-xxs:                    479px;
+$responsive-xs:                     767px;
+$responsive-sm:                     1023px;
+$responsive-md:                     1200px;
+
+
+$breakpoint-mobile-portrait:        @media (max-width: $responsive-xxs);
+$breakpoint-mobile:                 @media (max-width: $responsive-xs);
+$breakpoint-tablet-portrait:        @media (max-width: $responsive-sm);
+$breakpoint-small-desktop:          @media (max-width: $responsive-md);
+$retina:                            @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi);

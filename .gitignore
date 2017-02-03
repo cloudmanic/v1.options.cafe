@@ -1,0 +1,11 @@
+.DS_Store
+
+/node_modules
+/vendor
+
+/frontend/node_modules
+/desktop/node_modules
+
+Homestead.json
+Homestead.yaml
+.env

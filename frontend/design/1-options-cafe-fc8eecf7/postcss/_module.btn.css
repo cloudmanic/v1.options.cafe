@@ -1,0 +1,19 @@
+/* ------------------------------------------------------------ *\
+	Button
+\* ------------------------------------------------------------ */
+
+.btn { display: inline-block; vertical-align: middle; text-align: center; cursor: pointer; transition: opacity .4s, visibility .4s, background .4s, color .4s, border .4s;
+	-webkit-appearance: none;
+	   -moz-appearance: none;
+	 		appearance: none;
+}
+.btn:hover,
+.btn:focus { text-decoration: none; }
+
+/*  Btn Tooltip  */
+.btn-tooltip { padding: 0; border: none; font-size: 0; }
+.btn-tooltip span { display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: #eeeeee; font-size: 13px; line-height: 18px; color: $color-lightgrey; font-weight: 900; }
+.btn-tooltip small { display: none; }
+
+/*  Button Block  */
+.btn-block { display: block; padding-left: 0; padding-right: 0; }
