@@ -208,7 +208,7 @@ func HtmlMainTemplate(w http.ResponseWriter, r *http.Request) {
   
   	<title>Options Cafe</title>
   
-  	<link rel="shortcut icon" type="image/x-icon" href="assets/css/images/favicon.ico?v=2 />
+  	<link rel="shortcut icon" type="image/x-icon" href="assets/css/images/favicon.ico?v=2" />
   	<link rel="icon" type="image/png" href="assets/css/images/favicon-32x32.png?v=2" sizes="32x32" />
   	<link rel="icon" type="image/png" href="assets/css/images/favicon-16x16.png?v=2" sizes="16x16" />
   	
