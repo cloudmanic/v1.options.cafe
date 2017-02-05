@@ -144,8 +144,9 @@ func (t *Fetch) StartStreamingQuotes() {
 // Do get quotes - more details from the streaming - activeSymbols
 //
 func (t *Fetch) GetActiveSymbolsDetailedQuotes() (error) {
-   
-  symbols := t.GetActiveSymbols()
+
+  
+  symbols := t.GetActiveSymbols()  
   detailedQuotes, err := t.broker.GetQuotes(symbols)
   
   if err != nil {
@@ -199,14 +200,14 @@ func (t *Fetch) GetWatchlists() (error) {
     return err  
   }  
   
-  // Loop through and send data up websocket
-  t.muActiveSymbols.Lock()
-  
+  // Loop through and send data up websocket  
   for _, row := range watchlists {
   
     // Update active symbols 
     for _, row2 := range row.Symbols {
+      t.muActiveSymbols.Lock()
       t.activeSymbols = append(t.activeSymbols, row2.Name)
+      t.muActiveSymbols.Unlock()
     }   
    
     // Send up websocket.
@@ -217,8 +218,6 @@ func (t *Fetch) GetWatchlists() (error) {
     }    
     
   }
-  
-  t.muActiveSymbols.Unlock() 
   
   // Return Happy
   return nil

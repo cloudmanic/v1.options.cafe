@@ -3,23 +3,11 @@ package main
 import (
   "fmt" 
   "sync"
-  "time"
   "./models"  
   "net/http"
   "encoding/json"
   "github.com/tidwall/gjson"  
   "github.com/gorilla/websocket" 
-)
-
-const (
-	// Time allowed to write a message to the peer.
-	writeWait = 10 * time.Second
-	
-	// Time allowed to read the next pong message from the peer.
-	pongWait = 60 * time.Second
-	
-	// Send pings to peer with this period. Must be less than pongWait.
-	pingPeriod = 55 * time.Second
 )
 
 type Websockets struct {   
@@ -125,10 +113,6 @@ func (t *Websockets) DoWebsocketConnection(w http.ResponseWriter, r *http.Reques
   // Close connection when this function ends
   defer conn.Close()  
 
-  // Add in the ping (rom server) and the pong (back from browser)
-	conn.SetReadDeadline(time.Now().Add(pongWait))
-	conn.SetPongHandler(func(string) error { conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
-	
   // Add the connection to our connection array
   r_con := WebsocketConnection{ connection: conn }
     
@@ -226,56 +210,21 @@ func (t *Websockets) DoWebsocketReading(conn *WebsocketConnection) {
 //
 func (t *Websockets) DoWebsocketWriting(user *UsersConnection) {
   
-  // Setup the ping ticker
-  ticker := time.NewTicker(pingPeriod)
-  defer ticker.Stop()
-  
   for {
 
-    select {
-      
-      // Websocket Channel
-      case message := <-user.WebsocketWriteChannel:
-        
-        for i, _ := range t.connections {
-          
-          // We only care about the user we passed in.
-          if t.connections[i].userId != user.UserId {
-            continue
-          }
-          
-          t.connections[i].muWrite.Lock()
-          t.connections[i].connection.WriteMessage(websocket.TextMessage, []byte(message))
-          t.connections[i].muWrite.Unlock()
-          
-        }
-        
-      break      
-     
-      // Ticker - Send ping messages
-      case <-ticker.C:
-              
-        for i, _ := range t.connections {
-          
-          // We only care about the user we passed in.
-          if t.connections[i].userId != user.UserId {
-            continue
-          }
-          
-          t.connections[i].muWrite.Lock()
-          
-          t.connections[i].connection.SetWriteDeadline(time.Now().Add(writeWait))
-          
-          if err := t.connections[i].connection.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
-            fmt.Println("Client Disconnected... (Error Ticker)")
-			    }        
-			      
-          t.connections[i].muWrite.Unlock()
-          
-        }              
-        			  
-      break
+    message := <-user.WebsocketWriteChannel
     
+    for i, _ := range t.connections {
+      
+      // We only care about the user we passed in.
+      if t.connections[i].userId != user.UserId {
+        continue
+      }
+      
+      t.connections[i].muWrite.Lock()
+      t.connections[i].connection.WriteMessage(websocket.TextMessage, []byte(message))
+      t.connections[i].muWrite.Unlock()
+      
     }
 
   }
@@ -308,10 +257,6 @@ func (t *Websockets) DoQuoteWebsocketConnection(w http.ResponseWriter, r *http.R
   
   // Close connection when this function ends
   defer conn.Close()
-  
-  // Add in the ping (rom server) and the pong (back from browser)
-	conn.SetReadDeadline(time.Now().Add(pongWait))
-	conn.SetPongHandler(func(string) error { conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	  
   // Add the connection to our connection array
   r_con := WebsocketConnection{connection: conn}
@@ -327,91 +272,22 @@ func (t *Websockets) DoQuoteWebsocketConnection(w http.ResponseWriter, r *http.R
 //
 func (t *Websockets) DoWebsocketQuoteWriting(user *UsersConnection) {
   
-  // Setup the ping ticker
-  ticker := time.NewTicker(pingPeriod)
-  defer ticker.Stop()
-  
   for {
 
-    select {
-      
-      // Websocket Channel
-      case message := <-user.WebsocketWriteQuoteChannel:
-        
-        for i, _ := range t.quotesConnections {
-          
-          // We only care about the user we passed in.
-          if t.quotesConnections[i].userId != user.UserId {
-            continue
-          }
-          
-          t.quotesConnections[i].muWrite.Lock()
-          t.quotesConnections[i].connection.WriteMessage(websocket.TextMessage, []byte(message))
-          t.quotesConnections[i].muWrite.Unlock()
-          
-        }
-        
-      break      
-     
-      // Ticker - Send ping messages
-      case <-ticker.C:
-              
-        for i, _ := range t.quotesConnections {
-          
-          // We only care about the user we passed in.
-          if t.quotesConnections[i].userId != user.UserId {
-            continue
-          }
-          
-          t.quotesConnections[i].muWrite.Lock()
-          
-          t.quotesConnections[i].connection.SetWriteDeadline(time.Now().Add(writeWait))
-          
-          if err := t.quotesConnections[i].connection.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
-            fmt.Println("Client Quote Disconnected... (Error Ticker)")
-			    }        
-			      
-          t.quotesConnections[i].muWrite.Unlock()
-          
-        }              
-        			  
-      break
+    message := <-user.WebsocketWriteQuoteChannel
     
-    }
-
-/*
-    select {
+    for i, _ := range t.quotesConnections {
       
-      // Websocket Channel
-      case message := <-user.WebsocketWriteQuoteChannel:
+      // We only care about the user we passed in.
+      if t.quotesConnections[i].userId != user.UserId {
+        continue
+      }
       
-        // TODO: Filter this by lisc. keys
-        for _, row := range t.quotesConnections {
-          row.muWrite.Lock();
-          row.connection.WriteMessage(websocket.TextMessage, []byte(message));
-          row.muWrite.Unlock();
-        }
-        
-      break      
-     
-      // Ticker - Send ping messages
-      case <-ticker.C:
-              
-        for _, row := range t.quotesConnections {
-          row.muWrite.Lock()
-          
-          row.connection.SetWriteDeadline(time.Now().Add(writeWait))
-          
-          if err := row.connection.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
-            fmt.Println("Client Quote Disconnected... (Error Ticker)")
-			    }
-			    
-			    row.muWrite.Unlock()
-			  }
-			  
-      break
+      t.quotesConnections[i].muWrite.Lock()
+      t.quotesConnections[i].connection.WriteMessage(websocket.TextMessage, []byte(message))
+      t.quotesConnections[i].muWrite.Unlock()
+      
     }
-*/
 
   }  
 	  
