@@ -68,7 +68,7 @@ func (t * Api) GetOrders() ([]types.Order, error) {
     account_number := gjson.Get(string(body), "accounts.account.account_number").String() 
     
     // Do we have more than one order
-    vo2 = gjson.Get(string(body), "accounts.account.orders.id")
+    vo2 = gjson.Get(string(body), "accounts.account.orders.order.id")
     
     // More than one order??
     if ! vo2.Exists() {
@@ -127,7 +127,7 @@ func (t * Api) GetOrders() ([]types.Order, error) {
       account_number := gjson.Get(value.String(), "account_number").String() 
       
       // Do we have more than one order
-      vo2 = gjson.Get(value.String(), "orders.id")
+      vo2 = gjson.Get(value.String(), "orders.order.id")
       
       // More than one order??
       if ! vo2.Exists() {

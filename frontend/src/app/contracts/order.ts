@@ -1,6 +1,7 @@
 export class Order {
   constructor(
     public Id: number,
+    public AccountId: string,
     public AvgFillPrice: number,
     public Class: string,
     public CreateDate: string,

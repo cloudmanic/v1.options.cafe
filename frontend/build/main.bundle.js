@@ -450,8 +450,9 @@ var MarketStatus = (function () {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return Order; });
 var Order = (function () {
-    function Order(Id, AvgFillPrice, Class, CreateDate, Duration, ExecQuantity, LastFillPrice, LastFillQuantity, NumLegs, Price, Quantity, RemainingQuantity, Side, Status, Symbol, TransactionDate, Type) {
+    function Order(Id, AccountId, AvgFillPrice, Class, CreateDate, Duration, ExecQuantity, LastFillPrice, LastFillQuantity, NumLegs, Price, Quantity, RemainingQuantity, Side, Status, Symbol, TransactionDate, Type) {
         this.Id = Id;
+        this.AccountId = AccountId;
         this.AvgFillPrice = AvgFillPrice;
         this.Class = Class;
         this.CreateDate = CreateDate;
@@ -679,15 +680,32 @@ var OrdersComponent = (function () {
     function OrdersComponent(broker, changeDetect) {
         this.broker = broker;
         this.changeDetect = changeDetect;
+        this.activeAccount = "";
     }
     //
     // OnInit....
     //
     OrdersComponent.prototype.ngOnInit = function () {
         var _this = this;
+        // Set the active account.
+        this.activeAccount = this.broker.activeAccount;
         // Subscribe to data updates from the broker - Orders
         this.broker.ordersPushData.subscribe(function (data) {
-            _this.orders = data;
+            var rt = [];
+            // Filter - We only one the accounts that are active.
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].AccountId == _this.activeAccount) {
+                    rt.push(data[i]);
+                }
+            }
+            // Set order data
+            _this.orders = rt;
+            _this.changeDetect.detectChanges();
+        });
+        // Subscribe to when the active account changes
+        this.broker.activeAccountPushData.subscribe(function (data) {
+            _this.activeAccount = data;
+            _this.orders = [];
             _this.changeDetect.detectChanges();
         });
     };
@@ -922,6 +940,7 @@ var BrokerService = (function () {
     // Construct!!
     //
     function BrokerService() {
+        this.activeAccount = "";
         // Data objects
         this.marketStatus = new __WEBPACK_IMPORTED_MODULE_4__contracts_market_status__["a" /* MarketStatus */]('', '');
         this.userProfile = new __WEBPACK_IMPORTED_MODULE_5__contracts_user_profile__["a" /* UserProfile */]('', '', []);
@@ -934,6 +953,7 @@ var BrokerService = (function () {
         this.userProfilePushData = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["_20" /* EventEmitter */]();
         this.marketStatusPushData = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["_20" /* EventEmitter */]();
         this.watchlistPushData = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["_20" /* EventEmitter */]();
+        this.activeAccountPushData = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["_20" /* EventEmitter */]();
         // Setup standard websocket connection.
         this.setupWebSocket();
     }
@@ -979,7 +999,7 @@ var BrokerService = (function () {
     BrokerService.prototype.doOrdersRefresh = function (data) {
         var orders = [];
         for (var i = 0; i < data.length; i++) {
-            orders.push(new __WEBPACK_IMPORTED_MODULE_1__contracts_order__["a" /* Order */](data[i].Id, data[i].AvgFillPrice, data[i].Class, data[i].CreateDate, data[i].Duration, data[i].ExecQuantity, data[i].LastFillPrice, data[i].LastFillQuantity, data[i].NumLegs, data[i].Price, data[i].Quantity, data[i].RemainingQuantity, data[i].Side, data[i].Status, data[i].Symbol, data[i].TransactionDate, data[i].Type));
+            orders.push(new __WEBPACK_IMPORTED_MODULE_1__contracts_order__["a" /* Order */](data[i].Id, data[i].AccountId, data[i].AvgFillPrice, data[i].Class, data[i].CreateDate, data[i].Duration, data[i].ExecQuantity, data[i].LastFillPrice, data[i].LastFillQuantity, data[i].NumLegs, data[i].Price, data[i].Quantity, data[i].RemainingQuantity, data[i].Side, data[i].Status, data[i].Symbol, data[i].TransactionDate, data[i].Type));
         }
         this.ordersPushData.emit(orders);
     };
@@ -988,7 +1008,8 @@ var BrokerService = (function () {
     // Set the active account id.
     //
     BrokerService.prototype.setActiveAccountId = function (account_id) {
-        this.ws.send(JSON.stringify({ type: 'set-account-id', data: { id: account_id } }));
+        this.activeAccount = account_id;
+        this.activeAccountPushData.emit(account_id);
     };
     // ------------------------ Websocket Stuff --------------------- //
     //

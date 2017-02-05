@@ -16,6 +16,8 @@ declare var tradier_api_key: any;
 
 export class BrokerService {
   
+  activeAccount = ""
+  
   // Data objects
   marketStatus = new MarketStatus('', '');
   userProfile = new UserProfile('', '', []);
@@ -29,7 +31,8 @@ export class BrokerService {
   ordersPushData = new EventEmitter<Order[]>();
   userProfilePushData = new EventEmitter<UserProfile>();
   marketStatusPushData = new EventEmitter<MarketStatus>();
-  watchlistPushData = new EventEmitter<Watchlist>(); 
+  watchlistPushData = new EventEmitter<Watchlist>();
+  activeAccountPushData = new EventEmitter<string>();   
 
   //
   // Construct!!
@@ -110,6 +113,7 @@ export class BrokerService {
     {
       orders.push(new Order(
           data[i].Id,
+          data[i].AccountId,
           data[i].AvgFillPrice,
           data[i].Class,
           data[i].CreateDate,
@@ -140,7 +144,8 @@ export class BrokerService {
   //
   setActiveAccountId(account_id) {
     
-    this.ws.send(JSON.stringify({ type: 'set-account-id', data: { id: account_id }}));
+    this.activeAccount = account_id;
+    this.activeAccountPushData.emit(account_id);
   
   }
 
