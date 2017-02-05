@@ -318,12 +318,6 @@ func (t *Websockets) DoQuoteWebsocketConnection(w http.ResponseWriter, r *http.R
  
   t.quotesConnections[conn] = &r_con
   
-  // TODO: figure out what user this is
-  // HERE IS WHERE WE DO THE AUTH STUFF
-  
-  // Start handing writting of message.
-  go t.DoWebsocketQuoteWriting(userConnections[1])  
-  
   // Do reading
   t.DoQuoteWebsocketRead(&r_con); 
 }
@@ -339,6 +333,53 @@ func (t *Websockets) DoWebsocketQuoteWriting(user *UsersConnection) {
   
   for {
 
+    select {
+      
+      // Websocket Channel
+      case message := <-user.WebsocketWriteQuoteChannel:
+        
+        for i, _ := range t.quotesConnections {
+          
+          // We only care about the user we passed in.
+          if t.quotesConnections[i].userId != user.UserId {
+            continue
+          }
+          
+          t.quotesConnections[i].muWrite.Lock()
+          t.quotesConnections[i].connection.WriteMessage(websocket.TextMessage, []byte(message))
+          t.quotesConnections[i].muWrite.Unlock()
+          
+        }
+        
+      break      
+     
+      // Ticker - Send ping messages
+      case <-ticker.C:
+              
+        for i, _ := range t.quotesConnections {
+          
+          // We only care about the user we passed in.
+          if t.quotesConnections[i].userId != user.UserId {
+            continue
+          }
+          
+          t.quotesConnections[i].muWrite.Lock()
+          
+          t.quotesConnections[i].connection.SetWriteDeadline(time.Now().Add(writeWait))
+          
+          if err := t.quotesConnections[i].connection.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
+            fmt.Println("Client Quote Disconnected... (Error Ticker)")
+			    }        
+			      
+          t.quotesConnections[i].muWrite.Unlock()
+          
+        }              
+        			  
+      break
+    
+    }
+
+/*
     select {
       
       // Websocket Channel
@@ -370,6 +411,7 @@ func (t *Websockets) DoWebsocketQuoteWriting(user *UsersConnection) {
 			  
       break
     }
+*/
 
   }  
 	  
@@ -423,6 +465,11 @@ func (t *Websockets) DoQuoteWebsocketRead(conn *WebsocketConnection) {
         conn.muWrite.Unlock();        
       break;
       
+      // The user authenticates.
+      case "set-access-token":
+        access_token := gjson.Get(string(message), "data.access_token").String()
+        t.AuthenticateConnection(conn, access_token)
+      break;     
     }
   
   }

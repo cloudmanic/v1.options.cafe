@@ -142,6 +142,7 @@ func StartUserConnection(user models.User) {
   
   // Start the websocket write connection for this user.
   go ws.DoWebsocketWriting(userConnections[user.Id])
+  go ws.DoWebsocketQuoteWriting(userConnections[user.Id]) 
   
   // Loop through the different brokers for this user
   for _, row := range user.Brokers {

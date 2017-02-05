@@ -92,7 +92,12 @@ export class QuoteService {
     
     // On Websocket open
     this.ws.onopen = (e) =>
-    {            
+    {           
+      // Send Access Token (Give a few moments to get started)
+      setTimeout(() => { 
+        this.ws.send(JSON.stringify({ type: 'set-access-token', data: { access_token: localStorage.getItem('access_token') }}));
+      }, 1000);      
+      
       // Setup the connection heartbeat
       if(this.heartbeat === null) 
       {
