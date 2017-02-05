@@ -2,6 +2,7 @@ package types
 
 type Order struct {
   Id int
+  AccountId string  
   Type string
   Symbol string
   Side string
@@ -23,6 +24,7 @@ type Order struct {
 // Tradier Temp Object for json decodeing
 type TradierOrder struct {
   Id int
+  AccountId string   
   Type string
   Symbol string
   Side string
