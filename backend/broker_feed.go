@@ -7,10 +7,7 @@ import (
 )
 
 type BrokerFeed struct {
-  fetch Fetch
-  licenseKey string 
-  brokerAccountId string 
-  brokerApiToken string    
+  fetch Fetch   
   activeSymbols []string
   detailedQuotes []tradier.Quote
 }
@@ -22,10 +19,7 @@ type BrokerFeed struct {
 // expires or is revoked. While the first websocket connection tiggers this.
 // To go routines within this continue to run even if all clients are disconnected. 
 //
-func (t *BrokerFeed) Start(websocketSendQuoteChannel chan string) {
-
-  // Get real-time quotes going (often not polling)
-  //go t.fetch.StartStreamingQuotes(websocketSendQuoteChannel)
+func (t *BrokerFeed) Start() {
   
   // Setup tickers for broker polling.
   go t.DoOrdersTicker()

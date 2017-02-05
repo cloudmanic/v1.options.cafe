@@ -4,7 +4,6 @@ import (
   "os"
   "fmt"
   "log"
-  "flag"
   "sync"
   "time"
   "runtime"
@@ -21,25 +20,29 @@ import (
 
 var ( 
   mu sync.Mutex
-  localDevMode = flag.Bool("local", false, "localhost development")
-
-  ws Websockets
   db *gorm.DB
- 
-  brokerFeeds = make(map[string]*BrokerFeed)
   
-  // Channels
-  websocketSendChannel = make(chan string)
-  websocketSendQuoteChannel = make(chan string)
+  // Websocket connections.
+  ws = Websockets{
+    connections: make(map[*websocket.Conn]*WebsocketConnection),
+    quotesConnections: make(map[*websocket.Conn]*WebsocketConnection),
+  }
+  
+  // User connections
+  userConnections = make(map[uint]*UsersConnection)
 )
+
+type UsersConnection struct {
+  UserId uint
+  BrokerConnections map[uint]*BrokerFeed
+  WebsocketWriteChannel chan string
+  WebsocketWriteQuoteChannel chan string
+}
         
 //
 // Main....
 //
 func main() {  
-  
-  // Parse flags
-  flag.Parse()
    
   // Setup CPU stuff.
   runtime.GOMAXPROCS(runtime.NumCPU())  
@@ -55,26 +58,14 @@ func main() {
     
   // Connect to database and run Migrations.
   db = DbConnect()
-  
-  // Just for testing.
-  go func() {
-    for {
-      db.Create(&models.User{FirstName: "Spicer", LastName: "Matthews", Email: "spicer@options.cafe"})
-      time.Sleep(time.Second * 60)
-    }
-  }()
-    
-  // Setup websocket connections.
-  ws.connections = make(map[*websocket.Conn]*WebsocketConnection)
-  ws.quotesConnections = make(map[*websocket.Conn]*WebsocketConnection)
-  
-  // Get started websocket sending
-  go ws.DoWebsocketSending()
-  go ws.DoWebsocketQuoteSending()
+
+  // Start our broker connections.
+  StartUserConnections()
     
   // Register some handlers:
   mux := http.NewServeMux()
   
+  // Http Routes
   mux.HandleFunc("/", HtmlMainTemplate)    
     
   // Setup websocket
@@ -82,7 +73,7 @@ func main() {
 	mux.HandleFunc("/ws/quotes", ws.DoQuoteWebsocketConnection)
 
   // Are we in testing mode?
-  if *localDevMode {
+  if os.Getenv("APP_ENV") == "local" {
     
 		s := &http.Server{
 			Addr: ":7652",
@@ -111,6 +102,71 @@ func main() {
 }
 
 //
+// Start up our user connections.
+//
+func StartUserConnections() {
+  
+  var user models.User
+  users := user.GetAllUsers(db)
+
+  for i, _ := range users {
+    go StartUserConnection(users[i])     
+  }  
+  
+}
+
+//
+// Start one user connection.
+//
+func StartUserConnection(user models.User) {
+  
+  fmt.Println("Starting User Connection : " + user.Email)
+  
+  // Lock the memory
+	mu.Lock()
+	defer mu.Unlock() 
+
+  // Make sure we do not already have this licenseKey going.
+  if _, ok := userConnections[user.Id]; ok {
+    fmt.Println("User Connection Is Already Going : " + user.Email)
+    return
+  }
+  
+  // Set the user connection.
+  userConnections[user.Id] = &UsersConnection{
+    UserId: user.Id,
+    BrokerConnections: make(map[uint]*BrokerFeed),
+    WebsocketWriteChannel: make(chan string),
+    WebsocketWriteQuoteChannel: make(chan string),
+  }
+  
+  // Start the websocket write connection for this user.
+  go ws.DoWebsocketWriting(userConnections[user.Id])
+  
+  // Loop through the different brokers for this user
+  for _, row := range user.Brokers {
+    
+    // Need an access token to continue
+    if len(row.AccessToken) <= 0 {
+      fmt.Println("User Connection (Brokers) No Access Token Found : " + user.Email)
+      continue
+    }
+    
+    // Set the broker we are going to use.
+    var broker = tradier.Api{ ApiKey: row.AccessToken }
+    var fetch = Fetch{ broker: broker, user: userConnections[user.Id] }
+    
+    // Set Broker hash and lets get going.
+    userConnections[user.Id].BrokerConnections[row.Id] = &BrokerFeed{ fetch: fetch }
+  
+    // Start the broker feed.
+    userConnections[user.Id].BrokerConnections[row.Id].Start()     
+    
+  }
+    
+}
+
+//
 // Connect to the db and run migrations.
 //
 func DbConnect() (*gorm.DB) {
@@ -130,63 +186,9 @@ func DbConnect() (*gorm.DB) {
 
   // Migrate the schemas (one per table).
   conn.AutoMigrate(&models.User{})
+  conn.AutoMigrate(&models.Broker{})
   
   return conn   
-}
-
-//
-// Start a broker feed. One per lisc.
-//
-func StartBrokerFeed(licenseKey string, brokerApiToken string) {
-  
-  // Lock the memory
-	mu.Lock()
-	defer mu.Unlock() 
-
-  // Make sure we do not already have this licenseKey going.
-  if _, ok := brokerFeeds[licenseKey]; ok {
-    return
-  }  
-
-  // Log we are starting this.
-  fmt.Println("Starting The Broker Feed - " + licenseKey)
-  
-  // Set the broker we are going to use.
-  var broker = tradier.Api{ ApiKey: brokerApiToken }
-  var fetch = Fetch{ broker: broker }
-  
-  // Set Broker hash and lets get going.
-  brokerFeeds[licenseKey] = &BrokerFeed{ 
-                              fetch: fetch, 
-                              licenseKey: licenseKey, 
-                              brokerApiToken: brokerApiToken,
-                            }
-
-  // Start the broker feed.
-  brokerFeeds[licenseKey].Start(websocketSendQuoteChannel)
-}
-
-//
-// Set the active broker account id.
-//
-func SetBrokerAccountId(licenseKey string, brokerAccountId string) {
-  
-  // Lock the memory
-	mu.Lock()
-	defer mu.Unlock() 
-
-  // Make sure we do not already have this licenseKey going.
-  if _, ok := brokerFeeds[licenseKey]; ! ok {
-    return
-  }  
-  
-  // Set the account id.
-  brokerFeeds[licenseKey].brokerAccountId = brokerAccountId
-  brokerFeeds[licenseKey].fetch.broker.SetDefaultAccountId(brokerAccountId)
-  
-	// Log this action.
-	fmt.Println("New Default Account Id From Frontend - " + brokerAccountId)  
-  
 }
 
 //

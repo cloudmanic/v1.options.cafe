@@ -3,7 +3,8 @@ package main
 import (
   "fmt" 
   "sync"
-  "time"  
+  "time"
+  "./models"  
   "net/http"
   "encoding/json"
   "github.com/tidwall/gjson"  
@@ -18,7 +19,7 @@ const (
 	pongWait = 60 * time.Second
 	
 	// Send pings to peer with this period. Must be less than pongWait.
-	pingPeriod = (pongWait * 9) / 10
+	pingPeriod = 55 * time.Second
 )
 
 type Websockets struct {   
@@ -29,9 +30,9 @@ type Websockets struct {
 type WebsocketConnection struct {
   muWrite sync.Mutex 
   connection *websocket.Conn
-
-  muLicenseKey sync.Mutex
-  licenseKey string
+  
+  muUserId sync.Mutex
+  userId uint  
 }
 
 type TradierApiKeyStruct struct {
@@ -129,10 +130,7 @@ func (t *Websockets) DoWebsocketConnection(w http.ResponseWriter, r *http.Reques
 	conn.SetPongHandler(func(string) error { conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	
   // Add the connection to our connection array
-  r_con := WebsocketConnection{
-    connection: conn,
-    licenseKey: "",
-  }
+  r_con := WebsocketConnection{ connection: conn }
     
   t.connections[conn] = &r_con 
 
@@ -144,6 +142,27 @@ func (t *Websockets) DoWebsocketConnection(w http.ResponseWriter, r *http.Reques
   // Start handling reading messages from the client.
   t.DoWebsocketReading(&r_con)
 }
+
+//
+// Authenticate Connection
+//
+func (t *Websockets) AuthenticateConnection(conn *WebsocketConnection, access_token string) {
+    
+  var user models.User
+  
+  if db.First(&user, "access_token = ?", access_token).RecordNotFound() {
+    fmt.Println("Access Token Not Found - Unable to Authenticate")
+    return
+  }
+  
+  fmt.Println("Authenticated : " + user.Email)
+  
+  // Store the user id from this connection because the auth was successful
+  conn.muUserId.Lock()
+  conn.userId = user.Id
+  conn.muUserId.Unlock()
+  
+} 
 
 //
 // Do reading message.
@@ -191,18 +210,12 @@ func (t *Websockets) DoWebsocketReading(conn *WebsocketConnection) {
         conn.connection.WriteMessage(websocket.TextMessage, []byte("{\"type\":\"pong\"}"))
         conn.muWrite.Unlock();
       break;
-      
-      // Get the tradier API sent from the frontend
-      case "tradier-api-key":
-        t.DoTradierApiKey(conn, message)
-      break;
-      
-      // Set the account id we should be using when talking to the broker.
-      case "set-account-id":
-        id := gjson.Get(string(message), "data.id")
-        SetBrokerAccountId(conn.licenseKey, id.String())
-      break;
-      
+
+      // The user authenticates.
+      case "set-access-token":
+        access_token := gjson.Get(string(message), "data.access_token").String()
+        t.AuthenticateConnection(conn, access_token)
+      break;      
     }
         
   }  
@@ -211,7 +224,7 @@ func (t *Websockets) DoWebsocketReading(conn *WebsocketConnection) {
 //
 // Send data out the websocket
 //
-func (t *Websockets) DoWebsocketSending() {
+func (t *Websockets) DoWebsocketWriting(user *UsersConnection) {
   
   // Setup the ping ticker
   ticker := time.NewTicker(pingPeriod)
@@ -222,20 +235,19 @@ func (t *Websockets) DoWebsocketSending() {
     select {
       
       // Websocket Channel
-      case message := <-websocketSendChannel:
-      
-        //fmt.Println(string(message))
+      case message := <-user.WebsocketWriteChannel:
         
-        // TODO: Filter this by lisc. keys
-        for _, row := range t.connections {
+        for i, _ := range t.connections {
           
-          //fmt.Println("Here1")
+          // We only care about the user we passed in.
+          if t.connections[i].userId != user.UserId {
+            continue
+          }
           
-          row.muWrite.Lock()
-          row.connection.WriteMessage(websocket.TextMessage, []byte(message))
-          row.muWrite.Unlock()
+          t.connections[i].muWrite.Lock()
+          t.connections[i].connection.WriteMessage(websocket.TextMessage, []byte(message))
+          t.connections[i].muWrite.Unlock()
           
-          //fmt.Println("Here2")
         }
         
       break      
@@ -243,46 +255,31 @@ func (t *Websockets) DoWebsocketSending() {
       // Ticker - Send ping messages
       case <-ticker.C:
               
-        for _, row := range t.connections {
-          row.muWrite.Lock()
+        for i, _ := range t.connections {
           
-          row.connection.SetWriteDeadline(time.Now().Add(writeWait))
+          // We only care about the user we passed in.
+          if t.connections[i].userId != user.UserId {
+            continue
+          }
           
-          if err := row.connection.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
+          t.connections[i].muWrite.Lock()
+          
+          t.connections[i].connection.SetWriteDeadline(time.Now().Add(writeWait))
+          
+          if err := t.connections[i].connection.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
             fmt.Println("Client Disconnected... (Error Ticker)")
-			    }
-			    
-			    row.muWrite.Unlock()
-			  }
-			  
+			    }        
+			      
+          t.connections[i].muWrite.Unlock()
+          
+        }              
+        			  
       break
+    
     }
 
   }
 	  
-}
-
-//
-// Grab the tradier API key sent over from the front-end
-//
-func (t *Websockets) DoTradierApiKey(conn *WebsocketConnection, message []byte) (string, error) {
-  
-  var obj TradierApiKeyStruct
-          
-  if err := json.Unmarshal(message, &obj); err != nil {
-    fmt.Println("json: (do_tradier_api_key)", err)
-    return "", err      
-  } 
-  
-  // Start collecting data for this connection if we have not already started
-  StartBrokerFeed("fa9a93242ds234kasdf", string(obj.Data.Key))
-  
-  // TODO: change this to the real lisc key
-  conn.muLicenseKey.Lock()
-  conn.licenseKey = "fa9a93242ds234kasdf"
-  conn.muLicenseKey.Unlock()
-  
-  return obj.Data.Key, nil
 }
 
 // ---------------------------- Special Handling For Quotes ----------------------- //
@@ -321,6 +318,12 @@ func (t *Websockets) DoQuoteWebsocketConnection(w http.ResponseWriter, r *http.R
  
   t.quotesConnections[conn] = &r_con
   
+  // TODO: figure out what user this is
+  // HERE IS WHERE WE DO THE AUTH STUFF
+  
+  // Start handing writting of message.
+  go t.DoWebsocketQuoteWriting(userConnections[1])  
+  
   // Do reading
   t.DoQuoteWebsocketRead(&r_con); 
 }
@@ -328,7 +331,7 @@ func (t *Websockets) DoQuoteWebsocketConnection(w http.ResponseWriter, r *http.R
 //
 // Send data out quote data websocket 
 //
-func (t *Websockets) DoWebsocketQuoteSending() {
+func (t *Websockets) DoWebsocketQuoteWriting(user *UsersConnection) {
   
   // Setup the ping ticker
   ticker := time.NewTicker(pingPeriod)
@@ -339,7 +342,7 @@ func (t *Websockets) DoWebsocketQuoteSending() {
     select {
       
       // Websocket Channel
-      case message := <-websocketSendQuoteChannel:
+      case message := <-user.WebsocketWriteQuoteChannel:
       
         // TODO: Filter this by lisc. keys
         for _, row := range t.quotesConnections {

@@ -198,9 +198,9 @@ export class BrokerService {
     // On Websocket open
     this.ws.onopen = (e) =>
     {      
-      // Send tradier API key to backend. (Give a few moments to get started)
+      // Send Access Token (Give a few moments to get started)
       setTimeout(() => { 
-        this.ws.send(JSON.stringify({ type: 'tradier-api-key', data: { key: tradier_api_key }}));
+        this.ws.send(JSON.stringify({ type: 'set-access-token', data: { access_token: localStorage.getItem('access_token') }}));
       }, 1000);
       
       // Setup the connection heartbeat

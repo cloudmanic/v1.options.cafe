@@ -14,6 +14,7 @@ type Fetch struct {
   mu sync.Mutex
   activeSymbols []string
   broker tradier.Api
+  user *UsersConnection
 }
 
 //
@@ -59,10 +60,10 @@ func (t *Fetch) GetMarketStatus() (error) {
   }   
   
   // Send up websocket.
-  err = t.SendWebSocket("MarketStatus:refresh", marketStatus)
+  err = t.WriteWebSocket("MarketStatus:refresh", marketStatus)
   
   if err != nil {
-    return fmt.Errorf("GetMarketStatus() SendWebSocket : ", err)
+    return fmt.Errorf("GetMarketStatus() WriteWebSocket : ", err)
   }   
   
   // Return Happy
@@ -85,10 +86,10 @@ func (t *Fetch) GetUserProfile() (error) {
   }   
   
   // Send up websocket.
-  err = t.SendWebSocket("UserProfile:refresh", userProfile)
+  err = t.WriteWebSocket("UserProfile:refresh", userProfile)
   
   if err != nil {
-    return fmt.Errorf("GetUserProfile() SendWebSocket : ", err)
+    return fmt.Errorf("GetUserProfile() WriteWebSocket : ", err)
   }   
   
   // Return Happy
@@ -113,7 +114,7 @@ func (t *Fetch) GetOrders() (error) {
   }   
   
   // Send up websocket.
-  err = t.SendWebSocket("Orders:refresh", orders)
+  err = t.WriteWebSocket("Orders:refresh", orders)
   
   if err != nil {
     return fmt.Errorf("GetUserProfile() GetOrders : ", err)
@@ -129,9 +130,9 @@ func (t *Fetch) GetOrders() (error) {
 //
 // Start the streaming quotes.
 //
-func (t *Fetch) StartStreamingQuotes(websocketSendQuoteChannel chan string) {
+func (t *Fetch) StartStreamingQuotes() {
   
-  t.broker.DoQuotes(websocketSendQuoteChannel)
+  t.broker.DoQuotes(t.user.WebsocketWriteQuoteChannel)
   
 }
 
@@ -171,7 +172,7 @@ func (t *Fetch) GetActiveSymbolsDetailedQuotes() (error) {
     err = t.SendQuoteWebSocket(send_json)
     
     if err != nil {
-      return fmt.Errorf("GetActiveSymbolsDetailedQuotes() SendWebSocket : ", err)
+      return fmt.Errorf("GetActiveSymbolsDetailedQuotes() WriteWebSocket : ", err)
     }     
     
   } 
@@ -205,10 +206,10 @@ func (t *Fetch) GetWatchlists() (error) {
     }   
    
     // Send up websocket.
-    err = t.SendWebSocket("Watchlist:refresh", row)
+    err = t.WriteWebSocket("Watchlist:refresh", row)
     
     if err != nil {
-      return fmt.Errorf("GetWatchlists() SendWebSocket : ", err)
+      return fmt.Errorf("GetWatchlists() WriteWebSocket : ", err)
     }    
     
   }
@@ -244,10 +245,10 @@ func (t *Fetch) GetWatchlist(listName string) (error) {
   t.mu.Unlock()
   
   // Send up websocket.
-  err = t.SendWebSocket("Watchlist:refresh", watchlist)
+  err = t.WriteWebSocket("Watchlist:refresh", watchlist)
  
   if err != nil {
-    return fmt.Errorf("GetWatchlist() SendWebSocket : ", err)
+    return fmt.Errorf("GetWatchlist() WriteWebSocket : ", err)
   }   
   
   // Return Happy
@@ -260,24 +261,24 @@ func (t *Fetch) GetWatchlist(listName string) (error) {
 //
 // Send data up websocket. 
 //
-func (t *Fetch) SendWebSocket(send_type string, sendObject interface{}) (error) {
+func (t *Fetch) WriteWebSocket(send_type string, sendObject interface{}) (error) {
   
   // Convert to a json string.
   dataJson, err := json.Marshal(sendObject)
 
   if err != nil {
-    return fmt.Errorf("SendWebSocket() json.Marshal : ", err)
+    return fmt.Errorf("WriteWebSocket() json.Marshal : ", err)
   } 
   
   // Send data up websocket.
   sendJson, err := ws.GetSendJson(send_type, string(dataJson))  
   
   if err != nil {
-    return fmt.Errorf("SendWebSocket() GetSendJson Send Object : ", err)
+    return fmt.Errorf("WriteWebSocket() GetSendJson Send Object : ", err)
   }   
 
   // Write data out websocket
-  websocketSendChannel <- sendJson
+  t.user.WebsocketWriteChannel <- sendJson
   
   // Return happy
   return nil
@@ -290,7 +291,7 @@ func (t *Fetch) SendWebSocket(send_type string, sendObject interface{}) (error) 
 func (t *Fetch) SendQuoteWebSocket(sendJson string) (error) {
 
   // Write data out websocket
-  websocketSendQuoteChannel <- sendJson
+  t.user.WebsocketWriteQuoteChannel <- sendJson
   
   // Return happy
   return nil
