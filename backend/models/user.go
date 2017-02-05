@@ -7,8 +7,8 @@ import (
 
 type User struct {
   Id uint `gorm:"primary_key"`
-  CreatedAt time.Time `sql:"not null"`
-  UpdatedAt time.Time `sql:"not null"`
+  CreatedAt time.Time
+  UpdatedAt time.Time
   FirstName string `sql:"not null"`
   LastName string `sql:"not null"`
   Email string `sql:"not null"`

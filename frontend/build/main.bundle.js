@@ -73,6 +73,10 @@ var QuoteService = (function () {
         };
         // On Websocket open
         this.ws.onopen = function (e) {
+            // Send Access Token (Give a few moments to get started)
+            setTimeout(function () {
+                _this.ws.send(JSON.stringify({ type: 'set-access-token', data: { access_token: localStorage.getItem('access_token') } }));
+            }, 1000);
             // Setup the connection heartbeat
             if (_this.heartbeat === null) {
                 _this.missed_heartbeats = 0;
@@ -1026,9 +1030,9 @@ var BrokerService = (function () {
         };
         // On Websocket open
         this.ws.onopen = function (e) {
-            // Send tradier API key to backend. (Give a few moments to get started)
+            // Send Access Token (Give a few moments to get started)
             setTimeout(function () {
-                _this.ws.send(JSON.stringify({ type: 'tradier-api-key', data: { key: tradier_api_key } }));
+                _this.ws.send(JSON.stringify({ type: 'set-access-token', data: { access_token: localStorage.getItem('access_token') } }));
             }, 1000);
             // Setup the connection heartbeat
             if (_this.heartbeat === null) {

@@ -208,21 +208,15 @@ func HtmlMainTemplate(w http.ResponseWriter, r *http.Request) {
   
   	<title>Options Cafe</title>
   
-  	<link rel="shortcut icon" type="image/x-icon" href="assets/css/images/favicon.ico?v=1" />
-  	<link rel="icon" type="image/png" href="assets/css/images/favicon-32x32.png?v=1" sizes="32x32" />
-  	<link rel="icon" type="image/png" href="assets/css/images/favicon-16x16.png?v=1" sizes="16x16" />
+  	<link rel="shortcut icon" type="image/x-icon" href="assets/css/images/favicon.ico?v=2 />
+  	<link rel="icon" type="image/png" href="assets/css/images/favicon-32x32.png?v=2" sizes="32x32" />
+  	<link rel="icon" type="image/png" href="assets/css/images/favicon-16x16.png?v=2" sizes="16x16" />
   	
-  	<link rel="stylesheet" href="assets/vendor/bootstrap-3.3.7-dist/css/bootstrap.min.css?v=1" type="text/css" media="all" />
-  	<link rel="stylesheet" href="assets/css/style.css?v=1" />  
+  	<link rel="stylesheet" href="assets/vendor/bootstrap-3.3.7-dist/css/bootstrap.min.css?v=2" type="text/css" media="all" />
+  	<link rel="stylesheet" href="assets/css/style.css?v=2" />  
   	
     <script type="text/javascript">
-      
-      // Set websocket url
       var ws_server = "wss://app.options.cafe";
-      //var ws_server = "ws://127.0.0.1:7652";
-      
-      // Set tradier api key
-      var tradier_api_key = localStorage.getItem('tradier_api_key');
     </script>  		
   </head>
 <body>
@@ -230,12 +224,12 @@ func HtmlMainTemplate(w http.ResponseWriter, r *http.Request) {
     <oc-root>Loading...</oc-root>
   </div>
 
-  <script src="assets/vendor/jquery-1.12.4.min.js?v=1"></script>
-  <script src="assets/vendor/bootstrap-3.3.7-dist/js/bootstrap.min.js?v=1"></script>
-  <script src="assets/js/functions.js?v=1"></script>
-  <script type="text/javascript" src="inline.bundle.js?v=1"></script>
-  <script type="text/javascript" src="vendor.bundle.js?v=1"></script>
-  <script type="text/javascript" src="main.bundle.js?v=1"></script>        
+  <script src="assets/vendor/jquery-1.12.4.min.js?v=2"></script>
+  <script src="assets/vendor/bootstrap-3.3.7-dist/js/bootstrap.min.js?v=2"></script>
+  <script src="assets/js/functions.js?v=2"></script>
+  <script type="text/javascript" src="inline.bundle.js?v=2"></script>
+  <script type="text/javascript" src="vendor.bundle.js?v=2"></script>
+  <script type="text/javascript" src="main.bundle.js?v=2"></script>        
 </body>
 </html>  
   `))
