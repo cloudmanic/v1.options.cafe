@@ -11,8 +11,12 @@ import (
 )
 
 type Fetch struct {
-  mu sync.Mutex
+  muWsWrite sync.Mutex
+  muWsWriteQuote sync.Mutex    
+  
+  muActiveSymbols sync.Mutex
   activeSymbols []string
+  
   broker tradier.Api
   user *UsersConnection
 }
@@ -24,8 +28,8 @@ type Fetch struct {
 func (t *Fetch) GetActiveSymbols() ([]string) {
   
   // Lock da memory
-	t.mu.Lock()
-	defer t.mu.Unlock()   
+	t.muActiveSymbols.Lock()
+	defer t.muActiveSymbols.Unlock()   
   
   // Symbols we always want
   t.activeSymbols = append(t.activeSymbols, "$DJI")
@@ -196,7 +200,7 @@ func (t *Fetch) GetWatchlists() (error) {
   }  
   
   // Loop through and send data up websocket
-  t.mu.Lock()
+  t.muActiveSymbols.Lock()
   
   for _, row := range watchlists {
   
@@ -214,7 +218,7 @@ func (t *Fetch) GetWatchlists() (error) {
     
   }
   
-  t.mu.Unlock() 
+  t.muActiveSymbols.Unlock() 
   
   // Return Happy
   return nil
@@ -236,13 +240,13 @@ func (t *Fetch) GetWatchlist(listName string) (error) {
   // Update our list of active symbols.
   t.activeSymbols = make([]string, 0)
   
-  t.mu.Lock()
+  t.muActiveSymbols.Lock()
   
   for _, row := range watchlist.Symbols {
     t.activeSymbols = append(t.activeSymbols, row.Name)
   }
   
-  t.mu.Unlock()
+  t.muActiveSymbols.Unlock()
   
   // Send up websocket.
   err = t.WriteWebSocket("Watchlist:refresh", watchlist)
@@ -262,7 +266,7 @@ func (t *Fetch) GetWatchlist(listName string) (error) {
 // Send data up websocket. 
 //
 func (t *Fetch) WriteWebSocket(send_type string, sendObject interface{}) (error) {
-  
+
   // Convert to a json string.
   dataJson, err := json.Marshal(sendObject)
 
@@ -278,7 +282,9 @@ func (t *Fetch) WriteWebSocket(send_type string, sendObject interface{}) (error)
   }   
 
   // Write data out websocket
+  t.muWsWrite.Lock()
   t.user.WebsocketWriteChannel <- sendJson
+  t.muWsWrite.Unlock() 
   
   // Return happy
   return nil
@@ -291,7 +297,9 @@ func (t *Fetch) WriteWebSocket(send_type string, sendObject interface{}) (error)
 func (t *Fetch) SendQuoteWebSocket(sendJson string) (error) {
 
   // Write data out websocket
+  t.muWsWriteQuote.Lock()
   t.user.WebsocketWriteQuoteChannel <- sendJson
+  t.muWsWriteQuote.Unlock()
   
   // Return happy
   return nil
