@@ -68,14 +68,14 @@ func (t * Api) GetQuotes(symbols []string) ([]Quote, error) {
     return nil, err 
   }        
   
+  // Close Body
+  defer res.Body.Close()    
+  
   // Make sure the api responded with a 200
   if res.StatusCode != 200 {
     return nil, errors.New(fmt.Sprint("GetQuotes API did not return 200, It returned ", res.StatusCode))
   }   
-  
-  // Close Body
-  defer res.Body.Close()  
-  
+    
   // Read the data we got.
   body, err := ioutil.ReadAll(res.Body)
   

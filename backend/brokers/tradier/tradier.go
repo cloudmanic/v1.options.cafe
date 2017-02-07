@@ -10,10 +10,9 @@ const (
 )
 
 type Api struct {
-  mu sync.Mutex
-  defaultAccountId string
-  
+  muActiveSymbols sync.Mutex
   activeSymbols string
+  
   ApiKey string
   oldActiveSymbols string
 }
@@ -24,25 +23,11 @@ type Api struct {
 func (t * Api) SetActiveSymbols(symbols []string) {
   
   // Lock da memory
-	t.mu.Lock()
-	defer t.mu.Unlock()    
+	t.muActiveSymbols.Lock()
+	defer t.muActiveSymbols.Unlock()    
   
   t.activeSymbols = strings.Join(symbols, ",")
   
-}
-
-//
-// Set the default account.
-//
-func (t * Api) SetDefaultAccountId(accountId string) {
-  
-  // Lock da memory
-	t.mu.Lock()
-	defer t.mu.Unlock()    
-	
-  // Store value
-  t.defaultAccountId = accountId
-    
 }
 
 /* End File */
