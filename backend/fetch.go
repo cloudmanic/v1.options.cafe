@@ -131,14 +131,6 @@ func (t *Fetch) GetOrders() (error) {
 
 // ----------------- Quotes ------------------- //
 
-//
-// Start the streaming quotes.
-//
-func (t *Fetch) StartStreamingQuotes() {
-  
-  t.broker.DoQuotes(t.user.WebsocketWriteQuoteChannel)
-  
-}
 
 //
 // Do get quotes - more details from the streaming - activeSymbols

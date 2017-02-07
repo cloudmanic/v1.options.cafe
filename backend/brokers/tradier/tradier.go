@@ -14,7 +14,6 @@ type Api struct {
   activeSymbols string
   
   ApiKey string
-  oldActiveSymbols string
 }
 
 //
