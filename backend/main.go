@@ -24,6 +24,8 @@ var (
   
   // Websocket connections.
   ws = Websockets{
+    WsPongChannel: make(chan *websocket.Conn),
+    WsQuotePongChannel: make(chan *websocket.Conn),        
     connections: make(map[*websocket.Conn]*WebsocketConnection),
     quotesConnections: make(map[*websocket.Conn]*WebsocketConnection),
   }

@@ -3,6 +3,7 @@ package main
 import (
   "fmt" 
   "sync"
+  "time"
   "./models"  
   "net/http"
   "encoding/json"
@@ -10,13 +11,16 @@ import (
   "github.com/gorilla/websocket" 
 )
 
-type Websockets struct {   
+const writeWait = 3 * time.Second
+
+type Websockets struct {
+  WsPongChannel chan *websocket.Conn
+  WsQuotePongChannel chan *websocket.Conn     
   connections map[*websocket.Conn]*WebsocketConnection
   quotesConnections map[*websocket.Conn]*WebsocketConnection 
 }
 
 type WebsocketConnection struct {
-  muWrite sync.Mutex 
   connection *websocket.Conn
   
   muUserId sync.Mutex
@@ -108,7 +112,7 @@ func (t *Websockets) DoWebsocketConnection(w http.ResponseWriter, r *http.Reques
     return
   }
 
-  println("New Websocket Connection - Standard")
+  fmt.Println("New Websocket Connection - Standard")
   
   // Close connection when this function ends
   defer conn.Close()  
@@ -117,11 +121,6 @@ func (t *Websockets) DoWebsocketConnection(w http.ResponseWriter, r *http.Reques
   r_con := WebsocketConnection{ connection: conn }
     
   t.connections[conn] = &r_con 
-
-  // Send a message that we are connected.
-  r_con.muWrite.Lock()
-  r_con.connection.WriteMessage(websocket.TextMessage, []byte("{\"type\":\"Status:connected\"}"))
-  r_con.muWrite.Unlock()
   
   // Start handling reading messages from the client.
   t.DoWebsocketReading(&r_con)
@@ -190,9 +189,7 @@ func (t *Websockets) DoWebsocketReading(conn *WebsocketConnection) {
       
       // Ping to make sure we are alive.
       case "ping":
-        conn.muWrite.Lock();
-        conn.connection.WriteMessage(websocket.TextMessage, []byte("{\"type\":\"pong\"}"))
-        conn.muWrite.Unlock();
+        t.WsPongChannel <- conn.connection
       break;
 
       // The user authenticates.
@@ -211,24 +208,32 @@ func (t *Websockets) DoWebsocketReading(conn *WebsocketConnection) {
 func (t *Websockets) DoWebsocketWriting(user *UsersConnection) {
   
   for {
-
-    message := <-user.WebsocketWriteChannel
     
-    for i, _ := range t.connections {
+    select {
       
-      // We only care about the user we passed in.
-      if t.connections[i].userId != user.UserId {
-        continue
-      }
+      // Standard write message.
+      case message := <-user.WebsocketWriteChannel:
       
-      t.connections[i].muWrite.Lock()
-      t.connections[i].connection.WriteMessage(websocket.TextMessage, []byte(message))
-      t.connections[i].muWrite.Unlock()
+        for i, _ := range t.connections {
+          
+          // We only care about the user we passed in.
+          if t.connections[i].userId != user.UserId {
+            continue
+          }
+          
+          t.connections[i].connection.WriteMessage(websocket.TextMessage, []byte(message))
+          
+        }      
+    
+      // Manage pongs back to the browser
+      case conn := <-t.WsPongChannel:
+      
+        conn.WriteMessage(websocket.TextMessage, []byte("{\"type\":\"pong\"}"))    
       
     }
-
+    
   }
-	  
+  	  
 }
 
 // ---------------------------- Special Handling For Quotes ----------------------- //
@@ -260,7 +265,7 @@ func (t *Websockets) DoQuoteWebsocketConnection(w http.ResponseWriter, r *http.R
 	  
   // Add the connection to our connection array
   r_con := WebsocketConnection{connection: conn}
- 
+  
   t.quotesConnections[conn] = &r_con
   
   // Do reading
@@ -273,22 +278,30 @@ func (t *Websockets) DoQuoteWebsocketConnection(w http.ResponseWriter, r *http.R
 func (t *Websockets) DoWebsocketQuoteWriting(user *UsersConnection) {
   
   for {
-
-    message := <-user.WebsocketWriteQuoteChannel
     
-    for i, _ := range t.quotesConnections {
+    select {
+
+      // Standard write message.
+      case message := <-user.WebsocketWriteQuoteChannel:
+    
+        for i, _ := range t.quotesConnections {
+
+          // We only care about the user we passed in.
+          if t.quotesConnections[i].userId != user.UserId {
+            continue
+          }
+          
+          t.quotesConnections[i].connection.WriteMessage(websocket.TextMessage, []byte(message))
+          
+        }
+     
+      // Manage pongs back to the browser
+      case conn := <-t.WsQuotePongChannel:
       
-      // We only care about the user we passed in.
-      if t.quotesConnections[i].userId != user.UserId {
-        continue
-      }
-      
-      t.quotesConnections[i].muWrite.Lock()
-      t.quotesConnections[i].connection.WriteMessage(websocket.TextMessage, []byte(message))
-      t.quotesConnections[i].muWrite.Unlock()
+        conn.WriteMessage(websocket.TextMessage, []byte("{\"type\":\"pong\"}"))
       
     }
-
+    
   }  
 	  
 }
@@ -312,7 +325,7 @@ func (t *Websockets) DoQuoteWebsocketRead(conn *WebsocketConnection) {
 				delete(t.quotesConnections, conn.connection)
 			}     
       
-      println("Quote Client Disconnected...")
+      fmt.Println("Quote Client Disconnected...")
       
       break
     } 
@@ -336,9 +349,7 @@ func (t *Websockets) DoQuoteWebsocketRead(conn *WebsocketConnection) {
       
       // Ping to make sure we are alive.
       case "ping":
-        conn.muWrite.Lock();
-        conn.connection.WriteMessage(websocket.TextMessage, []byte("{\"type\":\"pong\"}"))
-        conn.muWrite.Unlock();        
+        t.WsQuotePongChannel <- conn.connection       
       break;
       
       // The user authenticates.

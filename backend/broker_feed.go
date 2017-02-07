@@ -8,7 +8,6 @@ import (
 
 type BrokerFeed struct {
   fetch Fetch   
-  activeSymbols []string
   detailedQuotes []tradier.Quote
 }
 

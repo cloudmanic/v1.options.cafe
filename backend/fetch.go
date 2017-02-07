@@ -11,9 +11,6 @@ import (
 )
 
 type Fetch struct {
-  muWsWrite sync.Mutex
-  muWsWriteQuote sync.Mutex    
-  
   muActiveSymbols sync.Mutex
   activeSymbols []string
   
@@ -136,13 +133,12 @@ func (t *Fetch) GetOrders() (error) {
 // Do get quotes - more details from the streaming - activeSymbols
 //
 func (t *Fetch) GetActiveSymbolsDetailedQuotes() (error) {
-
   
   symbols := t.GetActiveSymbols()  
   detailedQuotes, err := t.broker.GetQuotes(symbols)
   
   if err != nil {
-    fmt.Println(err)
+    fmt.Println("DoDetailedQuotes() t.broker.GetQuotes : ", err)
     return err
   }   
   
@@ -273,9 +269,7 @@ func (t *Fetch) WriteWebSocket(send_type string, sendObject interface{}) (error)
   }   
 
   // Write data out websocket
-  t.muWsWrite.Lock()
   t.user.WebsocketWriteChannel <- sendJson
-  t.muWsWrite.Unlock() 
   
   // Return happy
   return nil
@@ -286,11 +280,9 @@ func (t *Fetch) WriteWebSocket(send_type string, sendObject interface{}) (error)
 // Send data up quote websocket. 
 //
 func (t *Fetch) SendQuoteWebSocket(sendJson string) (error) {
-
+  
   // Write data out websocket
-  t.muWsWriteQuote.Lock()
   t.user.WebsocketWriteQuoteChannel <- sendJson
-  t.muWsWriteQuote.Unlock()
   
   // Return happy
   return nil
