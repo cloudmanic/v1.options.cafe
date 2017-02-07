@@ -269,7 +269,7 @@ func (t *Fetch) WriteWebSocket(send_type string, sendObject interface{}) (error)
   }   
 
   // Write data out websocket
-  t.user.WebsocketWriteChannel <- sendJson
+  t.user.WsWriteChannel <- sendJson
   
   // Return happy
   return nil
@@ -282,7 +282,7 @@ func (t *Fetch) WriteWebSocket(send_type string, sendObject interface{}) (error)
 func (t *Fetch) SendQuoteWebSocket(sendJson string) (error) {
   
   // Write data out websocket
-  t.user.WebsocketWriteQuoteChannel <- sendJson
+  t.user.WsWriteQuoteChannel <- sendJson
   
   // Return happy
   return nil

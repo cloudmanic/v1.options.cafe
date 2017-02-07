@@ -11,7 +11,7 @@ import (
   "github.com/gorilla/websocket" 
 )
 
-const writeWait = 3 * time.Second
+const writeWait = 5 * time.Second
 
 type Websockets struct { 
   connections map[*websocket.Conn]*WebsocketConnection
@@ -137,7 +137,6 @@ func (t *Websockets) DoQuoteWebsocketConnection(w http.ResponseWriter, r *http.R
   t.quotesConnections[conn] = &r_con
   
   // Do reading
-  //t.DoQuoteWebsocketRead(&r_con);
   t.DoWsReading(&r_con) 
 }
 
@@ -170,10 +169,13 @@ func (t *Websockets) AuthenticateConnection(conn *WebsocketConnection, access_to
 //
 func (t *Websockets) DoWsWriting(conn *WebsocketConnection) {
   
+  conn.connection.SetWriteDeadline(time.Now().Add(writeWait))
+  
   for {
     
     message := <-conn.writeChan
     conn.connection.WriteMessage(websocket.TextMessage, []byte(message))
+    conn.connection.SetWriteDeadline(time.Now().Add(writeWait))
     
   }
   
@@ -244,13 +246,13 @@ func (t *Websockets) DoWsDispatch(user *UsersConnection) {
     select {
 
       // Core channel
-      case message := <-user.WebsocketWriteChannel:
+      case message := <-user.WsWriteChannel:
       
         for i, _ := range t.connections {
           
           // We only care about the user we passed in.
           if t.connections[i].userId == user.UserId {
-            
+              
             t.connections[i].writeChan <- message
             
           }
@@ -258,7 +260,7 @@ func (t *Websockets) DoWsDispatch(user *UsersConnection) {
         }
       
       // Quotes channel
-      case message := <-user.WebsocketWriteQuoteChannel:
+      case message := <-user.WsWriteQuoteChannel:
       
         for i, _ := range t.quotesConnections {
           

@@ -35,8 +35,8 @@ var (
 type UsersConnection struct {
   UserId uint
   BrokerConnections map[uint]*BrokerFeed
-  WebsocketWriteChannel chan string
-  WebsocketWriteQuoteChannel chan string
+  WsWriteChannel chan string
+  WsWriteQuoteChannel chan string
 }
         
 //
@@ -136,8 +136,8 @@ func StartUserConnection(user models.User) {
   userConnections[user.Id] = &UsersConnection{
     UserId: user.Id,
     BrokerConnections: make(map[uint]*BrokerFeed),
-    WebsocketWriteChannel: make(chan string),
-    WebsocketWriteQuoteChannel: make(chan string),
+    WsWriteChannel: make(chan string),
+    WsWriteQuoteChannel: make(chan string),
   }
   
   // Start the websocket write dispatcher for this user.

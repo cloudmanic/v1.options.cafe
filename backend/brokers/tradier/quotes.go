@@ -68,8 +68,13 @@ func (t * Api) GetQuotes(symbols []string) ([]Quote, error) {
   }        
   
   // Close Body
-  defer res.Body.Close()    
+  defer res.Body.Close()  
   
+  //fmt.Println(res.Header.Get("X-Ratelimit-Allowed"))  
+  //fmt.Println(res.Header.Get("X-Ratelimit-Used"))
+  //fmt.Println(res.Header.Get("X-Ratelimit-Available"))
+  //fmt.Println(res.Header.Get("X-Ratelimit-Expiry"))
+
   // Make sure the api responded with a 200
   if res.StatusCode != 200 {
     return nil, errors.New(fmt.Sprint("GetQuotes API did not return 200, It returned ", res.StatusCode))
