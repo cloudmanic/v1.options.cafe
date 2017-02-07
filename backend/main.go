@@ -23,9 +23,7 @@ var (
   db *gorm.DB
   
   // Websocket connections.
-  ws = Websockets{
-    WsPongChannel: make(chan *websocket.Conn),
-    WsQuotePongChannel: make(chan *websocket.Conn),        
+  ws = Websockets{      
     connections: make(map[*websocket.Conn]*WebsocketConnection),
     quotesConnections: make(map[*websocket.Conn]*WebsocketConnection),
   }
@@ -142,9 +140,8 @@ func StartUserConnection(user models.User) {
     WebsocketWriteQuoteChannel: make(chan string),
   }
   
-  // Start the websocket write connection for this user.
-  go ws.DoWebsocketWriting(userConnections[user.Id])
-  go ws.DoWebsocketQuoteWriting(userConnections[user.Id]) 
+  // Start the websocket write dispatcher for this user.
+  go ws.DoWsDispatch(userConnections[user.Id])
   
   // Loop through the different brokers for this user
   for _, row := range user.Brokers {
