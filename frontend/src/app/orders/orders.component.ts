@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { QuoteService } from '../services/quote.service';
 import { BrokerService } from '../services/broker.service';
 import { Order } from '../contracts/order';
 
@@ -8,13 +9,15 @@ import { Order } from '../contracts/order';
 })
 export class OrdersComponent implements OnInit {
   
-  orders: Order[]
+  quotes = {}
   activeAccount = ""
+
+  orders: Order[]
 
   //
   // Constructor....
   //
-  constructor(private broker: BrokerService, private changeDetect: ChangeDetectorRef) { }
+  constructor(private quotesService: QuoteService, private broker: BrokerService, private changeDetect: ChangeDetectorRef) { }
 
   //
   // OnInit....
@@ -26,6 +29,8 @@ export class OrdersComponent implements OnInit {
     
     // Subscribe to data updates from the broker - Orders
     this.broker.ordersPushData.subscribe(data => {
+      
+      //console.log(data);
       
       var rt = []
       
@@ -48,7 +53,15 @@ export class OrdersComponent implements OnInit {
       this.activeAccount = data;
       this.orders = [];
       this.changeDetect.detectChanges();
-    }); 
+    });
+    
+    // Subscribe to data updates from the quotes - Market Quotes
+    this.quotesService.marketQuotePushData.subscribe(data => {
+    
+      this.quotes[data.symbol] = data;
+      this.changeDetect.detectChanges();
+      
+    });     
     
   }
 

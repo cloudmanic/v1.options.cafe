@@ -1,6 +1,6 @@
 webpackJsonp([0,3],{
 
-/***/ 200:
+/***/ 138:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -154,11 +154,11 @@ webpackEmptyContext.id = 344;
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__polyfills_ts__ = __webpack_require__(468);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__polyfills_ts__ = __webpack_require__(469);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__polyfills_ts___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__polyfills_ts__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__ = __webpack_require__(432);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__environments_environment__ = __webpack_require__(467);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__environments_environment__ = __webpack_require__(468);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__app_app_module__ = __webpack_require__(454);
 
 
@@ -231,7 +231,7 @@ var AccountsComponent = (function () {
     AccountsComponent = __decorate([
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({
             selector: 'oc-accounts',
-            template: __webpack_require__(621)
+            template: __webpack_require__(622)
         }), 
         __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__services_broker_service__["a" /* BrokerService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__services_broker_service__["a" /* BrokerService */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["i" /* ChangeDetectorRef */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_core__["i" /* ChangeDetectorRef */]) === 'function' && _b) || Object])
     ], AccountsComponent);
@@ -272,7 +272,7 @@ var AppComponent = (function () {
     AppComponent = __decorate([
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({
             selector: 'oc-root',
-            template: __webpack_require__(622),
+            template: __webpack_require__(623),
         }), 
         __metadata('design:paramtypes', [])
     ], AppComponent);
@@ -287,20 +287,20 @@ var AppComponent = (function () {
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__ = __webpack_require__(192);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__ = __webpack_require__(193);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__(422);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_http__ = __webpack_require__(428);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__app_component__ = __webpack_require__(453);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__services_quote_service__ = __webpack_require__(200);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__services_quote_service__ = __webpack_require__(138);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__services_broker_service__ = __webpack_require__(60);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__layout_header_component__ = __webpack_require__(463);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__layout_footer_component__ = __webpack_require__(462);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__layout_header_component__ = __webpack_require__(464);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__layout_footer_component__ = __webpack_require__(463);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__accounts_accounts_component__ = __webpack_require__(452);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__watchlist_watchlist_component__ = __webpack_require__(466);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__orders_orders_component__ = __webpack_require__(464);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__dashboard_dashboard_component__ = __webpack_require__(461);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__sidebar_sidebar_component__ = __webpack_require__(465);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__watchlist_watchlist_component__ = __webpack_require__(467);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__orders_orders_component__ = __webpack_require__(465);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__dashboard_dashboard_component__ = __webpack_require__(462);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__sidebar_sidebar_component__ = __webpack_require__(466);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return AppModule; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -448,9 +448,37 @@ var MarketStatus = (function () {
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return OrderLeg; });
+var OrderLeg = (function () {
+    function OrderLeg(Type, Symbol, OptionSymbol, Side, Quantity, Status, Duration, AvgFillPrice, ExecQuantity, LastFillPrice, LastFillQuantity, RemainingQuantity, CreateDate, TransactionDate) {
+        this.Type = Type;
+        this.Symbol = Symbol;
+        this.OptionSymbol = OptionSymbol;
+        this.Side = Side;
+        this.Quantity = Quantity;
+        this.Status = Status;
+        this.Duration = Duration;
+        this.AvgFillPrice = AvgFillPrice;
+        this.ExecQuantity = ExecQuantity;
+        this.LastFillPrice = LastFillPrice;
+        this.LastFillQuantity = LastFillQuantity;
+        this.RemainingQuantity = RemainingQuantity;
+        this.CreateDate = CreateDate;
+        this.TransactionDate = TransactionDate;
+    }
+    return OrderLeg;
+}());
+//# sourceMappingURL=/Users/spicer/Development/app.options.cafe/frontend/src/order-leg.js.map
+
+/***/ },
+
+/***/ 459:
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return Order; });
 var Order = (function () {
-    function Order(Id, AccountId, AvgFillPrice, Class, CreateDate, Duration, ExecQuantity, LastFillPrice, LastFillQuantity, NumLegs, Price, Quantity, RemainingQuantity, Side, Status, Symbol, TransactionDate, Type) {
+    function Order(Id, AccountId, AvgFillPrice, Class, CreateDate, Duration, ExecQuantity, LastFillPrice, LastFillQuantity, NumLegs, Price, Quantity, RemainingQuantity, Side, Status, Symbol, TransactionDate, Type, Legs) {
         this.Id = Id;
         this.AccountId = AccountId;
         this.AvgFillPrice = AvgFillPrice;
@@ -469,6 +497,7 @@ var Order = (function () {
         this.Symbol = Symbol;
         this.TransactionDate = TransactionDate;
         this.Type = Type;
+        this.Legs = Legs;
     }
     return Order;
 }());
@@ -476,7 +505,7 @@ var Order = (function () {
 
 /***/ },
 
-/***/ 459:
+/***/ 460:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -493,7 +522,7 @@ var UserProfile = (function () {
 
 /***/ },
 
-/***/ 460:
+/***/ 461:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -509,7 +538,7 @@ var WatchlistItems = (function () {
 
 /***/ },
 
-/***/ 461:
+/***/ 462:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -533,7 +562,7 @@ var DashboardComponent = (function () {
     DashboardComponent = __decorate([
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({
             selector: 'oc-dashboard',
-            template: __webpack_require__(623)
+            template: __webpack_require__(624)
         }), 
         __metadata('design:paramtypes', [])
     ], DashboardComponent);
@@ -543,7 +572,7 @@ var DashboardComponent = (function () {
 
 /***/ },
 
-/***/ 462:
+/***/ 463:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -583,7 +612,7 @@ var FooterComponent = (function () {
     FooterComponent = __decorate([
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({
             selector: 'oc-footer',
-            template: __webpack_require__(624)
+            template: __webpack_require__(625)
         }), 
         __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__services_broker_service__["a" /* BrokerService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__services_broker_service__["a" /* BrokerService */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["i" /* ChangeDetectorRef */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_core__["i" /* ChangeDetectorRef */]) === 'function' && _b) || Object])
     ], FooterComponent);
@@ -594,13 +623,13 @@ var FooterComponent = (function () {
 
 /***/ },
 
-/***/ 463:
+/***/ 464:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_broker_service__ = __webpack_require__(60);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__services_quote_service__ = __webpack_require__(200);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__services_quote_service__ = __webpack_require__(138);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return HeaderComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -643,7 +672,7 @@ var HeaderComponent = (function () {
     HeaderComponent = __decorate([
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({
             selector: 'oc-header',
-            template: __webpack_require__(625)
+            template: __webpack_require__(626)
         }), 
         __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__services_broker_service__["a" /* BrokerService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__services_broker_service__["a" /* BrokerService */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__services_quote_service__["a" /* QuoteService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_2__services_quote_service__["a" /* QuoteService */]) === 'function' && _b) || Object, (typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["i" /* ChangeDetectorRef */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_core__["i" /* ChangeDetectorRef */]) === 'function' && _c) || Object])
     ], HeaderComponent);
@@ -655,12 +684,13 @@ var HeaderComponent = (function () {
 
 /***/ },
 
-/***/ 464:
+/***/ 465:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_broker_service__ = __webpack_require__(60);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_quote_service__ = __webpack_require__(138);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__services_broker_service__ = __webpack_require__(60);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return OrdersComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -673,13 +703,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
+
 var OrdersComponent = (function () {
     //
     // Constructor....
     //
-    function OrdersComponent(broker, changeDetect) {
+    function OrdersComponent(quotesService, broker, changeDetect) {
+        this.quotesService = quotesService;
         this.broker = broker;
         this.changeDetect = changeDetect;
+        this.quotes = {};
         this.activeAccount = "";
     }
     //
@@ -691,6 +724,7 @@ var OrdersComponent = (function () {
         this.activeAccount = this.broker.activeAccount;
         // Subscribe to data updates from the broker - Orders
         this.broker.ordersPushData.subscribe(function (data) {
+            //console.log(data);
             var rt = [];
             // Filter - We only one the accounts that are active.
             for (var i = 0; i < data.length; i++) {
@@ -708,23 +742,28 @@ var OrdersComponent = (function () {
             _this.orders = [];
             _this.changeDetect.detectChanges();
         });
+        // Subscribe to data updates from the quotes - Market Quotes
+        this.quotesService.marketQuotePushData.subscribe(function (data) {
+            _this.quotes[data.symbol] = data;
+            _this.changeDetect.detectChanges();
+        });
     };
     OrdersComponent = __decorate([
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({
             selector: 'oc-orders',
-            template: __webpack_require__(626)
+            template: __webpack_require__(627)
         }), 
-        __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__services_broker_service__["a" /* BrokerService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__services_broker_service__["a" /* BrokerService */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["i" /* ChangeDetectorRef */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_core__["i" /* ChangeDetectorRef */]) === 'function' && _b) || Object])
+        __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__services_quote_service__["a" /* QuoteService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__services_quote_service__["a" /* QuoteService */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__services_broker_service__["a" /* BrokerService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_2__services_broker_service__["a" /* BrokerService */]) === 'function' && _b) || Object, (typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["i" /* ChangeDetectorRef */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_core__["i" /* ChangeDetectorRef */]) === 'function' && _c) || Object])
     ], OrdersComponent);
     return OrdersComponent;
-    var _a, _b;
+    var _a, _b, _c;
 }());
 /* End File */ 
 //# sourceMappingURL=/Users/spicer/Development/app.options.cafe/frontend/src/orders.component.js.map
 
 /***/ },
 
-/***/ 465:
+/***/ 466:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -769,7 +808,7 @@ var SidebarComponent = (function () {
     SidebarComponent = __decorate([
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({
             selector: 'oc-sidebar',
-            template: __webpack_require__(627)
+            template: __webpack_require__(628)
         }), 
         __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__services_broker_service__["a" /* BrokerService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__services_broker_service__["a" /* BrokerService */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["i" /* ChangeDetectorRef */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_core__["i" /* ChangeDetectorRef */]) === 'function' && _b) || Object])
     ], SidebarComponent);
@@ -781,12 +820,12 @@ var SidebarComponent = (function () {
 
 /***/ },
 
-/***/ 466:
+/***/ 467:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_quote_service__ = __webpack_require__(200);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_quote_service__ = __webpack_require__(138);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__services_broker_service__ = __webpack_require__(60);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__contracts_watchlist__ = __webpack_require__(302);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return WatchlistComponent; });
@@ -833,7 +872,7 @@ var WatchlistComponent = (function () {
     WatchlistComponent = __decorate([
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({
             selector: 'oc-watchlist',
-            template: __webpack_require__(628)
+            template: __webpack_require__(629)
         }), 
         __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__services_quote_service__["a" /* QuoteService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__services_quote_service__["a" /* QuoteService */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__services_broker_service__["a" /* BrokerService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_2__services_broker_service__["a" /* BrokerService */]) === 'function' && _b) || Object, (typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["i" /* ChangeDetectorRef */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_core__["i" /* ChangeDetectorRef */]) === 'function' && _c) || Object])
     ], WatchlistComponent);
@@ -844,7 +883,7 @@ var WatchlistComponent = (function () {
 
 /***/ },
 
-/***/ 467:
+/***/ 468:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -860,41 +899,41 @@ var environment = {
 
 /***/ },
 
-/***/ 468:
+/***/ 469:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_core_js_es6_symbol__ = __webpack_require__(482);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_core_js_es6_symbol__ = __webpack_require__(483);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_core_js_es6_symbol___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_core_js_es6_symbol__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_core_js_es6_object__ = __webpack_require__(475);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_core_js_es6_object__ = __webpack_require__(476);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_core_js_es6_object___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_core_js_es6_object__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_core_js_es6_function__ = __webpack_require__(471);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_core_js_es6_function__ = __webpack_require__(472);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_core_js_es6_function___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_core_js_es6_function__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_core_js_es6_parse_int__ = __webpack_require__(477);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_core_js_es6_parse_int__ = __webpack_require__(478);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_core_js_es6_parse_int___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_core_js_es6_parse_int__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_core_js_es6_parse_float__ = __webpack_require__(476);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_core_js_es6_parse_float__ = __webpack_require__(477);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_core_js_es6_parse_float___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_core_js_es6_parse_float__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_core_js_es6_number__ = __webpack_require__(474);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_core_js_es6_number__ = __webpack_require__(475);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_core_js_es6_number___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_core_js_es6_number__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_core_js_es6_math__ = __webpack_require__(473);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_core_js_es6_math__ = __webpack_require__(474);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_core_js_es6_math___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_core_js_es6_math__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_core_js_es6_string__ = __webpack_require__(481);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_core_js_es6_string__ = __webpack_require__(482);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_core_js_es6_string___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_core_js_es6_string__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_core_js_es6_date__ = __webpack_require__(470);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_core_js_es6_date__ = __webpack_require__(471);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_core_js_es6_date___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_core_js_es6_date__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_core_js_es6_array__ = __webpack_require__(469);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_core_js_es6_array__ = __webpack_require__(470);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_core_js_es6_array___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9_core_js_es6_array__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_core_js_es6_regexp__ = __webpack_require__(479);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_core_js_es6_regexp__ = __webpack_require__(480);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_core_js_es6_regexp___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10_core_js_es6_regexp__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11_core_js_es6_map__ = __webpack_require__(472);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11_core_js_es6_map__ = __webpack_require__(473);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11_core_js_es6_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_11_core_js_es6_map__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12_core_js_es6_set__ = __webpack_require__(480);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12_core_js_es6_set__ = __webpack_require__(481);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12_core_js_es6_set___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_12_core_js_es6_set__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13_core_js_es6_reflect__ = __webpack_require__(478);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13_core_js_es6_reflect__ = __webpack_require__(479);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13_core_js_es6_reflect___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_13_core_js_es6_reflect__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_core_js_es7_reflect__ = __webpack_require__(483);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_core_js_es7_reflect__ = __webpack_require__(484);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_core_js_es7_reflect___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_14_core_js_es7_reflect__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15_zone_js_dist_zone__ = __webpack_require__(640);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15_zone_js_dist_zone__ = __webpack_require__(641);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15_zone_js_dist_zone___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_15_zone_js_dist_zone__);
 
 
@@ -921,13 +960,15 @@ var environment = {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__contracts_order__ = __webpack_require__(458);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__contracts_watchlist__ = __webpack_require__(302);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__contracts_watchlist_items__ = __webpack_require__(460);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__contracts_market_status__ = __webpack_require__(457);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__contracts_user_profile__ = __webpack_require__(459);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__contracts_broker_accounts__ = __webpack_require__(455);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__contracts_order__ = __webpack_require__(459);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__contracts_order_leg__ = __webpack_require__(458);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__contracts_watchlist__ = __webpack_require__(302);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__contracts_watchlist_items__ = __webpack_require__(461);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__contracts_market_status__ = __webpack_require__(457);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__contracts_user_profile__ = __webpack_require__(460);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__contracts_broker_accounts__ = __webpack_require__(455);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return BrokerService; });
+
 
 
 
@@ -942,8 +983,8 @@ var BrokerService = (function () {
     function BrokerService() {
         this.activeAccount = "";
         // Data objects
-        this.marketStatus = new __WEBPACK_IMPORTED_MODULE_4__contracts_market_status__["a" /* MarketStatus */]('', '');
-        this.userProfile = new __WEBPACK_IMPORTED_MODULE_5__contracts_user_profile__["a" /* UserProfile */]('', '', []);
+        this.marketStatus = new __WEBPACK_IMPORTED_MODULE_5__contracts_market_status__["a" /* MarketStatus */]('', '');
+        this.userProfile = new __WEBPACK_IMPORTED_MODULE_6__contracts_user_profile__["a" /* UserProfile */]('', '', []);
         // Websocket Stuff
         this.ws = null;
         this.heartbeat = null;
@@ -965,7 +1006,7 @@ var BrokerService = (function () {
         this.userProfile.Accounts = [];
         // Setup the array of accounts.
         for (var i in data.Accounts) {
-            this.userProfile.Accounts.push(new __WEBPACK_IMPORTED_MODULE_6__contracts_broker_accounts__["a" /* BrokerAccounts */](data.Accounts[i].AccountNumber, data.Accounts[i].Classification, data.Accounts[i].DayTrader, data.Accounts[i].OptionLevel, data.Accounts[i].Status, data.Accounts[i].Type));
+            this.userProfile.Accounts.push(new __WEBPACK_IMPORTED_MODULE_7__contracts_broker_accounts__["a" /* BrokerAccounts */](data.Accounts[i].AccountNumber, data.Accounts[i].Classification, data.Accounts[i].DayTrader, data.Accounts[i].OptionLevel, data.Accounts[i].Status, data.Accounts[i].Type));
         }
         this.userProfile.Id = data.Id;
         this.userProfile.Name = data.Name;
@@ -987,9 +1028,9 @@ var BrokerService = (function () {
         if (data.Id != 'default') {
             return false;
         }
-        var ws = new __WEBPACK_IMPORTED_MODULE_2__contracts_watchlist__["a" /* Watchlist */](data.Id, data.Name, []);
+        var ws = new __WEBPACK_IMPORTED_MODULE_3__contracts_watchlist__["a" /* Watchlist */](data.Id, data.Name, []);
         for (var i in data.Symbols) {
-            ws.items.push(new __WEBPACK_IMPORTED_MODULE_3__contracts_watchlist_items__["a" /* WatchlistItems */](data.Symbols[i].id, data.Symbols[i].symbol));
+            ws.items.push(new __WEBPACK_IMPORTED_MODULE_4__contracts_watchlist_items__["a" /* WatchlistItems */](data.Symbols[i].id, data.Symbols[i].symbol));
         }
         this.watchlistPushData.emit(ws);
     };
@@ -999,7 +1040,15 @@ var BrokerService = (function () {
     BrokerService.prototype.doOrdersRefresh = function (data) {
         var orders = [];
         for (var i = 0; i < data.length; i++) {
-            orders.push(new __WEBPACK_IMPORTED_MODULE_1__contracts_order__["a" /* Order */](data[i].Id, data[i].AccountId, data[i].AvgFillPrice, data[i].Class, data[i].CreateDate, data[i].Duration, data[i].ExecQuantity, data[i].LastFillPrice, data[i].LastFillQuantity, data[i].NumLegs, data[i].Price, data[i].Quantity, data[i].RemainingQuantity, data[i].Side, data[i].Status, data[i].Symbol, data[i].TransactionDate, data[i].Type));
+            // Add in the legs
+            var legs = [];
+            if (data[i].NumLegs > 0) {
+                for (var k = 0; k < data[i].Legs.length; k++) {
+                    legs.push(new __WEBPACK_IMPORTED_MODULE_2__contracts_order_leg__["a" /* OrderLeg */](data[i].Legs[k].Type, data[i].Legs[k].Symbol, data[i].Legs[k].OptionSymbol, data[i].Legs[k].Side, data[i].Legs[k].Quantity, data[i].Legs[k].Status, data[i].Legs[k].Duration, data[i].Legs[k].AvgFillPrice, data[i].Legs[k].ExecQuantity, data[i].Legs[k].LastFillPrice, data[i].Legs[k].LastFillQuantity, data[i].Legs[k].RemainingQuantity, data[i].Legs[k].CreateDate, data[i].Legs[k].TransactionDate));
+                }
+            }
+            // Push the order on
+            orders.push(new __WEBPACK_IMPORTED_MODULE_1__contracts_order__["a" /* Order */](data[i].Id, data[i].AccountId, data[i].AvgFillPrice, data[i].Class, data[i].CreateDate, data[i].Duration, data[i].ExecQuantity, data[i].LastFillPrice, data[i].LastFillQuantity, data[i].NumLegs, data[i].Price, data[i].Quantity, data[i].RemainingQuantity, data[i].Side, data[i].Status, data[i].Symbol, data[i].TransactionDate, data[i].Type, legs));
         }
         this.ordersPushData.emit(orders);
     };
@@ -1097,63 +1146,63 @@ var BrokerService = (function () {
 
 /***/ },
 
-/***/ 621:
+/***/ 622:
 /***/ function(module, exports) {
 
 module.exports = "<div class=\"select\">\n  <select [(ngModel)]=\"selectedAccount\" (ngModelChange)=\"onAccountChange()\">\n    <option [ngValue]=\"row\" *ngFor=\"let row of userProfile?.Accounts\">{{ row.AccountNumber }}</option>\n  </select>\n</div>"
 
 /***/ },
 
-/***/ 622:
+/***/ 623:
 /***/ function(module, exports) {
 
 module.exports = "<oc-header></oc-header>\n\n<div class=\"main\">\n  \n  <oc-sidebar></oc-sidebar>\n  \n  <oc-dashboard></oc-dashboard>\n\n</div>\n\n<oc-footer></oc-footer>"
 
 /***/ },
 
-/***/ 623:
+/***/ 624:
 /***/ function(module, exports) {
 
 module.exports = "<div class=\"content\">\n\t\n\t<div class=\"content-head\">\n\n\t\t<div class=\"tabs\">\n\t\t\t<ul class=\"nav nav-tabs\" role=\"tablist\">\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab1\" role=\"tab\" data-toggle=\"tab\">&nbsp;</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab2\" role=\"tab\" data-toggle=\"tab\">&nbsp;</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab3\" role=\"tab\" data-toggle=\"tab\">&nbsp;</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\" class=\"active\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab4\" role=\"tab\" data-toggle=\"tab\">Dashboard</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab5\" role=\"tab\" data-toggle=\"tab\">Screener</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab6\" role=\"tab\" data-toggle=\"tab\">Backtest</a>\n\t\t\t\t</li>\n\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab7\" role=\"tab\" data-toggle=\"tab\">&nbsp;</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab8\" role=\"tab\" data-toggle=\"tab\">&nbsp;</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab9\" role=\"tab\" data-toggle=\"tab\">&nbsp;</a>\n\t\t\t\t</li>\n\t\t\t</ul>\n\t\t</div><!-- /.tabs -->\n\t</div><!-- /.content-head -->\n\t\n  <div class=\"content-body\">\n    <div class=\"tabs\">\n\n      <div class=\"zone-content dashboard\">\n      \t\n      \t<div class=\"row\">\n          <oc-watchlist></oc-watchlist>\n          \n          <div class=\"col-md-9\">\n            \n            <oc-orders></oc-orders>\n            \n          </div>\n          \n      \t</div>\n      \t\n      </div>\n    \n    </div>\n  </div>\n\n</div>"
 
 /***/ },
 
-/***/ 624:
+/***/ 625:
 /***/ function(module, exports) {
 
 module.exports = ""
 
 /***/ },
 
-/***/ 625:
+/***/ 626:
 /***/ function(module, exports) {
 
 module.exports = "<header class=\"header\">\n  <div class=\"container-fluid\">\n  \t<div class=\"header-body\">\n    \t<div class=\"logo-cont\">\n    \t  <img src=\"assets/css/images/stockpeer_logo.jpg\" width=\"40\" height=\"40\" />\n    \t</div>\n    \t\n  \t\t<div class=\"header-content\">\n        <div class=\"row\">\n          \n          <div class=\"col-md-3 text-center\">\n    \t\t\t  <strong>Dow</strong> {{ quotes['$DJI']?.last | currency:'USD':true:'1.2-2' }} <br />\n            <span class=\"{{ quotes['$DJI']?.classColor() }}\">{{ quotes['$DJI']?.dailyChange() | currency:'USD':true:'1.2-2' }} ({{ quotes['$DJI']?.percentChange() | number:'1.2-2' }}%)</span>\n    \t\t\t</div>\n    \t\t\t\n    \t\t\t<div class=\"col-md-3  text-center\">\n    \t\t\t  <strong>S&P 500</strong> {{ quotes['SPX']?.last | currency:'USD':true:'1.2-2' }}<br />\n    \t\t\t <span class=\"{{ quotes['SPX']?.classColor() }}\">{{ quotes['SPX']?.dailyChange() | currency:'USD':true:'1.2-2' }} ({{ quotes['SPX']?.percentChange() | number:'1.2-2' }}%)</span>\n    \t\t\t</div>\n\n    \t\t\t<div class=\"col-md-3  text-center\">\n    \t\t\t  <strong>Nasdaq</strong> {{ quotes['COMP']?.last | currency:'USD':true:'1.2-2' }}<br />\n            <span class=\"{{ quotes['COMP']?.classColor() }}\">{{ quotes['COMP']?.dailyChange() | currency:'USD':true:'1.2-2' }} ({{ quotes['COMP']?.percentChange() | number:'1.2-2' }}%)</span>\n    \t\t\t</div>\n\n    \t\t\t<div class=\"col-md-3 text-center\">\n    \t\t\t  <strong>VIX</strong> {{ quotes['VIX']?.last | currency:'USD':true:'1.2-2' }}<br />\n            <span class=\"{{ quotes['VIX']?.classColor() }}\">{{ quotes['VIX']?.dailyChange() | currency:'USD':true:'1.2-2' }} ({{ quotes['VIX']?.percentChange() | number:'1.2-2' }}%)</span>\n    \t\t\t</div>\n\t    \t\t\t\n  \t\t\t</div>\n  \t\t\t  \t\t\t\n  \t\t</div><!-- /.header-content -->  \t\t\n  \t\t\n  \t</div><!-- /.header-body -->\n  </div><!-- /.container-fluid -->\n</header><!-- /.header -->"
 
 /***/ },
 
-/***/ 626:
-/***/ function(module, exports) {
-
-module.exports = "<div class=\"panel-group\">\n  <div class=\"panel panel-default\">\n  \t<div class=\"panel-heading\" role=\"tab\" id=\"headingOne\">\n  \t\t<h4 class=\"panel-title\">\n  \t\t\t<a role=\"button\" data-toggle=\"collapse\" href=\"#collapseOrders\">\n  \t\t\t\tOrders\n  \t\t\t</a>\n  \t\t</h4>\n  \t</div>\n  \t\n  \t<div id=\"collapseOrders\" class=\"panel-collapse collapse in\" role=\"tabpanel\" aria-labelledby=\"headingOne\">\n  \t\t<div class=\"panel-body\">\n\n        <table class=\"table\">\n          <thead>\n            <tr>\n              <th>Symbols</th>\n              <th>Last</th>\n              <th>Quantity</th>\n              <th>Duration</th>\n              <th>Type</th>\n              <th>Price</th>\n              <th>Filled</th>\n              <th>Status</th>        \n            </tr>\n          </thead>\n        \n          <tbody>\n            <tr *ngFor=\"let row of orders\">\n              <td>{{ row.Symbol }}</td>\n              <td>$4.44</td>\n              <td>{{ row.Quantity }}</td>\n              <td>{{ row.Duration }}</td>\n              <td>{{ row.Type }}</td>\n              <td>${{ row.Price }}</td>\n              <td>${{ row.AvgFillPrice }}</td>\n              <td>{{ row.Status }}</td> \n            </tr>\n          </tbody>\n        </table>\n\n  \t\t</div>\n  \t</div>\n  </div>\n</div>"
-
-/***/ },
-
 /***/ 627:
 /***/ function(module, exports) {
 
-module.exports = "<div class=\"sidebar\">\n\t<ul class=\"widgets\">\n\t\t<li class=\"widget widget-main\">\n\t\t\t<div class=\"widget-head\">\n\t\t\t\t<h5 class=\"widget-title\">Main</h5>\n\t\t\t</div>\n\t\t\t\n\t\t\t<div class=\"widget-body\">\n\t\t\t\t<nav class=\"nav-utilities\">\n\t\t\t\t\t<ul>\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t<a href=\"#\">\n\t\t\t\t\t\t\t\t<span>\n\t\t\t\t\t\t\t\t\t<i class=\"ico-indicator\"></i>\n\t\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t\tTrading\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t<a href=\"#\">\n\t\t\t\t\t\t\t\t<span>\n\t\t\t\t\t\t\t\t\t<i class=\"ico-report\"></i>\n\t\t\t\t\t\t\t\t</span>\n\n\t\t\t\t\t\t\t\tReports\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t</ul>\n\t\t\t\t</nav><!-- /.nav-utilities -->\n\t\t\t</div><!-- /.widget-body -->\n\t\t</li><!-- /.widget -->\n\t\t\n\t\t<li class=\"widget widget-account\">\n\t\t\t<div class=\"widget-head\">\n\t\t\t\t<h5 class=\"widget-title\">Account</h5>\n\t\t\t</div>\n\t\t\t\n\t\t\t<div class=\"widget-body\">\n  \t\t\t\n\t\t\t\t<nav class=\"nav-utilities nav-utilities-secondary\">\n\t\t\t\t\t<ul>\n\t\t\t\t\t\t<li>\n  \t\t        <oc-accounts></oc-accounts>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t</ul>\n\t\t\t\t</nav>\n\t\t\t\t\n\t\t\t</div><!-- /.widget-body -->\n\t\t</li>\n\t\t\n\t\t<li class=\"widget\">\t\t\t\n\t\t\t<div class=\"widget-body\">\n  \t\t\t<strong>US Stock Market</strong> <br />  \t\t\t\n  \t\t\t<span [ngSwitch]=\"marketStatus?.state\">\n  \t\t\t  <span *ngSwitchCase=\"'open'\">Open</span>\n  \t\t\t  <span *ngSwitchDefault>Closed</span>\n  \t\t\t</span>\n\t\t\t</div>\t\t\t\t\n\t\t</li>\n\t\t\n\t</ul><!-- /.widgets -->\n</div><!-- /.sidebar -->"
+module.exports = "<div class=\"panel-group\">\n  <div class=\"panel panel-default\">\n  \t<div class=\"panel-heading\" role=\"tab\" id=\"headingOne\">\n  \t\t<h4 class=\"panel-title\">\n  \t\t\t<a role=\"button\" data-toggle=\"collapse\" href=\"#collapseOrders\">\n  \t\t\t\tOrders\n  \t\t\t</a>\n  \t\t</h4>\n  \t</div>\n  \t\n  \t<div id=\"collapseOrders\" class=\"panel-collapse collapse in\" role=\"tabpanel\" aria-labelledby=\"headingOne\">\n  \t\t<div class=\"panel-body\">\n\n        <table class=\"table\">\n          <thead>\n            <tr>\n            <th>Symbols</th>\n            <th class=\"text-center\">Last</th>\n            <th class=\"text-center\">Qty</th>              \n            <th class=\"text-center\">Duration</th>       \n            <th class=\"text-center\">Type</th>\n            <th class=\"text-center\">Price</th> \n            <th class=\"text-center\">Filled</th>                       \n            <th class=\"text-center\">Status</th>        \n            </tr>\n          </thead>\n        \n          <tbody>\n\n            <tr *ngFor=\"let row of orders\">\n\n              <td [hidden]=\"row.Class != 'equity'\">{{ quotes[row.Symbol].description }}</td>\n              <td [hidden]=\"row.Class != 'equity'\" class=\"text-center\">{{ quotes[row.Symbol].last | currency:'USD':true:'1.2-2' }}</td>              \n              <td [hidden]=\"row.Class != 'equity'\" class=\"text-center\">{{ row.Quantity }}</td>\n\n\n              <td [hidden]=\"row.Class != 'multileg'\">\n                <p *ngFor=\"let row2 of row.Legs\">{{ quotes[row2.OptionSymbol].description }}</p>                \n              </td>\n              <td [hidden]=\"row.Class != 'multileg'\" class=\"text-center\">\n                <p *ngFor=\"let row2 of row.Legs\">{{ quotes[row2.OptionSymbol].last | currency:'USD':true:'1.2-2' }}</p>                \n              </td>               \n              <td [hidden]=\"row.Class != 'multileg'\" class=\"text-center\">\n                <p *ngFor=\"let row2 of row.Legs\">{{ row2.Quantity }}</p>                \n              </td>  \n\n              \n              <td [hidden]=\"row.Class != 'option'\">{{ quotes[row.Symbol].description }}</td>\n              <td [hidden]=\"row.Class != 'option'\" class=\"text-center\">{{ quotes[row.Symbol].last | currency:'USD':true:'1.2-2' }}</td> \n              <td [hidden]=\"row.Class != 'option'\" class=\"text-center\">{{ row.Quantity }}</td>\n                            \n  \n              <td class=\"text-center\">{{ row.Duration }}</td>\n              <td class=\"text-center\">{{ row.Type }}</td>\n\n              <td class=\"text-center\" [hidden]=\"row.Type != 'debit'\">{{ row.Price | currency:'USD':true:'1.2-2' }}</td>\n              <td class=\"text-center\" [hidden]=\"row.Type != 'credit'\">{{ row.Price | currency:'USD':true:'1.2-2' }}</td>\n              <td class=\"text-center\" [hidden]=\"row.Type != 'stop'\">{{ row.StopPrice | currency:'USD':true:'1.2-2' }}</td>\n              <td class=\"text-center\" [hidden]=\"row.Type != 'market'\">---</td>              \n\n              <td class=\"text-center\" [hidden]=\"row.Status != 'filled'\">{{ row.AvgFillPrice | currency:'USD':true:'1.2-2' }}</td>\n              <td class=\"text-center\" [hidden]=\"row.Status != 'open'\">---</td>\n\n              <td class=\"text-center\">{{ row.Status }}</td>\n                                             \n            </tr>            \n            \n          </tbody>\n        </table>\n\n  \t\t</div>\n  \t</div>\n  </div>\n</div>"
 
 /***/ },
 
 /***/ 628:
 /***/ function(module, exports) {
 
+module.exports = "<div class=\"sidebar\">\n\t<ul class=\"widgets\">\n\t\t<li class=\"widget widget-main\">\n\t\t\t<div class=\"widget-head\">\n\t\t\t\t<h5 class=\"widget-title\">Main</h5>\n\t\t\t</div>\n\t\t\t\n\t\t\t<div class=\"widget-body\">\n\t\t\t\t<nav class=\"nav-utilities\">\n\t\t\t\t\t<ul>\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t<a href=\"#\">\n\t\t\t\t\t\t\t\t<span>\n\t\t\t\t\t\t\t\t\t<i class=\"ico-indicator\"></i>\n\t\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t\tTrading\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t<a href=\"#\">\n\t\t\t\t\t\t\t\t<span>\n\t\t\t\t\t\t\t\t\t<i class=\"ico-report\"></i>\n\t\t\t\t\t\t\t\t</span>\n\n\t\t\t\t\t\t\t\tReports\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t</ul>\n\t\t\t\t</nav><!-- /.nav-utilities -->\n\t\t\t</div><!-- /.widget-body -->\n\t\t</li><!-- /.widget -->\n\t\t\n\t\t<li class=\"widget widget-account\">\n\t\t\t<div class=\"widget-head\">\n\t\t\t\t<h5 class=\"widget-title\">Account</h5>\n\t\t\t</div>\n\t\t\t\n\t\t\t<div class=\"widget-body\">\n  \t\t\t\n\t\t\t\t<nav class=\"nav-utilities nav-utilities-secondary\">\n\t\t\t\t\t<ul>\n\t\t\t\t\t\t<li>\n  \t\t        <oc-accounts></oc-accounts>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t</ul>\n\t\t\t\t</nav>\n\t\t\t\t\n\t\t\t</div><!-- /.widget-body -->\n\t\t</li>\n\t\t\n\t\t<li class=\"widget\">\t\t\t\n\t\t\t<div class=\"widget-body\">\n  \t\t\t<strong>US Stock Market</strong> <br />  \t\t\t\n  \t\t\t<span [ngSwitch]=\"marketStatus?.state\">\n  \t\t\t  <span *ngSwitchCase=\"'open'\">Open</span>\n  \t\t\t  <span *ngSwitchDefault>Closed</span>\n  \t\t\t</span>\n\t\t\t</div>\t\t\t\t\n\t\t</li>\n\t\t\n\t</ul><!-- /.widgets -->\n</div><!-- /.sidebar -->"
+
+/***/ },
+
+/***/ 629:
+/***/ function(module, exports) {
+
 module.exports = "<div class=\"panel-group col-md-3 watchlist\">\n  <div class=\"panel panel-default\">\n  \t<div class=\"panel-heading\" role=\"tab\" id=\"headingOne\">\n  \t\t<h4 class=\"panel-title\">\n  \t\t\t<a role=\"button\" data-toggle=\"collapse\" href=\"#collapseWatchlist\">\n  \t\t\t\tWatchlist\n  \t\t\t</a>\n  \t\t</h4>\n  \t</div>\n  \t\n  \t<div id=\"collapseWatchlist\" class=\"panel-collapse collapse in\" role=\"tabpanel\" aria-labelledby=\"headingOne\">\n  \t\t<div class=\"panel-body\">\n\n        <div class=\"list-group\">\n        \n          <a href=\"\" class=\"list-group-item\" *ngFor=\"let row of watchlist.items\">\n            <strong>{{ row.symbol }}</strong> <br /> \n            ${{ quotes[row.symbol]?.last | number:'1.2-2' }} \n            <span class=\"{{ quotes[row.symbol]?.classColor() }}\">\n              {{ quotes[row.symbol]?.dailyChange() | currency:'USD':true:'1.2-2' }}\n              <span>({{ quotes[row.symbol]?.percentChange() | number:'1.2-2' }}%)</span>\n            </span> \n            <br />\n            {{ quotes[row.symbol]?.description }}\n          </a>\n                   \n        </div>\n\n  \t\t</div>\n  \t</div>\n  </div>\n</div>"
 
 /***/ },
 
-/***/ 641:
+/***/ 642:
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(345);
@@ -1161,5 +1210,5 @@ module.exports = __webpack_require__(345);
 
 /***/ }
 
-},[641]);
+},[642]);
 //# sourceMappingURL=main.bundle.map

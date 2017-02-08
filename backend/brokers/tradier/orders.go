@@ -57,126 +57,51 @@ func (t * Api) GetOrders() ([]types.Order, error) {
   // Only one account
   if vo.Exists() {
 
-    // Do we have any orders.
-    vo2 := gjson.Get(string(body), "accounts.account.orders")
-    
-    if ! vo2.Exists() {
+    if t.orderParseOneAccount(body, &t_orders) != nil {
       return orders, nil
     }
-    
-    // Set the account id
-    account_number := gjson.Get(string(body), "accounts.account.account_number").String() 
-    
-    // Do we have more than one order
-    vo2 = gjson.Get(string(body), "accounts.account.orders.order.id")
-    
-    // More than one order??
-    if ! vo2.Exists() {
-              
-      var ws []types.TradierOrder
-      
-      // Get just the orders part
-      vo3 := gjson.Get(string(body), "accounts.account.orders.order")
-      
-      // Unmarshal json
-      if err := json.Unmarshal([]byte(vo3.String()), &ws); err != nil {
-        return orders, nil 
-      }
-      
-      // Set the orders to our return
-      for _, row := range ws {
-        row.AccountId = account_number
-        t_orders = append(t_orders, row)
-      }
            
-    } else 
-    {    
-      var ws types.TradierOrder
-    
-      // Get just the orders part
-      vo3 := gjson.Get(string(body), "accounts.account.orders.order")
-    
-      // Unmarshal json
-      if err := json.Unmarshal([]byte(vo3.String()), &ws); err != nil {
-        return orders, nil 
-      }
-            
-      // Set the orders we return.
-      ws.AccountId = account_number
-      t_orders = append(t_orders, ws)   
-      
-    }   
-  
-
   } else // More than one accounts
   {
 
-    vo = gjson.Get(string(body), "accounts.account")
-    
-    // Loop through the different accounts.
-    vo.ForEach(func(key, value gjson.Result) bool{
-      
-      // Do we have any orders.
-      vo2 := gjson.Get(value.String(), "orders")
-      
-      if ! vo2.Exists() {
-        return true
-      }
-      
-      // Set the account id
-      account_number := gjson.Get(value.String(), "account_number").String() 
-      
-      // Do we have more than one order
-      vo2 = gjson.Get(value.String(), "orders.order.id")
-      
-      // More than one order??
-      if ! vo2.Exists() {
-                
-        var ws []types.TradierOrder
+    if t.orderParseMoreThanOneAccount(body, &t_orders) != nil {
+      return orders, nil
+    }   
         
-        // Get just the orders part
-        vo3 := gjson.Get(value.String(), "orders.order")
-        
-        // Unmarshal json
-        if err := json.Unmarshal([]byte(vo3.String()), &ws); err != nil {
-          return true 
-        }
-        
-        // Set the orders to our return
-        for _, row := range ws {
-          row.AccountId = account_number
-          t_orders = append(t_orders, row)
-        }
-             
-      } else 
-      {    
-        var ws types.TradierOrder
-
-        // Get just the orders part
-        vo3 := gjson.Get(value.String(), "orders.order")
-
-        // Unmarshal json
-        if err := json.Unmarshal([]byte(vo3.String()), &ws); err != nil {
-          return true 
-        }
-              
-        // Set the orders we return.
-        ws.AccountId = account_number
-        t_orders = append(t_orders, ws)   
-        
-      }       
-      
-      // keep iterating
-      return true 
-      
-    })    
-        
-    
   }
   
   // Clean up the array and make it more generic
   for _, row := range t_orders {
     
+    var legs []types.OrderLeg
+    
+    // Merge in the legs
+    if len(row.Legs) > 0 {
+      
+      for _, row2 := range row.Legs {
+        
+        legs = append(legs, types.OrderLeg{
+          Type: row2.Type,
+          Symbol: row2.Symbol,
+          OptionSymbol: row2.OptionSymbol, 
+          Side: row2.Side, 
+          Quantity: row2.Quantity, 
+          Status: row2.Status, 
+          Duration: row2.Duration, 
+          AvgFillPrice: row2.AvgFillPrice, 
+          ExecQuantity: row2.ExecQuantity, 
+          LastFillPrice: row2.LastFillPrice, 
+          LastFillQuantity: row2.LastFillQuantity, 
+          RemainingQuantity: row2.RemainingQuantity, 
+          CreateDate: row2.CreateDate, 
+          TransactionDate: row2.TransactionDate,           
+        })
+        
+      }
+      
+    }
+    
+    // Append the orders
     orders = append(orders, types.Order{
       Id: row.Id,
       AccountId: row.AccountId,
@@ -195,13 +120,145 @@ func (t * Api) GetOrders() ([]types.Order, error) {
       CreateDate: row.CreateDate,
       TransactionDate: row.TransactionDate,
       Class: row.Class,
-      NumLegs: row.NumLegs})
+      NumLegs: row.NumLegs,
+      Legs: legs,
+    })
     
   }
   
   // Return happy
   return orders, nil	
   
+}
+
+//
+// Parse the case where the user just has more than one account.
+// This function just sets the t_orders
+//
+func (t * Api) orderParseMoreThanOneAccount(body []byte, t_orders *[]types.TradierOrder) error {
+    
+  vo := gjson.Get(string(body), "accounts.account")
+  
+  // Loop through the different accounts.
+  vo.ForEach(func(key, value gjson.Result) bool{
+    
+    // Do we have any orders.
+    vo2 := gjson.Get(value.String(), "orders")
+    
+    if ! vo2.Exists() {
+      return true
+    }
+    
+    // Set the account id
+    account_number := gjson.Get(value.String(), "account_number").String() 
+    
+    // Do we have more than one order
+    vo2 = gjson.Get(value.String(), "orders.order.id")
+    
+    // More than one order??
+    if ! vo2.Exists() {
+              
+      var ws []types.TradierOrder
+      
+      // Get just the orders part
+      vo3 := gjson.Get(value.String(), "orders.order")
+      
+      // Unmarshal json
+      if err := json.Unmarshal([]byte(vo3.String()), &ws); err != nil {
+        return true 
+      }
+      
+      // Set the orders to our return
+      for _, row := range ws {        
+        row.AccountId = account_number
+        *t_orders = append(*t_orders, row)
+      }
+           
+    } else 
+    {    
+      var ws types.TradierOrder
+  
+      // Get just the orders part
+      vo3 := gjson.Get(value.String(), "orders.order")
+  
+      // Unmarshal json
+      if err := json.Unmarshal([]byte(vo3.String()), &ws); err != nil {
+        return true 
+      }
+
+      // Set the orders we return.
+      ws.AccountId = account_number
+      *t_orders = append(*t_orders, ws)   
+      
+    }       
+    
+    // keep iterating
+    return true 
+    
+  }) 
+
+  // Happy
+  return nil      
+}
+
+//
+// Parse the case where the user just has one account.
+// This function just sets the t_orders
+//
+func (t * Api) orderParseOneAccount(body []byte, t_orders *[]types.TradierOrder) error {
+  
+  // Do we have any orders.
+  vo2 := gjson.Get(string(body), "accounts.account.orders")
+  
+  if ! vo2.Exists() {
+    return errors.New("No Orders Found") 
+  }
+  
+  // Set the account id
+  account_number := gjson.Get(string(body), "accounts.account.account_number").String() 
+  
+  // Do we have more than one order
+  vo2 = gjson.Get(string(body), "accounts.account.orders.order.id")
+  
+  // More than one order??
+  if ! vo2.Exists() {
+            
+    var ws []types.TradierOrder
+    
+    // Get just the orders part
+    vo3 := gjson.Get(string(body), "accounts.account.orders.order")
+    
+    // Unmarshal json
+    if err := json.Unmarshal([]byte(vo3.String()), &ws); err != nil {
+      return err
+    }
+    
+    // Set the orders to our return
+    for _, row := range ws {
+      row.AccountId = account_number
+      *t_orders = append(*t_orders, row)
+    }
+  
+  } else 
+  {    
+    var ws types.TradierOrder
+  
+    // Get just the orders part
+    vo3 := gjson.Get(string(body), "accounts.account.orders.order")
+  
+    // Unmarshal json
+    if err := json.Unmarshal([]byte(vo3.String()), &ws); err != nil {
+      return err
+    }
+          
+    // Set the orders we return.
+    ws.AccountId = account_number
+    *t_orders = append(*t_orders, ws)   
+    
+  }      
+  
+  // Success
+  return nil
 }
 
 /* End File */

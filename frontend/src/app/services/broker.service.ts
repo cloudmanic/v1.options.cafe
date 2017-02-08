@@ -1,5 +1,6 @@
 import { EventEmitter } from '@angular/core';
 import { Order } from '../contracts/order';
+import { OrderLeg } from '../contracts/order-leg';
 import { Watchlist } from '../contracts/watchlist';
 import { WatchlistItems } from '../contracts/watchlist-items';
 import { MarketStatus } from '../contracts/market-status';
@@ -111,6 +112,33 @@ export class BrokerService {
     
     for(var i = 0; i < data.length; i++)
     {
+      // Add in the legs
+      var legs = [];
+      
+      if(data[i].NumLegs > 0)
+      {
+        for(var k = 0; k < data[i].Legs.length; k++)
+        {
+          legs.push(new OrderLeg(
+            data[i].Legs[k].Type,
+            data[i].Legs[k].Symbol,
+            data[i].Legs[k].OptionSymbol, 
+            data[i].Legs[k].Side, 
+            data[i].Legs[k].Quantity, 
+            data[i].Legs[k].Status, 
+            data[i].Legs[k].Duration, 
+            data[i].Legs[k].AvgFillPrice, 
+            data[i].Legs[k].ExecQuantity, 
+            data[i].Legs[k].LastFillPrice, 
+            data[i].Legs[k].LastFillQuantity, 
+            data[i].Legs[k].RemainingQuantity, 
+            data[i].Legs[k].CreateDate, 
+            data[i].Legs[k].TransactionDate          
+          ));
+        }
+      }
+      
+      // Push the order on
       orders.push(new Order(
           data[i].Id,
           data[i].AccountId,
@@ -129,7 +157,8 @@ export class BrokerService {
           data[i].Status,
           data[i].Symbol,
           data[i].TransactionDate,
-          data[i].Type));
+          data[i].Type,
+          legs));
                
     }
     

@@ -11,8 +11,12 @@ import (
 )
 
 type Fetch struct {
-  muActiveSymbols sync.Mutex
-  activeSymbols []string
+
+  muOrders sync.Mutex
+  Orders []types.Order
+
+  muWatchlists sync.Mutex
+  Watchlists []types.Watchlist
   
   broker tradier.Api
   user *UsersConnection
@@ -22,27 +26,61 @@ type Fetch struct {
 // Return active symbols. This is handy because we 
 // sort and filter before returning.
 //
-func (t *Fetch) GetActiveSymbols() ([]string) {
+func (t *Fetch) GetActiveSymbols() []string {
   
-  // Lock da memory
-	t.muActiveSymbols.Lock()
-	defer t.muActiveSymbols.Unlock()   
+  var activeSymbols []string  
   
   // Symbols we always want
-  t.activeSymbols = append(t.activeSymbols, "$DJI")
-  t.activeSymbols = append(t.activeSymbols, "SPX")
-  t.activeSymbols = append(t.activeSymbols, "COMP")   
-  t.activeSymbols = append(t.activeSymbols, "VIX") 
+  activeSymbols = append(activeSymbols, "$DJI")
+  activeSymbols = append(activeSymbols, "SPX")
+  activeSymbols = append(activeSymbols, "COMP")   
+  activeSymbols = append(activeSymbols, "VIX")
+  
+  // Watchlists to the active symbols.
+  t.muWatchlists.Lock()
+  
+  for _, row := range t.Watchlists {
+    
+    for _, row2 := range row.Symbols {
+    
+      activeSymbols = append(activeSymbols, row2.Name)
+  
+    }
+    
+  }
+  
+  t.muWatchlists.Unlock()    
+  
+  // Add in the orders we want.
+  t.muOrders.Lock()
+  
+  for _, row := range t.Orders {
+    
+    activeSymbols = append(activeSymbols, row.Symbol)
+    
+    if row.NumLegs > 0 {
+      
+      for _, row2 := range row.Legs {
+        
+        activeSymbols = append(activeSymbols, row2.OptionSymbol);
+      
+      } 
+   
+    }
+  
+  }
+  
+  t.muOrders.Unlock() 
     
   // Clean up the list.
-  t.activeSymbols = t.ToUpperStrings(t.activeSymbols)
-  t.activeSymbols = t.RemoveDupsStrings(t.activeSymbols)
+  activeSymbols = t.ToUpperStrings(activeSymbols)
+  activeSymbols = t.RemoveDupsStrings(activeSymbols)
   
   // Sort the list.
-  sort.Strings(t.activeSymbols)
+  sort.Strings(activeSymbols)
   
   // Return the cleaned up list.
-  return t.activeSymbols;
+  return activeSymbols;
   
 }
 
@@ -109,6 +147,11 @@ func (t *Fetch) GetOrders() (error) {
 
   // Make API call
   orders, err := t.broker.GetOrders()
+  
+  // Save the orders in the fetch object
+  t.muOrders.Lock()
+  t.Orders = orders
+  t.muOrders.Unlock()
   
   if err != nil {
     return err  
@@ -186,18 +229,16 @@ func (t *Fetch) GetWatchlists() (error) {
   
   if err != nil {
     return err  
-  }  
+  } 
+  
+  // Save the watchlists in the fetch object
+  t.muWatchlists.Lock()
+  t.Watchlists = watchlists
+  t.muWatchlists.Unlock()   
   
   // Loop through and send data up websocket  
   for _, row := range watchlists {
-  
-    // Update active symbols 
-    for _, row2 := range row.Symbols {
-      t.muActiveSymbols.Lock()
-      t.activeSymbols = append(t.activeSymbols, row2.Name)
-      t.muActiveSymbols.Unlock()
-    }   
-   
+     
     // Send up websocket.
     err = t.WriteWebSocket("Watchlist:refresh", row)
     
@@ -212,6 +253,7 @@ func (t *Fetch) GetWatchlists() (error) {
   
 }
 
+/*
 //
 // Do get a watchlist
 //
@@ -246,6 +288,7 @@ func (t *Fetch) GetWatchlist(listName string) (error) {
   return nil    
   
 }
+*/
 
 // ----------------- Helper Functions ---------------- //
 

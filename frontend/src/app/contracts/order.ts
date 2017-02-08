@@ -1,3 +1,5 @@
+import { OrderLeg } from './order-leg';
+
 export class Order {
   constructor(
     public Id: number,
@@ -17,6 +19,7 @@ export class Order {
     public Status: string,
     public Symbol: string,
     public TransactionDate: string,
-    public Type: string
+    public Type: string,
+    public Legs: OrderLeg[]
   ){}
 }
