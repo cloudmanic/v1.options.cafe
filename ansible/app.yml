@@ -1,0 +1,80 @@
+---
+- name: Setup our server for our Golang app (app.options.cafe).
+  
+  hosts: app
+  
+  remote_user: spicer
+  
+  become: yes
+  
+  become_user: root  
+  
+  tasks:
+  
+    # Setup the Hostname
+    - name: Updating the host name
+      hostname: 
+        name: app.options.cafe
+        
+    # Install base packages
+    - name: Install packages we need
+      action: apt pkg={{item}} state=installed
+      with_items:
+        - nmap
+        - nload
+        - supervisor
+        
+    # Install group deploy        
+    - name: Install group deploy
+      group: name=deploy state=present
+              
+    # Add the user we deploy our app as
+    - name: Installing a deploy user
+      user:
+        name: deploy
+        shell: /usr/sbin/nologin
+        group: deploy
+        home: /home/deploy
+        createhome: yes
+        append: yes 
+        
+    # Set the ssh directory
+    - name: Set the deploy home dir /home/deploy
+      file: path=/home/deploy state=directory owner=deploy group=deploy mode=0700
+      
+    # Install supervisor config app.options.cafe
+    - name: Install supervisor config app.options.cafe
+      copy: src=app.options.cafe.conf dest=/etc/supervisor/conf.d/app.options.cafe.conf                 
+            
+    # Set logging
+    - name: UFW - Set logging
+      ufw:
+        logging: on      
+    
+    # Allow all access to tcp port 80:
+    - name: UFW - Allow all access to tcp port 80
+      ufw:
+        rule: allow
+        port: 80
+        proto: tcp
+    
+    # Allow all access to tcp port 443:
+    - name: UFW - Allow all access to tcp port 443
+      ufw:
+        rule: allow
+        port: 443
+        proto: tcp
+        
+    # Allow ssh access from Spicer house, web1, and a VPN
+    - name: UFW - Allow ssh access from a few ip addresses
+      ufw: rule=allow port=9022 src={{item}}
+      with_items:
+        - 73.157.193.173
+        - 45.33.31.199 
+        - 96.239.59.69
+          
+    # Deny everything and enable UFW (this should go last)
+    - name: Deny everything and enable UFW
+      ufw:
+        state: enabled
+        policy: deny         

@@ -1,0 +1,56 @@
+---
+- name: Bootstraps a server where all we have is a root login.
+  
+  hosts: bootstrap
+  
+  become: yes
+  
+  become_user: root  
+  
+  tasks:
+          
+    # Set Timezone
+    - name: Set the timezone for the server to be US/Pacific-New
+      command: timedatectl set-timezone US/Pacific-New
+
+    # Install base packages we need on all systems.
+    - name: Install base packages
+      action: apt pkg={{item}} state=installed
+      with_items:
+        - git-core
+        - vim
+        - ntp
+        
+    # Install group spicer        
+    - name: Install group spicer
+      group: name=spicer state=present gid=1000       
+        
+    # Install User Spicer
+    - name: Install user spicer.
+      user: name=spicer uid=1000 state=present home=/home/spicer shell=/bin/bash group=spicer groups=sudo,root append=yes password=$6$6jml2jW9$7ipmdz6dnCPUnuFUsDDw1PUIQ44uQyi05sPfihZstAkl9GBYuUcUQ5.PGCAjrwEfYI9UoORvqVuiUrv6WYBTz.   
+
+    # Set the ssh directory
+    - name: Set the .ssh directory for spicer.
+      file: path=/home/spicer/.ssh state=directory owner=spicer group=spicer mode=0700
+
+    # Install authorized_keys
+    - name: Add authorized_keys For Spicer
+      copy: src=authorized_keys dest=/home/spicer/.ssh/authorized_keys2
+
+    # Change the ssh port to 9022      
+    - name: Setup alternate SSH port 9022
+      lineinfile:
+        dest: "/etc/ssh/sshd_config"
+        regexp: "^Port"
+        line: "Port 9022"
+      
+    # Turn off root ssh access.     
+    - name: No more root ssh access
+      lineinfile:
+        dest: "/etc/ssh/sshd_config"
+        regexp: "^PermitRootLogin"
+        line: "PermitRootLogin no"
+        
+    # Restart sshd
+    - name: Restart sshd
+      service: name=ssh state=restarted     

@@ -46,7 +46,9 @@
   <div class="content-body">
     <div class="tabs">
 
-      <div class="zone-content dashboard">
+      <div class="zone-content section-styleguide dashboard">
+        
+        <div [hidden]="! ws_reconnecting" class="bg-warning text-white" style="margin-bottom: 10px;">Reconnecting to the server...</div>
       	
       	<div class="row">
           <oc-watchlist></oc-watchlist>

@@ -1,124 +1,5 @@
 webpackJsonp([0,3],{
 
-/***/ 138:
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__contracts_market_quote__ = __webpack_require__(456);
-/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return QuoteService; });
-
-
-var QuoteService = (function () {
-    //
-    // Construct!!
-    //
-    function QuoteService() {
-        this.quotes = {};
-        // Websocket Stuff
-        this.ws = null;
-        this.heartbeat = null;
-        this.missed_heartbeats = 0;
-        // Emitters
-        this.marketQuotePushData = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["_20" /* EventEmitter */]();
-        // Setup standard websocket connection.
-        this.setupWebSocket();
-    }
-    // ------------------------ Websocket Stuff --------------------- //
-    //
-    // Setup normal data websocket connection.
-    //
-    QuoteService.prototype.setupWebSocket = function () {
-        var _this = this;
-        // Setup websocket
-        this.ws = new WebSocket(ws_server + '/ws/quotes');
-        // Websocket sent data to us.
-        this.ws.onmessage = function (e) {
-            var msg = JSON.parse(e.data);
-            // Is this a pong to our ping or some other return.
-            if (msg.type == 'pong') {
-                _this.missed_heartbeats--;
-            }
-            else {
-                // Send quote to angular component
-                switch (msg.type) {
-                    // Real-time market quote
-                    case 'trade':
-                        // Have we seen this quote before?
-                        if (typeof _this.quotes[msg.symbol] == "undefined") {
-                            _this.quotes[msg.symbol] = new __WEBPACK_IMPORTED_MODULE_1__contracts_market_quote__["a" /* MarketQuote */](msg.last, 0, 0, msg.symbol, '');
-                        }
-                        else {
-                            _this.quotes[msg.symbol].last = msg.last;
-                        }
-                        _this.marketQuotePushData.emit(_this.quotes[msg.symbol]);
-                        break;
-                    // DetailedQuotes refresh
-                    case 'DetailedQuotes:refresh':
-                        var msg_data = JSON.parse(msg.data);
-                        // Have we seen this quote before?
-                        if (typeof _this.quotes[msg_data.Symbol] == "undefined") {
-                            _this.quotes[msg_data.Symbol] = new __WEBPACK_IMPORTED_MODULE_1__contracts_market_quote__["a" /* MarketQuote */](msg_data.Last, msg_data.Open, msg_data.PrevClose, msg_data.Symbol, msg_data.Description);
-                        }
-                        else {
-                            _this.quotes[msg_data.Symbol].last = msg_data.Last;
-                            _this.quotes[msg_data.Symbol].open = msg_data.Open;
-                            _this.quotes[msg_data.Symbol].prev_close = msg_data.PrevClose;
-                            _this.quotes[msg_data.Symbol].description = msg_data.Description;
-                        }
-                        _this.marketQuotePushData.emit(_this.quotes[msg_data.Symbol]);
-                        break;
-                }
-            }
-        };
-        // On Websocket open
-        this.ws.onopen = function (e) {
-            // Send Access Token (Give a few moments to get started)
-            setTimeout(function () {
-                _this.ws.send(JSON.stringify({ type: 'set-access-token', data: { access_token: localStorage.getItem('access_token') } }));
-            }, 1000);
-            // Setup the connection heartbeat
-            if (_this.heartbeat === null) {
-                _this.missed_heartbeats = 0;
-                _this.heartbeat = setInterval(function () {
-                    try {
-                        _this.missed_heartbeats++;
-                        if (_this.missed_heartbeats >= 5) {
-                            throw new Error('Too many missed heartbeats (quotes).');
-                        }
-                        _this.ws.send(JSON.stringify({ type: 'ping' }));
-                    }
-                    catch (e) {
-                        //$scope.ws_reconnecting = true;
-                        clearInterval(_this.heartbeat);
-                        _this.heartbeat = null;
-                        console.warn("Closing connection (quotes). Reason: " + e.message);
-                        _this.ws.close();
-                    }
-                }, 5000);
-            }
-            else {
-                clearInterval(_this.heartbeat);
-            }
-        };
-        // On Close
-        this.ws.onclose = function () {
-            // Kill Ping heartbeat.
-            clearInterval(_this.heartbeat);
-            _this.heartbeat = null;
-            _this.ws = null;
-            // Try to reconnect
-            //$scope.ws_reconnecting = true;
-            setTimeout(function () { _this.setupWebSocket(); }, 3 * 1000);
-        };
-    };
-    return QuoteService;
-}());
-/* End File */
-//# sourceMappingURL=/Users/spicer/Development/app.options.cafe/frontend/src/quote.service.js.map
-
-/***/ },
-
 /***/ 302:
 /***/ function(module, exports, __webpack_require__) {
 
@@ -178,7 +59,7 @@ __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dyna
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_broker_service__ = __webpack_require__(60);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_broker_service__ = __webpack_require__(51);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return AccountsComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -292,8 +173,8 @@ var AppComponent = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__(422);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_http__ = __webpack_require__(428);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__app_component__ = __webpack_require__(453);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__services_quote_service__ = __webpack_require__(138);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__services_broker_service__ = __webpack_require__(60);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__services_quote_service__ = __webpack_require__(96);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__services_broker_service__ = __webpack_require__(51);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__layout_header_component__ = __webpack_require__(464);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__layout_footer_component__ = __webpack_require__(463);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__accounts_accounts_component__ = __webpack_require__(452);
@@ -543,6 +424,8 @@ var WatchlistItems = (function () {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_quote_service__ = __webpack_require__(96);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__services_broker_service__ = __webpack_require__(51);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return DashboardComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -554,19 +437,40 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
+
+
 var DashboardComponent = (function () {
-    function DashboardComponent() {
+    function DashboardComponent(quotesService, broker, changeDetect) {
+        this.quotesService = quotesService;
+        this.broker = broker;
+        this.changeDetect = changeDetect;
+        this.ws_reconnecting = false;
     }
+    //
+    // OnInit....
+    //
     DashboardComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        // Subscribe to when we are reconnecting to a websocket - Core
+        this.broker.wsReconnecting.subscribe(function (data) {
+            _this.ws_reconnecting = data;
+            _this.changeDetect.detectChanges();
+        });
+        // Subscribe to when we are reconnecting to a websocket - Quotes
+        this.quotesService.wsReconnecting.subscribe(function (data) {
+            _this.ws_reconnecting = data;
+            _this.changeDetect.detectChanges();
+        });
     };
     DashboardComponent = __decorate([
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({
             selector: 'oc-dashboard',
             template: __webpack_require__(624)
         }), 
-        __metadata('design:paramtypes', [])
+        __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__services_quote_service__["a" /* QuoteService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__services_quote_service__["a" /* QuoteService */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__services_broker_service__["a" /* BrokerService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_2__services_broker_service__["a" /* BrokerService */]) === 'function' && _b) || Object, (typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["i" /* ChangeDetectorRef */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_core__["i" /* ChangeDetectorRef */]) === 'function' && _c) || Object])
     ], DashboardComponent);
     return DashboardComponent;
+    var _a, _b, _c;
 }());
 //# sourceMappingURL=/Users/spicer/Development/app.options.cafe/frontend/src/dashboard.component.js.map
 
@@ -577,7 +481,7 @@ var DashboardComponent = (function () {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_broker_service__ = __webpack_require__(60);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_broker_service__ = __webpack_require__(51);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return FooterComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -628,8 +532,8 @@ var FooterComponent = (function () {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_broker_service__ = __webpack_require__(60);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__services_quote_service__ = __webpack_require__(138);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_broker_service__ = __webpack_require__(51);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__services_quote_service__ = __webpack_require__(96);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return HeaderComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -689,8 +593,8 @@ var HeaderComponent = (function () {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_quote_service__ = __webpack_require__(138);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__services_broker_service__ = __webpack_require__(60);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_quote_service__ = __webpack_require__(96);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__services_broker_service__ = __webpack_require__(51);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return OrdersComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -768,7 +672,7 @@ var OrdersComponent = (function () {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_broker_service__ = __webpack_require__(60);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_broker_service__ = __webpack_require__(51);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return SidebarComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -825,8 +729,8 @@ var SidebarComponent = (function () {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_quote_service__ = __webpack_require__(138);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__services_broker_service__ = __webpack_require__(60);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_quote_service__ = __webpack_require__(96);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__services_broker_service__ = __webpack_require__(51);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__contracts_watchlist__ = __webpack_require__(302);
 /* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return WatchlistComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -955,7 +859,7 @@ var environment = {
 
 /***/ },
 
-/***/ 60:
+/***/ 51:
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -990,6 +894,7 @@ var BrokerService = (function () {
         this.heartbeat = null;
         this.missed_heartbeats = 0;
         // Emitters - Pushers
+        this.wsReconnecting = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["_20" /* EventEmitter */]();
         this.ordersPushData = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["_20" /* EventEmitter */]();
         this.userProfilePushData = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["_20" /* EventEmitter */]();
         this.marketStatusPushData = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["_20" /* EventEmitter */]();
@@ -1104,6 +1009,8 @@ var BrokerService = (function () {
             setTimeout(function () {
                 _this.ws.send(JSON.stringify({ type: 'set-access-token', data: { access_token: localStorage.getItem('access_token') } }));
             }, 1000);
+            // Tell the UI we are connected
+            _this.wsReconnecting.emit(false);
             // Setup the connection heartbeat
             if (_this.heartbeat === null) {
                 _this.missed_heartbeats = 0;
@@ -1116,7 +1023,7 @@ var BrokerService = (function () {
                         _this.ws.send(JSON.stringify({ type: 'ping' }));
                     }
                     catch (e) {
-                        //$scope.ws_reconnecting = true;
+                        _this.wsReconnecting.emit(true);
                         clearInterval(_this.heartbeat);
                         _this.heartbeat = null;
                         console.warn("Closing connection. Reason: " + e.message);
@@ -1135,7 +1042,7 @@ var BrokerService = (function () {
             _this.heartbeat = null;
             _this.ws = null;
             // Try to reconnect
-            //$scope.ws_reconnecting = true;
+            _this.wsReconnecting.emit(true);
             setTimeout(function () { _this.setupWebSocket(); }, 3 * 1000);
         };
     };
@@ -1163,7 +1070,7 @@ module.exports = "<oc-header></oc-header>\n\n<div class=\"main\">\n  \n  <oc-sid
 /***/ 624:
 /***/ function(module, exports) {
 
-module.exports = "<div class=\"content\">\n\t\n\t<div class=\"content-head\">\n\n\t\t<div class=\"tabs\">\n\t\t\t<ul class=\"nav nav-tabs\" role=\"tablist\">\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab1\" role=\"tab\" data-toggle=\"tab\">&nbsp;</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab2\" role=\"tab\" data-toggle=\"tab\">&nbsp;</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab3\" role=\"tab\" data-toggle=\"tab\">&nbsp;</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\" class=\"active\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab4\" role=\"tab\" data-toggle=\"tab\">Dashboard</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab5\" role=\"tab\" data-toggle=\"tab\">Screener</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab6\" role=\"tab\" data-toggle=\"tab\">Backtest</a>\n\t\t\t\t</li>\n\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab7\" role=\"tab\" data-toggle=\"tab\">&nbsp;</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab8\" role=\"tab\" data-toggle=\"tab\">&nbsp;</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab9\" role=\"tab\" data-toggle=\"tab\">&nbsp;</a>\n\t\t\t\t</li>\n\t\t\t</ul>\n\t\t</div><!-- /.tabs -->\n\t</div><!-- /.content-head -->\n\t\n  <div class=\"content-body\">\n    <div class=\"tabs\">\n\n      <div class=\"zone-content dashboard\">\n      \t\n      \t<div class=\"row\">\n          <oc-watchlist></oc-watchlist>\n          \n          <div class=\"col-md-9\">\n            \n            <oc-orders></oc-orders>\n            \n          </div>\n          \n      \t</div>\n      \t\n      </div>\n    \n    </div>\n  </div>\n\n</div>"
+module.exports = "<div class=\"content\">\n\t\n\t<div class=\"content-head\">\n\n\t\t<div class=\"tabs\">\n\t\t\t<ul class=\"nav nav-tabs\" role=\"tablist\">\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab1\" role=\"tab\" data-toggle=\"tab\">&nbsp;</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab2\" role=\"tab\" data-toggle=\"tab\">&nbsp;</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab3\" role=\"tab\" data-toggle=\"tab\">&nbsp;</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\" class=\"active\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab4\" role=\"tab\" data-toggle=\"tab\">Dashboard</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab5\" role=\"tab\" data-toggle=\"tab\">Screener</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab6\" role=\"tab\" data-toggle=\"tab\">Backtest</a>\n\t\t\t\t</li>\n\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab7\" role=\"tab\" data-toggle=\"tab\">&nbsp;</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab8\" role=\"tab\" data-toggle=\"tab\">&nbsp;</a>\n\t\t\t\t</li>\n\t\t\t\t\n\t\t\t\t<li role=\"presentation\">\n\t\t\t\t\t<a href=\"\" aria-controls=\"tab9\" role=\"tab\" data-toggle=\"tab\">&nbsp;</a>\n\t\t\t\t</li>\n\t\t\t</ul>\n\t\t</div><!-- /.tabs -->\n\t</div><!-- /.content-head -->\n\t\n  <div class=\"content-body\">\n    <div class=\"tabs\">\n\n      <div class=\"zone-content section-styleguide dashboard\">\n        \n        <div [hidden]=\"! ws_reconnecting\" class=\"bg-warning text-white\" style=\"margin-bottom: 10px;\">Reconnecting to the server...</div>\n      \t\n      \t<div class=\"row\">\n          <oc-watchlist></oc-watchlist>\n          \n          <div class=\"col-md-9\">\n            \n            <oc-orders></oc-orders>\n            \n          </div>\n          \n      \t</div>\n      \t\n      </div>\n    \n    </div>\n  </div>\n\n</div>"
 
 /***/ },
 
@@ -1207,6 +1114,128 @@ module.exports = "<div class=\"panel-group col-md-3 watchlist\">\n  <div class=\
 
 module.exports = __webpack_require__(345);
 
+
+/***/ },
+
+/***/ 96:
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__contracts_market_quote__ = __webpack_require__(456);
+/* harmony export (binding) */ __webpack_require__.d(exports, "a", function() { return QuoteService; });
+
+
+var QuoteService = (function () {
+    //
+    // Construct!!
+    //
+    function QuoteService() {
+        this.quotes = {};
+        // Websocket Stuff
+        this.ws = null;
+        this.heartbeat = null;
+        this.missed_heartbeats = 0;
+        // Emitters
+        this.wsReconnecting = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["_20" /* EventEmitter */]();
+        this.marketQuotePushData = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["_20" /* EventEmitter */]();
+        // Setup standard websocket connection.
+        this.setupWebSocket();
+    }
+    // ------------------------ Websocket Stuff --------------------- //
+    //
+    // Setup normal data websocket connection.
+    //
+    QuoteService.prototype.setupWebSocket = function () {
+        var _this = this;
+        // Setup websocket
+        this.ws = new WebSocket(ws_server + '/ws/quotes');
+        // Websocket sent data to us.
+        this.ws.onmessage = function (e) {
+            var msg = JSON.parse(e.data);
+            // Is this a pong to our ping or some other return.
+            if (msg.type == 'pong') {
+                _this.missed_heartbeats--;
+            }
+            else {
+                // Send quote to angular component
+                switch (msg.type) {
+                    // Real-time market quote
+                    case 'trade':
+                        // Have we seen this quote before?
+                        if (typeof _this.quotes[msg.symbol] == "undefined") {
+                            _this.quotes[msg.symbol] = new __WEBPACK_IMPORTED_MODULE_1__contracts_market_quote__["a" /* MarketQuote */](msg.last, 0, 0, msg.symbol, '');
+                        }
+                        else {
+                            _this.quotes[msg.symbol].last = msg.last;
+                        }
+                        _this.marketQuotePushData.emit(_this.quotes[msg.symbol]);
+                        break;
+                    // DetailedQuotes refresh
+                    case 'DetailedQuotes:refresh':
+                        var msg_data = JSON.parse(msg.data);
+                        // Have we seen this quote before?
+                        if (typeof _this.quotes[msg_data.Symbol] == "undefined") {
+                            _this.quotes[msg_data.Symbol] = new __WEBPACK_IMPORTED_MODULE_1__contracts_market_quote__["a" /* MarketQuote */](msg_data.Last, msg_data.Open, msg_data.PrevClose, msg_data.Symbol, msg_data.Description);
+                        }
+                        else {
+                            _this.quotes[msg_data.Symbol].last = msg_data.Last;
+                            _this.quotes[msg_data.Symbol].open = msg_data.Open;
+                            _this.quotes[msg_data.Symbol].prev_close = msg_data.PrevClose;
+                            _this.quotes[msg_data.Symbol].description = msg_data.Description;
+                        }
+                        _this.marketQuotePushData.emit(_this.quotes[msg_data.Symbol]);
+                        break;
+                }
+            }
+        };
+        // On Websocket open
+        this.ws.onopen = function (e) {
+            // Send Access Token (Give a few moments to get started)
+            setTimeout(function () {
+                _this.ws.send(JSON.stringify({ type: 'set-access-token', data: { access_token: localStorage.getItem('access_token') } }));
+            }, 1000);
+            // Tell the UI we are connected
+            _this.wsReconnecting.emit(false);
+            // Setup the connection heartbeat
+            if (_this.heartbeat === null) {
+                _this.missed_heartbeats = 0;
+                _this.heartbeat = setInterval(function () {
+                    try {
+                        _this.missed_heartbeats++;
+                        if (_this.missed_heartbeats >= 5) {
+                            throw new Error('Too many missed heartbeats (quotes).');
+                        }
+                        _this.ws.send(JSON.stringify({ type: 'ping' }));
+                    }
+                    catch (e) {
+                        _this.wsReconnecting.emit(true);
+                        clearInterval(_this.heartbeat);
+                        _this.heartbeat = null;
+                        console.warn("Closing connection (quotes). Reason: " + e.message);
+                        _this.ws.close();
+                    }
+                }, 5000);
+            }
+            else {
+                clearInterval(_this.heartbeat);
+            }
+        };
+        // On Close
+        this.ws.onclose = function () {
+            // Kill Ping heartbeat.
+            clearInterval(_this.heartbeat);
+            _this.heartbeat = null;
+            _this.ws = null;
+            // Try to reconnect
+            _this.wsReconnecting.emit(true);
+            setTimeout(function () { _this.setupWebSocket(); }, 3 * 1000);
+        };
+    };
+    return QuoteService;
+}());
+/* End File */
+//# sourceMappingURL=/Users/spicer/Development/app.options.cafe/frontend/src/quote.service.js.map
 
 /***/ }
 

@@ -29,6 +29,7 @@ export class BrokerService {
   missed_heartbeats = 0;
   
   // Emitters - Pushers
+  wsReconnecting = new EventEmitter<boolean>();
   ordersPushData = new EventEmitter<Order[]>();
   userProfilePushData = new EventEmitter<UserProfile>();
   marketStatusPushData = new EventEmitter<MarketStatus>();
@@ -237,6 +238,9 @@ export class BrokerService {
         this.ws.send(JSON.stringify({ type: 'set-access-token', data: { access_token: localStorage.getItem('access_token') }}));
       }, 1000);
       
+      // Tell the UI we are connected
+      this.wsReconnecting.emit(false);
+      
       // Setup the connection heartbeat
       if(this.heartbeat === null) 
       {
@@ -256,7 +260,7 @@ export class BrokerService {
             
           } catch(e) 
           {
-            //$scope.ws_reconnecting = true;
+            this.wsReconnecting.emit(true);
             clearInterval(this.heartbeat);
             this.heartbeat = null;
             console.warn("Closing connection. Reason: " + e.message);
@@ -280,7 +284,7 @@ export class BrokerService {
       this.ws = null;
       
       // Try to reconnect
-      //$scope.ws_reconnecting = true;
+      this.wsReconnecting.emit(true);
       setTimeout(() => { this.setupWebSocket(); }, 3 * 1000);
     }        
     
