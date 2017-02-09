@@ -2,7 +2,7 @@
 
 echo ""
 echo ""
-echo \"Tailing the server log just to make sure everything went ok. (Control-C when done)\";
+echo "Tailing the server log just to make sure everything went ok. (Control-C when done)";
 echo ""
 echo ""
 
