@@ -19,10 +19,13 @@ ssh -t -p 9022 spicer@app.options.cafe "sudo -- sh -c '
   chown deploy:deploy /home/deploy/.env; 
   setcap CAP_NET_BIND_SERVICE=+eip /home/deploy/options_cafe.linux.amd64; 
   supervisorctl start app.options.cafe;
-  echo ""
-  echo ""
-  echo \"Tailing the server log just to make sure everything went ok. (Control-C when done)\";
-  echo ""
-  echo ""
-  tail -f  /home/deploy/logs/app.options.cafe.out.log
+  sleep 12;
+  echo \"\";
+  echo \"Checking out the server logs making sure there was no error on startup.\";
+  echo \"\";
+  tail /home/deploy/logs/app.options.cafe.out.log;
+  echo \"\";
+  echo \"\";
 '"
+
+echo "Deploy Done....."
