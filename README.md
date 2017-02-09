@@ -25,3 +25,7 @@ This is the options trading application we offer to customers. Angular2 front-en
 * Run this ```sudo mkdir /etc/letsencrypt``` ```sudo chmod 700 /etc/letsencrypt``` ```sudo chown deploy:deploy /etc/letsencrypt/```
 
 * When deploying this is useful for kick starting https://skitch.cloudmanic.com/Lightsail_1E4C5E91.png
+
+* Run this ```sudo rm -rf /root/.ssh```
+
+* Run this ```sudo passwd root``` This sets root's password. Maybe we do not want this. Who knows.....
