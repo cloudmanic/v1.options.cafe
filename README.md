@@ -1,6 +1,10 @@
-## app.options.cafe
+## App: app.options.cafe
 
 This is the options trading application we offer to customers. Angular2 front-end, Golang backend, Electron desktop application. 
+
+## Getting Up And Running For Development
+
+* Install (UPX)[https://upx.github.io/] ```brew install upx```
 
 ## Deploying With Ansible (and other actions by hand)
 
@@ -19,3 +23,5 @@ This is the options trading application we offer to customers. Angular2 front-en
 * Run this ```sudo systemctl enable supervisor.service```
 
 * Run this ```sudo mkdir /etc/letsencrypt``` ```sudo chmod 700 /etc/letsencrypt``` ```sudo chown deploy:deploy /etc/letsencrypt/```
+
+* When deploying this is useful for kick starting https://skitch.cloudmanic.com/Lightsail_1E4C5E91.png

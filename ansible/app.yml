@@ -48,22 +48,15 @@
             
     # Set logging
     - name: UFW - Set logging
-      ufw:
-        logging: on      
+      ufw: logging=on      
     
     # Allow all access to tcp port 80:
     - name: UFW - Allow all access to tcp port 80
-      ufw:
-        rule: allow
-        port: 80
-        proto: tcp
+      ufw: rule=allow port=80 proto=tcp
     
     # Allow all access to tcp port 443:
     - name: UFW - Allow all access to tcp port 443
-      ufw:
-        rule: allow
-        port: 443
-        proto: tcp
+      ufw: rule=allow port=443 proto=tcp
         
     # Allow ssh access from Spicer house, web1, and a VPN
     - name: UFW - Allow ssh access from a few ip addresses
@@ -75,6 +68,4 @@
           
     # Deny everything and enable UFW (this should go last)
     - name: Deny everything and enable UFW
-      ufw:
-        state: enabled
-        policy: deny         
+      ufw: state=enabled policy=deny         

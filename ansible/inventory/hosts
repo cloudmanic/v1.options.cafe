@@ -1,5 +1,5 @@
-app.options.cafe-bootstrap ansible_port=22 ansible_host=138.197.50.228 ansible_ssh_user=root
-app.options.cafe ansible_port=9022 ansible_host=138.197.50.228 ansible_ssh_user=spicer
+app.options.cafe-bootstrap ansible_port=22 ansible_host=app.options.cafe ansible_ssh_user=root
+app.options.cafe ansible_port=9022 ansible_host=app.options.cafe ansible_ssh_user=spicer
 
 [bootstrap]
 app.options.cafe-bootstrap
