@@ -2,10 +2,11 @@ import { EventEmitter } from '@angular/core';
 import { MarketQuote } from '../contracts/market-quote';
 
 declare var ws_server: any;
-declare var Fingerprint2: any;
+declare var ClientJS: any;
 
 export class QuoteService {
   
+  deviceId = ""
   quotes = {};
   
   // Websocket Stuff
@@ -22,13 +23,10 @@ export class QuoteService {
   //
   constructor() {
     
-    var self = this;
-
     // Set the device id
-    new Fingerprint2().get(function(result, components) {
-      self.deviceId = result;
-    });    
-
+    var clientJs = new ClientJS();
+    this.deviceId = clientJs.getFingerprint();
+ 
     // Setup standard websocket connection.
     this.setupWebSocket();    
 

@@ -14,7 +14,7 @@ declare var tradier_api_key: any;
 */
 
 declare var ws_server: any;
-declare var Fingerprint2: any;
+declare var ClientJS: any;
 
 export class BrokerService {
   
@@ -43,13 +43,10 @@ export class BrokerService {
   // Construct!!
   //
   constructor() {
-    
-    var self = this;
 
     // Set the device id
-    new Fingerprint2().get(function(result, components) {
-      self.deviceId = result;
-    });
+    var clientJs = new ClientJS();
+    this.deviceId = clientJs.getFingerprint();
 
     // Setup standard websocket connection.
     this.setupWebSocket();    
