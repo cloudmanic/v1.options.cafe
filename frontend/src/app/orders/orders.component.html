@@ -61,6 +61,7 @@
               <td class="text-center" [hidden]="row.Status != 'filled'">{{ row.AvgFillPrice | currency:'USD':true:'1.2-2' }}</td>
               <td class="text-center" [hidden]="row.Status != 'open'">---</td>
               <td class="text-center" [hidden]="row.Status != 'canceled'">---</td>
+              <td class="text-center" [hidden]="row.Status != 'expired'">---</td>
 
               <td class="text-center">{{ row.Status }}</td>
                                              
