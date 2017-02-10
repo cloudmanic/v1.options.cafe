@@ -29,24 +29,24 @@
 
             <tr *ngFor="let row of orders">
 
-              <td [hidden]="row.Class != 'equity'">{{ quotes[row.Symbol].description }}</td>
-              <td [hidden]="row.Class != 'equity'" class="text-center">{{ quotes[row.Symbol].last | currency:'USD':true:'1.2-2' }}</td>              
+              <td [hidden]="row.Class != 'equity'">{{ quotes[row.Symbol]?.description }}</td>
+              <td [hidden]="row.Class != 'equity'" class="text-center">{{ quotes[row.Symbol]?.last | currency:'USD':true:'1.2-2' }}</td>              
               <td [hidden]="row.Class != 'equity'" class="text-center">{{ row.Quantity }}</td>
 
 
               <td [hidden]="row.Class != 'multileg'">
-                <p *ngFor="let row2 of row.Legs">{{ quotes[row2.OptionSymbol].description }}</p>                
+                <p *ngFor="let row2 of row.Legs">{{ quotes[row2.OptionSymbol]?.description }}</p>                
               </td>
               <td [hidden]="row.Class != 'multileg'" class="text-center">
-                <p *ngFor="let row2 of row.Legs">{{ quotes[row2.OptionSymbol].last | currency:'USD':true:'1.2-2' }}</p>                
+                <p *ngFor="let row2 of row.Legs">{{ quotes[row2.OptionSymbol]?.last | currency:'USD':true:'1.2-2' }}</p>                
               </td>               
               <td [hidden]="row.Class != 'multileg'" class="text-center">
                 <p *ngFor="let row2 of row.Legs">{{ row2.Quantity }}</p>                
               </td>  
 
               
-              <td [hidden]="row.Class != 'option'">{{ quotes[row.Symbol].description }}</td>
-              <td [hidden]="row.Class != 'option'" class="text-center">{{ quotes[row.Symbol].last | currency:'USD':true:'1.2-2' }}</td> 
+              <td [hidden]="row.Class != 'option'">{{ quotes[row.Symbol]?.description }}</td>
+              <td [hidden]="row.Class != 'option'" class="text-center">{{ quotes[row.Symbol]?.last | currency:'USD':true:'1.2-2' }}</td> 
               <td [hidden]="row.Class != 'option'" class="text-center">{{ row.Quantity }}</td>
                             
   

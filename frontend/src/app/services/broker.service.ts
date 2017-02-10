@@ -199,12 +199,22 @@ export class BrokerService {
   // ------------------------ Push Data Back To Backend --------------------- //
   
   //
+  // Request the backend sends all data again. (often do this on state change or page change)
+  //
+  requestAllData() {
+    
+    this.ws.send(JSON.stringify({  type: 'refresh-all-data', data: {} }));   
+    
+  }
+  
+  //
   // Set the active account id.
   //
   setActiveAccountId(account_id) {
     
     this.activeAccount = account_id;
     this.activeAccountPushData.emit(account_id);
+    this.requestAllData();
   
   }
 

@@ -3,11 +3,9 @@ package main
 import (
   "fmt" 
   "sync"
-  "time"
-  "./models"  
+  "time" 
   "net/http"
   "encoding/json"
-  "github.com/tidwall/gjson"  
   "github.com/gorilla/websocket" 
 )
 
@@ -15,7 +13,8 @@ const writeWait = 5 * time.Second
 
 type Websockets struct { 
   connections map[*websocket.Conn]*WebsocketConnection
-  quotesConnections map[*websocket.Conn]*WebsocketConnection 
+  quotesConnections map[*websocket.Conn]*WebsocketConnection
+  controller WsController 
 }
 
 type WebsocketConnection struct {
@@ -136,38 +135,6 @@ func (t *Websockets) DoQuoteWebsocketConnection(w http.ResponseWriter, r *http.R
 }
 
 //
-// Authenticate Connection
-//
-func (t *Websockets) AuthenticateConnection(conn *WebsocketConnection, access_token string, device_id string) {
-    
-  var user models.User
-  
-  fmt.Println("Device Id : " + device_id)
-  
-  // Store the device id
-  conn.muDeviceId.Lock()
-  conn.deviceId = device_id
-  conn.muDeviceId.Unlock()  
-  
-  // See if this user is in our db.
-  if db.First(&user, "access_token = ?", access_token).RecordNotFound() {
-    fmt.Println("Access Token Not Found - Unable to Authenticate")
-    return
-  }
-  
-  fmt.Println("Authenticated : " + user.Email)
-  
-  // Store the user id from this connection because the auth was successful
-  conn.muUserId.Lock()
-  conn.userId = user.Id
-  conn.muUserId.Unlock()
-  
-  // Do the writing. 
-  go t.DoWsWriting(conn)
-  
-}
-
-//
 // Start a writer for the websocket connection.
 //
 func (t *Websockets) DoWsWriting(conn *WebsocketConnection) {
@@ -222,20 +189,7 @@ func (t *Websockets) DoWsReading(conn *WebsocketConnection) {
     }
     
     // Switch on the type of requests.
-    switch data["type"] {
-      
-      // Ping to make sure we are alive.
-      case "ping":
-        conn.writeChan <- "{\"type\":\"pong\"}"
-      break;
-
-      // The user authenticates.
-      case "set-access-token":
-        device_id := gjson.Get(string(message), "data.device_id").String()
-        access_token := gjson.Get(string(message), "data.access_token").String()
-        t.AuthenticateConnection(conn, access_token, device_id)
-      break;      
-    }
+    t.controller.ProcessRead(conn, string(message), data)
         
   }  
 }

@@ -19,9 +19,66 @@ type Fetch struct {
 
   muBalances sync.Mutex
   Balances []types.Balance  
+
+  muMarketStatus sync.Mutex
+  MarketStatus types.MarketStatus
+
+  muUserProfile sync.Mutex
+  UserProfile types.UserProfile
   
   broker tradier.Api
   user *UsersConnection
+}
+
+//
+// Send cached data up the websocket pipeline. 
+// This is useful for when the application wants
+// data between pooling of the broker.
+//
+func (t *Fetch) RefreshFromCached() error {
+  
+  // UserProfile - Send up websocket.
+  err := t.WriteWebSocket("UserProfile:refresh", t.UserProfile)
+  
+  if err != nil {
+    return fmt.Errorf("RefreshFromCached() WriteWebSocket - UserProfile:refresh : ", err)
+  }   
+  
+  // MarketStatus - Send up websocket.
+  err = t.WriteWebSocket("MarketStatus:refresh", t.MarketStatus)
+  
+  if err != nil {
+    return fmt.Errorf("RefreshFromCached() WriteWebSocket - MarketStatus:refresh : ", err)
+  } 
+  
+  // Orders - Send up websocket.
+  err = t.WriteWebSocket("Orders:refresh", t.Orders)
+  
+  if err != nil {
+    return fmt.Errorf("RefreshFromCached() WriteWebSocket - Orders:refresh : ", err)
+  }
+  
+  // Balances - Send up websocket.
+  err = t.WriteWebSocket("Balances:refresh", t.Balances)
+  
+  if err != nil {
+    return fmt.Errorf("RefreshFromCached() WriteWebSocket - Balances:refresh : ", err)
+  }     
+  
+  // Watchlists - Loop through and send data up websocket  
+  for _, row := range t.Watchlists {
+     
+    // Send up websocket.
+    err = t.WriteWebSocket("Watchlist:refresh", row)
+    
+    if err != nil {
+      return fmt.Errorf("RefreshFromCached() WriteWebSocket - Watchlist:refresh : ", err)
+    }    
+    
+  }  
+  
+  // No error
+  return nil
 }
 
 //
@@ -100,6 +157,11 @@ func (t *Fetch) GetMarketStatus() (error) {
     return err  
   }   
   
+  // Save the market status in the fetch object
+  t.muMarketStatus.Lock()
+  t.MarketStatus = marketStatus
+  t.muMarketStatus.Unlock()   
+  
   // Send up websocket.
   err = t.WriteWebSocket("MarketStatus:refresh", marketStatus)
   
@@ -125,6 +187,11 @@ func (t *Fetch) GetUserProfile() (error) {
   if err != nil {
     return err  
   }   
+  
+  // Save the orders in the fetch object
+  t.muUserProfile.Lock()
+  t.UserProfile = userProfile
+  t.muUserProfile.Unlock()    
   
   // Send up websocket.
   err = t.WriteWebSocket("UserProfile:refresh", userProfile)
@@ -277,7 +344,7 @@ func (t *Fetch) GetBalances() (error) {
   err = t.WriteWebSocket("Balances:refresh", balances)
   
   if err != nil {
-    return fmt.Errorf("GetBalances() : ", err)
+    return fmt.Errorf("GetBalances() WriteWebSocket : ", err)
   } 
   
   // Return Happy

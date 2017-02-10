@@ -33,7 +33,7 @@ func (t *BrokerFeed) Start() {
 // ---------------------- Tickers (polling) ---------------------------- //
 
 //
-// Ticker - User Profile : 5 seconds
+// Ticker - User Profile : 60 seconds
 //
 func (t *BrokerFeed) DoUserProfileTicker() {
 
@@ -47,8 +47,8 @@ func (t *BrokerFeed) DoUserProfileTicker() {
       fmt.Println(err)
     } 
     
-    // Sleep for 5 second.
-    time.Sleep(time.Second * 5)
+    // Sleep for 60 second.
+    time.Sleep(time.Second * 60)
      
   }
 
@@ -78,7 +78,7 @@ func (t *BrokerFeed) DoOrdersTicker() {
 }
 
 //
-// Ticker - Watchlists : 10 seconds
+// Ticker - Watchlists : 30 seconds
 //
 func (t *BrokerFeed) DoGetWatchlistsTicker() {
 
@@ -95,8 +95,8 @@ func (t *BrokerFeed) DoGetWatchlistsTicker() {
     symbols := t.fetch.GetActiveSymbols()
     t.fetch.broker.SetActiveSymbols(symbols)
     
-    // Sleep for 10 second.
-    time.Sleep(time.Second * 10)
+    // Sleep for 30 second.
+    time.Sleep(time.Second * 30)
         
   } 
 
