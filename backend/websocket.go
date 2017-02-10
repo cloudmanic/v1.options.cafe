@@ -101,7 +101,7 @@ func (t *Websockets) DoWebsocketConnection(w http.ResponseWriter, r *http.Reques
   defer conn.Close()  
 
   // Add the connection to our connection array
-  r_con := WebsocketConnection{ connection: conn, writeChan: make(chan string) }
+  r_con := WebsocketConnection{ connection: conn, writeChan: make(chan string, 100) }
     
   t.connections[conn] = &r_con 
   
@@ -135,7 +135,7 @@ func (t *Websockets) DoQuoteWebsocketConnection(w http.ResponseWriter, r *http.R
   defer conn.Close()
 	  
   // Add the connection to our connection array
-  r_con := WebsocketConnection{connection: conn, writeChan: make(chan string)}
+  r_con := WebsocketConnection{connection: conn, writeChan: make(chan string, 1000)}
   
   t.quotesConnections[conn] = &r_con
   
@@ -264,8 +264,15 @@ func (t *Websockets) DoWsDispatch(user *UsersConnection) {
           
           // We only care about the user we passed in.
           if t.connections[i].userId == user.UserId {
+            
+            select {
               
-            t.connections[i].writeChan <- message
+              case t.connections[i].writeChan <- message:
+ 	
+              default:
+                fmt.Println("Channel full. Discarding value (Core channel)")   
+                          
+            }
             
           }
           
@@ -279,7 +286,14 @@ func (t *Websockets) DoWsDispatch(user *UsersConnection) {
           // We only care about the user we passed in.
           if t.quotesConnections[i].userId == user.UserId {
             
-            t.quotesConnections[i].writeChan <- message
+             select {
+              
+              case t.quotesConnections[i].writeChan <- message:
+ 	
+              default:
+                fmt.Println("Channel full. Discarding value (Quotes channel)")   
+                          
+            }           
             
           }
           
