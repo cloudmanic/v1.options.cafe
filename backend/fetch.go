@@ -11,12 +11,14 @@ import (
 )
 
 type Fetch struct {
-
   muOrders sync.Mutex
   Orders []types.Order
 
   muWatchlists sync.Mutex
   Watchlists []types.Watchlist
+
+  muBalances sync.Mutex
+  Balances []types.Balance  
   
   broker tradier.Api
   user *UsersConnection
@@ -147,15 +149,15 @@ func (t *Fetch) GetOrders() (error) {
 
   // Make API call
   orders, err := t.broker.GetOrders()
+ 
+  if err != nil {
+    return err  
+  }    
   
   // Save the orders in the fetch object
   t.muOrders.Lock()
   t.Orders = orders
-  t.muOrders.Unlock()
-  
-  if err != nil {
-    return err  
-  }   
+  t.muOrders.Unlock() 
   
   // Send up websocket.
   err = t.WriteWebSocket("Orders:refresh", orders)
@@ -253,42 +255,35 @@ func (t *Fetch) GetWatchlists() (error) {
   
 }
 
-/*
+// ----------------- Balances ------------------- //
+
 //
-// Do get a watchlist
+// Do get Balances
 //
-func (t *Fetch) GetWatchlist(listName string) (error) {
-	  
-  // Get default watch list.
-  watchlist, err := t.broker.GetWatchList(listName)
-    
+func (t *Fetch) GetBalances() (error) {
+
+  balances, err := t.broker.GetBalances()
+  
   if err != nil {
-    return fmt.Errorf("GetWatchlist() : ", err)
+    return err  
   } 
   
-  // Update our list of active symbols.
-  t.activeSymbols = make([]string, 0)
-  
-  t.muActiveSymbols.Lock()
-  
-  for _, row := range watchlist.Symbols {
-    t.activeSymbols = append(t.activeSymbols, row.Name)
-  }
-  
-  t.muActiveSymbols.Unlock()
+  // Save the balances in the fetch object
+  t.muBalances.Lock()
+  t.Balances = balances
+  t.muBalances.Unlock()   
   
   // Send up websocket.
-  err = t.WriteWebSocket("Watchlist:refresh", watchlist)
- 
+  err = t.WriteWebSocket("Balances:refresh", balances)
+  
   if err != nil {
-    return fmt.Errorf("GetWatchlist() WriteWebSocket : ", err)
-  }   
+    return fmt.Errorf("GetBalances() : ", err)
+  } 
   
   // Return Happy
-  return nil    
+  return nil
   
 }
-*/
 
 // ----------------- Helper Functions ---------------- //
 

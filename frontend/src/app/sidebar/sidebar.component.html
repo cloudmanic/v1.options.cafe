@@ -52,26 +52,26 @@
 			
 			<div class="widget-body">
   			<strong>Total Account Value</strong> <br />  			
-  			<span>$9,781.11</span>
+  			<span>{{ balance?.AccountValue | currency:'USD':true:'1.2-2' }}</span>
 			</div>
 			
       <br />
 			<div class="widget-body">
   			<strong>Total Cash</strong> <br />  			
-  			<span>$9,886.11</span>
+  			<span>{{ balance?.TotalCash | currency:'USD':true:'1.2-2' }}</span>
 			</div>
 						
 			<br />
 			
 			<div class="widget-body">
   			<strong>Option Buying Power</strong> <br />  			
-  			<span>$7,086.11</span>
+  			<span>{{ balance?.OptionBuyingPower | currency:'USD':true:'1.2-2' }}</span>
 			</div>
 
       <br />
 			<div class="widget-body">
   			<strong>Stock Buying Power</strong> <br />  			
-  			<span>$14,172.22</span>
+  			<span>{{ balance?.StockBuyingPower | currency:'USD':true:'1.2-2' }}</span>
 			</div>
 						
 		</li>

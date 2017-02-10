@@ -23,7 +23,10 @@ type WebsocketConnection struct {
   connection *websocket.Conn
   
   muUserId sync.Mutex
-  userId uint  
+  userId uint 
+  
+  muDeviceId sync.Mutex
+  deviceId string    
 }
 
 type TradierApiKeyStruct struct {
@@ -143,10 +146,18 @@ func (t *Websockets) DoQuoteWebsocketConnection(w http.ResponseWriter, r *http.R
 //
 // Authenticate Connection
 //
-func (t *Websockets) AuthenticateConnection(conn *WebsocketConnection, access_token string) {
+func (t *Websockets) AuthenticateConnection(conn *WebsocketConnection, access_token string, device_id string) {
     
   var user models.User
   
+  fmt.Println("Device Id : " + device_id)
+  
+  // Store the device id
+  conn.muDeviceId.Lock()
+  conn.deviceId = device_id
+  conn.muDeviceId.Unlock()  
+  
+  // See if this user is in our db.
   if db.First(&user, "access_token = ?", access_token).RecordNotFound() {
     fmt.Println("Access Token Not Found - Unable to Authenticate")
     return
@@ -200,7 +211,7 @@ func (t *Websockets) DoWsReading(conn *WebsocketConnection) {
 				delete(t.connections, conn.connection)
 			}    
       
-      fmt.Println("Client Disconnected...")
+      fmt.Println("Client Disconnected (" + conn.deviceId + ") ...")
       
       break
     }
@@ -228,8 +239,9 @@ func (t *Websockets) DoWsReading(conn *WebsocketConnection) {
 
       // The user authenticates.
       case "set-access-token":
+        device_id := gjson.Get(string(message), "data.device_id").String()
         access_token := gjson.Get(string(message), "data.access_token").String()
-        t.AuthenticateConnection(conn, access_token)
+        t.AuthenticateConnection(conn, access_token, device_id)
       break;      
     }
         

@@ -1,5 +1,6 @@
 import { EventEmitter } from '@angular/core';
 import { Order } from '../contracts/order';
+import { Balance } from '../contracts/balance';
 import { OrderLeg } from '../contracts/order-leg';
 import { Watchlist } from '../contracts/watchlist';
 import { WatchlistItems } from '../contracts/watchlist-items';
@@ -13,10 +14,11 @@ declare var tradier_api_key: any;
 */
 
 declare var ws_server: any;
-declare var tradier_api_key: any;
+declare var Fingerprint2: any;
 
 export class BrokerService {
   
+  deviceId = ""
   activeAccount = ""
   
   // Data objects
@@ -31,6 +33,7 @@ export class BrokerService {
   // Emitters - Pushers
   wsReconnecting = new EventEmitter<boolean>();
   ordersPushData = new EventEmitter<Order[]>();
+  balancesPushData = new EventEmitter<Balance[]>();
   userProfilePushData = new EventEmitter<UserProfile>();
   marketStatusPushData = new EventEmitter<MarketStatus>();
   watchlistPushData = new EventEmitter<Watchlist>();
@@ -40,6 +43,13 @@ export class BrokerService {
   // Construct!!
   //
   constructor() {
+    
+    var self = this;
+
+    // Set the device id
+    new Fingerprint2().get(function(result, components) {
+      self.deviceId = result;
+    });
 
     // Setup standard websocket connection.
     this.setupWebSocket();    
@@ -81,6 +91,28 @@ export class BrokerService {
     this.marketStatus.description = data.Description;
     this.marketStatusPushData.emit(this.marketStatus);
   }
+  
+  //
+  // Do Balances Refresh
+  //
+  doBalancesRefresh (data) {
+    
+    var balances = [];
+    
+    for(var i = 0; i < data.length; i++)
+    {
+      balances.push(new Balance(
+        data[i].AccountNumber,
+        data[i].AccountValue,
+        data[i].TotalCash,
+        data[i].OptionBuyingPower,
+        data[i].StockBuyingPower        
+      ));               
+    }  
+
+    this.balancesPushData.emit(balances);
+    
+  }  
   
   //
   // Do watchlist Refresh
@@ -226,6 +258,11 @@ export class BrokerService {
             this.doOrdersRefresh(msg_data);     
           break;
           
+          // Balances refresh
+          case 'Balances:refresh':
+            this.doBalancesRefresh(msg_data);
+          break;
+          
         }
       }      
     }
@@ -235,7 +272,10 @@ export class BrokerService {
     {      
       // Send Access Token (Give a few moments to get started)
       setTimeout(() => { 
-        this.ws.send(JSON.stringify({ type: 'set-access-token', data: { access_token: localStorage.getItem('access_token') }}));
+        this.ws.send(JSON.stringify({ 
+          type: 'set-access-token', 
+          data: { access_token: localStorage.getItem('access_token'), device_id: this.deviceId }
+        }));
       }, 1000);
       
       // Tell the UI we are connected

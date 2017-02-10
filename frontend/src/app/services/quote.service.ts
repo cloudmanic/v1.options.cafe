@@ -2,7 +2,7 @@ import { EventEmitter } from '@angular/core';
 import { MarketQuote } from '../contracts/market-quote';
 
 declare var ws_server: any;
-declare var tradier_api_key: any;
+declare var Fingerprint2: any;
 
 export class QuoteService {
   
@@ -21,6 +21,13 @@ export class QuoteService {
   // Construct!!
   //
   constructor() {
+    
+    var self = this;
+
+    // Set the device id
+    new Fingerprint2().get(function(result, components) {
+      self.deviceId = result;
+    });    
 
     // Setup standard websocket connection.
     this.setupWebSocket();    
@@ -93,12 +100,15 @@ export class QuoteService {
     
     // On Websocket open
     this.ws.onopen = (e) =>
-    {           
+    {    
       // Send Access Token (Give a few moments to get started)
       setTimeout(() => { 
-        this.ws.send(JSON.stringify({ type: 'set-access-token', data: { access_token: localStorage.getItem('access_token') }}));
+        this.ws.send(JSON.stringify({ 
+          type: 'set-access-token', 
+          data: { access_token: localStorage.getItem('access_token'), device_id: this.deviceId }
+        }));
       }, 1000);      
-      
+          
       // Tell the UI we are connected
       this.wsReconnecting.emit(false);      
       

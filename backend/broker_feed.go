@@ -26,6 +26,7 @@ func (t *BrokerFeed) Start() {
   go t.DoGetWatchlistsTicker()
   go t.DoGetDetailedQuotes()
   go t.DoGetMarketStatusTicker()
+  go t.DoGetBalancesTicker()
    
 }
 
@@ -123,7 +124,7 @@ func (t *BrokerFeed) DoGetDetailedQuotes() {
 }
 
 //
-// Ticker - Get GetMarketStatus : 10 seconds
+// Ticker - Get GetMarketStatus : 5 seconds
 //
 func (t *BrokerFeed) DoGetMarketStatusTicker() {
 
@@ -139,7 +140,29 @@ func (t *BrokerFeed) DoGetMarketStatusTicker() {
     }       
     
     // Sleep for 10 second.
-    time.Sleep(time.Second * 10)
+    time.Sleep(time.Second * 5)
+     
+  }
+  
+}
+
+// Ticker - Get GetBalances : 5 seconds
+//
+func (t *BrokerFeed) DoGetBalancesTicker() {
+
+  var err error
+
+  for {
+       
+    // Load up market status. 
+    err = t.fetch.GetBalances()
+    
+    if err != nil {
+      fmt.Println(err)
+    }       
+    
+    // Sleep for 5 second.
+    time.Sleep(time.Second * 5)
      
   }
   
