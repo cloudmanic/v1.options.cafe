@@ -59,16 +59,8 @@ func (t *Websockets) CheckOrigin(r *http.Request) bool {
   if origin == "http://localhost:7652" {
     return true;
   } 
-  
-  if origin == "https://s3.amazonaws.com" {
-    return true;
-  }  
 
   if origin == "https://app.options.cafe" {
-    return true;
-  } 
-
-  if origin == "https://cdn.options.cafe" {
     return true;
   } 
 
