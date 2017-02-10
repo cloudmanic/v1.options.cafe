@@ -56,12 +56,15 @@
               <td class="text-center" [hidden]="row.Type != 'debit'">{{ row.Price | currency:'USD':true:'1.2-2' }}</td>
               <td class="text-center" [hidden]="row.Type != 'credit'">{{ row.Price | currency:'USD':true:'1.2-2' }}</td>
               <td class="text-center" [hidden]="row.Type != 'stop'">{{ row.StopPrice | currency:'USD':true:'1.2-2' }}</td>
+              <td class="text-center" [hidden]="row.Type != 'limit'">{{ row.Price | currency:'USD':true:'1.2-2' }}</td> 
               <td class="text-center" [hidden]="row.Type != 'market'">---</td>              
 
               <td class="text-center" [hidden]="row.Status != 'filled'">{{ row.AvgFillPrice | currency:'USD':true:'1.2-2' }}</td>
               <td class="text-center" [hidden]="row.Status != 'open'">---</td>
               <td class="text-center" [hidden]="row.Status != 'canceled'">---</td>
               <td class="text-center" [hidden]="row.Status != 'expired'">---</td>
+              <td class="text-center" [hidden]="row.Status != 'rejected'">---</td>
+              <td class="text-center" [hidden]="row.Status != 'pending'">---</td>              
 
               <td class="text-center">{{ row.Status }}</td>
                                              
