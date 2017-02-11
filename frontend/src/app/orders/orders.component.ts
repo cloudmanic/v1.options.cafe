@@ -30,8 +30,6 @@ export class OrdersComponent implements OnInit {
     // Subscribe to data updates from the broker - Orders
     this.broker.ordersPushData.subscribe(data => {
       
-      //console.log(data);
-      
       var rt = []
       
       // Filter - We only one the accounts that are active.
@@ -46,12 +44,12 @@ export class OrdersComponent implements OnInit {
       // Set order data
       this.orders = rt;      
       this.changeDetect.detectChanges();
+      
     });    
     
     // Subscribe to when the active account changes
     this.broker.activeAccountPushData.subscribe(data => {
       this.activeAccount = data;
-      this.orders = [];
       this.changeDetect.detectChanges();
     });
     
