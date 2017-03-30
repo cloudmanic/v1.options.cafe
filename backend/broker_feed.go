@@ -3,7 +3,8 @@ package main
 import (
   "fmt"
   "time"
-  "./brokers/tradier" 
+  "./brokers/tradier"
+  "github.com/stvp/rollbar" 
 )
 
 type BrokerFeed struct {
@@ -45,6 +46,7 @@ func (t *BrokerFeed) DoUserProfileTicker() {
 
     if err != nil {
       fmt.Println(err)
+      rollbar.Error(rollbar.ERR, err)
     } 
     
     // Sleep for 60 second.
@@ -68,6 +70,7 @@ func (t *BrokerFeed) DoOrdersTicker() {
     
     if err != nil {
       fmt.Println(err)
+      rollbar.Error(rollbar.ERR, err)
     }       
     
     // Sleep for 3 second.
@@ -89,6 +92,7 @@ func (t *BrokerFeed) DoGetWatchlistsTicker() {
   
     if err != nil {
       fmt.Println(err)
+      rollbar.Error(rollbar.ERR, err)
     }
     
     // Update any active symbols
@@ -114,6 +118,7 @@ func (t *BrokerFeed) DoGetDetailedQuotes() {
   
     if err != nil {
       fmt.Println(err)
+      rollbar.Error(rollbar.ERR, err)
     }
     
     // Sleep for 1 second
@@ -137,6 +142,7 @@ func (t *BrokerFeed) DoGetMarketStatusTicker() {
     
     if err != nil {
       fmt.Println(err)
+      rollbar.Error(rollbar.ERR, err)
     }       
     
     // Sleep for 10 second.
@@ -159,6 +165,7 @@ func (t *BrokerFeed) DoGetBalancesTicker() {
     
     if err != nil {
       fmt.Println(err)
+      rollbar.Error(rollbar.ERR, err)
     }       
     
     // Sleep for 5 second.

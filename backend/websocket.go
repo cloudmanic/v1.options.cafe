@@ -6,6 +6,7 @@ import (
   "time" 
   "net/http"
   "encoding/json"
+  "github.com/stvp/rollbar"
   "github.com/gorilla/websocket" 
 )
 
@@ -116,6 +117,7 @@ func (t *Websockets) DoQuoteWebsocketConnection(w http.ResponseWriter, r *http.R
   conn, err := upgrader.Upgrade(w, r, nil)
 
   if err != nil {
+    rollbar.Error(rollbar.ERR, err)
     fmt.Println(err)
     return
   }
@@ -184,7 +186,8 @@ func (t *Websockets) DoWsReading(conn *WebsocketConnection) {
     // Json decode message.
     var data map[string]interface{}
     if err := json.Unmarshal(message, &data); err != nil {
-			println("json:", err)
+      rollbar.Error(rollbar.ERR, err)
+			fmt.Println("json:", err)
       break      
     }
     
@@ -216,6 +219,7 @@ func (t *Websockets) DoWsDispatch(user *UsersConnection) {
               case t.connections[i].writeChan <- message:
  	
               default:
+                rollbar.Message("error", "Channel full. Discarding value (Core channel)")
                 fmt.Println("Channel full. Discarding value (Core channel)")   
                           
             }
@@ -237,6 +241,7 @@ func (t *Websockets) DoWsDispatch(user *UsersConnection) {
               case t.quotesConnections[i].writeChan <- message:
  	
               default:
+                rollbar.Message("error", "Channel full. Discarding value (Quotes channel)")
                 fmt.Println("Channel full. Discarding value (Quotes channel)")   
                           
             }           

@@ -11,6 +11,7 @@ import (
   "./models"
   "./library/https"
   "./brokers/tradier"
+  "github.com/stvp/rollbar"
   "github.com/jinzhu/gorm"
   "github.com/joho/godotenv"
   "github.com/gorilla/websocket"
@@ -47,15 +48,22 @@ func main() {
    
   // Setup CPU stuff.
   runtime.GOMAXPROCS(runtime.NumCPU())  
-   
+         
   // Load .env file 
   err := godotenv.Load()
   if err != nil {
     log.Fatal("Error loading .env file")
   }        
     
+  // Setup Rollbar
+  rollbar.Token = os.Getenv("ROLLBAR_TOKEN")
+  rollbar.Environment = os.Getenv("ROLLBAR_ENV")    
+    
   // Lets get started
   fmt.Println("App Started: " + os.Getenv("APP_ENV"))    
+  
+  // Message that the app has started
+  rollbar.Message("info", "App started.")
     
   // Connect to database and run Migrations.
   db = DbConnect()
@@ -178,6 +186,7 @@ func DbConnect() (*gorm.DB) {
   conn, err := gorm.Open("mysql", os.Getenv("DB_USERNAME") + ":" + os.Getenv("DB_PASSWORD") + "@/" + os.Getenv("DB_DATABASE") + "?charset=utf8&parseTime=True&loc=Local")
   
   if err != nil {
+    rollbar.Error(rollbar.ERR, err)
     panic("failed to connect database")
   }
 

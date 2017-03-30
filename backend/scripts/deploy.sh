@@ -1,5 +1,10 @@
 #!/bin/bash
 
+ACCESS_TOKEN=20c0603580344cd68a99260b634be30e
+ENVIRONMENT=production
+LOCAL_USERNAME=`whoami`
+REVISION=`git log -n 1 --pretty=format:"%H"`
+
 echo "Building options_cafe.linux.amd64..."
 
 ./build.sh
@@ -27,5 +32,17 @@ ssh -t -p 9022 spicer@app.options.cafe "sudo -- sh -c '
   echo \"\";
   echo \"\";
 '"
+
+# Tell Rollbar about this.
+
+echo "Telling rollbar about this deploy"
+
+curl https://api.rollbar.com/api/1/deploy/ \
+  -F access_token=$ACCESS_TOKEN \
+  -F environment=$ENVIRONMENT \
+  -F revision=$REVISION \
+  -F local_username=$LOCAL_USERNAME
+
+echo ""
 
 echo "Deploy Done....."
