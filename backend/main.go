@@ -8,23 +8,20 @@ import (
   "time"
   "runtime"
   "net/http"
-  "./models"
-  "./library/https"
-  "./brokers/tradier"
   "github.com/stvp/rollbar"
   "github.com/jinzhu/gorm"
   "github.com/joho/godotenv"
   "github.com/gorilla/websocket"
   "golang.org/x/crypto/acme/autocert"
   _ "github.com/go-sql-driver/mysql"
+  "app.options.cafe/backend/models"
+  "app.options.cafe/backend/library/https"
+  "app.options.cafe/backend/brokers/tradier"  
 )
 
 var ( 
   mu sync.Mutex
   db *gorm.DB
-  
-  // Setup helper "classes"
-  archiveFeed = &ArchiveFeed{}
   
   // Websocket connections.
   ws = Websockets{      

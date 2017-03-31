@@ -6,8 +6,8 @@ import (
   "sync"
 	"strings"    
   "encoding/json"
-  "./brokers/types"
-  "./brokers/tradier"  
+  "app.options.cafe/backend/brokers/types"
+  "app.options.cafe/backend/brokers/tradier"  
 )
 
 type Fetch struct {

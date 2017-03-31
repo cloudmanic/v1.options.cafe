@@ -1,20 +1,19 @@
-package main
+package archive
 
 import (
   "fmt"
   "time"
-  "./models"
-  "./brokers/types"
-  "github.com/stvp/rollbar"   
+  "github.com/jinzhu/gorm"  
+  "github.com/stvp/rollbar"
+  "app.options.cafe/backend/models"
+  "app.options.cafe/backend/brokers/types"     
 )
-
-type ArchiveFeed struct {}
 
 //
 // Pass in all orders and archive them by putting them into our database.
 // We only archive orders that are filled. TODO: Review partially_filled orders.
 //
-func (t * ArchiveFeed) StoreOrders(orders []types.Order, userId uint) (error) {
+func StoreOrders(db *gorm.DB, orders []types.Order, userId uint) (error) {
   
   // Loop through the orders and process
   for _, row := range orders {

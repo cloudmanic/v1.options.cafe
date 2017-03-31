@@ -6,7 +6,7 @@ import (
   "net/http"
   "io/ioutil"
   "encoding/json"
-  "../types"  
+  "app.options.cafe/backend/brokers/types" 
 )
 
 //

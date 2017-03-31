@@ -3,8 +3,9 @@ package main
 import (
   "fmt"
   "time"
-  "./brokers/types"
-  "./brokers/tradier"  
+  "app.options.cafe/backend/brokers/types"
+  "app.options.cafe/backend/brokers/tradier"
+  "app.options.cafe/backend/library/archive"  
 )
 
 type BrokerFeed struct {
@@ -77,7 +78,7 @@ func (t *BrokerFeed) DoOrdersArchive() {
     }       
 
     // Store the orders in our database
-    archiveFeed.StoreOrders(orders, t.userId)
+    archive.StoreOrders(db, orders, t.userId)
 
     // Clear memory
     orders = nil
