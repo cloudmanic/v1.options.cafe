@@ -44,10 +44,7 @@ func (t * Api) GetUserProfile() (types.UserProfile, error) {
   // Bust open the Profile.
   var ws map[string]types.TmpUserProfile 
   
-  if err := json.Unmarshal(body, &ws); err != nil {
-    
-    fmt.Println(err)
-    
+  if err := json.Unmarshal(body, &ws); err != nil {    
     return user, err 
   }
   

@@ -208,7 +208,7 @@ func (t *Fetch) GetUserProfile() (error) {
 // ----------------- Orders ------------------- //
 
 //
-// Do get user profile
+// Do get orders
 //
 func (t *Fetch) GetOrders() (error) {
 
@@ -230,11 +230,30 @@ func (t *Fetch) GetOrders() (error) {
   err = t.WriteWebSocket("Orders:refresh", orders)
   
   if err != nil {
-    return fmt.Errorf("GetUserProfile() GetOrders : ", err)
+    return fmt.Errorf("Fetch.GetOrders() : ", err)
   }   
   
   // Return Happy
   return nil
+  
+}
+
+//
+// Do get all orders. We return the orders instead of sending it up the websocket
+//
+func (t *Fetch) GetAllOrders() ([]types.Order, error) {
+
+  var orders []types.Order
+
+  // Make API call
+  orders, err := t.broker.GetAllOrders()
+
+  if err != nil {
+    return orders, fmt.Errorf("Fetch.GetAllOrders() : ", err)
+  }   
+  
+  // Return Happy
+  return orders, nil
   
 }
 
@@ -255,7 +274,7 @@ func (t *Fetch) GetActiveSymbolsDetailedQuotes() (error) {
   }   
   
   // Loop through the quotes sending them up the websocket channel
-  for _, row := range detailedQuotes{
+  for _, row := range detailedQuotes {
 
     // Convert to a json string.
     data_json, err := json.Marshal(row)

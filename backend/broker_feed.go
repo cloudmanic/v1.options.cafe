@@ -3,7 +3,8 @@ package main
 import (
   "fmt"
   "time"
-  "./brokers/tradier"
+  "./brokers/types"
+  "./brokers/tradier"  
 )
 
 type BrokerFeed struct {
@@ -27,6 +28,9 @@ func (t *BrokerFeed) Start() {
   go t.DoGetDetailedQuotes()
   go t.DoGetMarketStatusTicker()
   go t.DoGetBalancesTicker()
+  
+  // Do Archive Calls
+  go t.DoOrdersArchive()
    
 }
 
@@ -51,6 +55,36 @@ func (t *BrokerFeed) DoUserProfileTicker() {
     time.Sleep(time.Second * 60)
      
   }
+
+}
+
+//
+// Ticker - Orders Archive : 24 hours
+//
+func (t *BrokerFeed) DoOrdersArchive() {
+
+  var err error
+  var orders []types.Order
+
+  for {
+    
+    // Load up all orders 
+    orders, err = t.fetch.GetAllOrders()
+        
+    if err != nil {
+      fmt.Println(err)
+    }       
+
+    // Store the orders in our database
+    archiveFeed.StoreOrders(orders)
+
+    // Clear memory
+    orders = nil
+     
+    // Sleep for 24 hours
+    time.Sleep(time.Hour * 24)
+        
+  } 
 
 }
 

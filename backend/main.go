@@ -23,6 +23,9 @@ var (
   mu sync.Mutex
   db *gorm.DB
   
+  // Setup helper "classes"
+  archiveFeed = &ArchiveFeed{}
+  
   // Websocket connections.
   ws = Websockets{      
     connections: make(map[*websocket.Conn]*WebsocketConnection),
@@ -137,6 +140,7 @@ func StartUserConnection(user models.User) {
 
   // Make sure we do not already have this licenseKey going.
   if _, ok := userConnections[user.Id]; ok {
+    rollbar.Message("info", "User Connection Is Already Going : " + user.Email)
     fmt.Println("User Connection Is Already Going : " + user.Email)
     return
   }
@@ -157,6 +161,7 @@ func StartUserConnection(user models.User) {
     
     // Need an access token to continue
     if len(row.AccessToken) <= 0 {
+      rollbar.Message("info", "User Connection (Brokers) No Access Token Found : " + user.Email)
       fmt.Println("User Connection (Brokers) No Access Token Found : " + user.Email)
       continue
     }
@@ -183,7 +188,7 @@ func DbConnect() (*gorm.DB) {
   var err error
     
   // Connect to Mysql
-  conn, err := gorm.Open("mysql", os.Getenv("DB_USERNAME") + ":" + os.Getenv("DB_PASSWORD") + "@/" + os.Getenv("DB_DATABASE") + "?charset=utf8&parseTime=True&loc=Local")
+  conn, err := gorm.Open("mysql", os.Getenv("DB_USERNAME") + ":" + os.Getenv("DB_PASSWORD") + "@" + os.Getenv("DB_HOST") + "/" + os.Getenv("DB_DATABASE") + "?charset=utf8&parseTime=True&loc=Local")
   
   if err != nil {
     rollbar.Error(rollbar.ERR, err)
