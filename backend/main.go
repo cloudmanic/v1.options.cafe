@@ -171,7 +171,7 @@ func StartUserConnection(user models.User) {
     var fetch = Fetch{ broker: broker, user: userConnections[user.Id] }
     
     // Set Broker hash and lets get going.
-    userConnections[user.Id].BrokerConnections[row.Id] = &BrokerFeed{ fetch: fetch }
+    userConnections[user.Id].BrokerConnections[row.Id] = &BrokerFeed{ fetch: fetch, userId: user.Id }
   
     // Start the broker feed.
     userConnections[user.Id].BrokerConnections[row.Id].Start()     
@@ -202,6 +202,8 @@ func DbConnect() (*gorm.DB) {
   // Migrate the schemas (one per table).
   conn.AutoMigrate(&models.User{})
   conn.AutoMigrate(&models.Broker{})
+  conn.AutoMigrate(&models.Order{})
+  conn.AutoMigrate(&models.OrderLeg{})  
   
   return conn   
 }

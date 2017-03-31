@@ -8,6 +8,7 @@ import (
 )
 
 type BrokerFeed struct {
+  userId uint
   fetch Fetch   
   detailedQuotes []tradier.Quote
 }
@@ -76,7 +77,7 @@ func (t *BrokerFeed) DoOrdersArchive() {
     }       
 
     // Store the orders in our database
-    archiveFeed.StoreOrders(orders)
+    archiveFeed.StoreOrders(orders, t.userId)
 
     // Clear memory
     orders = nil
