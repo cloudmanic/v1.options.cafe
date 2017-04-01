@@ -4,7 +4,9 @@ This is the options trading application we offer to customers. Angular2 front-en
 
 ## Getting Up And Running For Development
 
-* Install (UPX)[https://upx.github.io/] ```brew install upx```
+* Make sure the GoPATH is setup. This is what I have set ```export GOPATH=$HOME/Development/golang:$HOME/Development```
+
+* In the case of ```$HOME/Development``` Make sure you add a symlink with src. ```ln -s /Users/spicer/Development /Users/spicer/Development/src```
 
 ## Deploying With Ansible (and other actions by hand)
 

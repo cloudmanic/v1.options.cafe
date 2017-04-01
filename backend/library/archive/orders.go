@@ -64,7 +64,7 @@ func StoreOrders(db *gorm.DB, orders []types.Order, userId uint) (error) {
                 Type: row.Type,
                 Symbol: row.Symbol,
                 Side: row.Side,
-                Quantity: row.Quantity,
+                Qty: int(row.Quantity),
                 Status: row.Status,
                 Duration: row.Duration,
                 Price: row.Price,
@@ -76,6 +76,7 @@ func StoreOrders(db *gorm.DB, orders []types.Order, userId uint) (error) {
                 CreateDate: createDate, 
                 TransactionDate: transactionDate,
                 Class: row.Class,
+                PositionReviewed: "No",
                 NumLegs: row.NumLegs,        
               }
     
@@ -113,7 +114,7 @@ func StoreOrders(db *gorm.DB, orders []types.Order, userId uint) (error) {
                   Symbol: row2.Symbol,
                   OptionSymbol: row2.OptionSymbol,
                   Side: row2.Side,
-                  Quantity: row2.Quantity,
+                  Qty: int(row2.Quantity),
                   Status: row2.Status,
                   Duration: row2.Duration,
                   AvgFillPrice: row2.AvgFillPrice,
@@ -131,6 +132,9 @@ func StoreOrders(db *gorm.DB, orders []types.Order, userId uint) (error) {
     }
     
   }
+  
+  // Now build out our positions database table based on past orders.
+  StorePositions(db, userId)
    
   // Return Happy
   return nil

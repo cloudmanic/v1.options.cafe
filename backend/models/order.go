@@ -14,19 +14,21 @@ type Order struct {
   Type string
   Symbol string
   Side string
-  Quantity float64
+  Qty int
   Status string
   Duration string
-  Price float64
-  AvgFillPrice float64 
-  ExecQuantity float64 
-  LastFillPrice float64
-  LastFillQuantity float64
-  RemainingQuantity float64
+  Price float64 `sql:"type:DECIMAL(12,2)"`
+  AvgFillPrice float64 `sql:"type:DECIMAL(12,2)"` 
+  ExecQuantity float64 `sql:"type:DECIMAL(12,2)"` 
+  LastFillPrice float64 `sql:"type:DECIMAL(12,2)"`
+  LastFillQuantity float64 `sql:"type:DECIMAL(12,2)"`
+  RemainingQuantity float64 `sql:"type:DECIMAL(12,2)"`
   CreateDate time.Time
   TransactionDate time.Time
   Class string
   NumLegs int
+  PositionReviewed string `sql:"not null;type:ENUM('No', 'Yes');default:'No'"`
+  Legs []OrderLeg
 }
 
 type OrderLeg struct {
@@ -39,14 +41,14 @@ type OrderLeg struct {
   Symbol string
   OptionSymbol string
   Side string
-  Quantity float64
+  Qty int
   Status string
   Duration string
-  AvgFillPrice float64
-  ExecQuantity float64
-  LastFillPrice float64
-  LastFillQuantity float64
-  RemainingQuantity float64
+  AvgFillPrice float64 `sql:"type:DECIMAL(12,2)"`
+  ExecQuantity float64 `sql:"type:DECIMAL(12,2)"`
+  LastFillPrice float64 `sql:"type:DECIMAL(12,2)"`
+  LastFillQuantity float64 `sql:"type:DECIMAL(12,2)"`
+  RemainingQuantity float64 `sql:"type:DECIMAL(12,2)"`
   CreateDate time.Time
   TransactionDate time.Time  
 }

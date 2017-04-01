@@ -200,7 +200,9 @@ func DbConnect() (*gorm.DB) {
   conn.AutoMigrate(&models.User{})
   conn.AutoMigrate(&models.Broker{})
   conn.AutoMigrate(&models.Order{})
-  conn.AutoMigrate(&models.OrderLeg{})  
+  conn.AutoMigrate(&models.OrderLeg{})
+  conn.AutoMigrate(&models.Position{}) 
+  conn.AutoMigrate(&models.TradeGroup{}) 
   
   return conn   
 }
