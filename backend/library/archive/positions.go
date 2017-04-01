@@ -3,6 +3,7 @@ package archive
 import (
   "fmt"
   "time"
+  "errors"
   "strconv"
   "github.com/jinzhu/gorm"  
   "github.com/stvp/rollbar"
@@ -31,11 +32,11 @@ func doMultiLegOrders(db *gorm.DB, userId uint) (error) {
   var orders = &[]models.Order{}
   
   // Query and get all orders we have not reviewed before.  
-  db.Where("user_id = ? AND class = ? AND status = ? AND position_reviewed = ?", userId, "multileg", "filled", "No").Find(orders)
+  db.Where("user_id = ? AND class = ? AND status = ? AND position_reviewed = ?", userId, "multileg", "filled", "No").Order("transaction_date asc").Find(orders)
   
   // Loop through the different orders and process.
   for _, row := range *orders {
-        
+                
     var positions []*models.Position
         
     // Add in Legs
@@ -49,18 +50,51 @@ func doMultiLegOrders(db *gorm.DB, userId uint) (error) {
         
         case "sell_to_open":
           row2.Qty = (row2.Qty * -1)
-          pos := doOpenOneLegMultiLegOrder(row, row2, db, userId)
+          
+          pos, err := doOpenOneLegMultiLegOrder(row, row2, db, userId)
+          
+          if err != nil {
+            fmt.Println(err)
+            rollbar.Error(rollbar.ERR, err)
+            continue;
+          }
+          
           positions = append(positions, pos) 
       
         case "buy_to_open":
-          pos := doOpenOneLegMultiLegOrder(row, row2, db, userId)
-          positions = append(positions, pos)
-        
-        case "buy_to_close":
-          continue
+          pos, err := doOpenOneLegMultiLegOrder(row, row2, db, userId)
           
-        case "sell_to_close":    
-          continue
+          if err != nil {
+            fmt.Println(err)
+            rollbar.Error(rollbar.ERR, err)
+            continue;
+          }          
+          
+          positions = append(positions, pos)
+          
+        case "buy_to_close":
+          pos, err := doCloseOneLegMultiLegOrder(row, row2, db, userId)
+          
+          if err != nil {
+            fmt.Println(err)
+            rollbar.Error(rollbar.ERR, err)
+            continue;
+          }          
+          
+          positions = append(positions, pos)     
+          
+        case "sell_to_close":
+          row2.Qty = (row2.Qty * -1)    
+          
+          pos, err := doCloseOneLegMultiLegOrder(row, row2, db, userId)
+          
+          if err != nil {
+            fmt.Println(err)
+            rollbar.Error(rollbar.ERR, err)
+            continue;
+          }          
+          
+          positions = append(positions, pos)
           
         default:
           fmt.Println("Unknown Side")
@@ -87,6 +121,9 @@ func doMultiLegOrders(db *gorm.DB, userId uint) (error) {
 // Build / Update a Tradegoup based on an array of positions
 //
 func doTradeGroupBuildFromPositions(order models.Order, positions []*models.Position, db *gorm.DB, userId uint) error {
+ 
+  var tradeGroupId uint
+  var tradeGroupStatus = "Closed" 
   
   // If we do not have at least 1 position we give up
   if len(positions) == 0 {
@@ -94,17 +131,24 @@ func doTradeGroupBuildFromPositions(order models.Order, positions []*models.Posi
   }  
   
   // See if we have a trade group of any of the positions
-  var tradeGroupId uint
   tradeGroupId = 0
   
   for _, row := range positions {
+    
+    // Mark if this trade group is open or closed.
+    if row.Qty != 0 {
+      tradeGroupStatus = "Open"
+    }
     
     if row.TradeGroupId > 0 {
       tradeGroupId = row.TradeGroupId
     }
     
-  }  
+  }
   
+  // TODO: Figure out Risked, Commission, Gain, and Profit
+
+  // Create or Update Trade Group
   if tradeGroupId == 0 {
     
     // Build a new Trade Group
@@ -113,7 +157,7 @@ func doTradeGroupBuildFromPositions(order models.Order, positions []*models.Posi
                           CreatedAt: time.Now(),
                           UpdatedAt: time.Now(),
                           AccountId: order.AccountId,
-                          Status: "Open",
+                          Status: tradeGroupStatus,
                           OrderIds: strconv.Itoa(int(order.Id)),
                           Note: "",
                           OpenDate: order.CreateDate,
@@ -131,6 +175,8 @@ func doTradeGroupBuildFromPositions(order models.Order, positions []*models.Posi
     // Update tradegroup with additional OrderIds
     tradeGroup := &models.TradeGroup{}
     db.Where("id = ? AND user_id = ?", tradeGroupId, userId).First(tradeGroup)
+    tradeGroup.Status = tradeGroupStatus
+    tradeGroup.ClosedDate = order.TransactionDate
     tradeGroup.OrderIds = tradeGroup.OrderIds + "," + strconv.Itoa(int(order.Id))
     db.Save(&tradeGroup)
        
@@ -152,12 +198,12 @@ func doTradeGroupBuildFromPositions(order models.Order, positions []*models.Posi
 //
 // Do one leg of a multi leg order - Open Order
 //
-func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db *gorm.DB, userId uint) *models.Position {
+func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db *gorm.DB, userId uint) (*models.Position, error) {
       
   var position = &models.Position{}
       
   // First we find out if we already have a position on for this.
-  db.Where("symbol = ? AND user_id = ? AND status = ?", leg.OptionSymbol, userId, "Open").First(position)
+  db.Where("symbol = ? AND user_id = ? AND status = ? AND account_id = ?", leg.OptionSymbol, userId, "Open", order.AccountId).First(position)
   
   // We found so we are just adding to a current position.
   if position.Id > 0 {
@@ -176,7 +222,7 @@ func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db *gorm
     // Insert Position
     position = &models.Position{
                   UserId: userId,
-                  TradeGroupId: 0, //tradeGroup.Id, 
+                  TradeGroupId: 0, 
                   CreatedAt: time.Now(),
                   UpdatedAt: time.Now(),
                   AccountId: order.AccountId,
@@ -199,7 +245,56 @@ func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db *gorm
   }
 
   // Return a list of position that we reviewed
-  return position
+  return position, nil
+  
+}
+
+//
+// Do one leg of a multi leg order - Close Order
+//
+func doCloseOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db *gorm.DB, userId uint) (*models.Position, error) {
+      
+  var position = &models.Position{}
+      
+  // First we find out if we already have a position on for this.
+  db.Where("symbol = ? AND user_id = ? AND status = ? AND account_id = ?", leg.OptionSymbol, userId, "Open", order.AccountId).First(position)
+  
+  // We found so we are just removing to a current position.
+  if position.Id > 0 {
+    
+    // Update pos
+    position.OrderIds = position.OrderIds + "," + strconv.Itoa(int(order.Id))
+    position.UpdatedAt = time.Now()
+    position.Qty = leg.Qty + position.Qty
+    
+    if position.AvgClosePrice != 0 {
+      position.AvgClosePrice = ((leg.AvgFillPrice + position.AvgClosePrice) / 2)
+    } else {
+      position.AvgClosePrice = leg.AvgFillPrice
+    }
+    
+    // Are we done with the trade?
+    if position.Qty == 0 {
+    
+      position.ClosedDate = leg.TransactionDate
+      position.Status = "Closed"
+    
+    } else {
+      
+      position.Note = position.Note + "Updated - " + leg.TransactionDate.Format(time.RFC1123) + " :: "
+    
+    }
+    
+    db.Save(&position)
+        
+  } else {
+        
+    return nil, errors.New("Unable to find close position in our database.")              
+  
+  }
+
+  // Return a list of position that we reviewed
+  return position, nil
   
 }
 
