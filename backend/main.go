@@ -16,7 +16,7 @@ import (
   _ "github.com/go-sql-driver/mysql"
   "app.options.cafe/backend/models"
   "app.options.cafe/backend/library/https"
-  "app.options.cafe/backend/brokers/tradier"  
+  "app.options.cafe/backend/brokers/tradier"
 )
 
 var ( 
@@ -62,9 +62,34 @@ func main() {
   // Lets get started
   fmt.Println("App Started: " + os.Getenv("APP_ENV"))    
   
+
+
+  
+  
+  
+/*
+  // Messing around with Tradier API calls.
+  var broker = tradier.Api{ ApiKey: os.Getenv("TEST_TRADIER_TOKEN") }
+  history, _ := broker.GetHistoryByAccountId(os.Getenv("TEST_TRADIER_ACCOUNT"))
+  
+  for _, row := range history {    
+    fmt.Println(row.BrokerId)
+  }
+  
+  fmt.Println(len(history))
+
+  
+  os.Exit(3)
+*/  
+  
+  
+  
+
+
+  
   // Message that the app has started
   rollbar.Message("info", "App started.")
-    
+      
   // Connect to database and run Migrations.
   db = DbConnect()
 
