@@ -1,0 +1,38 @@
+version: '2.1'
+
+services:
+
+  # App
+  backend:
+           
+    hostname: ${VIRTUAL_HOST}
+
+    container_name: ${VIRTUAL_HOST}
+           
+    build:
+      context: ./build
+      dockerfile: Dockerfile-backend
+      args:
+        P_UID: ${P_UID}
+        P_GID: ${P_GID}       
+    
+    image: ${VIRTUAL_HOST}/golang:1.8.1-alpine           
+
+    restart: ${RESTART}
+    
+    environment:   
+      VIRTUAL_HOST: ${VIRTUAL_HOST}  
+    
+    volumes:
+      - ../:/work:rw
+      - ../../:/go/src/app.options.cafe:ro       
+      - ${GO_PATH}/src/golang.org:/go/src/golang.org:ro
+      - ${GO_PATH}/src/github.com:/go/src/github.com:ro   
+      
+    networks:
+      - shared     
+  
+networks:
+  shared:
+    external:
+      name: shared 
