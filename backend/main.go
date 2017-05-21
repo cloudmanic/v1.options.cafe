@@ -43,7 +43,7 @@ func main() {
                     }
                     
   // Start users feeds
-  Users.Start()
+  Users.StartFeeds()
 
   // Start websockets
   websocket.Start()

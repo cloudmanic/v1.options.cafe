@@ -24,9 +24,9 @@ type User struct {
 }
 
 //
-// Start up our users.
+// Start up our user feeds.
 //
-func (t * Base) Start() {
+func (t * Base) StartFeeds() {
   
   // Setup the map of users.
   t.Users = make(map[uint]*User)
@@ -36,7 +36,7 @@ func (t * Base) Start() {
 
   // Loop through the users
   for i, _ := range users {
-    t.doUser(users[i])     
+    t.DoUser(users[i])     
   }  
   
 } 
@@ -44,7 +44,7 @@ func (t * Base) Start() {
 //
 // Start one user.
 //
-func (t * Base) doUser(user models.User) {
+func (t * Base) DoUser(user models.User) {
  
   var brokerApi brokers.Api   
  
