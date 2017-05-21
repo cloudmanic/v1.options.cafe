@@ -4,8 +4,7 @@ import (
   "fmt"
 	"sort"
 	"strings"    
-  "encoding/json"
-  "app.options.cafe/backend/websocket"   
+  "encoding/json"  
   "app.options.cafe/backend/brokers/types"   
 )
 
@@ -162,6 +161,8 @@ func (t *Base) GetUserProfile() (error) {
 
   // Make API call
   userProfile, err := t.Api.GetUserProfile()
+  
+fmt.Println(userProfile)  
   
   if err != nil {
     return err  
@@ -358,7 +359,7 @@ func (t *Base) GetBalances() (error) {
 func (t *Base) GetSendJson(send_type string, data_json string) (string, error) {
   
   // Send Object
-  send := websocket.SendStruct{
+  send := SendStruct{
     Type: send_type,
     Data: data_json,
   } 
@@ -392,7 +393,7 @@ func (t *Base) WriteWebSocket(send_type string, sendObject interface{}) (error) 
   }   
 
   // Write data out websocket
-  t.WsWriteChannel <- sendJson
+  t.DataChannel <- sendJson
   
   // Return happy
   return nil
@@ -403,9 +404,9 @@ func (t *Base) WriteWebSocket(send_type string, sendObject interface{}) (error) 
 // Send data up quote websocket. 
 //
 func (t *Base) SendQuoteWebSocket(sendJson string) (error) {
-  
+    
   // Write data out websocket
-  t.WsWriteQuoteChannel <- sendJson
+  t.QuoteChannel <- sendJson
   
   // Return happy
   return nil

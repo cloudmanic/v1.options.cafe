@@ -1,8 +1,8 @@
 package users
 
 import (
-  //"fmt"
   "app.options.cafe/backend/models"
+  "app.options.cafe/backend/websocket"
   "app.options.cafe/backend/brokers"
   "app.options.cafe/backend/brokers/feed"
   "app.options.cafe/backend/brokers/tradier"  
@@ -12,13 +12,15 @@ import (
 type Base struct {
   DB *models.DB
   Users map[uint]*User
+  WsWriteChannel chan websocket.SendStruct
+  WsWriteQuoteChannel chan websocket.SendStruct
 }
 
 type User struct {
   Profile models.User
   BrokerFeed map[uint]*feed.Base
-  WsWriteChannel chan string
-  WsWriteQuoteChannel chan string
+  DataChannel chan string
+  QuoteChannel chan string
 }
 
 //
@@ -34,7 +36,7 @@ func (t * Base) Start() {
 
   // Loop through the users
   for i, _ := range users {
-    go t.doUser(users[i])     
+    t.doUser(users[i])     
   }  
   
 } 
@@ -44,9 +46,7 @@ func (t * Base) Start() {
 //
 func (t * Base) doUser(user models.User) {
  
-  var brokerApi brokers.Api
-  var wsWriteChannel chan string
-  var wsWriteQuoteChannel chan string     
+  var brokerApi brokers.Api   
  
   services.Log("Starting User Connection : " + user.Email)
   
@@ -60,8 +60,8 @@ func (t * Base) doUser(user models.User) {
   t.Users[user.Id] = &User{
                         Profile: user,
                         BrokerFeed: make(map[uint]*feed.Base),
-                        WsWriteChannel: make(chan string),
-                        WsWriteQuoteChannel: make(chan string),    
+                        DataChannel: make(chan string, 1000),
+                        QuoteChannel: make(chan string, 1000),    
                       }
     
   // Loop through the different brokers for this user
@@ -92,101 +92,46 @@ func (t * Base) doUser(user models.User) {
     t.Users[user.Id].BrokerFeed[row.Id] = &feed.Base{ 
                                             User: user, 
                                             Api: brokerApi,
-                                            WsWriteChannel: wsWriteChannel,
-                                            WsWriteQuoteChannel: wsWriteQuoteChannel,                       
+                                            DataChannel: t.Users[user.Id].DataChannel,
+                                            QuoteChannel: t.Users[user.Id].QuoteChannel,                       
                                           }
                       
     // Start fetching data for this user.
-    t.Users[user.Id].BrokerFeed[row.Id].Start()      
-    
-/*    
-    // Set the broker we are going to use.
-    var broker = tradier.Api{ ApiKey: row.AccessToken }
-    var fetch = Fetch{ broker: broker, user: userConnections[user.Id] }
-    
-    // Set Broker hash and lets get going.
-    userConnections[user.Id].BrokerConnections[row.Id] = &BrokerFeed{ fetch: fetch, userId: user.Id }
-  
-    // Start the broker feed.
-    userConnections[user.Id].BrokerConnections[row.Id].Start()
-*/     
-    
-  }  
-  
-}
-
-/*
-type Connection struct {
-  UserId uint
-  BrokerConnections map[uint]*feed.Broker
-  WsWriteChannel chan string
-  WsWriteQuoteChannel chan string
-}
-
-//
-// Start up our user connections.
-//
-func StartUserConnections() {
-  
-  var user models.User
-  usrs := user.GetAllUsers(db)
-
-  for i, _ := range usrs {
-    go StartUserConnection(usrs[i])     
-  }  
-  
-}
-
-//
-// Start one user connection.
-//
-func StartUserConnection(user models.User) {
-  
-  fmt.Println("Starting User Connection : " + user.Email)
-  
-  // Lock the memory
-	mu.Lock()
-	defer mu.Unlock() 
-
-  // Make sure we do not already have this licenseKey going.
-  if _, ok := userConnections[user.Id]; ok {
-    rollbar.Message("info", "User Connection Is Already Going : " + user.Email)
-    fmt.Println("User Connection Is Already Going : " + user.Email)
-    return
+    go t.Users[user.Id].BrokerFeed[row.Id].Start()    
   }
   
-  // Set the user connection.
-  userConnections[user.Id] = &http_ws.Connection{
-    UserId: user.Id,
-    BrokerConnections: make(map[uint]*feed.Broker),
-    WsWriteChannel: make(chan string),
-    WsWriteQuoteChannel: make(chan string),
-  }
+  // Listen for data from our fetchers
+  go t.doDataListen(t.Users[user.Id])
   
-  // Start the websocket write dispatcher for this user.
-  go ws.DoWsDispatch(userConnections[user.Id])
+}
+
+//
+// Listen for message on the data channel.
+//
+func (t * Base) doDataListen(user *User) {
   
-  // Loop through the different brokers for this user
-  for _, row := range user.Brokers {
+  // Listen for data from the fetcher. We then send it up the main channel after
+  // adding a userId to the object. We do it this way because int he future we could do 
+  // extra processing here.
+  for {
+  
+    select {
     
-    // Need an access token to continue
-    if len(row.AccessToken) <= 0 {
-      rollbar.Message("info", "User Connection (Brokers) No Access Token Found : " + user.Email)
-      fmt.Println("User Connection (Brokers) No Access Token Found : " + user.Email)
-      continue
+      case message := <-user.DataChannel:
+        
+        // Send this message up the chain to the master channel
+        t.WsWriteChannel <- websocket.SendStruct{ UserId: user.Profile.Id, Message: message }
+        
+      case message := <-user.QuoteChannel:
+
+        // Send this message up the chain to the master channel
+        t.WsWriteQuoteChannel <- websocket.SendStruct{ UserId: user.Profile.Id, Message: message }
+       
+    
     }
-    
-    // Set the broker we are going to use.
-    var broker = tradier.Api{ ApiKey: row.AccessToken }
-    var fetch = Fetch{ broker: broker, user: userConnections[user.Id] }
-    
-    // Set Broker hash and lets get going.
-    userConnections[user.Id].BrokerConnections[row.Id] = &BrokerFeed{ fetch: fetch, userId: user.Id }
   
-    // Start the broker feed.
-    userConnections[user.Id].BrokerConnections[row.Id].Start()     
-    
-  }
-    
+  }  
+  
 }
-*/
+
+/* End File */

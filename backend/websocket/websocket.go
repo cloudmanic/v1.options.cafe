@@ -39,8 +39,8 @@ type TradierApiKeyStruct struct {
 }
 
 type SendStruct struct {
-  Type string `json:"type"`
-  Data string `json:"data"`
+  UserId uint
+  Message string
 }
 
 var (
@@ -265,6 +265,7 @@ func DoWsDispatch(user *feed.Connection) {
 }
 */
 
+/*
 //
 // Return a json object ready to be sent up the websocket
 //
@@ -283,5 +284,6 @@ func GetSendJson(send_type string, data_json string) (string, error) {
 
   return string(send_json), nil
 }
+*/
 
 /* End File */

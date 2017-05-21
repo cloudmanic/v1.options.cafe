@@ -18,8 +18,8 @@ type Base struct {
   User models.User
   Api brokers.Api
   
-  WsWriteChannel chan string
-  WsWriteQuoteChannel chan string
+  DataChannel chan string
+  QuoteChannel chan string
   
   muOrders sync.Mutex
   Orders []types.Order
@@ -45,6 +45,11 @@ type Base struct {
 */
 }
 
+type SendStruct struct {
+  Type string `json:"type"`
+  Data string `json:"data"`
+}
+
 //
 // When we have a broker access token and an active user we call this.
 // We start fetching data from the broker and such. This continues to run
@@ -55,12 +60,8 @@ func (t *Base) Start() {
   
   fmt.Println("Starting Polling....")
 
-go t.DoUserProfileTicker()
-
   // Setup tickers for broker polling.
-  //go t.DoOrdersTicker()
-  
-/*
+  go t.DoOrdersTicker()
   go t.DoUserProfileTicker()
   go t.DoGetWatchlistsTicker()
   go t.DoGetDetailedQuotes()
@@ -68,8 +69,7 @@ go t.DoUserProfileTicker()
   go t.DoGetBalancesTicker()
   
   // Do Archive Calls
-  go t.DoOrdersArchive()
-*/
+  //go t.DoOrdersArchive()
    
 }
 
@@ -98,8 +98,6 @@ func (t *Base) DoUserProfileTicker() {
 
 }
 
-/*
-
 //
 // Ticker - Orders Archive : 24 hours
 //
@@ -107,6 +105,7 @@ func (t *Base) DoOrdersArchive() {
 
 
 
+/*
   //var positions = &[]models.Position{}
   //db.Where("user_id = ? AND trade_group_id = ?", t.userId, 132).Find(positions)  
 
@@ -122,7 +121,7 @@ func (t *Base) DoOrdersArchive() {
   for {
     
     // Load up all orders 
-    orders, err = t.fetch.GetAllOrders()
+    orders, err = t.GetAllOrders()
         
     if err != nil {
       fmt.Println(err)
@@ -138,6 +137,7 @@ func (t *Base) DoOrdersArchive() {
     time.Sleep(time.Hour * 24)
         
   } 
+*/
 
 }
 
@@ -151,7 +151,7 @@ func (t *Base) DoOrdersTicker() {
   for {
     
     // Load up orders 
-    err = t.fetch.GetOrders()
+    err = t.GetOrders()
     
     if err != nil {
       fmt.Println(err)
@@ -172,15 +172,15 @@ func (t *Base) DoGetWatchlistsTicker() {
   for {
     
     // Load up our watchlists    
-    err := t.fetch.GetWatchlists()
+    err := t.GetWatchlists()
   
     if err != nil {
       fmt.Println(err)
     }
     
     // Update any active symbols
-    symbols := t.fetch.GetActiveSymbols()
-    t.fetch.broker.SetActiveSymbols(symbols)
+    symbols := t.GetActiveSymbols()
+    t.Api.SetActiveSymbols(symbols)
     
     // Sleep for 30 second.
     time.Sleep(time.Second * 30)
@@ -197,7 +197,7 @@ func (t *Base) DoGetDetailedQuotes() {
   for {
     
     // Load up our DetailedQuotes  
-    err := t.fetch.GetActiveSymbolsDetailedQuotes()
+    err := t.GetActiveSymbolsDetailedQuotes()
   
     if err != nil {
       fmt.Println(err)
@@ -220,7 +220,7 @@ func (t *Base) DoGetMarketStatusTicker() {
   for {
        
     // Load up market status. 
-    err = t.fetch.GetMarketStatus()
+    err = t.GetMarketStatus()
     
     if err != nil {
       fmt.Println(err)
@@ -242,7 +242,7 @@ func (t *Base) DoGetBalancesTicker() {
   for {
        
     // Load up market status. 
-    err = t.fetch.GetBalances()
+    err = t.GetBalances()
     
     if err != nil {
       fmt.Println(err)
@@ -254,6 +254,5 @@ func (t *Base) DoGetBalancesTicker() {
   }
   
 }
-*/
 
 /* End File */

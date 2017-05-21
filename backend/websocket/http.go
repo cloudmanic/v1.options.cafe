@@ -2,16 +2,25 @@ package websocket
 
 import (
   "os"
+  "fmt"
   "log"
   "time"
   "net/http"
   "golang.org/x/crypto/acme/autocert"
 )
 
+var (
+  WsWriteChannel chan SendStruct
+  WsWriteQuoteChannel chan SendStruct
+)
+
 //
 // Start the webserver
 //
 func Start() {
+  
+  // Listen for data from our broker feeds.
+  go DoWebsocketDataFeeds()
   
   // Register some handlers:
   mux := http.NewServeMux()
@@ -49,6 +58,28 @@ func Start() {
     StartSecureServer(mux, m.GetCertificate)
     
   }
+  
+}
+
+//
+// Listen for data from our broker feeds.
+// Take the data and then pass it up the websockets.
+//
+func DoWebsocketDataFeeds() {
+  
+  for {
+  
+    select {
+    
+      case send := <-WsWriteChannel:
+        fmt.Println(send.Message)
+        
+      case send := <-WsWriteQuoteChannel:
+        fmt.Println(send.Message)
+      
+    }
+  
+  }   
   
 }
 
