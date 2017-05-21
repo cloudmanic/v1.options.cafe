@@ -7,7 +7,10 @@ import (
   "strconv"
   "github.com/jinzhu/gorm"  
   "github.com/stvp/rollbar"
-  "app.options.cafe/backend/models"     
+  "app.options.cafe/backend/models"
+  
+  //"app.options.cafe/backend/brokers/types"
+  //"app.options.cafe/backend/brokers/tradier"       
 )
 
 //
@@ -23,6 +26,32 @@ func StorePositions(db *gorm.DB, userId uint) (error) {
   return nil
   
 }
+
+//
+//
+//
+func ClassifyTradeGroup(positions *[]models.Position) {
+  
+  
+  for _, row := range *positions {
+    
+    fmt.Println(row.Symbol)
+    
+/*
+    s := []string{row.Symbol}
+    
+    var q tradier.Quote.Api
+    
+    
+    quotes := q.GetQuotes(s)
+    
+    fmt.Println(quotes)
+*/
+    
+  }
+
+}
+
 
 //
 // Do multi leg orders - Just when you open a position. 

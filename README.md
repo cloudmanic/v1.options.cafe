@@ -34,7 +34,7 @@ This is the options trading application we offer to customers. Angular2 front-en
 
 ## Note On Backend Docker
 
-* ```go run *.go``` the docker way : ```cd backend/docker && dc run --rm backend```
+* ```go run *.go``` the docker way : ```cd backend/docker && dc run --rm -p 7652:7652  backend bash```
 
 * Docker .env file example located in ```backend/docker/.env```
 

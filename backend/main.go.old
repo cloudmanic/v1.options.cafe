@@ -1,0 +1,218 @@
+package main
+
+import (
+  "os"
+  "fmt"
+  "log"
+  "sync"
+  "time"
+  "runtime"
+  "net/http"
+  "github.com/stvp/rollbar"
+  "github.com/jinzhu/gorm"
+  "github.com/joho/godotenv"
+  "github.com/gorilla/websocket"
+  "golang.org/x/crypto/acme/autocert"
+  _ "github.com/go-sql-driver/mysql"
+  
+  "app.options.cafe/backend/users"
+  "app.options.cafe/backend/http_ws"
+  "app.options.cafe/backend/models"
+  "app.options.cafe/backend/library/https"
+  "app.options.cafe/backend/brokers/feed"
+  "app.options.cafe/backend/brokers/tradier"
+)
+
+var ( 
+  mu sync.Mutex
+  db *gorm.DB
+  
+  // Websocket connections.
+  ws = http_ws.Websockets{      
+    connections: make(map[*websocket.Conn]*WebsocketConnection),
+    quotesConnections: make(map[*websocket.Conn]*WebsocketConnection),
+    controller: http_ws.WsController{},
+  }
+  
+  // User connections
+  userConnections = make(map[uint]*http_ws.Connection)
+)
+        
+//
+// Main....
+//
+func main() {  
+   
+  // Setup CPU stuff.
+  runtime.GOMAXPROCS(runtime.NumCPU())  
+         
+  // Load .env file 
+  err := godotenv.Load()
+  if err != nil {
+    log.Fatal("Error loading .env file")
+  }        
+    
+  // Setup Rollbar
+  rollbar.Token = os.Getenv("ROLLBAR_TOKEN")
+  rollbar.Environment = os.Getenv("ROLLBAR_ENV")    
+    
+  // Lets get started
+  fmt.Println("App Started: " + os.Getenv("APP_ENV"))    
+  
+
+
+  
+
+  
+  // Lets testing new broker feed stuff
+  api := &tradier.Api{ ApiKey: "2G7BpjX7M2TuQRSnw1mLzR2xGu3w" }
+  feed := feed.Broker{ UserId: 1, Api: api, Websockets: &ws }
+  feed.Start()
+  
+  
+  os.Exit(3)
+  
+/*
+  // Messing around with Tradier API calls.
+  var broker = tradier.Api{ ApiKey: os.Getenv("TEST_TRADIER_TOKEN") }
+  history, _ := broker.GetHistoryByAccountId(os.Getenv("TEST_TRADIER_ACCOUNT"))
+  
+  for _, row := range history {    
+    fmt.Println(row.BrokerId)
+  }
+  
+  fmt.Println(len(history))
+
+  
+  os.Exit(3)
+*/  
+  
+  
+  
+
+
+  
+  // Message that the app has started
+  rollbar.Message("info", "App started.")
+      
+  // Connect to database and run Migrations.
+  db = DbConnect()
+
+  // Start our broker connections.
+  http_ws.StartUserConnections()
+    
+  // Register some handlers:
+  mux := http.NewServeMux()
+  
+  // Http Routes
+  mux.HandleFunc("/", HtmlMainTemplate)    
+    
+  // Setup websocket
+	mux.HandleFunc("/ws/core", ws.DoWebsocketConnection)
+	mux.HandleFunc("/ws/quotes", ws.DoQuoteWebsocketConnection)
+
+  // Are we in testing mode?
+  if os.Getenv("APP_ENV") == "local" {
+    
+		s := &http.Server{
+			Addr: ":7652",
+			Handler: mux,
+      ReadTimeout:  2 * time.Second,
+      WriteTimeout: 2 * time.Second,			
+		}
+		
+		log.Fatal(s.ListenAndServe())    
+     
+  } else {
+
+    // Secure it with a TLS certificate using Let's  Encrypt:
+    m := autocert.Manager{
+  	  Prompt: autocert.AcceptTOS,
+      Cache: autocert.DirCache("/etc/letsencrypt/"),
+      Email: "support@options.cafe",
+      HostPolicy: autocert.HostWhitelist("app.options.cafe"),
+    }
+  
+    // Start a secure server:
+    https.StartSecureServer(mux, m.GetCertificate)
+    
+  }
+	  
+}
+
+//
+// Connect to the db and run migrations.
+//
+func DbConnect() (*gorm.DB) {
+  
+  var err error
+    
+  // Connect to Mysql
+  conn, err := gorm.Open("mysql", os.Getenv("DB_USERNAME") + ":" + os.Getenv("DB_PASSWORD") + "@" + os.Getenv("DB_HOST") + "/" + os.Getenv("DB_DATABASE") + "?charset=utf8&parseTime=True&loc=Local")
+  
+  if err != nil {
+    rollbar.Error(rollbar.ERR, err)
+    panic("failed to connect database")
+  }
+
+  // Enable
+  //conn.LogMode(true)
+  //conn.SetLogger(log.New(os.Stdout, "\r\n", 0))
+
+  // Migrate the schemas (one per table).
+  conn.AutoMigrate(&models.User{})
+  conn.AutoMigrate(&models.Broker{})
+  conn.AutoMigrate(&models.Order{})
+  conn.AutoMigrate(&models.OrderLeg{})
+  conn.AutoMigrate(&models.Position{}) 
+  conn.AutoMigrate(&models.TradeGroup{}) 
+  
+  return conn   
+}
+
+//
+// Return the html tmplate of app.
+//
+func HtmlMainTemplate(w http.ResponseWriter, r *http.Request) {
+
+  w.Write([]byte(`
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+  	<base href="https://cdn.options.cafe/app/" />
+  	<meta charset="utf-8" />
+  
+  	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+  
+  	<title>Options Cafe</title>
+  
+  	<link rel="shortcut icon" type="image/x-icon" href="assets/css/images/favicon.ico?v=9" />
+  	<link rel="icon" type="image/png" href="assets/css/images/favicon-32x32.png?v=9" sizes="32x32" />
+  	<link rel="icon" type="image/png" href="assets/css/images/favicon-16x16.png?v=9" sizes="16x16" />
+  	
+  	<link rel="stylesheet" href="assets/vendor/bootstrap-3.3.7-dist/css/bootstrap.min.css" type="text/css" media="all" />
+  	<link rel="stylesheet" href="assets/css/style.css?v=9" />  
+  	
+    <script type="text/javascript">
+      var ws_server = "wss://app.options.cafe";
+    </script>  		
+  </head>
+<body>
+  <div class="wrapper">
+    <oc-root>Loading...</oc-root>
+  </div>
+
+  <script src="assets/vendor/jquery-1.12.4.min.js"></script>
+  <script src="assets/vendor/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+  <script src="assets/bower/clientjs/dist/client.min.js"></script>
+  <script src="assets/js/functions.js?v=9"></script>
+  <script type="text/javascript" src="inline.bundle.js?v=9"></script>
+  <script type="text/javascript" src="vendor.bundle.js?v=9"></script>
+  <script type="text/javascript" src="main.bundle.js?v=9"></script>        
+</body>
+</html>  
+  `))
+  
+}
+
+/* End File */

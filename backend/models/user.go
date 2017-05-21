@@ -2,7 +2,6 @@ package models
 
 import (
   "time"
-  "github.com/jinzhu/gorm"
 )
 
 type User struct {
@@ -21,15 +20,33 @@ type User struct {
 // 
 // Return an array of all users.
 //
-func (s *User) GetAllUsers(db *gorm.DB) ([]User) {
+func (t * DB) GetAllUsers() ([]User) {
   
   var users []User
   
-  db.Find(&users)
+  t.Connection.Find(&users)
   
   // Add in our one to many look ups
   for i, _ := range users {
-    db.Model(users[i]).Related(&users[i].Brokers)     
+    t.Connection.Model(users[i]).Related(&users[i].Brokers)     
+  }  
+  
+  return users
+  
+}
+
+// 
+// Return an array of all active users.
+//
+func (t * DB) GetAllActiveUsers() ([]User) {
+  
+  var users []User
+  
+  t.Connection.Where("status = ?", "Active").Find(&users)
+  
+  // Add in our one to many look ups
+  for i, _ := range users {
+    t.Connection.Model(users[i]).Related(&users[i].Brokers)     
   }  
   
   return users

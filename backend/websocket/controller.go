@@ -1,17 +1,16 @@
-package main
+package websocket
+
 
 import (
-  "fmt" 
-  "./models"   
-  "github.com/tidwall/gjson"  
+  "fmt"   
+  "github.com/tidwall/gjson"
+  "app.options.cafe/backend/models"    
 )
-
-type WsController struct {}
 
 //
 // Process a read request that was sent in from the client
 //
-func (t *WsController) ProcessRead(conn *WebsocketConnection, message string, data map[string]interface{})  {
+func ProcessRead(conn *WebsocketConnection, message string, data map[string]interface{})  {
 
   switch data["type"] {
     
@@ -22,14 +21,14 @@ func (t *WsController) ProcessRead(conn *WebsocketConnection, message string, da
   
     // Refresh all cached data.
     case "refresh-all-data":
-      t.RefreshAllData(conn)
+      RefreshAllData(conn)
     break;
   
     // The user authenticates.
     case "set-access-token":
       device_id := gjson.Get(message, "data.device_id").String()
       access_token := gjson.Get(message, "data.access_token").String()
-      t.AuthenticateConnection(conn, access_token, device_id)
+      AuthenticateConnection(conn, access_token, device_id)
     break; 
          
   }
@@ -39,7 +38,7 @@ func (t *WsController) ProcessRead(conn *WebsocketConnection, message string, da
 //
 // Authenticate Connection
 //
-func (t *WsController) AuthenticateConnection(conn *WebsocketConnection, access_token string, device_id string) {
+func AuthenticateConnection(conn *WebsocketConnection, access_token string, device_id string) {
     
   var user models.User
   
@@ -50,11 +49,13 @@ func (t *WsController) AuthenticateConnection(conn *WebsocketConnection, access_
   conn.deviceId = device_id
   conn.muDeviceId.Unlock()  
   
+/*
   // See if this user is in our db.
   if db.First(&user, "access_token = ?", access_token).RecordNotFound() {
     fmt.Println("Access Token Not Found - Unable to Authenticate")
     return
   }
+*/
   
   fmt.Println("Authenticated : " + user.Email)
   
@@ -64,14 +65,16 @@ func (t *WsController) AuthenticateConnection(conn *WebsocketConnection, access_
   conn.muUserId.Unlock()
   
   // Do the writing. 
-  go ws.DoWsWriting(conn)
+  go DoWsWriting(conn)
   
+/*
   // Send cached data so they do not have to wait for polling.
   for key, _ := range userConnections[conn.userId].BrokerConnections {
     
     userConnections[conn.userId].BrokerConnections[key].fetch.RefreshFromCached()
     
   }
+*/
 
 }
 
@@ -81,14 +84,16 @@ func (t *WsController) AuthenticateConnection(conn *WebsocketConnection, access_
 // or the state of a page changes and they need to 
 // refresh the data on the client.
 //
-func (t *WsController) RefreshAllData(conn *WebsocketConnection)  {
+func RefreshAllData(conn *WebsocketConnection)  {
   
+/*
   // Send cached data so they do not have to wait for polling.
   for key, _ := range userConnections[conn.userId].BrokerConnections {
     
     userConnections[conn.userId].BrokerConnections[key].fetch.RefreshFromCached()
     
   }
+*/
    
 }
 

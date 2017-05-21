@@ -3,6 +3,7 @@ package main
 import (
   "fmt"
   "time"
+  //"app.options.cafe/backend/models" 
   "app.options.cafe/backend/brokers/types"
   "app.options.cafe/backend/brokers/tradier"
   "app.options.cafe/backend/library/archive"  
@@ -64,6 +65,19 @@ func (t *BrokerFeed) DoUserProfileTicker() {
 // Ticker - Orders Archive : 24 hours
 //
 func (t *BrokerFeed) DoOrdersArchive() {
+
+
+
+/*
+  var positions = &[]models.Position{}
+  db.Where("user_id = ? AND trade_group_id = ?", t.userId, 132).Find(positions)  
+
+  archive.ClassifyTradeGroup(positions)
+*/
+  
+
+
+  
 
   var err error
   var orders []types.Order

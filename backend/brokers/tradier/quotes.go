@@ -6,7 +6,8 @@ import (
   "strings"
   "net/http"
   "io/ioutil"
-  "encoding/json"   
+  "encoding/json"
+  "app.options.cafe/backend/brokers/types"   
 )
 
 type SessionStruct struct {
@@ -23,35 +24,17 @@ type StreamQuote struct {
   Size string `json:"size"`        
 }
 
-type Quote struct {
-  Type string
-  Symbol string
-  Size int
-  Last float64
-  Open float64 
-  High float64 
-  Low float64
-  Close float64 
-  PrevClose float64      
-  Change float64
-  ChangePercentage float64 `json:"change_percentage"`
-  Volume int
-  AverageVolume int `json:"average_volume"`
-  LastVolume int `json:"last_volume"`     
-  Description string       
-}
-
 //
 // Get a quote.
 //
-func (t * Api) GetQuotes(symbols []string) ([]Quote, error) {
+func (t * Api) GetQuotes(symbols []string) ([]types.Quote, error) {
   
   // No symbols, no quotes.
 	if len(symbols) == 0 {
 		return nil, nil
 	}  
   
-  var quotes []Quote
+  var quotes []types.Quote
   
   // Setup http client
   client := &http.Client{}    
@@ -90,7 +73,7 @@ func (t * Api) GetQuotes(symbols []string) ([]Quote, error) {
   // Did we get one quote or many?
   if strings.Contains(string(body), "[") {
     
-    var res map[string]map[string][]Quote 
+    var res map[string]map[string][]types.Quote 
     
     err := json.Unmarshal(body, &res)
 		
@@ -109,7 +92,7 @@ func (t * Api) GetQuotes(symbols []string) ([]Quote, error) {
   } else
   {
     
-    var res map[string]map[string]Quote 
+    var res map[string]map[string]types.Quote 
     
     err := json.Unmarshal(body, &res)
 		
@@ -123,7 +106,7 @@ func (t * Api) GetQuotes(symbols []string) ([]Quote, error) {
 			return nil, nil
 		}		
    
-    quotes = []Quote{quote}
+    quotes = []types.Quote{quote}
     
   }
   

@@ -1,22 +1,24 @@
-package main
+package websocket
 
 import (
   "fmt" 
   "sync"
-  "time" 
+  "time"
   "net/http"
   "encoding/json"
   "github.com/stvp/rollbar"
-  "github.com/gorilla/websocket" 
+  "github.com/gorilla/websocket"
 )
 
 const writeWait = 5 * time.Second
 
+/*
 type Websockets struct { 
   connections map[*websocket.Conn]*WebsocketConnection
   quotesConnections map[*websocket.Conn]*WebsocketConnection
-  controller WsController 
+  controller Controller 
 }
+*/
 
 type WebsocketConnection struct {
   writeChan chan string
@@ -36,15 +38,20 @@ type TradierApiKeyStruct struct {
   }    
 }
 
-type WebsocketSendStruct struct {
+type SendStruct struct {
   Type string `json:"type"`
   Data string `json:"data"`
 }
 
+var (
+  connections map[*websocket.Conn]*WebsocketConnection
+  quotesConnections map[*websocket.Conn]*WebsocketConnection
+)
+  
 //
 // Check Origin
 //
-func (t *Websockets) CheckOrigin(r *http.Request) bool {
+func CheckOrigin(r *http.Request) bool {
   
   origin := r.Header.Get("Origin")
   
@@ -70,13 +77,13 @@ func (t *Websockets) CheckOrigin(r *http.Request) bool {
 //
 // Handle new connections to the app.
 //
-func (t *Websockets) DoWebsocketConnection(w http.ResponseWriter, r *http.Request) {
+func DoWebsocketConnection(w http.ResponseWriter, r *http.Request) {
 
   // setup upgrader
   var upgrader = websocket.Upgrader{
     ReadBufferSize:  1024,
     WriteBufferSize: 1024,
-    CheckOrigin: t.CheckOrigin,
+    CheckOrigin: CheckOrigin,
   }
 
   // Upgrade connection
@@ -95,22 +102,22 @@ func (t *Websockets) DoWebsocketConnection(w http.ResponseWriter, r *http.Reques
   // Add the connection to our connection array
   r_con := WebsocketConnection{ connection: conn, writeChan: make(chan string, 100) }
     
-  t.connections[conn] = &r_con 
+  connections[conn] = &r_con 
   
   // Start handling reading messages from the client.
-  t.DoWsReading(&r_con)
+  DoWsReading(&r_con)
 }
 
 //
 // Handle new quote connections to the app.
 //
-func (t *Websockets) DoQuoteWebsocketConnection(w http.ResponseWriter, r *http.Request) {
+func DoQuoteWebsocketConnection(w http.ResponseWriter, r *http.Request) {
 
   // setup upgrader
   var upgrader = websocket.Upgrader{
     ReadBufferSize:  1024,
     WriteBufferSize: 1024,
-    CheckOrigin: t.CheckOrigin,
+    CheckOrigin: CheckOrigin,
   }
 
   // Upgrade connection
@@ -130,16 +137,16 @@ func (t *Websockets) DoQuoteWebsocketConnection(w http.ResponseWriter, r *http.R
   // Add the connection to our connection array
   r_con := WebsocketConnection{connection: conn, writeChan: make(chan string, 1000)}
   
-  t.quotesConnections[conn] = &r_con
+  quotesConnections[conn] = &r_con
   
   // Do reading
-  t.DoWsReading(&r_con) 
+  DoWsReading(&r_con) 
 }
 
 //
 // Start a writer for the websocket connection.
 //
-func (t *Websockets) DoWsWriting(conn *WebsocketConnection) {
+func DoWsWriting(conn *WebsocketConnection) {
   
   conn.connection.SetWriteDeadline(time.Now().Add(writeWait))
   
@@ -156,7 +163,7 @@ func (t *Websockets) DoWsWriting(conn *WebsocketConnection) {
 //
 // Start a reader for this websocket connection.
 //
-func (t *Websockets) DoWsReading(conn *WebsocketConnection) {  
+func DoWsReading(conn *WebsocketConnection) {  
   
   for {
     
@@ -166,10 +173,10 @@ func (t *Websockets) DoWsReading(conn *WebsocketConnection) {
 		// Connection closed.
     if mt < 0 {
       
-			_, ok := t.connections[conn.connection]
+			_, ok := connections[conn.connection]
 			
 			if ok {
-				delete(t.connections, conn.connection)
+				delete(connections, conn.connection)
 			}    
       
       fmt.Println("Client Disconnected (" + conn.deviceId + ") ...")
@@ -192,15 +199,16 @@ func (t *Websockets) DoWsReading(conn *WebsocketConnection) {
     }
     
     // Switch on the type of requests.
-    t.controller.ProcessRead(conn, string(message), data)
+    ProcessRead(conn, string(message), data)
         
   }  
 }
 
+/*
 //
 // Grab data and dispatch it to the different websocket connections.
 //
-func (t *Websockets) DoWsDispatch(user *UsersConnection) {
+func DoWsDispatch(user *feed.Connection) {
 
   for {
     
@@ -255,14 +263,15 @@ func (t *Websockets) DoWsDispatch(user *UsersConnection) {
   }
   	  
 }
+*/
 
 //
 // Return a json object ready to be sent up the websocket
 //
-func (t *Websockets) GetSendJson(send_type string, data_json string) (string, error) {
+func GetSendJson(send_type string, data_json string) (string, error) {
   
   // Send Object
-  send := WebsocketSendStruct{
+  send := SendStruct{
     Type: send_type,
     Data: data_json} 
   
