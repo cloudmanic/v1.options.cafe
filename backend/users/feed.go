@@ -39,7 +39,7 @@ func (t * Base) StartFeeds() {
 
   // Loop through the users
   for i, _ := range users {
-    t.DoUser(users[i])     
+    t.DoUserFeed(users[i])     
   }
   
   // Listen of income Feed Requests.
@@ -50,7 +50,7 @@ func (t * Base) StartFeeds() {
 //
 // Start one user.
 //
-func (t * Base) DoUser(user models.User) {
+func (t * Base) DoUserFeed(user models.User) {
  
   var brokerApi brokers.Api   
  
