@@ -9,69 +9,63 @@ import (
   "app.options.cafe/backend/library/services"
 )
 
-// DataChannel & QuoteChannel are to share data for all users.
-type Base struct {
+var (
   DB *models.DB
   Users map[uint]*User
   DataChan chan websocket.SendStruct
   QuoteChan chan websocket.SendStruct
-  FeedRequestChan chan websocket.SendStruct 
-}
-
-// DataChannel & QuoteChannel are just for one user. 
+  FeedRequestChan chan websocket.SendStruct   
+)
+ 
 type User struct {
   Profile models.User
   BrokerFeed map[uint]*feed.Base
-  DataChan chan string
-  QuoteChan chan string
 }
 
 //
 // Start up our user feeds.
 //
-func (t * Base) StartFeeds() {
+func StartFeeds() {
   
   // Setup the map of users.
-  t.Users = make(map[uint]*User)
+  Users = make(map[uint]*User)
   
   // Get all active users
-  users := t.DB.GetAllActiveUsers()
+  users := DB.GetAllActiveUsers()
 
   // Loop through the users
   for i, _ := range users {
-    t.DoUserFeed(users[i])     
+    DoUserFeed(users[i])     
   }
   
   // Listen of income Feed Requests.
-  go t.doFeedRequestListen()  
+  go DoFeedRequestListen()  
   
 } 
 
 //
 // Start one user.
 //
-func (t * Base) DoUserFeed(user models.User) {
+func DoUserFeed(user models.User) {
  
   var brokerApi brokers.Api   
  
   services.Log("Starting User Connection : " + user.Email)
   
   // This should not happen. But we double check this user is not already started.
-  if _, ok := t.Users[user.Id]; ok {
+  if _, ok := Users[user.Id]; ok {
     services.MajorLog("User Connection Is Already Going : " + user.Email)
     return
   }
   
   // Set the user to the object
-  t.Users[user.Id] = &User{
-                        Profile: user,
-                        BrokerFeed: make(map[uint]*feed.Base),
-                        DataChan: make(chan string, 1000),
-                        QuoteChan: make(chan string, 1000),    
-                      }
+  Users[user.Id] = &User{
+                      Profile: user,
+                      BrokerFeed: make(map[uint]*feed.Base),   
+                    }
     
   // Loop through the different brokers for this user
-  for _, row := range t.Users[user.Id].Profile.Brokers {
+  for _, row := range Users[user.Id].Profile.Brokers {
     
     // Need an access token to continue
     if len(row.AccessToken) <= 0 {
@@ -95,30 +89,27 @@ func (t * Base) DoUserFeed(user models.User) {
     services.Log("Setting up to use " + row.Name + " as the broker for " + user.Email)  
     
     // Set the library we use to fetching data from our broker's API
-    t.Users[user.Id].BrokerFeed[row.Id] = &feed.Base{ 
-                                            User: user, 
-                                            Api: brokerApi,
-                                            DataChan: t.Users[user.Id].DataChan,
-                                            QuoteChan: t.Users[user.Id].QuoteChan,                       
-                                          }
+    Users[user.Id].BrokerFeed[row.Id] = &feed.Base{ 
+                                          User: user, 
+                                          Api: brokerApi,
+                                          DataChan: DataChan,
+                                          QuoteChan: QuoteChan,                       
+                                        }
                       
     // Start fetching data for this user.
-    go t.Users[user.Id].BrokerFeed[row.Id].Start()    
+    go Users[user.Id].BrokerFeed[row.Id].Start()    
   }
-  
-  // Listen for data from our fetchers
-  go t.doUserDataListen(t.Users[user.Id])
   
 }
 
 //
 // Listen for incomeing feed requests.
 //
-func (t * Base) doFeedRequestListen() {
+func DoFeedRequestListen() {
 
   for {
   
-    send := <-t.FeedRequestChan
+    send := <-FeedRequestChan
     
     switch send.Message {
       
@@ -126,7 +117,7 @@ func (t * Base) doFeedRequestListen() {
       case "FromCache:refresh":
         
         // Loop through each broker and refresh the data.
-        for _, row := range t.Users[send.UserId].BrokerFeed {
+        for _, row := range Users[send.UserId].BrokerFeed {
           
           row.RefreshFromCached()
           
@@ -135,35 +126,6 @@ func (t * Base) doFeedRequestListen() {
     }
 
   } 
-  
-}
-
-//
-// Listen for message on the data channel.
-//
-func (t * Base) doUserDataListen(user *User) {
-  
-  // Listen for data from the fetcher. We then send it up the main channel after
-  // adding a userId to the object. We do it this way because int he future we could do 
-  // extra processing here.
-  for {
-  
-    select {
-    
-      case message := <-user.DataChan:
-        
-        // Send this message up the chain to the master channel
-        t.DataChan <- websocket.SendStruct{ UserId: user.Profile.Id, Message: message }
-        
-      case message := <-user.QuoteChan:
-
-        // Send this message up the chain to the master channel
-        t.QuoteChan <- websocket.SendStruct{ UserId: user.Profile.Id, Message: message }
-       
-    
-    }
-  
-  }  
   
 }
 

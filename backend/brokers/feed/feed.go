@@ -6,20 +6,16 @@ import (
   "time"
   "app.options.cafe/backend/models"  
   "app.options.cafe/backend/brokers"
+  "app.options.cafe/backend/websocket"
   "app.options.cafe/backend/brokers/types"
-/*
-  "app.options.cafe/backend/brokers/fetch"
-  "app.options.cafe/backend/brokers/tradier"
-  "app.options.cafe/backend/library/archive" 
-*/
 )
 
 type Base struct {
   User models.User
   Api brokers.Api
   
-  DataChan chan string
-  QuoteChan chan string
+  DataChan chan websocket.SendStruct
+  QuoteChan chan websocket.SendStruct
   
   muOrders sync.Mutex
   Orders []types.Order
@@ -35,14 +31,6 @@ type Base struct {
 
   muUserProfile sync.Mutex
   UserProfile types.UserProfile
-    
-  //Websockets *http.Websockets
-  //user *UsersConnection  
-  
-/*
-  fetch Fetch   
-  detailedQuotes []tradier.Quote
-*/
 }
 
 type SendStruct struct {

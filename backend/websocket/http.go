@@ -119,26 +119,7 @@ func DoWsDispatch() {
     }
       
   }  
-  
-  
-  
-  
-/*
-  for {
-  
-    select {
     
-      case send := <-WsWriteChannel:
-        fmt.Println(send.Message)
-        
-      case send := <-WsWriteQuoteChannel:
-        fmt.Println(send.Message)
-      
-    }
-  
-  }
-*/   
-  
 }
 
 

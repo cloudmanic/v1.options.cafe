@@ -37,16 +37,12 @@ func main() {
   websocket.WsWriteChan = make(chan websocket.SendStruct, 1000)
   websocket.WsWriteQuoteChan = make(chan websocket.SendStruct, 1000)
     
-  // Setup users object
-  var Users = users.Base{ 
-                      DB: &DB,
-                      DataChan: websocket.WsWriteChan,
-                      QuoteChan: websocket.WsWriteQuoteChan,
-                      FeedRequestChan: websocket.WsReadChan,  
-                    }
-                    
-  // Start users feeds
-  Users.StartFeeds()
+  // Setup users object & Start users feeds
+  users.DB = &DB
+  users.DataChan = websocket.WsWriteChan
+  users.QuoteChan = websocket.WsWriteQuoteChan
+  users.FeedRequestChan = websocket.WsReadChan    
+  users.StartFeeds()
 
   // Start websockets
   websocket.Start()
