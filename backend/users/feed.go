@@ -122,6 +122,7 @@ func (t * Base) doFeedRequestListen() {
     
     switch send.Message {
       
+      // Refresh all data from cache - FromCache:refresh
       case "FromCache:refresh":
         
         // Loop through each broker and refresh the data.
