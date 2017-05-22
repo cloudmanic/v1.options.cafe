@@ -12,14 +12,6 @@ import (
 
 const writeWait = 5 * time.Second
 
-/*
-type Websockets struct { 
-  connections map[*websocket.Conn]*WebsocketConnection
-  quotesConnections map[*websocket.Conn]*WebsocketConnection
-  controller Controller 
-}
-*/
-
 type WebsocketConnection struct {
   writeChan chan string
   connection *websocket.Conn
@@ -44,8 +36,8 @@ type SendStruct struct {
 }
 
 var (
-  connections map[*websocket.Conn]*WebsocketConnection
-  quotesConnections map[*websocket.Conn]*WebsocketConnection
+  connections = make(map[*websocket.Conn]*WebsocketConnection)
+  quotesConnections = make(map[*websocket.Conn]*WebsocketConnection)
 )
   
 //

@@ -27,19 +27,22 @@ func main() {
   // Lets get started
   services.MajorLog("App Started: " + os.Getenv("APP_ENV")) 
   
-  // Setup channels
-  websocket.WsWriteChannel = make(chan websocket.SendStruct, 1000)
-  websocket.WsWriteQuoteChannel = make(chan websocket.SendStruct, 1000)
-  
   // Connect to database and run Migrations.
   var DB = models.DB{}
-  DB.Start()
+  DB.Start()  
   
+  // Setup websockets
+  websocket.DB = &DB
+  websocket.WsReadChan = make(chan websocket.SendStruct, 1000)
+  websocket.WsWriteChan = make(chan websocket.SendStruct, 1000)
+  websocket.WsWriteQuoteChan = make(chan websocket.SendStruct, 1000)
+    
   // Setup users object
   var Users = users.Base{ 
                       DB: &DB,
-                      WsWriteChannel: websocket.WsWriteChannel,
-                      WsWriteQuoteChannel: websocket.WsWriteQuoteChannel,
+                      DataChan: websocket.WsWriteChan,
+                      QuoteChan: websocket.WsWriteQuoteChan,
+                      FeedRequestChan: websocket.WsReadChan,  
                     }
                     
   // Start users feeds

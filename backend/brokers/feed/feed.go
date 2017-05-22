@@ -18,8 +18,8 @@ type Base struct {
   User models.User
   Api brokers.Api
   
-  DataChannel chan string
-  QuoteChannel chan string
+  DataChan chan string
+  QuoteChan chan string
   
   muOrders sync.Mutex
   Orders []types.Order

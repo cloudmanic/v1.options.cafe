@@ -49,13 +49,11 @@ func AuthenticateConnection(conn *WebsocketConnection, access_token string, devi
   conn.deviceId = device_id
   conn.muDeviceId.Unlock()  
   
-/*
   // See if this user is in our db.
-  if db.First(&user, "access_token = ?", access_token).RecordNotFound() {
+  if DB.Connection.First(&user, "access_token = ?", access_token).RecordNotFound() {
     fmt.Println("Access Token Not Found - Unable to Authenticate")
     return
   }
-*/
   
   fmt.Println("Authenticated : " + user.Email)
   
@@ -67,14 +65,8 @@ func AuthenticateConnection(conn *WebsocketConnection, access_token string, devi
   // Do the writing. 
   go DoWsWriting(conn)
   
-/*
   // Send cached data so they do not have to wait for polling.
-  for key, _ := range userConnections[conn.userId].BrokerConnections {
-    
-    userConnections[conn.userId].BrokerConnections[key].fetch.RefreshFromCached()
-    
-  }
-*/
+  RefreshAllData(conn)
 
 }
 
@@ -86,15 +78,8 @@ func AuthenticateConnection(conn *WebsocketConnection, access_token string, devi
 //
 func RefreshAllData(conn *WebsocketConnection)  {
   
-/*
-  // Send cached data so they do not have to wait for polling.
-  for key, _ := range userConnections[conn.userId].BrokerConnections {
-    
-    userConnections[conn.userId].BrokerConnections[key].fetch.RefreshFromCached()
-    
-  }
-*/
-   
+  WsReadChan <- SendStruct{ UserId: conn.userId, Message: "FromCache:refresh" }  
+ 
 }
 
 /* End File */

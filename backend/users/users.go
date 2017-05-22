@@ -9,18 +9,21 @@ import (
   "app.options.cafe/backend/library/services"
 )
 
+// DataChannel & QuoteChannel are to share data for all users.
 type Base struct {
   DB *models.DB
   Users map[uint]*User
-  WsWriteChannel chan websocket.SendStruct
-  WsWriteQuoteChannel chan websocket.SendStruct
+  DataChan chan websocket.SendStruct
+  QuoteChan chan websocket.SendStruct
+  FeedRequestChan chan websocket.SendStruct 
 }
 
+// DataChannel & QuoteChannel are just for one user. 
 type User struct {
   Profile models.User
   BrokerFeed map[uint]*feed.Base
-  DataChannel chan string
-  QuoteChannel chan string
+  DataChan chan string
+  QuoteChan chan string
 }
 
 //
@@ -37,7 +40,10 @@ func (t * Base) StartFeeds() {
   // Loop through the users
   for i, _ := range users {
     t.DoUser(users[i])     
-  }  
+  }
+  
+  // Listen of income Feed Requests.
+  go t.doFeedRequestListen()  
   
 } 
 
@@ -60,8 +66,8 @@ func (t * Base) DoUser(user models.User) {
   t.Users[user.Id] = &User{
                         Profile: user,
                         BrokerFeed: make(map[uint]*feed.Base),
-                        DataChannel: make(chan string, 1000),
-                        QuoteChannel: make(chan string, 1000),    
+                        DataChan: make(chan string, 1000),
+                        QuoteChan: make(chan string, 1000),    
                       }
     
   // Loop through the different brokers for this user
@@ -92,8 +98,8 @@ func (t * Base) DoUser(user models.User) {
     t.Users[user.Id].BrokerFeed[row.Id] = &feed.Base{ 
                                             User: user, 
                                             Api: brokerApi,
-                                            DataChannel: t.Users[user.Id].DataChannel,
-                                            QuoteChannel: t.Users[user.Id].QuoteChannel,                       
+                                            DataChan: t.Users[user.Id].DataChan,
+                                            QuoteChan: t.Users[user.Id].QuoteChan,                       
                                           }
                       
     // Start fetching data for this user.
@@ -101,14 +107,40 @@ func (t * Base) DoUser(user models.User) {
   }
   
   // Listen for data from our fetchers
-  go t.doDataListen(t.Users[user.Id])
+  go t.doUserDataListen(t.Users[user.Id])
+  
+}
+
+//
+// Listen for incomeing feed requests.
+//
+func (t * Base) doFeedRequestListen() {
+
+  for {
+  
+    send := <-t.FeedRequestChan
+    
+    switch send.Message {
+      
+      case "FromCache:refresh":
+        
+        // Loop through each broker and refresh the data.
+        for _, row := range t.Users[send.UserId].BrokerFeed {
+          
+          row.RefreshFromCached()
+          
+        }
+        
+    }
+
+  } 
   
 }
 
 //
 // Listen for message on the data channel.
 //
-func (t * Base) doDataListen(user *User) {
+func (t * Base) doUserDataListen(user *User) {
   
   // Listen for data from the fetcher. We then send it up the main channel after
   // adding a userId to the object. We do it this way because int he future we could do 
@@ -117,15 +149,15 @@ func (t * Base) doDataListen(user *User) {
   
     select {
     
-      case message := <-user.DataChannel:
+      case message := <-user.DataChan:
         
         // Send this message up the chain to the master channel
-        t.WsWriteChannel <- websocket.SendStruct{ UserId: user.Profile.Id, Message: message }
+        t.DataChan <- websocket.SendStruct{ UserId: user.Profile.Id, Message: message }
         
-      case message := <-user.QuoteChannel:
+      case message := <-user.QuoteChan:
 
         // Send this message up the chain to the master channel
-        t.WsWriteQuoteChannel <- websocket.SendStruct{ UserId: user.Profile.Id, Message: message }
+        t.QuoteChan <- websocket.SendStruct{ UserId: user.Profile.Id, Message: message }
        
     
     }

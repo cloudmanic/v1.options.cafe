@@ -2,16 +2,19 @@ package websocket
 
 import (
   "os"
-  "fmt"
   "log"
   "time"
   "net/http"
   "golang.org/x/crypto/acme/autocert"
+  "app.options.cafe/backend/models"
+  "app.options.cafe/backend/library/services"
 )
 
 var (
-  WsWriteChannel chan SendStruct
-  WsWriteQuoteChannel chan SendStruct
+  DB *models.DB
+  WsReadChan chan SendStruct
+  WsWriteChan chan SendStruct
+  WsWriteQuoteChan chan SendStruct
 )
 
 //
@@ -20,7 +23,7 @@ var (
 func Start() {
   
   // Listen for data from our broker feeds.
-  go DoWebsocketDataFeeds()
+  go DoWsDispatch()
   
   // Register some handlers:
   mux := http.NewServeMux()
@@ -65,8 +68,62 @@ func Start() {
 // Listen for data from our broker feeds.
 // Take the data and then pass it up the websockets.
 //
-func DoWebsocketDataFeeds() {
+func DoWsDispatch() {
   
+  for {
+    
+    select {
+
+      // Core channel
+      case send := <-WsWriteChan:
+      
+        for i, _ := range connections {
+          
+          // We only care about the user we passed in.
+          if connections[i].userId == send.UserId {
+            
+            select {
+              
+              case connections[i].writeChan <-send.Message:
+ 	
+              default:
+                services.MajorLog("Channel full. Discarding value (Core channel)")   
+                          
+            }
+            
+          }
+          
+        }
+      
+      // Quotes channel
+      case send := <-WsWriteQuoteChan:
+      
+        for i, _ := range quotesConnections {
+          
+          // We only care about the user we passed in.
+          if quotesConnections[i].userId == send.UserId {
+            
+             select {
+              
+              case quotesConnections[i].writeChan <-send.Message:
+ 	
+              default:
+                services.MajorLog("Channel full. Discarding value (Quotes channel)")   
+                          
+            }           
+            
+          }
+          
+        }
+         
+    }
+      
+  }  
+  
+  
+  
+  
+/*
   for {
   
     select {
@@ -79,7 +136,8 @@ func DoWebsocketDataFeeds() {
       
     }
   
-  }   
+  }
+*/   
   
 }
 

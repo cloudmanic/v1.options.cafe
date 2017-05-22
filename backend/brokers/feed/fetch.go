@@ -16,41 +16,41 @@ import (
 func (t *Base) RefreshFromCached() error {
   
   // UserProfile - Send up websocket.
-  err := t.WriteWebSocket("UserProfile:refresh", t.UserProfile)
+  err := t.WriteDataChannel("UserProfile:refresh", t.UserProfile)
   
   if err != nil {
-    return fmt.Errorf("RefreshFromCached() WriteWebSocket - UserProfile:refresh : ", err)
+    return fmt.Errorf("RefreshFromCached() WriteDataChannel - UserProfile:refresh : ", err)
   }   
   
   // MarketStatus - Send up websocket.
-  err = t.WriteWebSocket("MarketStatus:refresh", t.MarketStatus)
+  err = t.WriteDataChannel("MarketStatus:refresh", t.MarketStatus)
   
   if err != nil {
-    return fmt.Errorf("RefreshFromCached() WriteWebSocket - MarketStatus:refresh : ", err)
+    return fmt.Errorf("RefreshFromCached() WriteDataChannel - MarketStatus:refresh : ", err)
   } 
   
   // Orders - Send up websocket.
-  err = t.WriteWebSocket("Orders:refresh", t.Orders)
+  err = t.WriteDataChannel("Orders:refresh", t.Orders)
   
   if err != nil {
-    return fmt.Errorf("RefreshFromCached() WriteWebSocket - Orders:refresh : ", err)
+    return fmt.Errorf("RefreshFromCached() WriteDataChannel - Orders:refresh : ", err)
   }
   
   // Balances - Send up websocket.
-  err = t.WriteWebSocket("Balances:refresh", t.Balances)
+  err = t.WriteDataChannel("Balances:refresh", t.Balances)
   
   if err != nil {
-    return fmt.Errorf("RefreshFromCached() WriteWebSocket - Balances:refresh : ", err)
+    return fmt.Errorf("RefreshFromCached() WriteDataChannel - Balances:refresh : ", err)
   }     
   
   // Watchlists - Loop through and send data up websocket  
   for _, row := range t.Watchlists {
      
     // Send up websocket.
-    err = t.WriteWebSocket("Watchlist:refresh", row)
+    err = t.WriteDataChannel("Watchlist:refresh", row)
     
     if err != nil {
-      return fmt.Errorf("RefreshFromCached() WriteWebSocket - Watchlist:refresh : ", err)
+      return fmt.Errorf("RefreshFromCached() WriteDataChannel - Watchlist:refresh : ", err)
     }    
     
   }  
@@ -141,10 +141,10 @@ func (t *Base) GetMarketStatus() (error) {
   t.muMarketStatus.Unlock()   
   
   // Send up websocket.
-  err = t.WriteWebSocket("MarketStatus:refresh", marketStatus)
+  err = t.WriteDataChannel("MarketStatus:refresh", marketStatus)
   
   if err != nil {
-    return fmt.Errorf("GetMarketStatus() WriteWebSocket : ", err)
+    return fmt.Errorf("GetMarketStatus() WriteDataChannel : ", err)
   }   
   
   // Return Happy
@@ -162,8 +162,6 @@ func (t *Base) GetUserProfile() (error) {
   // Make API call
   userProfile, err := t.Api.GetUserProfile()
   
-fmt.Println(userProfile)  
-  
   if err != nil {
     return err  
   }   
@@ -174,10 +172,10 @@ fmt.Println(userProfile)
   t.muUserProfile.Unlock()    
   
   // Send up websocket.
-  err = t.WriteWebSocket("UserProfile:refresh", userProfile)
+  err = t.WriteDataChannel("UserProfile:refresh", userProfile)
   
   if err != nil {
-    return fmt.Errorf("GetUserProfile() WriteWebSocket : ", err)
+    return fmt.Errorf("GetUserProfile() WriteDataChannel : ", err)
   }   
   
   // Return Happy
@@ -207,7 +205,7 @@ func (t *Base) GetOrders() (error) {
   t.muOrders.Unlock() 
   
   // Send up websocket.
-  err = t.WriteWebSocket("Orders:refresh", orders)
+  err = t.WriteDataChannel("Orders:refresh", orders)
   
   if err != nil {
     return fmt.Errorf("Fetch.GetOrders() : ", err)
@@ -273,10 +271,10 @@ func (t *Base) GetActiveSymbolsDetailedQuotes() (error) {
     } 
     
     // Send up websocket.
-    err = t.SendQuoteWebSocket(send_json)
+    err = t.WriteQuoteChannel(send_json)
     
     if err != nil {
-      return fmt.Errorf("GetActiveSymbolsDetailedQuotes() WriteWebSocket : ", err)
+      return fmt.Errorf("GetActiveSymbolsDetailedQuotes() WriteDataChannel : ", err)
     }     
     
   } 
@@ -308,10 +306,10 @@ func (t *Base) GetWatchlists() (error) {
   for _, row := range watchlists {
      
     // Send up websocket.
-    err = t.WriteWebSocket("Watchlist:refresh", row)
+    err = t.WriteDataChannel("Watchlist:refresh", row)
     
     if err != nil {
-      return fmt.Errorf("GetWatchlists() WriteWebSocket : ", err)
+      return fmt.Errorf("GetWatchlists() WriteDataChannel : ", err)
     }    
     
   }
@@ -340,10 +338,10 @@ func (t *Base) GetBalances() (error) {
   t.muBalances.Unlock()   
   
   // Send up websocket.
-  err = t.WriteWebSocket("Balances:refresh", balances)
+  err = t.WriteDataChannel("Balances:refresh", balances)
   
   if err != nil {
-    return fmt.Errorf("GetBalances() WriteWebSocket : ", err)
+    return fmt.Errorf("GetBalances() WriteDataChannel : ", err)
   } 
   
   // Return Happy
@@ -376,24 +374,24 @@ func (t *Base) GetSendJson(send_type string, data_json string) (string, error) {
 //
 // Send data up websocket. 
 //
-func (t *Base) WriteWebSocket(send_type string, sendObject interface{}) (error) {
+func (t *Base) WriteDataChannel(send_type string, sendObject interface{}) (error) {
 
   // Convert to a json string.
   dataJson, err := json.Marshal(sendObject)
 
   if err != nil {
-    return fmt.Errorf("WriteWebSocket() json.Marshal : ", err)
+    return fmt.Errorf("WriteDataChannel() json.Marshal : ", err)
   } 
   
   // Send data up websocket.
   sendJson, err := t.GetSendJson(send_type, string(dataJson))  
   
   if err != nil {
-    return fmt.Errorf("WriteWebSocket() GetSendJson Send Object : ", err)
+    return fmt.Errorf("WriteDataChannel() GetSendJson Send Object : ", err)
   }   
 
   // Write data out websocket
-  t.DataChannel <- sendJson
+  t.DataChan <- sendJson
   
   // Return happy
   return nil
@@ -403,10 +401,10 @@ func (t *Base) WriteWebSocket(send_type string, sendObject interface{}) (error) 
 //
 // Send data up quote websocket. 
 //
-func (t *Base) SendQuoteWebSocket(sendJson string) (error) {
+func (t *Base) WriteQuoteChannel(sendJson string) (error) {
     
   // Write data out websocket
-  t.QuoteChannel <- sendJson
+  t.QuoteChan <- sendJson
   
   // Return happy
   return nil
