@@ -2,12 +2,6 @@
 
 This is the options trading application we offer to customers. Angular2 front-end, Golang backend, Electron desktop application. 
 
-## Getting Up And Running For Development
-
-* Make sure the GoPATH is setup. This is what I have set ```export GOPATH=$HOME/Development/golang:$HOME/Development```
-
-* In the case of ```$HOME/Development``` Make sure you add a symlink with src. ```ln -s /Users/spicer/Development /Users/spicer/Development/src```
-
 ## Deploying With Ansible (and other actions by hand)
 
 * Login to the new host as root and run this command : ```apt-get install python```
@@ -31,18 +25,3 @@ This is the options trading application we offer to customers. Angular2 front-en
 * Run this ```sudo rm -rf /root/.ssh```
 
 * Run this ```sudo passwd root``` This sets root's password. Maybe we do not want this. Who knows.....
-
-## Note On Backend Docker
-
-* ```go run *.go``` the docker way : ```cd backend/docker && dc run --rm -p 7652:7652  backend bash```
-
-* Docker .env file example located in ```backend/docker/.env```
-
-```
-P_UID=501
-P_GID=20
-RESTART=always
-VIRTUAL_HOST=app.options.dev
-COMPOSE_PROJECT_NAME=app.options.dev
-GO_PATH=/Users/spicer/Development/golang
-```

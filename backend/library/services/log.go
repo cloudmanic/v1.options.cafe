@@ -1,3 +1,9 @@
+//
+// Date: 5/31/2017
+// Author(s): Spicer Matthews (spicer@options.cafe)
+// Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
+//
+
 package services
 
 import (
