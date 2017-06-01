@@ -8,7 +8,6 @@ package data_import
 
 import (
   "os"
-  //"fmt"
   "testing"  
   "github.com/joho/godotenv"  
   "github.com/tj/go-dropy"
@@ -16,6 +15,9 @@ import (
   "github.com/stretchr/testify/assert"  
 )
 
+//
+// Test - GetProccessedFiles
+//
 func TestGetProccessedFiles(t *testing.T) {
 
   // Load .env file 
