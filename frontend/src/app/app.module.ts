@@ -1,37 +1,46 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
+import { Routes, RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
-import { QuoteService } from './services/quote.service';
-import { BrokerService } from './services/broker.service';
-import { HeaderComponent } from './layout/header.component';
-import { FooterComponent } from './layout/footer.component';
-import { AccountsComponent } from './accounts/accounts.component';
-import { WatchlistComponent } from './watchlist/watchlist.component';
-import { OrdersComponent } from './orders/orders.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { SidebarComponent } from './sidebar/sidebar.component';
+
+// Layout
+import { SidebarComponent } from './layouts/sidebar/sidebar.component';
+import { MainNavComponent } from './layouts/main-nav/main-nav.component';
+
+import { BacktestingComponent } from './backtesting/backtesting.component';
+import { ReportsComponent } from './reports/reports.component';
+
+// Trading
+import { TradingLayoutComponent } from './trading/layout/layout.component';
+import { TradingDashboardComponent } from './trading/dashboard/dashboard.component';
+
+const appRoutes: Routes = [
+  { path: '', component: TradingDashboardComponent },
+  { path: 'reports', component: ReportsComponent },
+  { path: 'backtesting', component: BacktestingComponent }
+];
 
 @NgModule({
   declarations: [
     AppComponent,
-    HeaderComponent,
-    FooterComponent,
-    AccountsComponent,
-    WatchlistComponent,
-    OrdersComponent,
-    DashboardComponent,
-    SidebarComponent
+    
+    // Layout
+    SidebarComponent,
+    MainNavComponent,    
+    
+    BacktestingComponent,
+    ReportsComponent,
+    
+    // Trading
+    TradingLayoutComponent,
+    TradingDashboardComponent
   ],
   imports: [
     BrowserModule,
-    FormsModule,
-    HttpModule
+    RouterModule.forRoot(appRoutes)
   ],
-  providers: [ BrokerService, QuoteService ],
-  bootstrap: [ AppComponent ]
+  providers: [],
+  bootstrap: [AppComponent]
 })
-
-export class AppModule {}
+export class AppModule { }

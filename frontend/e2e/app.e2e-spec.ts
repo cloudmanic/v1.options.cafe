@@ -1,14 +1,14 @@
-import { OptionsCafeDesktopPage } from './app.po';
+import { FrontendPage } from './app.po';
 
-describe('options-cafe-desktop App', function() {
-  let page: OptionsCafeDesktopPage;
+describe('frontend App', () => {
+  let page: FrontendPage;
 
   beforeEach(() => {
-    page = new OptionsCafeDesktopPage();
+    page = new FrontendPage();
   });
 
-  it('should display message saying app works', () => {
+  it('should display welcome message', () => {
     page.navigateTo();
-    expect(page.getParagraphText()).toEqual('oc works!');
+    expect(page.getParagraphText()).toEqual('Welcome to app!!');
   });
 });

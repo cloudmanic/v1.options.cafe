@@ -1,11 +1,11 @@
-import { browser, element, by } from 'protractor';
+import { browser, by, element } from 'protractor';
 
-export class OptionsCafeDesktopPage {
+export class FrontendPage {
   navigateTo() {
     return browser.get('/');
   }
 
   getParagraphText() {
-    return element(by.css('oc-root h1')).getText();
+    return element(by.css('app-root h1')).getText();
   }
 }
