@@ -1,0 +1,47 @@
+<app-auth-layout> 
+
+  <form action="?" method="post">
+    <section class="form__section box--bordered">
+    	<div class="form__head">
+    		<h5 class="form__title">Welcome to Options Cafe!</h5><!-- /.form__title -->
+    	</div><!-- /.form__head -->
+  
+    	<div class="form__body">
+    		<div class="form__row">
+    			<label for="field-email" class="form__label">Email</label>
+  
+    			<div class="form__controls">
+    				<input type="email" class="field" name="field-email" id="field-email" value="mattdabr@gmail.com" required />
+    			</div><!-- /.form__controls -->
+    		</div><!-- /.form__row -->
+  
+    		<div class="form__row">
+    			<label for="field-password" class="form__label">Password</label>
+  
+    			<div class="form__controls">
+    				<input type="password" class="field" name="field-password" id="field-password" value="123456" required />
+    			</div><!-- /.form__controls -->
+    		</div><!-- /.form__row -->
+  
+    		<span class="form__error">Password incorrect</span>
+  
+    		<span class="form__error active">No account with that email</span>
+    	</div><!-- /.form__body -->
+  
+    	<div class="form__actions">
+    		<a routerLink="/reset_password" class="link-action form__help">Forgot your password?</a>
+  
+    		<input type="submit" value="Log in" class="btn form__btn" />
+    	</div><!-- /.form__actions -->
+    </section><!-- /.form__section box-bordered -->
+  
+    <footer class="form__foot">
+    	<p>Don't have an account?</p>
+  
+    	<p>
+    		<a routerLink="/register" class="link-action">Click here to sign up!</a>
+    	</p>
+    </footer><!-- /.form__foot -->
+  </form>
+
+</app-auth-layout>

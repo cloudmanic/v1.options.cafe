@@ -8,6 +8,13 @@ import { AppComponent } from './app.component';
 import { SidebarComponent } from './layouts/sidebar/sidebar.component';
 import { MainNavComponent } from './layouts/main-nav/main-nav.component';
 
+// Auth
+import { AuthLayoutComponent } from './auth/layout/home.component';
+import { AuthLoginComponent } from './auth/login/home.component';
+import { AuthRegisterComponent } from './auth/register/home.component';
+import { AuthBrokerSelectComponent } from './auth/broker-select/home.component';
+import { AuthResetPasswordComponent } from './auth/reset-password/home.component';
+
 // Backtest
 import { BacktestLayoutComponent } from './backtest/layout/layout.component';
 import { BacktestHomeComponent } from './backtest/home/home.component';
@@ -18,12 +25,29 @@ import { ReportsHomeComponent } from './reports/home/home.component';
 
 // Trading
 import { TradingLayoutComponent } from './trading/layout/layout.component';
-import { TradingDashboardComponent } from './trading/dashboard/dashboard.component';
+import { TradesComponent } from './trading/trades/home.component';
+import { ScreenerComponent } from './trading/screener/home.component';
+import { DashboardComponent } from './trading/dashboard/home.component';
+
 
 // Routes
 const appRoutes: Routes = [
-  { path: '', component: TradingDashboardComponent },
+  // Auth
+  { path: 'login', component: AuthLoginComponent },  
+  { path: 'register', component: AuthRegisterComponent },
+  { path: 'broker_select', component: AuthBrokerSelectComponent }, 
+  { path: 'reset_password', component: AuthResetPasswordComponent },   
+  
+  // Trading
+  { path: '', component: DashboardComponent },
+  { path: 'dashboard', component: DashboardComponent },  
+  { path: 'screener', component: ScreenerComponent },
+  { path: 'trades', component: TradesComponent },
+    
+  // Reports
   { path: 'reports', component: ReportsHomeComponent },
+  
+  // Backtest
   { path: 'backtest', component: BacktestHomeComponent }
 ];
 
@@ -35,6 +59,13 @@ const appRoutes: Routes = [
     SidebarComponent,
     MainNavComponent,    
     
+    // Auth
+    AuthLayoutComponent,
+    AuthLoginComponent,
+    AuthRegisterComponent,
+    AuthBrokerSelectComponent,
+    AuthResetPasswordComponent,
+    
     // Backtest
     BacktestLayoutComponent,
     BacktestHomeComponent,
@@ -45,7 +76,9 @@ const appRoutes: Routes = [
     
     // Trading
     TradingLayoutComponent,
-    TradingDashboardComponent
+    TradesComponent,
+    ScreenerComponent,
+    DashboardComponent
   ],
   imports: [
     BrowserModule,
