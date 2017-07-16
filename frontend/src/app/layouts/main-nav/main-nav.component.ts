@@ -17,8 +17,7 @@ export class MainNavComponent implements OnInit {
   //
   // Clicked on help.
   //
-  onHelpClick() {  
-    //groove.widget('load');
+  onHelpClick() { 
     groove.widget('open');
   }
 

@@ -1,0 +1,3 @@
+/* Hide GooveHq stuff */
+iframe.grv-widget-tag { display: none !important; }
+iframe.grv-widget-app { display: block !important; }
