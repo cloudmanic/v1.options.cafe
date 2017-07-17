@@ -2,7 +2,7 @@ package users
 
 import (
   "app.options.cafe/backend/models"
-  "app.options.cafe/backend/websocket"
+  "app.options.cafe/backend/controllers"
   "app.options.cafe/backend/brokers"
   "app.options.cafe/backend/brokers/feed"
   "app.options.cafe/backend/brokers/tradier"  
@@ -12,9 +12,9 @@ import (
 var (
   DB *models.DB
   Users map[uint]*User
-  DataChan chan websocket.SendStruct
-  QuoteChan chan websocket.SendStruct
-  FeedRequestChan chan websocket.SendStruct   
+  DataChan chan controllers.SendStruct
+  QuoteChan chan controllers.SendStruct
+  FeedRequestChan chan controllers.SendStruct   
 )
  
 type User struct {

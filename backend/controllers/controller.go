@@ -1,8 +1,8 @@
-package websocket
+package controllers
 
 
 import (
-  "fmt"   
+  "fmt"
   "github.com/tidwall/gjson"
   "app.options.cafe/backend/models"    
 )

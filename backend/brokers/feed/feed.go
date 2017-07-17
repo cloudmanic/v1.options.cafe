@@ -6,7 +6,7 @@ import (
   "time"
   "app.options.cafe/backend/models"  
   "app.options.cafe/backend/brokers"
-  "app.options.cafe/backend/websocket"
+  "app.options.cafe/backend/controllers"
   "app.options.cafe/backend/brokers/types"
 )
 
@@ -14,8 +14,8 @@ type Base struct {
   User models.User
   Api brokers.Api
   
-  DataChan chan websocket.SendStruct
-  QuoteChan chan websocket.SendStruct
+  DataChan chan controllers.SendStruct
+  QuoteChan chan controllers.SendStruct
   
   muOrders sync.Mutex
   Orders []types.Order

@@ -6,7 +6,7 @@ import (
   "github.com/joho/godotenv"
   "app.options.cafe/backend/users"
   "app.options.cafe/backend/models"
-  "app.options.cafe/backend/websocket"  
+  "app.options.cafe/backend/controllers"  
   "app.options.cafe/backend/library/services"
 )
       
@@ -32,21 +32,21 @@ func main() {
   DB.Start()
   defer DB.Connection.Close()  
   
-  // Setup websockets
-  websocket.DB = &DB
-  websocket.WsReadChan = make(chan websocket.SendStruct, 1000)
-  websocket.WsWriteChan = make(chan websocket.SendStruct, 1000)
-  websocket.WsWriteQuoteChan = make(chan websocket.SendStruct, 1000)
+  // Setup websockets & controllers
+  controllers.DB = &DB
+  controllers.WsReadChan = make(chan controllers.SendStruct, 1000)
+  controllers.WsWriteChan = make(chan controllers.SendStruct, 1000)
+  controllers.WsWriteQuoteChan = make(chan controllers.SendStruct, 1000)
     
   // Setup users object & Start users feeds
   users.DB = &DB
-  users.DataChan = websocket.WsWriteChan
-  users.QuoteChan = websocket.WsWriteQuoteChan
-  users.FeedRequestChan = websocket.WsReadChan    
+  users.DataChan = controllers.WsWriteChan
+  users.QuoteChan = controllers.WsWriteQuoteChan
+  users.FeedRequestChan = controllers.WsReadChan    
   users.StartFeeds()
 
-  // Start websockets
-  websocket.Start()
+  // Start websockets & controllers
+  controllers.Start()
   
 } 
 

@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"    
   "encoding/json"
-  "app.options.cafe/backend/websocket"  
+  "app.options.cafe/backend/controllers"  
   "app.options.cafe/backend/brokers/types"   
 )
 
@@ -392,7 +392,7 @@ func (t *Base) WriteDataChannel(send_type string, sendObject interface{}) (error
   }   
 
   // Write data out websocket
-  t.DataChan <- websocket.SendStruct{ UserId: t.User.Id, Message: sendJson }
+  t.DataChan <- controllers.SendStruct{ UserId: t.User.Id, Message: sendJson }
   
   // Return happy.
   return nil
@@ -404,7 +404,7 @@ func (t *Base) WriteDataChannel(send_type string, sendObject interface{}) (error
 func (t *Base) WriteQuoteChannel(sendJson string) (error) {
     
   // Write data out websocket
-  t.QuoteChan <- websocket.SendStruct{ UserId: t.User.Id, Message: sendJson }
+  t.QuoteChan <- controllers.SendStruct{ UserId: t.User.Id, Message: sendJson }
 
   // Return happy.
   return nil
