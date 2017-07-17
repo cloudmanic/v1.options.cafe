@@ -5,6 +5,7 @@ import (
   "log"
   "time"
   "net/http"
+  "encoding/json"
   "golang.org/x/crypto/acme/autocert"
   "app.options.cafe/backend/models"
   "app.options.cafe/backend/library/services"
@@ -30,6 +31,7 @@ func Start() {
   
   // Http Routes
   mux.HandleFunc("/", HtmlMainTemplate)    
+  mux.HandleFunc("/register", DoRegisterPost) 
     
   // Setup websocket
 	mux.HandleFunc("/ws/core", DoWebsocketConnection)
@@ -120,6 +122,68 @@ func DoWsDispatch() {
       
   }  
     
+}
+
+//
+// Register a new account.
+//
+func DoRegisterPost(w http.ResponseWriter, r *http.Request) {
+    
+  // Make sure this is a post request.
+	if r.Method != "POST" {
+    http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+    return
+	} 
+  
+  // Decode json passed in
+  decoder := json.NewDecoder(r.Body)
+  
+  type RegisterPost struct {
+    First string
+    Last string    
+    Email string
+    Password string
+  }
+  
+  var post RegisterPost 
+  
+  err := decoder.Decode(&post)
+  
+  if err != nil {
+    services.Error(err, "DoRegisterPost - Failed to decode JSON posted in")
+    return 
+  }
+  
+  defer r.Body.Close()
+  
+  // Start the database
+  DB.Start()
+  defer DB.Connection.Close()
+  
+  // First see if we already have this user.
+  user, err := DB.GetUserByEmail(post.Email)
+  
+  if err == nil {
+    services.Log("DoRegisterPost - Attempt to register user already in database : " + user.Email)
+    
+    // Respond with error
+    w.Header().Set("Content-Type", "application/json")
+    w.Write([]byte("{\"status\":0, \"error\":\"Looks like you already have an account, please login?\"}"))    
+      
+    return
+  }
+
+  // Install new user.
+  user, err = DB.CreateUser(post.First, post.Last, post.Email, post.Password)
+
+  if err != nil {
+    services.Error(err, "DoRegisterPost - Unable to register new user. (CreateUser)")
+    return     
+  }
+
+  // Return success json.
+  w.Header().Set("Content-Type", "application/json")
+  w.Write([]byte("{\"status\":1, \"access_token\":\"" + user.AccessToken + "\"}"))  
 }
 
 

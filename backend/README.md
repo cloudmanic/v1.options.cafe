@@ -6,7 +6,7 @@
 
 ## Note On Backend Docker
 
-* ```go run *.go``` the docker way : ```cd backend/docker && dc run --rm -p 7652:7652  backend bash```
+* ```go run *.go``` the docker way : ```cd backend/docker && docker-compose run --rm -p 7652:7652 backend-dev bash```
 
 * Docker .env file example located in ```backend/docker/.env```
 

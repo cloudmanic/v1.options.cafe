@@ -4,6 +4,9 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
 
+// Providers
+import { AppService } from './providers/websocket/app.service';
+
 // Layout
 import { SidebarComponent } from './layouts/sidebar/sidebar.component';
 import { MainNavComponent } from './layouts/main-nav/main-nav.component';
@@ -84,7 +87,7 @@ const appRoutes: Routes = [
     BrowserModule,
     RouterModule.forRoot(appRoutes)
   ],
-  providers: [],
+  providers: [ AppService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

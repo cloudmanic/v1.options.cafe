@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AppService } from '../../providers/websocket/app.service';
 
 @Component({
   selector: 'app-auth-register',
@@ -6,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AuthRegisterComponent implements OnInit {
 
-  constructor() { }
+  constructor(private appService: AppService) { }
 
   ngOnInit() {
   }

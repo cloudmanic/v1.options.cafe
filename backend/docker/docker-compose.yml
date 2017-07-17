@@ -3,14 +3,14 @@ version: '2.1'
 services:
 
   # App
-  backend:
+  backend-dev:
            
     hostname: ${VIRTUAL_HOST}
 
     container_name: ${VIRTUAL_HOST}
     
     ports:
-      - "7652:7652"     
+      - "127.0.0.1:7652:7652"     
            
     build:
       context: ./build
@@ -30,8 +30,8 @@ services:
       - ../:/work:rw
       - ../../:/go/src/app.options.cafe:ro       
       - ${GO_PATH}/src/golang.org:/go/src/golang.org:ro
-      - ${GO_PATH}/src/github.com:/go/src/github.com:ro   
-      
+      - ${GO_PATH}/src/github.com:/go/src/github.com:ro
+            
     networks:
       - shared     
   

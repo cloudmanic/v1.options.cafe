@@ -8,7 +8,6 @@ package services
 
 import (
   "os"
-  "fmt"
   "log"
   "github.com/stvp/rollbar"  
 )
@@ -18,7 +17,7 @@ import (
 //
 func Log(message string) {
   
-  fmt.Println(message)
+  log.Println(message)
   
 }
 

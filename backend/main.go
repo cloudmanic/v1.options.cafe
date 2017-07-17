@@ -29,7 +29,8 @@ func main() {
   
   // Connect to database and run Migrations.
   var DB = models.DB{}
-  DB.Start()  
+  DB.Start()
+  defer DB.Connection.Close()  
   
   // Setup websockets
   websocket.DB = &DB
