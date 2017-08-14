@@ -28,9 +28,9 @@ services:
           
     volumes:
       - ../:/work:rw
-      - ../../:/go/src/app.options.cafe:ro       
-      - ${GO_PATH}/src/golang.org:/go/src/golang.org:ro
-      - ${GO_PATH}/src/github.com:/go/src/github.com:ro
+      - ../../:/go/src/app.options.cafe:rw       
+      - ${GO_PATH}/src/golang.org:/go/src/golang.org:rw
+      - ${GO_PATH}/src/github.com:/go/src/github.com:rw
             
     networks:
       - shared     

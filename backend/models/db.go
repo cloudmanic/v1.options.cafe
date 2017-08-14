@@ -2,6 +2,7 @@ package models
 
 import (
   "os"
+  "log"
   "github.com/jinzhu/gorm"
   _ "github.com/go-sql-driver/mysql"
   "app.options.cafe/backend/library/services"
@@ -23,6 +24,7 @@ func (t * DB) Start() {
   
   if err != nil {
     services.Error(err, "Failed to connect database")
+    log.Fatal(err)
   }
 
   // Set the connection for the struct

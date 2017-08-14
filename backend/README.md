@@ -8,7 +8,7 @@
 
 * ```go run *.go``` the docker way : ```cd backend/docker && docker-compose run --rm -p 7652:7652 backend-dev bash```
 
-* Docker .env file example located in ```backend/docker/.env```
+* Add a Docker .env file example located at ```backend/docker/.env```
 
 ```
 P_UID=501
@@ -18,6 +18,11 @@ VIRTUAL_HOST=app.options.dev
 COMPOSE_PROJECT_NAME=app.options.dev
 GO_PATH=/Users/spicer/Development/golang
 ```
+
+* When connecting to a docker host we have to do this in the ```backend/.env``` file. 
+
+```DB_HOST=tcp(mysql-5.5:3306)```
+ 
 
 ## Backend Unit Testing....
 
