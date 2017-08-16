@@ -38,6 +38,7 @@ func (t * DB) Start() {
   t.Connection.AutoMigrate(&User{})
   t.Connection.AutoMigrate(&Broker{})
   t.Connection.AutoMigrate(&Order{})
+  t.Connection.AutoMigrate(&Session{})
   t.Connection.AutoMigrate(&OrderLeg{})
   t.Connection.AutoMigrate(&Position{}) 
   t.Connection.AutoMigrate(&TradeGroup{}) 

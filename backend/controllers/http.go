@@ -30,6 +30,7 @@ func Start() {
   
   // Http Routes
   mux.HandleFunc("/", HtmlMainTemplate)    
+  mux.HandleFunc("/login", DoLogin) 
   mux.HandleFunc("/register", DoRegister) 
     
   // Setup websocket

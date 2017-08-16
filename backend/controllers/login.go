@@ -1,15 +1,16 @@
 package controllers
 
 import (
+  "fmt"
   "net/http"
   "encoding/json" 
   "app.options.cafe/backend/library/services"     
 )
 
 //
-// Register a new account.
+// Login to account.
 //
-func DoRegister(w http.ResponseWriter, r *http.Request) {
+func DoLogin(w http.ResponseWriter, r *http.Request) {
     
   // Make sure this is a post request.
 	if r.Method == http.MethodGet {
@@ -21,27 +22,25 @@ func DoRegister(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
     http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
     return
-	} 	
+	}
   
   // Decode json passed in
   decoder := json.NewDecoder(r.Body)
   
-  type RegisterPost struct {
-    First string
-    Last string    
+  type LoginPost struct {  
     Email string
     Password string
   }
   
-  var post RegisterPost 
+  var post LoginPost 
   
   err := decoder.Decode(&post)
   
   if err != nil {
-    services.Error(err, "DoRegisterPost - Failed to decode JSON posted in")
+    services.Error(err, "DoLogin - Failed to decode JSON posted in")
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusBadRequest)
-    w.Write([]byte("{\"status\":0, \"error\":\"Something went wrong while registering your account. Please try again or contact help@options.cafe. Sorry for the trouble.\"}"))   
+    w.Write([]byte("{\"status\":0, \"error\":\"Something went wrong while logging into your account. Please try again or contact help@options.cafe. Sorry for the trouble.\"}"))   
     return 
   }
   
@@ -52,7 +51,7 @@ func DoRegister(w http.ResponseWriter, r *http.Request) {
   defer DB.Connection.Close()
 
   // Validate user.
-  if err := DB.ValidateCreateUser(post.First, post.Last, post.Email, post.Password); err != nil {
+  if err := DB.ValidateUserLogin(post.Email, post.Password); err != nil {
     
     // Respond with error
     w.Header().Set("Content-Type", "application/json")
@@ -62,19 +61,19 @@ func DoRegister(w http.ResponseWriter, r *http.Request) {
     return 
   }  
 
-  // Install new user.
-  user, err := DB.CreateUser(post.First, post.Last, post.Email, post.Password, r.UserAgent(), r.RemoteAddr)
+  // Login user in by email and password
+  user, err := DB.LoginUserByEmailPass(post.Email, post.Password, r.UserAgent(), r.RemoteAddr)
 
   if err != nil {
-    services.Error(err, "DoRegisterPost - Unable to register new user. (CreateUser)")
+    services.Error(err, "DoLogin - Unable to log user in. (CreateUser)")
     
     // Respond with error
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusBadRequest)
-    w.Write([]byte("{\"status\":0, \"error\":\"Something went wrong while registering your account. Please try again or contact help@options.cafe. Sorry for the trouble.\"}"))     
+    w.Write([]byte("{\"status\":0, \"error\":\"Something went wrong while logging into your account. Please try again or contact help@options.cafe. Sorry for the trouble.\"}"))     
     
     return     
-  }
+  }  
 
   // Return success json.
   w.Header().Set("Content-Type", "application/json")

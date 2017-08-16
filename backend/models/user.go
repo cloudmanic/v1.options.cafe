@@ -18,8 +18,8 @@ type User struct {
   LastName string `sql:"not null"`
   Email string `sql:"not null"`
   Password string `sql:"not null"`
-  AccessToken string `sql:"not null"`
   Status string `sql:"not null;type:ENUM('Active', 'Disable');default:'Active'"`
+  Session Session 
   Brokers []Broker
 }
 
@@ -76,22 +76,45 @@ func (t * DB) GetAllActiveUsers() ([]User) {
 }
 
 //
+// Login a user in by email and password. The userAgent is a way to marking what device this 
+// login request came from. Same with ipAddress.
+//
+func (t * DB) LoginUserByEmailPass(email string, password string, userAgent string, ipAddress string) (User, error) {
+
+  var user User
+
+  // See if we already have this user.
+  user, err := t.GetUserByEmail(email)
+  
+  if err != nil {   
+    return user, errors.New("Sorry, we were unable to find our account.")
+  }  
+  
+  // TODO: Validate password here.
+  
+  // Create a session so we get an access_token
+  session, err := t.CreateSession(user.Id, userAgent, ipAddress)
+
+  if err != nil {
+    services.Error(err, "LoginUserByEmailPass - Unable to create session in CreateSession()")
+    return User{}, err    
+  }
+  
+  // Add the session to the user object.
+  user.Session = session  
+
+  return user, nil
+}
+
+//
 // Create a new user.
 //
-func (t * DB) CreateUser(first string, last string, email string, password string) (User, error) {
+func (t * DB) CreateUser(first string, last string, email string, password string, userAgent string, ipAddress string) (User, error) {
   
   // Lets do some validation
   if err := t.ValidateCreateUser(first, last, email, password); err != nil {
     return User{}, err
   }
-  
-  // Create an access token.
-  access_token, err := GenerateRandomString(50)
-
-	if err != nil {
-    services.Error(err, "CreateUser - Unable to create random string (access_token)")
-    return User{}, err 
-	}  
 	
   // Generate "hash" to store from user password
   hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -105,15 +128,52 @@ func (t * DB) CreateUser(first string, last string, email string, password strin
   var _first = template.HTMLEscapeString(first)
   var _last = template.HTMLEscapeString(last)
   
-  user := User{FirstName: _first, LastName: _last, Email: email, Password: string(hash), AccessToken: access_token}
+  user := User{FirstName: _first, LastName: _last, Email: email, Password: string(hash)}
   t.Connection.Create(&user)
   
   // Log user creation.
   services.Log("CreateUser - Created a new user account - " + first + " " + last + " " + email)
+  
+  // Create a session so we get an access_token
+  session, err := t.CreateSession(user.Id, userAgent, ipAddress)
+
+  if err != nil {
+    services.Error(err, "CreateUser - Unable to create session in CreateSession()")
+    return User{}, err    
+  }
+  
+  // Add the session to the user object.
+  user.Session = session
  
   // Return the user.
   return user, nil
   
+}
+
+//
+// Validate a login user action.
+//
+func (t * DB) ValidateUserLogin(email string, password string) error {
+    
+  // Make sure the password is at least 6 chars long
+  if len(password) < 6 {
+    return errors.New("The password filed must be at least 6 characters long.")
+  }
+  
+  // Lets validate the email address
+  if err := ValidateEmailAddress(email); err != nil {
+    return err
+  } 
+  
+  // See if we already have this user.
+  _, err := t.GetUserByEmail(email)
+  
+  if err != nil {  
+    return errors.New("Sorry, we were unable to find our account.")
+  }  
+  
+  // Return happy.
+  return nil
 }
 
 //
