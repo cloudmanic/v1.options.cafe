@@ -1,9 +1,9 @@
 package controllers
 
 import (
-  "fmt"
   "net/http"
   "encoding/json" 
+  "app.options.cafe/backend/library/realip"
   "app.options.cafe/backend/library/services"     
 )
 
@@ -62,7 +62,7 @@ func DoLogin(w http.ResponseWriter, r *http.Request) {
   }  
 
   // Login user in by email and password
-  user, err := DB.LoginUserByEmailPass(post.Email, post.Password, r.UserAgent(), r.RemoteAddr)
+  user, err := DB.LoginUserByEmailPass(post.Email, post.Password, r.UserAgent(), realip.RealIP(r))
 
   if err != nil {
     services.Error(err, "DoLogin - Unable to log user in. (CreateUser)")
