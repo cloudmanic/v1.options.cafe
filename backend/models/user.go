@@ -34,6 +34,9 @@ func (t * DB) GetUserByEmail(email string) (User, error) {
     return u, errors.New("Record not found")
   }
   
+  // Add in brokers
+  t.Connection.Model(u).Related(&u.Brokers)
+  
   // Return the user.
   return u, nil
   
@@ -90,7 +93,12 @@ func (t * DB) LoginUserByEmailPass(email string, password string, userAgent stri
     return user, errors.New("Sorry, we were unable to find our account.")
   }  
   
-  // TODO: Validate password here.
+  // Validate password here by comparing hashes nil means success
+  err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+  
+  if err != nil {
+    return user, err;
+  }
   
   // Create a session so we get an access_token
   session, err := t.CreateSession(user.Id, userAgent, ipAddress)

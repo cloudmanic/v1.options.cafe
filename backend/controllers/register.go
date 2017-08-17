@@ -2,7 +2,8 @@ package controllers
 
 import (
   "net/http"
-  "encoding/json" 
+  "encoding/json"
+  "app.options.cafe/backend/library/realip" 
   "app.options.cafe/backend/library/services"     
 )
 
@@ -22,6 +23,9 @@ func DoRegister(w http.ResponseWriter, r *http.Request) {
     http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
     return
 	} 	
+	
+	// Set response
+	w.Header().Set("Content-Type", "application/json")	
   
   // Decode json passed in
   decoder := json.NewDecoder(r.Body)
@@ -39,7 +43,6 @@ func DoRegister(w http.ResponseWriter, r *http.Request) {
   
   if err != nil {
     services.Error(err, "DoRegisterPost - Failed to decode JSON posted in")
-    w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusBadRequest)
     w.Write([]byte("{\"status\":0, \"error\":\"Something went wrong while registering your account. Please try again or contact help@options.cafe. Sorry for the trouble.\"}"))   
     return 
@@ -55,7 +58,6 @@ func DoRegister(w http.ResponseWriter, r *http.Request) {
   if err := DB.ValidateCreateUser(post.First, post.Last, post.Email, post.Password); err != nil {
     
     // Respond with error
-    w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusBadRequest)
     w.Write([]byte("{\"status\":0, \"error\":\"" + err.Error() + "\"}"))     
     
@@ -63,13 +65,12 @@ func DoRegister(w http.ResponseWriter, r *http.Request) {
   }  
 
   // Install new user.
-  user, err := DB.CreateUser(post.First, post.Last, post.Email, post.Password, r.UserAgent(), r.RemoteAddr)
+  user, err := DB.CreateUser(post.First, post.Last, post.Email, post.Password, r.UserAgent(), realip.RealIP(r))
 
   if err != nil {
     services.Error(err, "DoRegisterPost - Unable to register new user. (CreateUser)")
     
     // Respond with error
-    w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusBadRequest)
     w.Write([]byte("{\"status\":0, \"error\":\"Something went wrong while registering your account. Please try again or contact help@options.cafe. Sorry for the trouble.\"}"))     
     
@@ -77,7 +78,6 @@ func DoRegister(w http.ResponseWriter, r *http.Request) {
   }
 
   // Return success json.
-  w.Header().Set("Content-Type", "application/json")
   w.Write([]byte("{\"status\":1, \"access_token\":\"" + user.Session.AccessToken + "\"}"))  
 }
 
