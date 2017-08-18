@@ -1,6 +1,7 @@
 package controllers
 
 import (
+  "os"
   "net/http"
   "encoding/json"
   "app.options.cafe/backend/library/realip" 
@@ -11,6 +12,15 @@ import (
 // Register a new account.
 //
 func DoRegister(w http.ResponseWriter, r *http.Request) {
+    
+  // Manage OPTIONS requests 
+	if (os.Getenv("APP_ENV") == "local") && (r.Method == http.MethodOptions) {
+	  w.Header().Set("Content-Type", "application/json")
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+    w.Header().Set("Access-Control-Allow-Headers", "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range")
+    return
+  }    
     
   // Make sure this is a post request.
 	if r.Method == http.MethodGet {

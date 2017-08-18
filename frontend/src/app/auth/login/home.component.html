@@ -1,6 +1,6 @@
 <app-auth-layout> 
 
-  <form action="?" method="post">
+  <form (ngSubmit)="onSubmit(f)" #f="ngForm">
     <section class="form__section box--bordered">
     	<div class="form__head">
     		<h5 class="form__title">Welcome to Options Cafe!</h5><!-- /.form__title -->
@@ -11,7 +11,7 @@
     			<label for="field-email" class="form__label">Email</label>
   
     			<div class="form__controls">
-    				<input type="email" class="field" name="field-email" id="field-email" value="mattdabr@gmail.com" required />
+    				<input type="email" class="field" name="email" id="field-email" value="" required email ngModel />
     			</div><!-- /.form__controls -->
     		</div><!-- /.form__row -->
   
@@ -19,7 +19,7 @@
     			<label for="field-password" class="form__label">Password</label>
   
     			<div class="form__controls">
-    				<input type="password" class="field" name="field-password" id="field-password" value="123456" required />
+    				<input type="password" class="field" name="password" id="field-password" value="" required ngModel />
     			</div><!-- /.form__controls -->
     		</div><!-- /.form__row -->
   
@@ -31,7 +31,7 @@
     	<div class="form__actions">
     		<a routerLink="/reset_password" class="link-action form__help">Forgot your password?</a>
   
-    		<input type="submit" value="Log in" class="btn form__btn" />
+    		<input type="submit" value="Log in" class="btn form__btn" [disabled]="! f.valid" />
     	</div><!-- /.form__actions -->
     </section><!-- /.form__section box-bordered -->
   
