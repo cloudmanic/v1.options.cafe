@@ -29,6 +29,7 @@ func HtmlMainTemplate(w http.ResponseWriter, r *http.Request) {
   	
     <script type="text/javascript">
       var ws_server = "wss://app.options.cafe";
+      var app_server = "https://app.options.cafe";
     </script>  		
   </head>
 <body>
