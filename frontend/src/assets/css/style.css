@@ -1608,3 +1608,5 @@ select::-ms-expand { display: none; }
 /* Hide GooveHq stuff */
 iframe.grv-widget-tag { display: none !important; }
 iframe.grv-widget-app { display: block !important; }
+
+input[type="submit"]:disabled { opacity: .3 }

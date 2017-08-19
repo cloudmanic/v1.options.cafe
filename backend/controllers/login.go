@@ -81,7 +81,7 @@ func DoLogin(w http.ResponseWriter, r *http.Request) {
     
     // Respond with error
     w.WriteHeader(http.StatusBadRequest)
-    w.Write([]byte("{\"status\":0, \"error\":\"Sorry, we could not find an account with that email / password combination.\"}"))     
+    w.Write([]byte("{\"status\":0, \"error\":\"Sorry, we could not find you account.\"}"))     
     
     return     
   }  

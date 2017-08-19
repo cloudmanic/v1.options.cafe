@@ -19,19 +19,17 @@
     			<label for="field-password" class="form__label">Password</label>
   
     			<div class="form__controls">
-    				<input type="password" class="field" name="password" id="field-password" value="" required ngModel />
+    				<input type="password" class="field" name="password" id="field-password" value="" minlength="6" required ngModel />
     			</div><!-- /.form__controls -->
     		</div><!-- /.form__row -->
   
-    		<span class="form__error">Password incorrect</span>
-  
-    		<span class="form__error active">No account with that email</span>
+    		<span class="form__error active" *ngIf="errorMsg">{{ errorMsg }}</span>
     	</div><!-- /.form__body -->
   
     	<div class="form__actions">
-    		<a routerLink="/reset_password" class="link-action form__help">Forgot your password?</a>
+    		<a routerLink="/reset-password" class="link-action form__help">Forgot your password?</a>
   
-    		<input type="submit" value="Log in" class="btn form__btn" [disabled]="! f.valid" />
+    		<input type="submit" value="{{ submitBtn }}" class="btn form__btn" [disabled]="! f.valid" />
     	</div><!-- /.form__actions -->
     </section><!-- /.form__section box-bordered -->
   

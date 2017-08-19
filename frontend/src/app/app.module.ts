@@ -40,8 +40,8 @@ const appRoutes: Routes = [
   // Auth
   { path: 'login', component: AuthLoginComponent },  
   { path: 'register', component: AuthRegisterComponent },
-  { path: 'broker_select', component: AuthBrokerSelectComponent }, 
-  { path: 'reset_password', component: AuthResetPasswordComponent },   
+  { path: 'broker-select', component: AuthBrokerSelectComponent }, 
+  { path: 'reset-password', component: AuthResetPasswordComponent },   
   
   // Trading
   { path: '', component: DashboardComponent },
