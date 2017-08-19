@@ -12,6 +12,6 @@ type Broker struct {
   Name string `sql:"not null;type:ENUM('Tradier', 'Tradeking', 'Etrade', 'Interactive Brokers'); default:'Tradier'"`
   AccessToken string `sql:"not null"`
   RefreshToken string `sql:"not null"`  
-}     
+}      
       
 /* End File */

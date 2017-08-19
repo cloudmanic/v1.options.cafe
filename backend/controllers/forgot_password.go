@@ -9,9 +9,9 @@ import (
 )
 
 //
-// Login to account.
+// Post back to setup a forgot password request.
 //
-func DoLogin(w http.ResponseWriter, r *http.Request) {
+func DoForgotPassword(w http.ResponseWriter, r *http.Request) {
   
   // Manage OPTIONS requests 
 	if (os.Getenv("APP_ENV") == "local") && (r.Method == http.MethodOptions) {
@@ -44,19 +44,18 @@ func DoLogin(w http.ResponseWriter, r *http.Request) {
   // Decode json passed in
   decoder := json.NewDecoder(r.Body)
   
-  type LoginPost struct {  
+  type ForgotPost struct {  
     Email string
-    Password string
   }
   
-  var post LoginPost 
+  var post ForgotPost 
   
   err := decoder.Decode(&post)
   
   if err != nil {
-    services.Error(err, "DoLogin - Failed to decode JSON posted in")
+    services.Error(err, "DoForgotPassword - Failed to decode JSON posted in")
     w.WriteHeader(http.StatusBadRequest)
-    w.Write([]byte("{\"status\":0, \"error\":\"Something went wrong while logging into your account. Please try again or contact help@options.cafe. Sorry for the trouble.\"}"))   
+    w.Write([]byte("{\"error\":\"Something went wrong while setting up your forgot password request. Please try again or contact help@options.cafe. Sorry for the trouble.\"}"))   
     return 
   }
   
@@ -66,52 +65,33 @@ func DoLogin(w http.ResponseWriter, r *http.Request) {
   DB.Start()
   defer DB.Connection.Close()
 
-  // Validate user.
-  if err := DB.ValidateUserLogin(post.Email, post.Password); err != nil {
-    
-    // Respond with error
-    w.WriteHeader(http.StatusBadRequest)
-    w.Write([]byte("{\"status\":0, \"error\":\"" + err.Error() + "\"}"))     
-    
-    return 
-  }  
-
-  // Login user in by email and password
-  user, err := DB.LoginUserByEmailPass(post.Email, post.Password, r.UserAgent(), realip.RealIP(r))
-
+  // Request a reset password request.
+  err = DB.DoResetPassword(post.Email, realip.RealIP(r))
+  
   if err != nil {
-    services.Error(err, "DoLogin - Unable to log user in. (CreateUser)")
+    services.Error(err, "DoForgotPassword - Unable to reset password.")
     
     // Respond with error
     w.WriteHeader(http.StatusBadRequest)
-    w.Write([]byte("{\"status\":0, \"error\":\"Sorry, we could not find your account.\"}"))     
+    w.Write([]byte("{\"error\":\"Sorry, we could not find your account.\"}"))     
     
     return     
   }  
   
-  // Here we check to see if we have any brokers. If there are no brokers the user needs to select at least one to do anything.
-  var brokerCount = len(user.Brokers)
-  
   type Response struct {
-    Status uint `json:"status"`
-    AccessToken string `json:"access_token"`
-    BrokerCount int `json:"broker_count"`
+    Message string `json:"message"`
   }
   
-  resObj := &Response{ 
-    Status: 1,
-    AccessToken: user.Session.AccessToken,
-    BrokerCount: brokerCount,
-  }
-
+  resObj := &Response{ Message: "Success! Please check your email for next steps." }
+  
   resJson, err := json.Marshal(resObj)
   
   if err != nil {
-    services.Error(err, "DoLogin - Unable to log user in. (json.Marshal)") 
+    services.Error(err, "DoForgotPassword - Unable to reset password. (json.Marshal)") 
     
     // Respond with error
     w.WriteHeader(http.StatusBadRequest)
-    w.Write([]byte("{\"status\":0, \"error\":\"Something went wrong while logging into your account. Please try again or contact help@options.cafe. Sorry for the trouble.\"}"))     
+    w.Write([]byte("{\"error\":\"Something went wrong while setting up your forgot password request. Please try again or contact help@options.cafe. Sorry for the trouble.\"}"))     
     
     return     
   } 

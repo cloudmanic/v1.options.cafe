@@ -32,6 +32,7 @@ func Start() {
   mux.HandleFunc("/", HtmlMainTemplate)    
   mux.HandleFunc("/login", DoLogin) 
   mux.HandleFunc("/register", DoRegister) 
+  mux.HandleFunc("/forgot-password", DoForgotPassword)
     
   // Setup websocket
 	mux.HandleFunc("/ws/core", DoWebsocketConnection)
