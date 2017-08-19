@@ -218,7 +218,7 @@ func (t * DB) ValidateCreateUser(first string, last string, email string, passwo
   _, err := t.GetUserByEmail(email)
   
   if err == nil {   
-    return errors.New("Looks like you already have an account, please login?")
+    return errors.New("Looks like you already have an account.")
   }  
   
   // Return happy.

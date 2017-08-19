@@ -1,41 +1,49 @@
 <app-auth-layout> 
 
-  <form action="?" method="post">
+  <form (ngSubmit)="onSubmit(f)" #f="ngForm">
     <section class="form__section box--bordered">
     	<div class="form__head">
     		<h5 class="form__title">Create an Options Cafe Account!</h5><!-- /.form__title -->
-    	</div><!-- /.form__head -->
+    	</div>
   
     	<div class="form__body">
     		<div class="form__row">
-    			<label for="field-name" class="form__label">Name</label>
+    			<label for="field-first" class="form__label">First Name</label>
   
     			<div class="form__controls">
-    				<input type="text" class="field" name="field-name" id="field-name" required />
-    			</div><!-- /.form__controls -->
-    		</div><!-- /.form__row -->
+    				<input type="text" class="field" name="first" id="field-first" required ngModel />
+    			</div>
+    		</div>
+    		
+    		<div class="form__row">
+    			<label for="field-last" class="form__label">Last Name</label>
+  
+    			<div class="form__controls">
+    				<input type="text" class="field" name="last" id="field-last" required ngModel />
+    			</div>
+    		</div>    		
   
     		<div class="form__row">
     			<label for="field-email" class="form__label">Email</label>
   
     			<div class="form__controls">
-    				<input type="email" class="field" name="field-email" id="field-email" required />
-    			</div><!-- /.form__controls -->
-    		</div><!-- /.form__row -->
+    				<input type="email" class="field" name="email" id="field-email" required email ngModel />
+    			</div>
+    		</div>
   
     		<div class="form__row">
     			<label for="field-password" class="form__label">Password</label>
   
     			<div class="form__controls">
-    				<input type="password" class="field" name="field-password" id="field-password" required />
-    			</div><!-- /.form__controls -->
-    		</div><!-- /.form__row -->
+    				<input type="password" class="field" name="password" id="field-password" minlength="6" required ngModel />
+    			</div>
+    		</div>
   
-    		<span class="form__error active">Not a valid email address</span>
-    	</div><!-- /.form__body -->
+    		<span class="form__error active" *ngIf="errorMsg">{{ errorMsg }}</span>
+    	</div>
   
     	<div class="form__actions">
-    		<input type="submit" value="Create account" class="btn form__btn" />
+    		<input type="submit" value="{{ submitBtn }}" class="btn form__btn" [disabled]="! f.valid" />
     	</div><!-- /.form__actions -->
     </section><!-- /.form__section box-bordered -->
   
@@ -43,7 +51,7 @@
     	<p>
     		<a routerLink="/login" class="link-action">Back to login</a>
     	</p>
-    </footer><!-- /.form__foot form__foot-alignleft -->
+    </footer>
   </form>
 
 </app-auth-layout>

@@ -20,7 +20,7 @@ func DoRegister(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
     w.Header().Set("Access-Control-Allow-Headers", "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range")
     return
-  }    
+  }  
     
   // Make sure this is a post request.
 	if r.Method == http.MethodGet {
@@ -35,7 +35,11 @@ func DoRegister(w http.ResponseWriter, r *http.Request) {
 	} 	
 	
 	// Set response
-	w.Header().Set("Content-Type", "application/json")	
+	if (os.Getenv("APP_ENV") == "local") {
+	  w.Header().Set("Access-Control-Allow-Origin", "*")
+	}
+	
+	w.Header().Set("Content-Type", "application/json")
   
   // Decode json passed in
   decoder := json.NewDecoder(r.Body)

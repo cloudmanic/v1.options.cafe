@@ -35,7 +35,10 @@ func DoLogin(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	// Set response
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	if (os.Getenv("APP_ENV") == "local") {
+	  w.Header().Set("Access-Control-Allow-Origin", "*")
+	}
+	
 	w.Header().Set("Content-Type", "application/json")
   
   // Decode json passed in
