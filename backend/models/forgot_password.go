@@ -3,6 +3,7 @@ package models
 import (
   "time"
   "errors"
+  "app.options.cafe/backend/library/email"
   "app.options.cafe/backend/library/services"
 )
 
@@ -18,10 +19,10 @@ type ForgotPassword struct {
 //
 // Reset the user's password and send an email telling them next steps.
 //
-func (t * DB) DoResetPassword(email string, ip string) error {
+func (t * DB) DoResetPassword(user_email string, ip string) error {
 
   // Make sure this is a real email address
-  user, err := t.GetUserByEmail(email)
+  user, err := t.GetUserByEmail(user_email)
   
   if err != nil {  
     return errors.New("Sorry, we were unable to find our account.")
@@ -40,10 +41,41 @@ func (t * DB) DoResetPassword(email string, ip string) error {
   t.Connection.Create(&rsp)
   
   // Log user creation.
-  services.Log("DoResetPassword - Reset password token for " + user.Email)   
+  services.Log("DoResetPassword - Reset password token for " + user.Email)
+  
+  // Send email to user asking them to come to the site and reset the password.
+  err = email.Send(user.Email, "Options Cafe Reset Password Request", GetForgotPasswordStepOneEmailHtml())
+
+  if err != nil { 
+    return err
+  }
 
   // Everything went as planned.
   return nil
+  
+}
+
+// ------------------- Template Emails ------------------------- //
+
+func GetForgotPasswordStepOneEmailHtml() string {
+  
+  return string(`
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+            "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html>
+    
+    </head>
+    
+    <body>
+    <p>
+        Hello {{.Name}}
+        <a href="{{.URL}}">Confirm email address</a>
+    </p>
+        
+    </body>
+    
+    </html>  
+  `)
   
 }
  

@@ -9,7 +9,7 @@ ARG P_GID=0
 USER root
 
 # Install bash
-RUN apk add --no-cache bash
+RUN apk add --no-cache bash git
 
 # Reset Password and group files
 RUN set -x \
