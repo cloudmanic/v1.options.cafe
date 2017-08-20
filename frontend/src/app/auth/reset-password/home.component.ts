@@ -50,8 +50,6 @@ export class AuthResetPasswordComponent implements OnInit {
 
     // Add the hash to the post.
     form.value.hash = this.hash;
-    
-    console.log(form.value);
 
     // Make the the HTTP request:
     this.http.post(app_server + '/reset-password', form.value).subscribe(
