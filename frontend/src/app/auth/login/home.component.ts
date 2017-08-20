@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm }   from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 
 declare var app_server: any;
 
@@ -20,11 +20,22 @@ interface LoginResponse {
 export class AuthLoginComponent implements OnInit {
 
   errorMsg = "";
+  successMsg = "";
   submitBtn = "Log In";
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router, private activatedRoute: ActivatedRoute) { }
 
-  ngOnInit() {}
+  //
+  // OnInit...
+  //
+  ngOnInit() {
+    
+    // subscribe to router event
+    this.activatedRoute.queryParams.subscribe((params: Params) => {
+      this.successMsg = params['success'];
+    });
+    
+  }
   
   //
   // Login submit.

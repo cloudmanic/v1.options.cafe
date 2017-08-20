@@ -24,6 +24,25 @@ type User struct {
 }
 
 //
+// Get a user by Id.
+//
+func (t * DB) GetUserById(id uint) (User, error) {
+ 
+  var u User
+  
+  if t.Connection.Where("Id = ?", id).First(&u).RecordNotFound() {
+    return u, errors.New("Record not found")
+  }
+  
+  // Add in brokers
+  t.Connection.Model(u).Related(&u.Brokers)
+  
+  // Return the user.
+  return u, nil
+  
+} 
+
+//
 // Get a user by email.
 //
 func (t * DB) GetUserByEmail(email string) (User, error) {
@@ -112,6 +131,37 @@ func (t * DB) LoginUserByEmailPass(email string, password string, userAgent stri
   user.Session = session  
 
   return user, nil
+}
+
+//
+// Reset a user password.
+//
+func (t * DB) ResetUserPassword(id uint, password string) error {
+  
+  // Get the user.
+  user, err := t.GetUserById(id)
+  
+  if err != nil {  
+    return err
+  }   
+  
+  // Build the new password hash.
+  hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)  
+  
+  if err != nil {
+    services.Error(err, "ResetUserPassword - Unable to create password hash (password hash)")
+    return err    
+  }  
+  
+  // Update the database with the new password
+  if err := t.Connection.Model(&user).Update("password", hash).Error; err != nil {
+    services.Error(err, "ResetUserPassword - Unable update the password (mysql query)")
+    return err    
+  }
+  
+  // Success.
+  return nil
+  
 }
 
 //
@@ -205,8 +255,10 @@ func (t * DB) ValidateCreateUser(first string, last string, email string, passwo
   }
   
   // Make sure the password is at least 6 chars long
-  if len(password) < 6 {
-    return errors.New("The password filed must be at least 6 characters long.")
+  err := t.ValidatePassword(password)
+  
+  if err != nil {
+    return err
   }
   
   // Lets validate the email address
@@ -215,7 +267,7 @@ func (t * DB) ValidateCreateUser(first string, last string, email string, passwo
   } 
   
   // See if we already have this user.
-  _, err := t.GetUserByEmail(email)
+  _, err = t.GetUserByEmail(email)
   
   if err == nil {   
     return errors.New("Looks like you already have an account.")
@@ -223,6 +275,21 @@ func (t * DB) ValidateCreateUser(first string, last string, email string, passwo
   
   // Return happy.
   return nil
+}
+
+// 
+// Validate password.
+//
+func (t * DB) ValidatePassword(password string) error {
+ 
+  // Make sure the password is at least 6 chars long
+  if len(password) < 6 {
+    return errors.New("The password filed must be at least 6 characters long.")
+  } 
+
+  // Return happy.
+  return nil
+  
 }
 
 // ------------------ Helper Functions --------------------- //

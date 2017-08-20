@@ -1,12 +1,16 @@
 <app-auth-layout> 
-
+  
   <form (ngSubmit)="onSubmit(f)" #f="ngForm">
     <section class="form__section box--bordered">
+      
     	<div class="form__head">
     		<h5 class="form__title">Welcome to Options Cafe!</h5><!-- /.form__title -->
     	</div><!-- /.form__head -->
   
     	<div class="form__body">
+      	
+      	<p class="title-green" *ngIf="successMsg">{{ successMsg }}</p>
+      	
     		<div class="form__row">
     			<label for="field-email" class="form__label">Email</label>
   
@@ -27,7 +31,7 @@
     	</div><!-- /.form__body -->
   
     	<div class="form__actions">
-    		<a routerLink="/reset-password" class="link-action form__help">Forgot your password?</a>
+    		<a routerLink="/forgot-password" class="link-action form__help">Forgot your password?</a>
   
     		<input type="submit" value="{{ submitBtn }}" class="btn form__btn" [disabled]="! f.valid" />
     	</div><!-- /.form__actions -->

@@ -8,6 +8,8 @@ import (
   "app.options.cafe/backend/library/services"     
 )
 
+// TODO: Lots of duplicate code in here with setting headers and such. Should clean up. Also see Forgot Password, and Login.
+
 //
 // Register a new account.
 //

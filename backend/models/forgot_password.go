@@ -1,6 +1,7 @@
 package models
 
 import (
+  "os"
   "time"
   "errors"
   "app.options.cafe/backend/library/email"
@@ -14,6 +15,53 @@ type ForgotPassword struct {
   UserId uint `sql:"not null;index:UserId"` 
   Token string `sql:"not null"`
   IpAddress string `sql:"not null"`
+}
+
+//
+// Return the user based on the hash passed.
+//
+func (t * DB) GetUserFromToken(token string) (User, error) {
+ 
+  var u User
+  var f ForgotPassword
+  
+  // Get the record based on the token we passed in.
+  if t.Connection.Where("Token = ?", token).First(&f).RecordNotFound() {
+    return u, errors.New("Record not found")
+  }
+  
+  // Get the user from based on the user id we got.
+  u, err := t.GetUserById(f.UserId)
+  
+  if err != nil {  
+    return u, err
+  }  
+  
+  // Return the user.
+  return u, nil
+  
+}
+
+//
+// Delete record by hash.
+//
+func (t * DB) DeleteForgotPasswordByToken(token string) error {
+  
+  var f ForgotPassword
+  
+  // Get the record based on the token we passed in.
+  if t.Connection.Where("Token = ?", token).First(&f).RecordNotFound() {
+    return errors.New("Record not found")
+  }
+  
+  // Delete record
+  if err := t.Connection.Delete(&f).Error; err != nil {
+    return err     
+  }
+
+  // Return success
+  return nil    
+  
 }
 
 //
@@ -44,7 +92,7 @@ func (t * DB) DoResetPassword(user_email string, ip string) error {
   services.Log("DoResetPassword - Reset password token for " + user.Email)
   
   // Build the url to reset the password.
-  var url = "https://app.options.cafe/reset-password?hash=" + hash
+  var url = os.Getenv("SITE_URL") + "/reset-password?hash=" + hash
   
   // Send email to user asking them to come to the site and reset the password.
   err = email.Send(

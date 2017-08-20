@@ -19,6 +19,7 @@ import { AuthLoginComponent } from './auth/login/home.component';
 import { AuthRegisterComponent } from './auth/register/home.component';
 import { AuthBrokerSelectComponent } from './auth/broker-select/home.component';
 import { AuthResetPasswordComponent } from './auth/reset-password/home.component';
+import { AuthForgotPasswordComponent } from './auth/forgot-password/home.component';
 
 // Backtest
 import { BacktestLayoutComponent } from './backtest/layout/layout.component';
@@ -41,7 +42,8 @@ const appRoutes: Routes = [
   { path: 'login', component: AuthLoginComponent },  
   { path: 'register', component: AuthRegisterComponent },
   { path: 'broker-select', component: AuthBrokerSelectComponent }, 
-  { path: 'reset-password', component: AuthResetPasswordComponent },   
+  { path: 'forgot-password', component: AuthForgotPasswordComponent },   
+  { path: 'reset-password', component: AuthResetPasswordComponent }, 
   
   // Trading
   { path: '', component: DashboardComponent },
@@ -70,6 +72,7 @@ const appRoutes: Routes = [
     AuthRegisterComponent,
     AuthBrokerSelectComponent,
     AuthResetPasswordComponent,
+    AuthForgotPasswordComponent,
     
     // Backtest
     BacktestLayoutComponent,
