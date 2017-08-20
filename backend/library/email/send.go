@@ -2,9 +2,16 @@ package email
 
 import (
   "os"
+  "errors"
   "strconv"
   "gopkg.in/gomail.v2"
+  "gopkg.in/mailgun/mailgun-go.v1"
   "app.options.cafe/backend/library/services"
+)
+
+var (
+  fromEmail = "help@options.cafe"
+  bccEmail = "bcc@options.cafe"
 )
 
 //
@@ -14,11 +21,60 @@ import (
 //
 func Send(to string, subject string, html string, text string) error {
     
+  // Are we sending as SMTP or via Mailgun? Typically we 
+  // send as SMTP for local development so we can use Mailhog
+  if os.Getenv("MAIL_DRIVER") == "smtp" {
+    return SmtpSend(to, subject, html, text)
+  } 
+  
+  // Send via mailgun
+  if os.Getenv("MAIL_DRIVER") == "mailgun" {
+    return MailgunSend(to, subject, html, text)
+  } 
+  
+  // We should never get here if we are configured correctly.
+  var err = errors.New("No mail driver found.")
+  services.Error(err, "library/email/Send/Send() - No mail driver found.")
+  return err
+  
+}
+
+//
+// Send via Mailgun.
+//
+func MailgunSend(to string, subject string, html string, text string) error {
+
+  // Setup mailgun
+  mg := mailgun.NewMailgun(os.Getenv("MAILGUN_DOMAIN"), os.Getenv("MAILGUN_API_KEY"), "")
+  
+  // Create message
+  message := mailgun.NewMessage("Options Cafe" + "<" + fromEmail + ">", subject, text, to)
+  message.AddBCC(bccEmail)
+  message.SetHtml(html)
+  
+  // Send the message
+  _, _, err := mg.Send(message)
+  
+  if err != nil {
+    services.Error(err, "library/email/Send/MailgunSend() - Unable to send email.") 
+    return err
+  }
+
+  // Everything went well!
+  return nil 
+  
+}
+
+//
+// Send as SMTP.
+//
+func SmtpSend(to string, subject string, html string, text string) error {
+ 
   // Setup the email to send.
   m := gomail.NewMessage()
-  m.SetHeader("From", "help@options.cafe")
+  m.SetHeader("From", fromEmail)
   m.SetHeader("To", to)
-  m.SetHeader("Bcc", "bcc@options.cafe")
+  m.SetHeader("Bcc", bccEmail)
   m.SetHeader("Subject", subject)
   m.SetBody("text/html", html)
   m.AddAlternative("text/plain", text)
@@ -34,12 +90,13 @@ func Send(to string, subject string, html string, text string) error {
 
   // Send Da Email
   if err := d.DialAndSend(m); err != nil {
-    services.Error(err, "library/email/Send/Send() - Unable to send email.") 
+    services.Error(err, "library/email/Send/SmtpSend() - Unable to send email.") 
     return err
   }  
   
   // Everything went well!
-  return nil
+  return nil 
   
 }
 
+/* End File */
