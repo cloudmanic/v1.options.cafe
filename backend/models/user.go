@@ -1,11 +1,8 @@
 package models
 
 import (
-  "os"
   "time"
   "errors"
-  "net/url"
-  "net/http"
   "crypto/rand"
   "html/template"
   "golang.org/x/crypto/bcrypt"
@@ -207,7 +204,8 @@ func (t * DB) CreateUser(first string, last string, email string, password strin
   user.Session = session
   
   // Subscribe new user to mailing lists.
-  go NewsletterSubscribe(email, first, last)
+  go services.SendySubscribe("no-brokers", email, first, last)
+  go services.SendySubscribe("subscribers", email, first, last)  
   
   // Tell slack about this.
   go services.SlackNotify("#events", "New Options Cafe User Account : " +  email)
@@ -302,68 +300,6 @@ func (t * DB) ValidatePassword(password string) error {
 }
 
 // ------------------ Helper Functions --------------------- //
-
-//
-// Subscribe user to our newsletter lists
-//
-func NewsletterSubscribe(email string, first string, last string) {
-    
-  // ----------------- Subscribe List ---------------------- //
-    
-  if len(os.Getenv("SENDY_SUBSCRIBE_LIST")) > 0 {
-    
-    // Build form request
-    form := url.Values{
-      "list": {os.Getenv("SENDY_SUBSCRIBE_LIST")},
-      "email": {email},
-  		"name": {first + " " + last},
-  		"FirstName": {first},
-  		"LastName": {last},		
-  	}
-    
-    // Send request.
-    resp, err := http.PostForm("https://sendy.cloudmanic.com/subscribe", form)
-  
-    if err != nil {
-      services.Error(err, "NewsletterSubscribe - Unable to subscribe " + email + " to Sendy Subscriber list.")
-    }
-  
-    if resp.StatusCode != http.StatusOK {
-      services.Error(err, "NewsletterSubscribe (no 200) - Unable to subscribe " + email + " to Sendy Subscriber list.")    
-    }
-    
-    defer resp.Body.Close()    
-    
-  }
-
-  // ----------------- No Broker List ---------------------- //
-   
-  if len(os.Getenv("SENDY_NO_BROKER_LIST")) > 0 {
-  
-    // Build form request
-    form2 := url.Values{
-      "list": {os.Getenv("SENDY_NO_BROKER_LIST")},
-      "email": {email},
-  		"name": {first + " " + last},
-  		"FirstName": {first},
-  		"LastName": {last},		
-  	}
-    
-    // Send request.
-    resp2, err2 := http.PostForm("https://sendy.cloudmanic.com/subscribe", form2)
-    defer resp2.Body.Close()
-  
-    if err2 != nil {
-      services.Error(err2, "NewsletterSubscribe - Unable to no broker list " + email + " to Sendy Subscriber list.")
-    }
-  
-    if resp2.StatusCode != http.StatusOK {
-      services.Error(err2, "NewsletterSubscribe (no 200) - Unable to no broker list " + email + " to Sendy Subscriber list.")    
-    }  
-  
-  }
-  
-}
 
 //
 // Validate an email address
