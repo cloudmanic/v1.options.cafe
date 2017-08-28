@@ -208,6 +208,9 @@ func (t * DB) CreateUser(first string, last string, email string, password strin
   
   // Subscribe new user to mailing lists.
   go NewsletterSubscribe(email, first, last)
+  
+  // Tell slack about this.
+  go services.SlackNotify("#events", "New Options Cafe User Account : " +  email)
  
   // Return the user.
   return user, nil
@@ -320,7 +323,6 @@ func NewsletterSubscribe(email string, first string, last string) {
     
     // Send request.
     resp, err := http.PostForm("https://sendy.cloudmanic.com/subscribe", form)
-    defer resp.Body.Close()
   
     if err != nil {
       services.Error(err, "NewsletterSubscribe - Unable to subscribe " + email + " to Sendy Subscriber list.")
@@ -329,6 +331,8 @@ func NewsletterSubscribe(email string, first string, last string) {
     if resp.StatusCode != http.StatusOK {
       services.Error(err, "NewsletterSubscribe (no 200) - Unable to subscribe " + email + " to Sendy Subscriber list.")    
     }
+    
+    defer resp.Body.Close()    
     
   }
 
