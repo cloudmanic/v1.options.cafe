@@ -11,8 +11,10 @@ import (
   "fmt"
   "net/http"
   "io/ioutil"
+  "app.options.cafe/backend/emails"
   "app.options.cafe/backend/models"
   "github.com/stripe/stripe-go/webhook"
+  "app.options.cafe/backend/library/email"
   "app.options.cafe/backend/library/services"
 )
 
@@ -49,7 +51,7 @@ func DoStripeWebhook(w http.ResponseWriter, r *http.Request) {
   
   // Figure out what user this event is for.
   // event.GetObjValue("customer")
-  user, err := DB.GetUserByStripeCustomer("cus_BKQjz6z9hMqzYY")
+  user, err := DB.GetUserByStripeCustomer(event.GetObjValue("customer"))
   
   if err != nil {
     services.MajorLog("Stripe Webhook Unknown user found in event : " + event.Type + " - " + event.ID)
@@ -85,6 +87,18 @@ func StripeEventSubscriptionDeleted(user models.User) {
   
   // Log event.
   services.Log("Stripe Subscription Deleted: " + user.Email); 
+  
+  // Send email telling the user this happened.
+  var url = "https://app.options.cafe"
+  
+  go email.Send(
+    user.Email, 
+    "Options Cafe : Subscription Canceled", 
+    emails.GetSubscriptionCanceledHtml(user.FirstName, url),
+    emails.GetSubscriptionCanceledText(user.FirstName, url))
+ 
+  // Tell slack about this.
+  go services.SlackNotify("#events", "Options Cafe Subscription Canceled : " +  user.Email) 
   
 }
 
