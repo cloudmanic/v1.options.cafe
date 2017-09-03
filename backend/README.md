@@ -29,3 +29,11 @@ GO_PATH=/Users/spicer/Development/golang
 * ```go test ./...``` from the root of the project
 * ```go test app.options.cafe/backend/library/archive``` (as an example)
 * ```go test -v app.options.cafe/backend/library/archive``` (if you want to see the output of say a println)
+
+## Notes On Billings
+
+Every user must have a subscription (table: ```User::StripeSubscription```) if this field is empty the user can not use the app. They should be presented with a screen to select a plan. New users have a trail period. So new users are assigned to a default subscription see .env ```STRIPE_DEFAULT_PLAN```. If after their trail ends and they do not add a payment source their subscription will be deleted via webhooks making ```User::StripeSubscription``` empty. 
+
+## Best Way To Test Webhooks Locally
+
+You can use https://ngrok.com to send webhooks in locally. The free account changes the url every time you run it. Here is how you start it ```ngrok http 7652```

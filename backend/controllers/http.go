@@ -6,8 +6,8 @@ import (
   "time"
   "net/http"
   "golang.org/x/crypto/acme/autocert"
-  "app.options.cafe/backend/models"
-  "app.options.cafe/backend/library/services"
+  "app.options.cafe/backend/models" 
+  "app.options.cafe/backend/library/services"   
 )
 
 var (
@@ -30,10 +30,13 @@ func Start() {
   
   // Http Routes
   mux.HandleFunc("/", HtmlMainTemplate)    
-  mux.HandleFunc("/login", DoLogin) 
+  mux.HandleFunc("/login", DoLogin)
   mux.HandleFunc("/register", DoRegister)
   mux.HandleFunc("/reset-password", DoResetPassword)   
   mux.HandleFunc("/forgot-password", DoForgotPassword)
+  
+  // Webhooks
+  mux.HandleFunc("/webhooks/stripe", DoStripeWebhook)
     
   // Setup websocket
 	mux.HandleFunc("/ws/core", DoWebsocketConnection)

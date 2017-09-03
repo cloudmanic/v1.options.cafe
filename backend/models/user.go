@@ -1,13 +1,14 @@
 package models
 
 import (
+  "os"
   "time"
   "errors"
   "crypto/rand"
   "html/template"
-  "golang.org/x/crypto/bcrypt"
+  "golang.org/x/crypto/bcrypt"   
   "app.options.cafe/backend/library/services"
-  "app.options.cafe/backend/library/checkmail"  
+  "app.options.cafe/backend/library/checkmail"   
 )
 
 type User struct {
@@ -17,10 +18,12 @@ type User struct {
   FirstName string `sql:"not null"`
   LastName string `sql:"not null"`
   Email string `sql:"not null"`
-  Password string `sql:"not null"`
+  Password string `sql:"not null"`  
   Status string `sql:"not null;type:ENUM('Active', 'Disable');default:'Active'"`
   Session Session 
   Brokers []Broker
+  StripeCustomer string `sql:"not null"`
+  StripeSubscription string `sql:"not null"`  
 }
 
 //
@@ -55,6 +58,22 @@ func (t * DB) GetUserByEmail(email string) (User, error) {
   
   // Add in brokers
   t.Connection.Model(u).Related(&u.Brokers)
+  
+  // Return the user.
+  return u, nil
+  
+} 
+
+//
+// Get a user by stripe customer.
+//
+func (t * DB) GetUserByStripeCustomer(customerId string) (User, error) {
+ 
+  var u User
+  
+  if t.Connection.Where("stripe_customer = ?", customerId).First(&u).RecordNotFound() {
+    return u, errors.New("Record not found")
+  }
   
   // Return the user.
   return u, nil
@@ -203,6 +222,13 @@ func (t * DB) CreateUser(first string, last string, email string, password strin
   // Add the session to the user object.
   user.Session = session
   
+  // Talk to stripe and setup the account.
+  err = t.CreateNewUserWithStripe(user)
+
+  if err != nil {
+    return User{}, err    
+  }
+
   // Subscribe new user to mailing lists.
   go services.SendySubscribe("no-brokers", email, first, last)
   go services.SendySubscribe("subscribers", email, first, last)  
@@ -300,6 +326,50 @@ func (t * DB) ValidatePassword(password string) error {
 }
 
 // ------------------ Helper Functions --------------------- //
+
+//
+// Create new user with strip.
+//
+func (t * DB) CreateNewUserWithStripe(user User) error {
+  
+  if len(os.Getenv("STRIPE_SECRET_KEY")) > 0 {
+    
+    // Subscribe the new customer to services.
+    custId, err := services.AddCustomer(user.FirstName, user.LastName, user.Email, int(user.Id))
+    
+    if err != nil {
+      services.Error(err, "CreateNewUserWithStripe - Unable to create a customer account at services. - " + user.Email)
+      return err 
+    }
+    
+    // Subscribe this user to our default Stripe plan.
+    subId, err := services.AddSubscription(custId, os.Getenv("STRIPE_DEFAULT_PLAN"))
+  
+    if err != nil {
+      services.Error(err, "CreateNewUserWithStripe - Unable to create a subscription at services. - " + user.Email)
+      return err 
+    }
+  
+    // Update the user to include subscription and customer ids from strip.
+    user.StripeCustomer = custId
+    user.StripeSubscription = subId
+    t.Connection.Save(&user)
+    
+  } else {
+    
+    // Here we are doing local development or something.
+    // Really we should not be doing this but sometimes we want to 
+    // develop stuff and not worry about strip.
+    user.StripeCustomer = "na"
+    user.StripeSubscription = "na"
+    t.Connection.Save(&user)     
+    
+  }
+ 
+  // Return happy.
+  return nil
+   
+}
 
 //
 // Validate an email address
