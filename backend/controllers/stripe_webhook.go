@@ -44,18 +44,25 @@ func DoStripeWebhook(w http.ResponseWriter, r *http.Request) {
   
   // Log the event.
   services.Log("Stripe Webhook Received : " + event.Type + " - " + event.ID)
+    
+  // If there is no customer value there is nothing we need to do.
+  // As of now all the events we care about have a customer attached to them.
+  if len(event.GetObjValue("customer")) == 0 {
+    services.Log("Stripe no customer data found (this is expected).")
+    fmt.Fprintf(w, "Done")
+    return
+  }
   
   // Start the database
   DB.Start()
-  defer DB.Connection.Close()  
+  defer DB.Connection.Close()    
   
   // Figure out what user this event is for.
-  // event.GetObjValue("customer")
   user, err := DB.GetUserByStripeCustomer(event.GetObjValue("customer"))
   
   if err != nil {
     services.MajorLog("Stripe Webhook Unknown user found in event : " + event.Type + " - " + event.ID)
-    w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
+    w.WriteHeader(http.StatusBadRequest) // Return a 400 error
     fmt.Fprintf(w, "%v", err)
     return 
   }
