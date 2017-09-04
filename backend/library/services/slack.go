@@ -9,13 +9,15 @@ package services
 import (
   "os"
   "bytes"
+  "errors"
   "net/http"
+  "io/ioutil"
 )
 
 //
 // Slack notify
 //
-func SlackNotify(channel string, msg string) {
+func SlackNotify(channel string, msg string) (string, error) {
   
   if len(os.Getenv("SLACK_HOOK")) > 0 {
   
@@ -31,14 +33,27 @@ func SlackNotify(channel string, msg string) {
     
     if err != nil {
       Error(err, "SlackNotify - Unable to send slack notice : " + msg + ".")
+      return "", err
     }
     
     if resp.StatusCode != http.StatusOK {
-      Error(err, "SlackNotify (no 200) - Unable to send slack notice : " + msg + ".")    
+      Error(err, "SlackNotify (no 200) - Unable to send slack notice : " + msg + ".")
+      return "", err          
     }  
   
+    // Get the body.
+    body, _ := ioutil.ReadAll(resp.Body)    
+  
     resp.Body.Close()
+    
+    // Return happy.
+    return string(body), err 
   
   } 
   
+  // Nothing happened.
+  return "", errors.New("SLACK_HOOK is not set.")
+  
 }
+
+/* End File */
