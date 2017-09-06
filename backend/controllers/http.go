@@ -6,7 +6,8 @@ import (
   "time"
   "net/http"
   "golang.org/x/crypto/acme/autocert"
-  "app.options.cafe/backend/models" 
+  "app.options.cafe/backend/models"
+  "app.options.cafe/backend/brokers/tradier" 
   "app.options.cafe/backend/library/services"   
 )
 
@@ -37,7 +38,11 @@ func Start() {
   
   // Webhooks
   mux.HandleFunc("/webhooks/stripe", DoStripeWebhook)
-    
+  
+  // Tradier Oauth
+  mux.HandleFunc("/tradier/authorize", tradier.DoAuthCode)
+  mux.HandleFunc("/tradier/callback", tradier.DoAuthCallback)
+
   // Setup websocket
 	mux.HandleFunc("/ws/core", DoWebsocketConnection)
 	mux.HandleFunc("/ws/quotes", DoQuoteWebsocketConnection)
