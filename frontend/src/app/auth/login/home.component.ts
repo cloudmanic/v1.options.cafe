@@ -1,3 +1,9 @@
+//
+// Date: 9/8/2017
+// Author(s): Spicer Matthews (spicer@options.cafe)
+// Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
+//
+
 import { Component, OnInit } from '@angular/core';
 import { NgForm }   from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
@@ -7,6 +13,7 @@ declare var app_server: any;
 
 interface LoginResponse {
   status: number, 
+  user_id: number,
   error: string,
   access_token: string,
   broker_count: number
@@ -55,6 +62,7 @@ export class AuthLoginComponent implements OnInit {
       data => {
         
         // Store access token in local storage. 
+        localStorage.setItem('user_id', data.user_id.toString());
         localStorage.setItem('access_token', data.access_token); 
         
         // See if we have a broker or not.

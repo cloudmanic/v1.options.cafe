@@ -1,3 +1,9 @@
+//
+// Date: 9/8/2017
+// Author(s): Spicer Matthews (spicer@options.cafe)
+// Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
+//
+
 package controllers
 
 import (
@@ -96,12 +102,14 @@ func DoLogin(w http.ResponseWriter, r *http.Request) {
   
   type Response struct {
     Status uint `json:"status"`
+    UserId uint `json:"user_id"`
     AccessToken string `json:"access_token"`
     BrokerCount int `json:"broker_count"`
   }
   
   resObj := &Response{ 
     Status: 1,
+    UserId: user.Id,
     AccessToken: user.Session.AccessToken,
     BrokerCount: brokerCount,
   }

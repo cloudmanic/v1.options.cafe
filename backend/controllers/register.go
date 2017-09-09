@@ -1,3 +1,9 @@
+//
+// Date: 9/8/2017
+// Author(s): Spicer Matthews (spicer@options.cafe)
+// Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
+//
+
 package controllers
 
 import (
@@ -92,9 +98,35 @@ func DoRegister(w http.ResponseWriter, r *http.Request) {
     
     return     
   }
+  
+  type Response struct {
+    Status uint `json:"status"`
+    UserId uint `json:"user_id"`
+    AccessToken string `json:"access_token"`
+    BrokerCount int `json:"broker_count"`
+  }
+  
+  resObj := &Response{ 
+    Status: 1,
+    UserId: user.Id,
+    AccessToken: user.Session.AccessToken,
+    BrokerCount: 0,
+  }
+
+  resJson, err := json.Marshal(resObj)
+  
+  if err != nil {
+    services.Error(err, "DoRegisterPost - Unable to log user in. (json.Marshal)") 
+    
+    // Respond with error
+    w.WriteHeader(http.StatusBadRequest)
+    w.Write([]byte("{\"status\":0, \"error\":\"Something went wrong while registering your account. Please try again or contact help@options.cafe. Sorry for the trouble.\"}"))     
+    
+    return     
+  } 
 
   // Return success json.
-  w.Write([]byte("{\"status\":1, \"access_token\":\"" + user.Session.AccessToken + "\"}"))  
+  w.Write(resJson)   
 }
 
 /* End File */

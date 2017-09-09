@@ -1,6 +1,6 @@
 <app-auth-layout>  				
   
-  <form action="?" method="post">
+  <form (ngSubmit)="onSubmit(f)" #f="ngForm">
     <section class="form__section box--bordered">
     	<div class="form__head">
     		<h5 class="form__title">Select Broker</h5><!-- /.form__title -->
@@ -12,10 +12,9 @@
   
     			<div class="form__controls">
     				<div class="select">
-    					<select name="field-broker" id="field-broker">
-    						<option value="broker-1">Tradier</option>
-  
-    						<option value="broker-2">Demo - Coming Soon</option>
+    					<select name="field-broker" id="field-broker" [ngModel]="broker">
+    						<option value="tradier">Tradier</option>
+    						<option value="demo" disabled>Demo Account - Coming Soon</option>
     					</select>
     				</div><!-- /.select -->
     			</div><!-- /.form__controls -->

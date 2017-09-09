@@ -199,7 +199,7 @@ func DoAuthCallback(w http.ResponseWriter, r *http.Request) {
   services.Log("Tradier authorization completed for " + user.Email)
  
   // Return success redirect
-  http.Redirect(w, r, "/", 302)
+  http.Redirect(w, r, os.Getenv("SITE_URL"), 302)
   
 }
 
