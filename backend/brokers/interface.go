@@ -1,6 +1,7 @@
 package brokers
 
 import (
+  "app.options.cafe/backend/models"
   "app.options.cafe/backend/brokers/types"    
 )	
 
@@ -17,6 +18,7 @@ type Api interface {
   GetUserProfile() (types.UserProfile, error)
   GetWatchLists() ([]types.Watchlist, error)
   GetWatchList(string) (types.Watchlist, error)
+  DoRefreshAccessTokenIfNeeded(models.User) error 
   
 }
 

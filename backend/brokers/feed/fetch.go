@@ -6,7 +6,8 @@ import (
 	"strings"    
   "encoding/json"
   "app.options.cafe/backend/controllers"  
-  "app.options.cafe/backend/brokers/types"   
+  "app.options.cafe/backend/brokers/types"
+  //"app.options.cafe/backend/library/services"   
 )
 
 //
@@ -345,6 +346,24 @@ func (t *Base) GetBalances() (error) {
     return fmt.Errorf("GetBalances() WriteDataChannel : ", err)
   } 
   
+  // Return Happy
+  return nil
+  
+}
+
+// ----------------- Access Tokens ------------------- //
+
+//
+// Do update access token from refresh
+//
+func (t *Base) AccessTokenRefresh() (error) {
+
+  err := t.Api.DoRefreshAccessTokenIfNeeded(t.User)
+  
+  if err != nil {
+    return err  
+  } 
+
   // Return Happy
   return nil
   

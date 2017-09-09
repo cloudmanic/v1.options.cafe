@@ -34,6 +34,22 @@ func (t * DB) GetBrokerById(id uint) (Broker, error) {
 } 
 
 //
+// Get a brokers by type and user id.
+//
+func (t * DB) GetBrokerTypeAndUserId(userId uint, brokerType string) ([]Broker, error) {
+ 
+  var u []Broker
+  
+  if t.Connection.Where("user_id = ? AND name = ?", userId, brokerType).Find(&u).RecordNotFound() {
+    return u, errors.New("Records not found")
+  }
+  
+  // Return the user.
+  return u, nil
+  
+} 
+
+//
 // Create a new broker entry.
 //
 func (t * DB) CreateNewBroker(name string, user User, accessToken string, refreshToken string, tokenExpirationDate time.Time) (Broker, error) {

@@ -17,6 +17,7 @@ type Api struct {
   muActiveSymbols sync.Mutex
   activeSymbols string
   
+  muApiKey sync.Mutex
   ApiKey string
 }
 

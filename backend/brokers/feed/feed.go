@@ -1,13 +1,13 @@
 package feed
 
 import (
-  "fmt"
   "sync"
   "time"
   "app.options.cafe/backend/models"  
   "app.options.cafe/backend/brokers"
   "app.options.cafe/backend/controllers"
   "app.options.cafe/backend/brokers/types"
+  "app.options.cafe/backend/library/services" 
 )
 
 type Base struct {
@@ -46,7 +46,7 @@ type SendStruct struct {
 //
 func (t *Base) Start() {
   
-  fmt.Println("Starting Polling....")
+  services.Log("Starting Polling....")
 
   // Setup tickers for broker polling.
   go t.DoOrdersTicker()
@@ -55,6 +55,7 @@ func (t *Base) Start() {
   go t.DoGetDetailedQuotes()
   go t.DoGetMarketStatusTicker()
   go t.DoGetBalancesTicker()
+  go t.DoAccessTokenRefresh()
   
   // Do Archive Calls
   //go t.DoOrdersArchive()
@@ -76,7 +77,7 @@ func (t *Base) DoUserProfileTicker() {
     err =  t.GetUserProfile()
 
     if err != nil {
-      fmt.Println(err)
+      services.Error(err, "Error in Brokers/Feed - DoUserProfileTicker()")
     } 
     
     // Sleep for 60 second.
@@ -142,7 +143,7 @@ func (t *Base) DoOrdersTicker() {
     err = t.GetOrders()
     
     if err != nil {
-      fmt.Println(err)
+      services.Error(err, "Error in Brokers/Feed - DoOrdersTicker()")
     }       
     
     // Sleep for 3 second.
@@ -163,7 +164,7 @@ func (t *Base) DoGetWatchlistsTicker() {
     err := t.GetWatchlists()
   
     if err != nil {
-      fmt.Println(err)
+      services.Error(err, "Error in Brokers/Feed - DoGetWatchlistsTicker()")
     }
     
     // Update any active symbols
@@ -188,7 +189,7 @@ func (t *Base) DoGetDetailedQuotes() {
     err := t.GetActiveSymbolsDetailedQuotes()
   
     if err != nil {
-      fmt.Println(err)
+      services.Error(err, "Error in Brokers/Feed - DoGetDetailedQuotes()")
     }
     
     // Sleep for 1 second
@@ -211,7 +212,7 @@ func (t *Base) DoGetMarketStatusTicker() {
     err = t.GetMarketStatus()
     
     if err != nil {
-      fmt.Println(err)
+      services.Error(err, "Error in Brokers/Feed - DoGetMarketStatusTicker")
     }       
     
     // Sleep for 10 second.
@@ -233,7 +234,7 @@ func (t *Base) DoGetBalancesTicker() {
     err = t.GetBalances()
     
     if err != nil {
-      fmt.Println(err)
+      services.Error(err, "Error in Brokers/Feed - DoGetBalancesTicker")
     }       
     
     // Sleep for 5 second.
@@ -241,6 +242,28 @@ func (t *Base) DoGetBalancesTicker() {
      
   }
   
+}
+
+//
+// Ticker - See if we need to refresh an access token : 60 seconds
+//
+func (t *Base) DoAccessTokenRefresh() {
+
+  var err error
+
+  for {
+    
+    err =  t.AccessTokenRefresh()
+
+    if err != nil {
+      services.Error(err, "Error in Brokers/Feed - DoGetBalancesTicker")
+    } 
+    
+    // Sleep for 60 second.
+    time.Sleep(time.Second * 60)
+     
+  }
+
 }
 
 /* End File */

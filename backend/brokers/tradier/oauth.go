@@ -23,6 +23,16 @@ var (
   genericError = []byte("Something went wrong while authorizing your account. Please try again or contact help@options.cafe. Sorry for the trouble.")
 )
 
+// Json response object
+type tokenResponse struct {
+  Token string `json:"access_token"`
+  ExpiresSec int64  `json:"expires_in"`
+  IssueDateStr string `json:"issued_at"`
+  RefreshToken string `json:"refresh_token"`
+  Scope string
+  Status string
+}
+
 //
 // Obtain an Authorization Code - http://localhost:7652/tradier/authorize?user=1
 //
@@ -49,8 +59,7 @@ func DoAuthCode(w http.ResponseWriter, r *http.Request) {
   user, err := DB.GetUserById(uint(u))
   
   if err != nil {
-    var msg = "Tradier - DoAuthCode - No user found."
-    services.Error(errors.New(msg), msg)
+    services.Error(err, "Tradier - DoAuthCode - No user found.")
     w.WriteHeader(http.StatusInternalServerError)
     w.Write(genericError)   
     return
@@ -136,17 +145,7 @@ func DoAuthCallback(w http.ResponseWriter, r *http.Request) {
     w.Write(genericError)
 		return
 	}
- 
-  // Json response object
-  type tokenResponse struct {
-	  Token string `json:"access_token"`
-    ExpiresSec int64  `json:"expires_in"`
-    IssueDateStr string `json:"issued_at"`
-    RefreshToken string `json:"refresh_token"`
-    Scope string
-    Status string
-  }
- 
+  
   // Put json into an object.
   var tr tokenResponse
   
@@ -200,9 +199,120 @@ func DoAuthCallback(w http.ResponseWriter, r *http.Request) {
  
   // Return success redirect
   http.Redirect(w, r, "/", 302)
-  //w.Write([]byte(tr.Token + " " + tr.RefreshToken + " " + tr.IssueDateStr)) 
   
 }
 
+//
+// Check to see if we need to refresh the refresh token.
+//
+func (t * Api) DoRefreshAccessTokenIfNeeded(user models.User) error {
+
+  // Start the database
+  var DB = models.DB{}
+  DB.Start()
+  defer DB.Connection.Close()  
+    
+  // Get the different tradier brokers.
+  brokers, err := DB.GetBrokerTypeAndUserId(user.Id, "Tradier")
+
+  if err != nil {
+    services.Error(err, "Tradier - DoRefreshAccessTokenIfNeeded - No brokers found.")
+    return err
+  }
+  
+  // Loop through and deal with each tradier broker in the db.
+  for i, _ := range brokers {
+    
+    // Is it time to refresh
+    if time.Now().UTC().Add(1 * time.Hour).After(brokers[i].TokenExpirationDate.UTC()) {
+      
+      err, msg := DoRefreshAccessToken(DB, brokers[i])
+      
+      if err == nil {
+        
+        // Update the access token.
+        t.muApiKey.Lock()
+        t.ApiKey = msg
+        t.muApiKey.Unlock()
+        
+        services.Log("Refreshed Tradier token : " + user.Email)
+        
+      } else {
+        
+        services.Error(err, msg + " : " + user.Email)        
+      
+      }
+      
+    }    
+        
+  }
+  
+  // All done no errors
+  return nil
+  
+}
+
+//
+// Get a new access token via the refresh token.
+//
+func DoRefreshAccessToken(DB models.DB, broker models.Broker) (error, string) {
+  
+  // Request and get an access token.
+	data := strings.NewReader("grant_type=refresh_token&refresh_token=" + broker.RefreshToken)
+	
+	req, err := http.NewRequest("POST", apiBaseUrl + "/oauth/refreshtoken", data)
+	
+	if err != nil {
+    return err, "Tradier - DoRefreshAccessToken - Failed to get access token. (#1)"
+	}
+	
+	req.SetBasicAuth(os.Getenv("TRADIER_CONSUMER_KEY"), os.Getenv("TRADIER_CONSUMER_SECRET"))
+	req.Header.Add("Accept", "application/json")
+	
+	client := &http.Client{}
+	resp, err := client.Do(req)	
+	
+  if err != nil {
+		return err, "Tradier - DoRefreshAccessToken - Failed to get access token. (#2)"
+	}
+	
+	defer resp.Body.Close()
+
+  // Make sure we got a good status code	
+	if resp.StatusCode != http.StatusOK {
+		return err, "Tradier - DoRefreshAccessToken - Failed to get access token. (#3)"
+	}
+	
+	// Get the json out of the body.
+	jsonBody, err := ioutil.ReadAll(resp.Body)
+	
+	if err != nil {
+		return err, "Tradier - DoRefreshAccessToken - Failed to get access token. (#4)"
+	}  
+  
+  // Put json into an object.
+  var tr tokenResponse
+  
+  err = json.Unmarshal(jsonBody, &tr)
+	
+	if err != nil {
+		return err, "Tradier - DoRefreshAccessToken - Failed to get access token. (#5)"
+	}
+	
+	// Make sure this request was approved.
+	if tr.Status != "approved" {
+		return err, "Tradier - DoRefreshAccessToken - Failed to get access token. (#6)" 	
+	}  
+  
+  // Update the database
+  broker.AccessToken = tr.Token
+  broker.RefreshToken = tr.RefreshToken
+  broker.TokenExpirationDate = time.Now().Add(time.Duration(tr.ExpiresSec) * time.Second).UTC()
+  DB.Connection.Save(&broker)
+
+  // All done no errors
+  return nil, tr.Token  
+  
+}
 
 /* End File */
