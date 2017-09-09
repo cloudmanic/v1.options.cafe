@@ -35,7 +35,7 @@ func Fatal(message string) {
 //
 func Error(err error, message string) {
   
-  Log(message)
+  Log(message + " (" + err.Error()  + ")")
 
   go func() {
     rollbar.Token = os.Getenv("ROLLBAR_TOKEN")

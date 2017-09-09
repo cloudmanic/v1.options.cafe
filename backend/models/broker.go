@@ -3,6 +3,7 @@ package models
 import (
   "time"
   "errors"
+  "app.options.cafe/backend/library/helpers"
   "app.options.cafe/backend/library/services"
 )
 
@@ -47,19 +48,35 @@ func (t * DB) GetBrokerTypeAndUserId(userId uint, brokerType string) ([]Broker, 
   // Return the user.
   return u, nil
   
-} 
+}
 
 //
 // Create a new broker entry.
 //
 func (t * DB) CreateNewBroker(name string, user User, accessToken string, refreshToken string, tokenExpirationDate time.Time) (Broker, error) {
   
+  // Encrypt the access token
+	encryptAccessToken, err := helpers.Encrypt(accessToken)
+	
+  if err != nil {
+    services.Error(err, "(CreateNewBroker) Unable to encrypt message (#1)")
+    return Broker{}, errors.New("(CreateNewBroker) Unable to encrypt message (#1)")
+  }  
+
+  // Encrypt the refresh token
+	encryptRefreshToken, err := helpers.Encrypt(refreshToken)
+	
+  if err != nil {
+    services.Error(err, "(CreateNewBroker) Unable to encrypt message (#2)")
+    return Broker{}, errors.New("(CreateNewBroker) Unable to encrypt message (#2)")
+  }
+  
   // Create entry.
   broker := Broker{ 
               Name: name, 
               UserId: user.Id,
-              AccessToken: accessToken,
-              RefreshToken: refreshToken,
+              AccessToken: encryptAccessToken,
+              RefreshToken: encryptRefreshToken,
               TokenExpirationDate: tokenExpirationDate,
             }
             
@@ -70,6 +87,39 @@ func (t * DB) CreateNewBroker(name string, user User, accessToken string, refres
   
   // Return the user.
   return broker, nil  
+   
+}
+
+//
+// Update a new broker entry.
+//
+func (t * DB) UpdateBroker(broker Broker) error {
+  
+  // Encrypt the access token
+	encryptAccessToken, err := helpers.Encrypt(broker.AccessToken)
+	
+  if err != nil {
+    services.Error(err, "(UpdateBroker) Unable to encrypt message (#1)")
+    return errors.New("(UpdateBroker) Unable to encrypt message (#1)")
+  }  
+
+  broker.AccessToken = encryptAccessToken
+
+  // Encrypt the refresh token
+	encryptRefreshToken, err := helpers.Encrypt(broker.RefreshToken)
+	
+  if err != nil {
+    services.Error(err, "(UpdateBroker) Unable to encrypt message (#2)")
+    return errors.New("(UpdateBroker) Unable to encrypt message (#2)")    
+  }
+  
+  broker.RefreshToken = encryptRefreshToken
+  
+  // Update entry.            
+  t.Connection.Save(&broker)
+   
+  // Return the user.
+  return nil  
    
 }      
       

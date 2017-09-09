@@ -16,6 +16,7 @@ import (
   "io/ioutil"
   "encoding/json"
   "app.options.cafe/backend/models"
+  "app.options.cafe/backend/library/helpers"
   "app.options.cafe/backend/library/services"   
 )
 
@@ -257,8 +258,15 @@ func (t * Api) DoRefreshAccessTokenIfNeeded(user models.User) error {
 //
 func DoRefreshAccessToken(DB models.DB, broker models.Broker) (error, string) {
   
+  // Decrypt the refresh token
+  decryptRefreshToken, err := helpers.Decrypt(broker.RefreshToken) 
+  
+  if err != nil {
+    return err, "Tradier - DoRefreshAccessToken - FUnable to decrypt message (#1)"
+  }    
+  
   // Request and get an access token.
-	data := strings.NewReader("grant_type=refresh_token&refresh_token=" + broker.RefreshToken)
+	data := strings.NewReader("grant_type=refresh_token&refresh_token=" + decryptRefreshToken)
 	
 	req, err := http.NewRequest("POST", apiBaseUrl + "/oauth/refreshtoken", data)
 	
@@ -308,7 +316,7 @@ func DoRefreshAccessToken(DB models.DB, broker models.Broker) (error, string) {
   broker.AccessToken = tr.Token
   broker.RefreshToken = tr.RefreshToken
   broker.TokenExpirationDate = time.Now().Add(time.Duration(tr.ExpiresSec) * time.Second).UTC()
-  DB.Connection.Save(&broker)
+  DB.UpdateBroker(broker)
 
   // All done no errors
   return nil, tr.Token  

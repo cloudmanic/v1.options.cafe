@@ -5,7 +5,8 @@ import (
   "app.options.cafe/backend/controllers"
   "app.options.cafe/backend/brokers"
   "app.options.cafe/backend/brokers/feed"
-  "app.options.cafe/backend/brokers/tradier"  
+  "app.options.cafe/backend/brokers/tradier"
+  "app.options.cafe/backend/library/helpers"  
   "app.options.cafe/backend/library/services"
 )
 
@@ -73,11 +74,19 @@ func DoUserFeed(user models.User) {
       continue
     }    
     
+    // Decrypt the access token
+    decryptAccessToken, err := helpers.Decrypt(row.AccessToken)
+    
+    if err != nil {
+      services.Error(err, "(DoUserFeed) Unable to decrypt message (#1)")
+      continue
+    }     
+    
     // Figure out which broker connection to setup.
     switch row.Name {
       
       case "Tradier":
-        brokerApi = &tradier.Api{ ApiKey: row.AccessToken }
+        brokerApi = &tradier.Api{ ApiKey: decryptAccessToken }
         
       default:
         services.MajorLog("Unknown Broker : " + row.Name + " (" + user.Email + ")")
