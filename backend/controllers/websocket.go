@@ -1,13 +1,12 @@
 package controllers
 
 import (
-  "fmt" 
   "sync"
   "time"
   "net/http"
   "encoding/json"
-  "github.com/stvp/rollbar"
   "github.com/gorilla/websocket"
+  "app.options.cafe/backend/library/services"  
 )
 
 const writeWait = 5 * time.Second
@@ -82,11 +81,11 @@ func DoWebsocketConnection(w http.ResponseWriter, r *http.Request) {
   conn, err := upgrader.Upgrade(w, r, nil)
 
   if err != nil {
-    fmt.Println(err)
+    services.Error(err, "Upable to upgrade Websocket")
     return
   }
 
-  fmt.Println("New Websocket Connection - Standard")
+  services.Log("New Websocket Connection - Standard")
   
   // Close connection when this function ends
   defer conn.Close()  
@@ -116,12 +115,11 @@ func DoQuoteWebsocketConnection(w http.ResponseWriter, r *http.Request) {
   conn, err := upgrader.Upgrade(w, r, nil)
 
   if err != nil {
-    rollbar.Error(rollbar.ERR, err)
-    fmt.Println(err)
+    services.Error(err, "(DoQuoteWebsocketConnection) Unable to upgrade Quote Websocket")
     return
   }
 
-  fmt.Println("New Websocket Connection - Quote")
+  services.Log("New Websocket Connection - Quote")
   
   // Close connection when this function ends
   defer conn.Close()
@@ -171,22 +169,21 @@ func DoWsReading(conn *WebsocketConnection) {
 				delete(connections, conn.connection)
 			}    
       
-      fmt.Println("Client Disconnected (" + conn.deviceId + ") ...")
+      services.Log("Client Disconnected (" + conn.deviceId + ") ...")
       
       break
     }
 		 
     // this should come after the mt test. 
     if err != nil {
-			fmt.Println(err)
+			services.Error(err, "Error in DoWsReading")
       break
     }		  
 		    
     // Json decode message.
     var data map[string]interface{}
     if err := json.Unmarshal(message, &data); err != nil {
-      rollbar.Error(rollbar.ERR, err)
-			fmt.Println("json:", err)
+			services.Error(err, "(DoWsReading) Unable to decode json")
       break      
     }
     

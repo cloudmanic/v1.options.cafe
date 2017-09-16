@@ -4,7 +4,8 @@ package controllers
 import (
   "fmt"
   "github.com/tidwall/gjson"
-  "app.options.cafe/backend/models"    
+  "app.options.cafe/backend/models"
+  "app.options.cafe/backend/library/services"    
 )
 
 //
@@ -39,23 +40,30 @@ func ProcessRead(conn *WebsocketConnection, message string, data map[string]inte
 // Authenticate Connection
 //
 func AuthenticateConnection(conn *WebsocketConnection, access_token string, device_id string) {
-    
-  var user models.User
+
+  var user models.User    
+  var session models.Session
   
-  fmt.Println("Device Id : " + device_id)
+  services.Log("Connected Device Id : " + device_id)
   
   // Store the device id
   conn.muDeviceId.Lock()
   conn.deviceId = device_id
   conn.muDeviceId.Unlock()  
   
-  // See if this user is in our db.
-  if DB.Connection.First(&user, "access_token = ?", access_token).RecordNotFound() {
-    fmt.Println("Access Token Not Found - Unable to Authenticate")
+  // See if this session is in our db.
+  if DB.Connection.First(&session, "access_token = ?", access_token).RecordNotFound() {
+    services.MajorLog("Access Token Not Found - Unable to Authenticate")
     return
   }
   
-  fmt.Println("Authenticated : " + user.Email)
+  // Get this user is in our db.  
+  if DB.Connection.First(&user, session.UserId).RecordNotFound() {
+    services.MajorLog("User Not Found - Unable to Authenticate - UserId : " + fmt.Sprint(session.UserId) + " - Session Id : " + fmt.Sprint(session.Id))     
+    return
+  }  
+  
+  services.Log("Authenticated : " + user.Email)
   
   // Store the user id from this connection because the auth was successful
   conn.muUserId.Lock()

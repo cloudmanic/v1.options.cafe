@@ -3,9 +3,9 @@
 // Other than quotes all communication runs over this connection 
 
 import { EventEmitter } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 declare var ClientJS: any;
-declare var ws_server: any;
 
 export class AppService  
 {  
@@ -30,6 +30,8 @@ export class AppService
         
     // Setup standard websocket connection.
     this.setupWebSocket();
+    
+    console.log("HERE");
   }
 
   //
@@ -38,7 +40,7 @@ export class AppService
   setupWebSocket() 
   {
     // Setup websocket
-    this.ws = new WebSocket(ws_server + '/ws/core');
+    this.ws = new WebSocket(environment.ws_server + '/ws/core');
     
     // Websocket sent data to us.
     this.ws.onmessage = (e) =>

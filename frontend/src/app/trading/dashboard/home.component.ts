@@ -1,5 +1,11 @@
+//
+// Date: 9/8/2017
+// Author(s): Spicer Matthews (spicer@options.cafe)
+// Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
+//
+
 import { Component, OnInit } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import { AppService } from '../../providers/websocket/app.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,11 +13,9 @@ import { environment } from '../../../environments/environment';
 })
 export class DashboardComponent implements OnInit {
 
-  constructor() { }
+  constructor(private app: AppService) { }
 
   ngOnInit() {
-    
-    console.log(environment.app_server);
     
   }
 
