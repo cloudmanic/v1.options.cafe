@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm }   from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-
-declare var app_server: any;
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-auth-reset-password',
@@ -52,7 +51,7 @@ export class AuthResetPasswordComponent implements OnInit {
     form.value.hash = this.hash;
 
     // Make the the HTTP request:
-    this.http.post(app_server + '/reset-password', form.value).subscribe(
+    this.http.post(environment.app_server + '/reset-password', form.value).subscribe(
       
       // Success redirect to login
       data => {

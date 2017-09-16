@@ -8,6 +8,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm }   from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router, ActivatedRoute, Params } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 declare var app_server: any;
 
@@ -64,7 +65,7 @@ export class AuthLoginComponent implements OnInit {
     this.submitBtn = "Posting...";
 
     // Make the the HTTP request:
-    this.http.post<LoginResponse>(app_server + '/login', form.value).subscribe(
+    this.http.post<LoginResponse>(environment.app_server + '/login', form.value).subscribe(
       
       // Success
       data => {

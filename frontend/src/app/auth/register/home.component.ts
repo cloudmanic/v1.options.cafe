@@ -8,8 +8,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm }   from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-
-declare var app_server: any;
+import { environment } from '../../../environments/environment';
 
 interface RegisterResponse {
   status: number,
@@ -43,7 +42,7 @@ export class AuthRegisterComponent implements OnInit {
     this.submitBtn = "Saving...";
 
     // Make the the HTTP request:
-    this.http.post<RegisterResponse>(app_server + '/register', form.value).subscribe(
+    this.http.post<RegisterResponse>(environment.app_server + '/register', form.value).subscribe(
       
       // Success
       data => {
