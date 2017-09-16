@@ -29,6 +29,7 @@ export class AuthLoginComponent implements OnInit {
   errorMsg = "";
   successMsg = "";
   submitBtn = "Log In";
+  returnUrl: "/";
 
   constructor(private http: HttpClient, private router: Router, private activatedRoute: ActivatedRoute) { }
 
@@ -37,10 +38,17 @@ export class AuthLoginComponent implements OnInit {
   //
   ngOnInit() {
     
+    // Remove local storage
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('user_id');    
+    
     // subscribe to router event
     this.activatedRoute.queryParams.subscribe((params: Params) => {
       this.successMsg = params['success'];
     });
+    
+    // get return url from route parameters or default to '/'
+    this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '/';    
     
   }
   
@@ -71,7 +79,7 @@ export class AuthLoginComponent implements OnInit {
           this.router.navigate([ '/broker-select' ]);
         } else
         {
-          this.router.navigate([ '/' ]);
+          this.router.navigate([ this.returnUrl ]);
         }
 
       },

@@ -3,10 +3,11 @@ import { NgModule } from '@angular/core';
 import { FormsModule }   from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
-
 import { AppComponent } from './app.component';
+import { Routing } from './app.routing';
 
 // Providers
+import { AuthGuard } from './auth/guards/auth.service';
 import { AppService } from './providers/websocket/app.service';
 
 // Layout
@@ -34,29 +35,6 @@ import { TradingLayoutComponent } from './trading/layout/layout.component';
 import { TradesComponent } from './trading/trades/home.component';
 import { ScreenerComponent } from './trading/screener/home.component';
 import { DashboardComponent } from './trading/dashboard/home.component';
-
-
-// Routes
-const appRoutes: Routes = [
-  // Auth
-  { path: 'login', component: AuthLoginComponent },  
-  { path: 'register', component: AuthRegisterComponent },
-  { path: 'broker-select', component: AuthBrokerSelectComponent }, 
-  { path: 'forgot-password', component: AuthForgotPasswordComponent },   
-  { path: 'reset-password', component: AuthResetPasswordComponent }, 
-  
-  // Trading
-  { path: '', component: DashboardComponent },
-  { path: 'dashboard', component: DashboardComponent },  
-  { path: 'screener', component: ScreenerComponent },
-  { path: 'trades', component: TradesComponent },
-    
-  // Reports
-  { path: 'reports', component: ReportsHomeComponent },
-  
-  // Backtest
-  { path: 'backtest', component: BacktestHomeComponent }
-];
 
 @NgModule({
   declarations: [
@@ -88,13 +66,17 @@ const appRoutes: Routes = [
     ScreenerComponent,
     DashboardComponent
   ],
+  
   imports: [
+    Routing,
     FormsModule,
     BrowserModule,
-    HttpClientModule,
-    RouterModule.forRoot(appRoutes)
+    HttpClientModule
   ],
-  providers: [ AppService ],
+  
+  providers: [ AppService, AuthGuard ],
+  
   bootstrap: [AppComponent]
 })
+
 export class AppModule { }
