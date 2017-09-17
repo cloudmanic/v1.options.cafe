@@ -72,8 +72,13 @@ export class AppService
     {
       // User Profile refresh
       case 'UserProfile:refresh':
-        this.doUserProfileRefresh(msg_data);     
+        this.userProfilePush.emit(UserProfile.buildForEmit(msg_data));  
       break;
+      
+      // Balances refresh
+      case 'Balances:refresh':
+        this.balancesPush.emit(Balance.buildForEmit(msg_data));
+      break;      
       
 /*
       // Market Status refresh
@@ -99,15 +104,7 @@ export class AppService
     }
     
   }
-  
-  //
-  // Do User Profile Refresh
-  //
-  doUserProfileRefresh (data) {
-    var userProfile = new UserProfile('', '', []);
-    userProfile.build(data);
-    this.userProfilePush.emit(userProfile);
-  }
+   
   
 /*
   //
@@ -119,27 +116,7 @@ export class AppService
     this.marketStatusPush.emit(this.marketStatus);
   }
   
-  //
-  // Do Balances Refresh
-  //
-  doBalancesRefresh (data) {
-    
-    var balances = [];
-    
-    for(var i = 0; i < data.length; i++)
-    {
-      balances.push(new Balance(
-        data[i].AccountNumber,
-        data[i].AccountValue,
-        data[i].TotalCash,
-        data[i].OptionBuyingPower,
-        data[i].StockBuyingPower        
-      ));               
-    }  
-
-    this.balancesPush.emit(balances);
-    
-  }  
+ 
   
   //
   // Do watchlist Refresh
@@ -233,20 +210,16 @@ export class AppService
   // Request the backend sends all data again. (often do this on state change or page change)
   //
   requestAllData() {
-    
     this.ws.send(JSON.stringify({  type: 'refresh-all-data', data: {} }));   
-    
   }
   
   //
   // Set the active account id.
   //
   setActiveAccountId(account_id) {
-    
-    this.activeAccount = account_id;
+    this.activeAccount = account_id;  
     this.activeAccountPush.emit(account_id);
     this.requestAllData();
-  
   }
 
   // ---------------------- Websocket Stuff ----------------------- //

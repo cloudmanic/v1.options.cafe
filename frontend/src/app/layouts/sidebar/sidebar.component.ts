@@ -31,15 +31,10 @@ export class SidebarComponent implements OnInit {
   // Oninit...
   //
   ngOnInit() {
-    
-    // Subscribe to data updates from the broker - User Profile
-    this.app.userProfilePush.subscribe(data => {
-      this.userProfile = data;
-      this.changeDetect.detectChanges();
-    });
-    
+            
     // Subscribe to data updates from the broker - Market Status
     this.app.userProfilePush.subscribe(data => {
+      
       this.userProfile = data;
       
       // Do we have an account already? Always have to reset the selected one when we get new account data.
@@ -57,9 +52,24 @@ export class SidebarComponent implements OnInit {
           }
         }
       }
-      
+
       this.changeDetect.detectChanges();
-    });    
+      
+    }); 
+    
+    // Subscribe to data updates from the broker - Balances
+    this.app.balancesPush.subscribe(data => {
+
+      for(var i = 0; i < data.length; i++)
+      {
+        if(data[i].AccountNumber == this.app.activeAccount)
+        {
+          this.balance = data[i];
+        }
+      }
+    
+      this.changeDetect.detectChanges();
+    });       
         
   }
   

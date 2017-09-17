@@ -19,17 +19,16 @@ export class UserProfile
   ){}
   
   //
-  // Build user profile
+  // Build user profile for emitting to the app.
   //
-  build(data) {
+  public static buildForEmit(data) : UserProfile  {
     
-    // Clear accounts array.
-    this.Accounts = [];    
-    
+    let user = new UserProfile(data.Id, data.Name, []); 
+       
     // Setup the array of accounts.
-    for(var i in data.Accounts)
+    for(let i in data.Accounts)
     {
-      this.Accounts.push(new BrokerAccounts(
+      user.Accounts.push(new BrokerAccounts(
         data.Accounts[i].AccountNumber,
         data.Accounts[i].Classification,
         data.Accounts[i].DayTrader,
@@ -38,10 +37,8 @@ export class UserProfile
         data.Accounts[i].Type       
       ));
     }
-    
-    this.Id = data.Id;
-    this.Name = data.Name;
-        
+     
+    return user;
   }
   
 }
