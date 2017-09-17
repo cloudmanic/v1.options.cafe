@@ -9,7 +9,6 @@
 //
 
 import { EventEmitter, Injectable } from '@angular/core';
-import { AppState } from '../app.state.service';
 import { environment } from '../../../environments/environment';
 import { Order } from '../../models/order';
 import { Balance } from '../../models/balance';
@@ -22,7 +21,7 @@ import { BrokerAccount } from '../../models/broker-account';
 
 declare var ClientJS: any;
 
-@Injectable()
+//@Injectable()
 export class AppService  
 {  
   deviceId = ""
@@ -45,7 +44,7 @@ export class AppService
   //
   // Construct!!
   //
-  constructor(private appState: AppState) 
+  constructor() 
   {
     // Set the device id
     var clientJs = new ClientJS();
@@ -206,7 +205,6 @@ export class AppService
   //
   setActiveAccount(account) {
     this.activeAccount = account;
-    this.appState.setActiveAccount(account);  
     this.activeAccountPush.emit(account);
     this.requestAllData();
   }

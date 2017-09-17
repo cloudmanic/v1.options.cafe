@@ -4,8 +4,7 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { AppState } from '../../providers/app.state.service';
+import { Component, OnInit } from '@angular/core';
 import { AppService } from '../../providers/websocket/app.service';
 import { Balance } from '../../models/balance';
 import { UserProfile } from '../../models/user-profile';
@@ -26,21 +25,12 @@ export class SidebarComponent implements OnInit {
   //
   // Construct.
   //
-  constructor(private app: AppService, private appState: AppState, private changeDetect: ChangeDetectorRef) { }
+  constructor(private app: AppService) { }
 
   //
   // Oninit...
   //
   ngOnInit() {
-    
-/*
-    // Pull in from the cache the default values.
-    this.userProfile = this.appState.getUserProfile();    
-    this.selectedAccount = this.appState.getActiveAccount();
-    this.changeDetect.detectChanges();
-    
-    console.log(this.userProfile);
-*/
         
     // Subscribe to data updates from the broker - Market Status
     this.app.marketStatusPush.subscribe(data => {
@@ -51,7 +41,6 @@ export class SidebarComponent implements OnInit {
     this.app.userProfilePush.subscribe(data => {
       
       this.userProfile = data;
-      this.appState.setUserProfile(data);
       
       // Do we have an account already? Always have to reset the selected one when we get new account data.
       if((! this.selectedAccount) && (this.userProfile.Accounts.length))

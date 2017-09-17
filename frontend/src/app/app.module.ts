@@ -7,7 +7,6 @@ import { AppComponent } from './app.component';
 import { Routing } from './app.routing';
 
 // Providers
-import { AppState } from './providers/app.state.service';
 import { AuthGuard } from './auth/guards/auth.service';
 import { AppService } from './providers/websocket/app.service';
 
@@ -77,7 +76,7 @@ import { DashboardComponent } from './trading/dashboard/home.component';
     HttpClientModule
   ],
   
-  providers: [ AppState, AppService, AuthGuard ],
+  providers: [ AppService, AuthGuard ],
   
   bootstrap: [AppComponent]
 })
