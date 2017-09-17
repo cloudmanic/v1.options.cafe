@@ -31,7 +31,7 @@ export class SidebarComponent implements OnInit {
   // Oninit...
   //
   ngOnInit() {
-        
+          
     // Subscribe to data updates from the broker - Market Status
     this.app.marketStatusPush.subscribe(data => {
       this.marketStatus = data;      
@@ -41,20 +41,23 @@ export class SidebarComponent implements OnInit {
     this.app.userProfilePush.subscribe(data => {
       
       this.userProfile = data;
+
+      if(! this.userProfile.Accounts.length)
+      {
+        return;
+      }
+
+      if(! this.app.getActiveAccount())
+      {
+        this.selectedAccount = data.Accounts[0];
+        return;
+      }
       
-      // Do we have an account already? Always have to reset the selected one when we get new account data.
-      if((! this.selectedAccount) && (this.userProfile.Accounts.length))
+      for(var i = 0; i < this.userProfile.Accounts.length; i++)
       {
-        this.selectedAccount = this.userProfile.Accounts[0];
-        this.app.setActiveAccount(this.selectedAccount);
-      } else
-      {
-        for(var i = 0; i < this.userProfile.Accounts.length; i++)
+        if(this.userProfile.Accounts[i].AccountNumber == this.app.getActiveAccount().AccountNumber)
         {
-          if(this.userProfile.Accounts[i].AccountNumber == this.selectedAccount.AccountNumber)
-          {
-            this.selectedAccount = this.userProfile.Accounts[i];            
-          }
+          this.selectedAccount = this.userProfile.Accounts[i];           
         }
       }
       
@@ -65,7 +68,7 @@ export class SidebarComponent implements OnInit {
 
       for(var i = 0; i < data.length; i++)
       {
-        if(data[i].AccountNumber == this.app.activeAccount)
+        if(data[i].AccountNumber == this.app.getActiveAccount().AccountNumber)
         {
           this.balance = data[i];
         }

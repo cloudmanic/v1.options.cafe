@@ -24,8 +24,8 @@ declare var ClientJS: any;
 //@Injectable()
 export class AppService  
 {  
-  deviceId = ""
-  activeAccount = ""    
+  public deviceId = ""
+  public activeAccount: BrokerAccount;    
    
   // Websocket Stuff
   ws = null;
@@ -53,13 +53,34 @@ export class AppService
     // Setup standard websocket connection.
     this.setupWebSocket();
   }
+  
+  // ---------------------- Geters / Setters ----------------------- //
+  
+  //
+  // Set active account.
+  //
+  public setActiveAccount(account: BrokerAccount) {
+    
+    this.activeAccount = account;
+    localStorage.setItem('active_account', account.AccountNumber);
+    this.activeAccountPush.emit(account);
+    this.requestAllData();
+    
+  }
+
+  //
+  // Get active account.
+  //
+  public getActiveAccount() : BrokerAccount {
+    return this.activeAccount;
+  }
 
   // ---------------------- Incoming Data  ------------------------- //
 
   //
   // Process incoming data.
   //
-  processIncomingData(msg)
+  private processIncomingData(msg)
   {
     let msg_data = JSON.parse(msg.data);
 
@@ -70,7 +91,9 @@ export class AppService
     {
       // User Profile refresh
       case 'UserProfile:refresh':
-        this.userProfilePush.emit(UserProfile.buildForEmit(msg_data));  
+        var obj = UserProfile.buildForEmit(msg_data);
+        this.calcActiveAccount(obj);
+        this.userProfilePush.emit(obj);  
       break;
       
       // Balances refresh
@@ -191,24 +214,51 @@ export class AppService
   }
 */  
 
+  // ------------------------ Helper Functions ------------------------------ //
+
+  //
+  // Figure out what our active account is based on data we passed in.
+  //
+  private calcActiveAccount(user: UserProfile) {
+
+    // If we already have an active account do nothing.
+    if(this.getActiveAccount())
+    {
+      return;
+    }
+
+    if(! user.Accounts.length)
+    {     
+      return;
+    }
+
+    if((! localStorage.getItem('active_account')) && user.Accounts.length)
+    {      
+      this.setActiveAccount(user.Accounts[0]);
+      return;
+    }
+    
+    var acn = localStorage.getItem('active_account');
+      
+    for(var i = 0; i < user.Accounts.length; i++)
+    {
+      if(user.Accounts[i].AccountNumber == acn)
+      {
+        this.setActiveAccount(user.Accounts[i]);            
+      }
+    }
+         
+  }
+
   // ------------------------ Push Data Back To Backend --------------------- //
   
   //
   // Request the backend sends all data again. (often do this on state change or page change)
   //
-  requestAllData() {
+  public requestAllData() {
     this.ws.send(JSON.stringify({  type: 'refresh-all-data', data: {} }));   
   }
   
-  //
-  // Set the active account.
-  //
-  setActiveAccount(account) {
-    this.activeAccount = account;
-    this.activeAccountPush.emit(account);
-    this.requestAllData();
-  }
-
   // ---------------------- Websocket Stuff ----------------------- //
 
 
