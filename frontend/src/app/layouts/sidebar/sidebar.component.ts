@@ -5,11 +5,12 @@
 //
 
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { AppState } from '../../providers/app.state.service';
 import { AppService } from '../../providers/websocket/app.service';
 import { Balance } from '../../models/balance';
 import { UserProfile } from '../../models/user-profile';
 import { MarketStatus } from '../../models/market-status';
-import { BrokerAccounts } from '../../models/broker-accounts';
+import { BrokerAccount } from '../../models/broker-account';
 
 @Component({
   selector: 'app-sidebar',
@@ -20,34 +21,43 @@ export class SidebarComponent implements OnInit {
   balance: Balance;
   userProfile: UserProfile;
   marketStatus: MarketStatus;
-  selectedAccount: BrokerAccounts;
+  selectedAccount: BrokerAccount;
 
   //
   // Construct.
   //
-  constructor(private app: AppService, private changeDetect: ChangeDetectorRef) { }
+  constructor(private app: AppService, private appState: AppState, private changeDetect: ChangeDetectorRef) { }
 
   //
   // Oninit...
   //
   ngOnInit() {
     
+/*
+    // Pull in from the cache the default values.
+    this.userProfile = this.appState.getUserProfile();    
+    this.selectedAccount = this.appState.getActiveAccount();
+    this.changeDetect.detectChanges();
+    
+    console.log(this.userProfile);
+*/
+        
     // Subscribe to data updates from the broker - Market Status
     this.app.marketStatusPush.subscribe(data => {
       this.marketStatus = data;      
-      this.changeDetect.detectChanges();
     });    
             
     // Subscribe to data updates from the broker - Market Status
     this.app.userProfilePush.subscribe(data => {
       
       this.userProfile = data;
+      this.appState.setUserProfile(data);
       
       // Do we have an account already? Always have to reset the selected one when we get new account data.
       if((! this.selectedAccount) && (this.userProfile.Accounts.length))
       {
         this.selectedAccount = this.userProfile.Accounts[0];
-        this.app.setActiveAccountId(this.selectedAccount.AccountNumber);
+        this.app.setActiveAccount(this.selectedAccount);
       } else
       {
         for(var i = 0; i < this.userProfile.Accounts.length; i++)
@@ -58,8 +68,6 @@ export class SidebarComponent implements OnInit {
           }
         }
       }
-
-      this.changeDetect.detectChanges();
       
     }); 
     
@@ -73,8 +81,7 @@ export class SidebarComponent implements OnInit {
           this.balance = data[i];
         }
       }
-    
-      this.changeDetect.detectChanges();
+
     });       
         
   }
@@ -83,9 +90,7 @@ export class SidebarComponent implements OnInit {
   // On account change.
   //
   onAccountChange() {
-    
-    this.app.setActiveAccountId(this.selectedAccount.AccountNumber);
-  
+    this.app.setActiveAccount(this.selectedAccount);
   }  
 
 }

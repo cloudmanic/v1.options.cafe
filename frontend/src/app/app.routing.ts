@@ -11,6 +11,9 @@ import { AuthBrokerSelectComponent } from './auth/broker-select/home.component';
 import { AuthResetPasswordComponent } from './auth/reset-password/home.component';
 import { AuthForgotPasswordComponent } from './auth/forgot-password/home.component';
 
+// Layouts
+import { LayoutCoreComponent } from './layouts/core/core.component';
+
 // Backtest
 import { BacktestLayoutComponent } from './backtest/layout/layout.component';
 import { BacktestHomeComponent } from './backtest/home/home.component';
@@ -20,7 +23,6 @@ import { ReportsLayoutComponent } from './reports/layout/layout.component';
 import { ReportsHomeComponent } from './reports/home/home.component';
 
 // Trading
-import { TradingLayoutComponent } from './trading/layout/layout.component';
 import { TradesComponent } from './trading/trades/home.component';
 import { ScreenerComponent } from './trading/screener/home.component';
 import { DashboardComponent } from './trading/dashboard/home.component';
@@ -35,19 +37,19 @@ const appRoutes: Routes = [
   { path: 'forgot-password', component: AuthForgotPasswordComponent },   
   { path: 'reset-password', component: AuthResetPasswordComponent }, 
   
-  // Trading
-  { path: 'dashboard', component: DashboardComponent, canActivate: [ AuthGuard ] },  
-  { path: 'screener', component: ScreenerComponent, canActivate: [ AuthGuard ] },
-  { path: 'trades', component: TradesComponent, canActivate: [ AuthGuard ] },
+  // Core App
+  { path: '', component: LayoutCoreComponent, children: [
     
-  // Reports
-  { path: 'reports', component: ReportsHomeComponent, canActivate: [ AuthGuard ] },
-  
-  // Backtest
-  { path: 'backtest', component: BacktestHomeComponent, canActivate: [ AuthGuard ] },
+    { path: '', component: DashboardComponent, canActivate: [ AuthGuard ] },
+    { path: 'screener', component: ScreenerComponent, canActivate: [ AuthGuard ] },
+    { path: 'trades', component: TradesComponent, canActivate: [ AuthGuard ] },
+    { path: 'reports', component: ReportsHomeComponent, canActivate: [ AuthGuard ] },
+    { path: 'backtest', component: BacktestHomeComponent, canActivate: [ AuthGuard ] }
+    
+  ] },
   
   // Otherwise redirect to home
-  { path: '**', redirectTo: 'dashboard' }  
+  { path: '**', redirectTo: '' }  
 ];
 
 

@@ -1,4 +1,4 @@
-export class BrokerAccounts {
+export class BrokerAccount {
   constructor(
     public AccountNumber: string,
     public Classification: string,

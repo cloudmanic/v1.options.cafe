@@ -8,7 +8,8 @@
 // Other than quotes all communication runs over this connection 
 //
 
-import { EventEmitter } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
+import { AppState } from '../app.state.service';
 import { environment } from '../../../environments/environment';
 import { Order } from '../../models/order';
 import { Balance } from '../../models/balance';
@@ -17,10 +18,11 @@ import { Watchlist } from '../../models/watchlist';
 import { WatchlistItems } from '../../models/watchlist-items';
 import { MarketStatus } from '../../models/market-status';
 import { UserProfile } from '../../models/user-profile';
-import { BrokerAccounts } from '../../models/broker-accounts';
+import { BrokerAccount } from '../../models/broker-account';
 
 declare var ClientJS: any;
 
+@Injectable()
 export class AppService  
 {  
   deviceId = ""
@@ -38,12 +40,12 @@ export class AppService
   userProfilePush = new EventEmitter<UserProfile>();
   marketStatusPush = new EventEmitter<MarketStatus>();
   watchlistPush = new EventEmitter<Watchlist>();
-  activeAccountPush = new EventEmitter<string>();    
+  activeAccountPush = new EventEmitter<BrokerAccount>();    
   
   //
   // Construct!!
   //
-  constructor() 
+  constructor(private appState: AppState) 
   {
     // Set the device id
     var clientJs = new ClientJS();
@@ -200,11 +202,12 @@ export class AppService
   }
   
   //
-  // Set the active account id.
+  // Set the active account.
   //
-  setActiveAccountId(account_id) {
-    this.activeAccount = account_id;  
-    this.activeAccountPush.emit(account_id);
+  setActiveAccount(account) {
+    this.activeAccount = account;
+    this.appState.setActiveAccount(account);  
+    this.activeAccountPush.emit(account);
     this.requestAllData();
   }
 

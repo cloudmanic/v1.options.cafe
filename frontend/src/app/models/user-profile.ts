@@ -4,7 +4,7 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-import { BrokerAccounts } from './broker-accounts';
+import { BrokerAccount } from './broker-account';
 
 export class UserProfile 
 {
@@ -15,7 +15,7 @@ export class UserProfile
   constructor(
     public Id: string,
     public Name: string,
-    public Accounts: BrokerAccounts[] 
+    public Accounts: BrokerAccount[] 
   ){}
   
   //
@@ -28,7 +28,7 @@ export class UserProfile
     // Setup the array of accounts.
     for(let i in data.Accounts)
     {
-      user.Accounts.push(new BrokerAccounts(
+      user.Accounts.push(new BrokerAccount(
         data.Accounts[i].AccountNumber,
         data.Accounts[i].Classification,
         data.Accounts[i].DayTrader,

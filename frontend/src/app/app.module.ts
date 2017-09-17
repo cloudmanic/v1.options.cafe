@@ -7,12 +7,14 @@ import { AppComponent } from './app.component';
 import { Routing } from './app.routing';
 
 // Providers
+import { AppState } from './providers/app.state.service';
 import { AuthGuard } from './auth/guards/auth.service';
 import { AppService } from './providers/websocket/app.service';
 
 // Layout
 import { SidebarComponent } from './layouts/sidebar/sidebar.component';
 import { MainNavComponent } from './layouts/main-nav/main-nav.component';
+import { LayoutCoreComponent } from './layouts/core/core.component';
 
 // Auth
 import { AuthLayoutComponent } from './auth/layout/home.component';
@@ -23,15 +25,15 @@ import { AuthResetPasswordComponent } from './auth/reset-password/home.component
 import { AuthForgotPasswordComponent } from './auth/forgot-password/home.component';
 
 // Backtest
-import { BacktestLayoutComponent } from './backtest/layout/layout.component';
+import { BacktestSubnavComponent } from './backtest/sub-nav/subnav.component';
 import { BacktestHomeComponent } from './backtest/home/home.component';
 
 // Reports
-import { ReportsLayoutComponent } from './reports/layout/layout.component';
+import { ReportsSubnavComponent } from './reports/sub-nav/subnav.component';
 import { ReportsHomeComponent } from './reports/home/home.component';
 
 // Trading
-import { TradingLayoutComponent } from './trading/layout/layout.component';
+import { SubnavComponent } from './trading/sub-nav/subnav.component';
 import { TradesComponent } from './trading/trades/home.component';
 import { ScreenerComponent } from './trading/screener/home.component';
 import { DashboardComponent } from './trading/dashboard/home.component';
@@ -42,7 +44,8 @@ import { DashboardComponent } from './trading/dashboard/home.component';
     
     // Layout
     SidebarComponent,
-    MainNavComponent,    
+    MainNavComponent,
+    LayoutCoreComponent,    
     
     // Auth
     AuthLayoutComponent,
@@ -53,15 +56,15 @@ import { DashboardComponent } from './trading/dashboard/home.component';
     AuthForgotPasswordComponent,
     
     // Backtest
-    BacktestLayoutComponent,
+    BacktestSubnavComponent,
     BacktestHomeComponent,
 
     // Reports
-    ReportsLayoutComponent,
+    ReportsSubnavComponent,
     ReportsHomeComponent,
     
     // Trading
-    TradingLayoutComponent,
+    SubnavComponent,
     TradesComponent,
     ScreenerComponent,
     DashboardComponent
@@ -74,7 +77,7 @@ import { DashboardComponent } from './trading/dashboard/home.component';
     HttpClientModule
   ],
   
-  providers: [ AppService, AuthGuard ],
+  providers: [ AppState, AppService, AuthGuard ],
   
   bootstrap: [AppComponent]
 })
