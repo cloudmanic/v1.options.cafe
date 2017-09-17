@@ -4,7 +4,7 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { AppService } from '../../providers/websocket/app.service';
 
 @Component({
@@ -13,9 +13,29 @@ import { AppService } from '../../providers/websocket/app.service';
 })
 export class DashboardComponent implements OnInit {
 
-  constructor(private app: AppService) { }
+  ws_reconnecting = false;
 
+  //
+  // Construct...
+  //
+  constructor(private app: AppService, private changeDetect: ChangeDetectorRef) { }
+
+  //
+  // On Init...
+  //
   ngOnInit() {
+    
+    // Subscribe to when we are reconnecting to a websocket - Core
+    this.app.wsReconnecting.subscribe(data => {
+      this.ws_reconnecting = data;
+      this.changeDetect.detectChanges();
+    });     
+
+    // Subscribe to when we are reconnecting to a websocket - Quotes
+    this.app.wsReconnecting.subscribe(data => {
+      this.ws_reconnecting = data;
+      this.changeDetect.detectChanges();
+    });    
     
   }
 

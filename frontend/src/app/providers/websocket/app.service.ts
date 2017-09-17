@@ -1,15 +1,33 @@
 //
+// Date: 9/8/2017
+// Author(s): Spicer Matthews (spicer@options.cafe)
+// Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
+//
+//
 // This is a websocket connection to the backend app. 
 // Other than quotes all communication runs over this connection 
+//
 
 import { EventEmitter } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { Order } from '../../models/order';
+import { Balance } from '../../models/balance';
+import { OrderLeg } from '../../models/order-leg';
+import { Watchlist } from '../../models/watchlist';
+import { WatchlistItems } from '../../models/watchlist-items';
+import { MarketStatus } from '../../models/market-status';
+import { UserProfile } from '../../models/user-profile';
+import { BrokerAccounts } from '../../models/broker-accounts';
 
 declare var ClientJS: any;
 
 export class AppService  
 {  
-  deviceId = ""  
+  deviceId = ""
+  activeAccount = ""    
+  
+  // Data objects
+  marketStatus = new MarketStatus('', '');  
   
   // Websocket Stuff
   ws = null;
@@ -17,7 +35,13 @@ export class AppService
   missed_heartbeats = 0;  
   
   // Emitters - Pushers
-  wsReconnecting = new EventEmitter<boolean>();  
+  wsReconnecting = new EventEmitter<boolean>();
+  ordersPush = new EventEmitter<Order[]>();
+  balancesPush = new EventEmitter<Balance[]>();
+  userProfilePush = new EventEmitter<UserProfile>();
+  marketStatusPush = new EventEmitter<MarketStatus>();
+  watchlistPush = new EventEmitter<Watchlist>();
+  activeAccountPush = new EventEmitter<string>();    
   
   //
   // Construct!!
@@ -30,9 +54,203 @@ export class AppService
         
     // Setup standard websocket connection.
     this.setupWebSocket();
-    
-    console.log("HERE");
   }
+
+  // ---------------------- Incoming Data  ------------------------- //
+
+  //
+  // Process incoming data.
+  //
+  processIncomingData(msg)
+  {
+    let msg_data = JSON.parse(msg.data);
+
+    // console.log(msg_data);
+        
+    // Send quote to angular component
+    switch(msg.type)
+    {
+      // User Profile refresh
+      case 'UserProfile:refresh':
+        this.doUserProfileRefresh(msg_data);     
+      break;
+      
+/*
+      // Market Status refresh
+      case 'MarketStatus:refresh':
+        this.doMarketStatusRefresh(msg_data);     
+      break;
+    
+      // Watchlist refresh
+      case 'Watchlist:refresh':
+        this.doWatchListRefresh(msg_data);     
+      break;
+    
+      // Order refresh
+      case 'Orders:refresh':
+        this.doOrdersRefresh(msg_data);     
+      break;
+      
+      // Balances refresh
+      case 'Balances:refresh':
+        this.doBalancesRefresh(msg_data);
+      break;
+*/
+    }
+    
+  }
+  
+  //
+  // Do User Profile Refresh
+  //
+  doUserProfileRefresh (data) {
+    var userProfile = new UserProfile('', '', []);
+    userProfile.build(data);
+    this.userProfilePush.emit(userProfile);
+  }
+  
+/*
+  //
+  // Do Market Status Refresh
+  //
+  doMarketStatusRefresh (data) {
+    this.marketStatus.state = data.State;
+    this.marketStatus.description = data.Description;
+    this.marketStatusPush.emit(this.marketStatus);
+  }
+  
+  //
+  // Do Balances Refresh
+  //
+  doBalancesRefresh (data) {
+    
+    var balances = [];
+    
+    for(var i = 0; i < data.length; i++)
+    {
+      balances.push(new Balance(
+        data[i].AccountNumber,
+        data[i].AccountValue,
+        data[i].TotalCash,
+        data[i].OptionBuyingPower,
+        data[i].StockBuyingPower        
+      ));               
+    }  
+
+    this.balancesPush.emit(balances);
+    
+  }  
+  
+  //
+  // Do watchlist Refresh
+  //
+  doWatchListRefresh (data) {
+    
+    // We only care about the default watchlist
+    if(data.Id != 'default')
+    {
+      return false;
+    }
+    
+    let ws = new Watchlist(data.Id, data.Name, []);
+
+    for(var i in data.Symbols)
+    {
+      ws.items.push(new WatchlistItems(data.Symbols[i].id, data.Symbols[i].symbol));
+    }
+    
+    this.watchlistPush.emit(ws);
+    
+  }
+  
+  //
+  // Do refresh orders
+  //
+  doOrdersRefresh (data) {
+    
+    var orders = [];
+    
+    for(var i = 0; i < data.length; i++)
+    {
+      // Add in the legs
+      var legs = [];
+      
+      if(data[i].NumLegs > 0)
+      {
+        for(var k = 0; k < data[i].Legs.length; k++)
+        {
+          legs.push(new OrderLeg(
+            data[i].Legs[k].Type,
+            data[i].Legs[k].Symbol,
+            data[i].Legs[k].OptionSymbol, 
+            data[i].Legs[k].Side, 
+            data[i].Legs[k].Quantity, 
+            data[i].Legs[k].Status, 
+            data[i].Legs[k].Duration, 
+            data[i].Legs[k].AvgFillPrice, 
+            data[i].Legs[k].ExecQuantity, 
+            data[i].Legs[k].LastFillPrice, 
+            data[i].Legs[k].LastFillQuantity, 
+            data[i].Legs[k].RemainingQuantity, 
+            data[i].Legs[k].CreateDate, 
+            data[i].Legs[k].TransactionDate          
+          ));
+        }
+      }
+      
+      // Push the order on
+      orders.push(new Order(
+          data[i].Id,
+          data[i].AccountId,
+          data[i].AvgFillPrice,
+          data[i].Class,
+          data[i].CreateDate,
+          data[i].Duration,
+          data[i].ExecQuantity,
+          data[i].LastFillPrice,
+          data[i].LastFillQuantity,
+          data[i].NumLegs,
+          data[i].Price,
+          data[i].Quantity,
+          data[i].RemainingQuantity,
+          data[i].Side,
+          data[i].Status,
+          data[i].Symbol,
+          data[i].TransactionDate,
+          data[i].Type,
+          legs));
+               
+    }
+    
+    this.ordersPush.emit(orders);
+    
+  }
+*/  
+
+  // ------------------------ Push Data Back To Backend --------------------- //
+  
+  //
+  // Request the backend sends all data again. (often do this on state change or page change)
+  //
+  requestAllData() {
+    
+    this.ws.send(JSON.stringify({  type: 'refresh-all-data', data: {} }));   
+    
+  }
+  
+  //
+  // Set the active account id.
+  //
+  setActiveAccountId(account_id) {
+    
+    this.activeAccount = account_id;
+    this.activeAccountPush.emit(account_id);
+    this.requestAllData();
+  
+  }
+
+  // ---------------------- Websocket Stuff ----------------------- //
+
 
   //
   // Setup normal data websocket connection.
@@ -45,7 +263,7 @@ export class AppService
     // Websocket sent data to us.
     this.ws.onmessage = (e) =>
     { 
-      console.log(e.data);
+      //console.log(e.data);
       
       let msg = JSON.parse(e.data);
       
@@ -55,41 +273,8 @@ export class AppService
         this.missed_heartbeats--;
       } else
       {        
-        let msg_data = JSON.parse(msg.data);
-
-        console.log(msg_data);
-        
-/*
-        // Send quote to angular component
-        switch(msg.type)
-        {
-          // User Profile refresh
-          case 'UserProfile:refresh':
-            this.doUserProfileRefresh(msg_data);     
-          break;
-          
-          // Market Status refresh
-          case 'MarketStatus:refresh':
-            this.doMarketStatusRefresh(msg_data);     
-          break;
-
-          // Watchlist refresh
-          case 'Watchlist:refresh':
-            this.doWatchListRefresh(msg_data);     
-          break;
-
-          // Order refresh
-          case 'Orders:refresh':
-            this.doOrdersRefresh(msg_data);     
-          break;
-          
-          // Balances refresh
-          case 'Balances:refresh':
-            this.doBalancesRefresh(msg_data);
-          break;
-        }
-*/
-      }      
+        this.processIncomingData(msg);
+      }
     }
     
     // On Websocket open
