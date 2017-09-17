@@ -25,10 +25,7 @@ export class AppService
 {  
   deviceId = ""
   activeAccount = ""    
-  
-  // Data objects
-  marketStatus = new MarketStatus('', '');  
-  
+   
   // Websocket Stuff
   ws = null;
   heartbeat = null;
@@ -79,13 +76,13 @@ export class AppService
       case 'Balances:refresh':
         this.balancesPush.emit(Balance.buildForEmit(msg_data));
       break;      
-      
-/*
+
       // Market Status refresh
       case 'MarketStatus:refresh':
-        this.doMarketStatusRefresh(msg_data);     
+        this.marketStatusPush.emit(MarketStatus.buildForEmit(msg_data));   
       break;
     
+/*
       // Watchlist refresh
       case 'Watchlist:refresh':
         this.doWatchListRefresh(msg_data);     
@@ -106,18 +103,7 @@ export class AppService
   }
    
   
-/*
-  //
-  // Do Market Status Refresh
-  //
-  doMarketStatusRefresh (data) {
-    this.marketStatus.state = data.State;
-    this.marketStatus.description = data.Description;
-    this.marketStatusPush.emit(this.marketStatus);
-  }
-  
- 
-  
+/*  
   //
   // Do watchlist Refresh
   //

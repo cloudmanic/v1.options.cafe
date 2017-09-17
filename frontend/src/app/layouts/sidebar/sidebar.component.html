@@ -1,8 +1,8 @@
 <div class="sidebar">
 	<div class="sidebar__logo sidebar--bordered">
-		<a href="#" class="logo"></a>
+		<a routerLink="/" class="logo"></a>
 
-		<a href="#" class="btn-menu">
+		<a href="" class="btn-menu">
 			<span></span>
 		</a>
 	</div><!-- /.sidebar__logo sidebar-bordered -->	
@@ -63,12 +63,16 @@
 					<ul class="list-details">
 						<li>
 							<h6>US stock market</h6>
-
-							<strong>Closed</strong>
+              
+              <span [ngSwitch]="marketStatus?.state">
+							  <strong *ngSwitchCase="'open'">Open</strong>
+							  <strong *ngSwitchDefault>Closed</strong>
+              </span>
 						</li>
-					</ul><!-- /.list-details -->
-				</div><!-- /.widget__body -->
-			</li><!-- /.widget widget-market -->
-		</ul><!-- /.widgets -->
-	</div><!-- /.sidebar__content -->
-</div><!-- /.sidebar -->
+					</ul>
+					
+				</div>
+			</li>
+		</ul>
+	</div>
+</div>

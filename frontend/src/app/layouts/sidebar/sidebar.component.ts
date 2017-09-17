@@ -31,6 +31,12 @@ export class SidebarComponent implements OnInit {
   // Oninit...
   //
   ngOnInit() {
+    
+    // Subscribe to data updates from the broker - Market Status
+    this.app.marketStatusPush.subscribe(data => {
+      this.marketStatus = data;      
+      this.changeDetect.detectChanges();
+    });    
             
     // Subscribe to data updates from the broker - Market Status
     this.app.userProfilePush.subscribe(data => {
