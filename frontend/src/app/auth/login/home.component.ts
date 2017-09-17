@@ -40,8 +40,9 @@ export class AuthLoginComponent implements OnInit {
   ngOnInit() {
     
     // Remove local storage
-    localStorage.removeItem('access_token');
     localStorage.removeItem('user_id');    
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('active_account');    
     
     // subscribe to router event
     this.activatedRoute.queryParams.subscribe((params: Params) => {
