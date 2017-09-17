@@ -1,0 +1,13 @@
+<div class="box__head box__head--relative">
+  <h5 class="box__title">Orders</h5><!-- /.box__title -->
+</div><!-- /.box__head box__head-relative -->
+
+<div class="box__body">
+  
+  <div class="box__inner" *ngFor="let row of orders">
+    
+    <app-trading-orders-multileg [order]="row" *ngIf="row.Class == 'multileg'"></app-trading-orders-multileg>
+    
+  </div>
+
+</div>

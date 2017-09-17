@@ -4,7 +4,6 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-
 export class Balance {
   
   //

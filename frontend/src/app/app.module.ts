@@ -36,6 +36,8 @@ import { SubnavComponent } from './trading/sub-nav/subnav.component';
 import { TradesComponent } from './trading/trades/home.component';
 import { ScreenerComponent } from './trading/screener/home.component';
 import { DashboardComponent } from './trading/dashboard/home.component';
+import { OrdersComponent } from './trading/dashboard/orders/orders.component';
+import { OrdersMultiLegComponent } from './trading/dashboard/orders/orders.multileg.component';
 
 @NgModule({
   declarations: [
@@ -63,10 +65,12 @@ import { DashboardComponent } from './trading/dashboard/home.component';
     ReportsHomeComponent,
     
     // Trading
+    OrdersComponent,
     SubnavComponent,
     TradesComponent,
     ScreenerComponent,
-    DashboardComponent
+    DashboardComponent,
+    OrdersMultiLegComponent
   ],
   
   imports: [

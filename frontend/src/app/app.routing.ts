@@ -15,11 +15,9 @@ import { AuthForgotPasswordComponent } from './auth/forgot-password/home.compone
 import { LayoutCoreComponent } from './layouts/core/core.component';
 
 // Backtest
-import { BacktestLayoutComponent } from './backtest/layout/layout.component';
 import { BacktestHomeComponent } from './backtest/home/home.component';
 
 // Reports
-import { ReportsLayoutComponent } from './reports/layout/layout.component';
 import { ReportsHomeComponent } from './reports/home/home.component';
 
 // Trading
