@@ -15,6 +15,7 @@ import { Order } from '../../../models/order';
 export class OrdersMultiLegComponent {
   
   @Input() order: Order;
+  @Input() quotes: {};
 
 }
 

@@ -15,7 +15,7 @@ import (
 
 //
 // Here we loop through all the order data and create positions. We do this because
-// brokders do not offer an api of past positions. 
+// brokers do not offer an api of past positions. 
 //
 func StorePositions(db *gorm.DB, userId uint) (error) {
   

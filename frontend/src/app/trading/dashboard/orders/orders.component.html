@@ -6,7 +6,7 @@
   
   <div class="box__inner" *ngFor="let row of orders">
     
-    <app-trading-orders-multileg [order]="row" *ngIf="row.Class == 'multileg'"></app-trading-orders-multileg>
+    <app-trading-orders-multileg [order]="row" [quotes]="quotes" *ngIf="row.Class == 'multileg'"></app-trading-orders-multileg>
     
   </div>
 

@@ -36,15 +36,9 @@
   		</tr>
 
   		<tr *ngFor="let row of order.Legs; let i = index">
-  			<td>
-  				SPY Jan 18 2017 {{ i }}
+  			<td>{{ quotes[row.OptionSymbol]?.description }}</td>
 
-  				<strong class="table__surrounded">$216.00</strong>
-
-  				Put
-  			</td>
-
-  			<td>$0.08</td>
+  			<td>{{ quotes[row.OptionSymbol]?.last | currency:'USD':true:'1.2-2' }}</td>
 
   			<td>{{ row.Quantity }}</td>
 

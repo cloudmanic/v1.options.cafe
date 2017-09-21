@@ -9,6 +9,7 @@ import { Routing } from './app.routing';
 // Providers
 import { AuthGuard } from './auth/guards/auth.service';
 import { AppService } from './providers/websocket/app.service';
+import { QuoteService } from './providers/websocket/quote.service';
 
 // Layout
 import { SidebarComponent } from './layouts/sidebar/sidebar.component';
@@ -41,6 +42,7 @@ import { OrdersMultiLegComponent } from './trading/dashboard/orders/orders.multi
 
 @NgModule({
   declarations: [
+    
     AppComponent,
     
     // Layout
@@ -80,7 +82,7 @@ import { OrdersMultiLegComponent } from './trading/dashboard/orders/orders.multi
     HttpClientModule
   ],
   
-  providers: [ AppService, AuthGuard ],
+  providers: [ AppService, QuoteService, AuthGuard ],
   
   bootstrap: [AppComponent]
 })

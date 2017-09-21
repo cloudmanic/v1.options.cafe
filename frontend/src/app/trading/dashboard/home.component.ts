@@ -6,6 +6,7 @@
 
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { AppService } from '../../providers/websocket/app.service';
+import { QuoteService } from '../../providers/websocket/quote.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,7 +19,7 @@ export class DashboardComponent implements OnInit {
   //
   // Construct...
   //
-  constructor(private app: AppService, private changeDetect: ChangeDetectorRef) { }
+  constructor(private appService: AppService, private quoteService: QuoteService, private changeDetect: ChangeDetectorRef) { }
 
   //
   // On Init...
@@ -26,17 +27,17 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     
     // Subscribe to when we are reconnecting to a websocket - Core
-    this.app.wsReconnecting.subscribe(data => {
+    this.appService.wsReconnecting.subscribe(data => {
       this.ws_reconnecting = data;
       this.changeDetect.detectChanges();
     });     
 
     // Subscribe to when we are reconnecting to a websocket - Quotes
-    this.app.wsReconnecting.subscribe(data => {
+    this.quoteService.wsReconnecting.subscribe(data => {
       this.ws_reconnecting = data;
       this.changeDetect.detectChanges();
     });    
-    
+ 
   }
 
 }

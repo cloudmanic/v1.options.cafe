@@ -6,6 +6,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { AppService } from '../../../providers/websocket/app.service';
+import { QuoteService } from '../../../providers/websocket/quote.service';
 import { Order } from '../../../models/order';
 import { BrokerAccount } from '../../../models/broker-account';
 
@@ -16,14 +17,14 @@ import { BrokerAccount } from '../../../models/broker-account';
 
 export class OrdersComponent implements OnInit {
   
-  //quotes = {}
+  quotes = {}
   orders: Order[]  
   activeAccount: BrokerAccount
 
   //
   // Constructor....
   //
-  constructor(private app: AppService) { }
+  constructor(private app: AppService, private quoteService: QuoteService) { }
 
   //
   // OnInit....
@@ -58,20 +59,20 @@ export class OrdersComponent implements OnInit {
       
     });    
     
+    // Subscribe to data updates from the quotes - Market Quotes
+    this.quoteService.marketQuotePushData.subscribe(data => {
+    
+      this.quotes[data.symbol] = data;
+      //this.changeDetect.detectChanges();
+      
+    });     
+    
 /*
     // Subscribe to when the active account changes
     this.broker.activeAccountPushData.subscribe(data => {
       this.activeAccount = data;
       this.changeDetect.detectChanges();
     });
-    
-    // Subscribe to data updates from the quotes - Market Quotes
-    this.quotesService.marketQuotePushData.subscribe(data => {
-    
-      this.quotes[data.symbol] = data;
-      this.changeDetect.detectChanges();
-      
-    }); 
 */    
     
   }
