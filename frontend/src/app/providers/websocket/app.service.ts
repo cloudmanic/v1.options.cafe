@@ -8,7 +8,7 @@
 // Other than quotes all communication runs over this connection 
 //
 
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter /* Injectable */ } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { Order } from '../../models/order';
 import { Balance } from '../../models/balance';
@@ -18,6 +18,7 @@ import { WatchlistItems } from '../../models/watchlist-items';
 import { MarketStatus } from '../../models/market-status';
 import { UserProfile } from '../../models/user-profile';
 import { BrokerAccount } from '../../models/broker-account';
+import { AppCacheService } from '../cache/app.cache.service';
 
 declare var ClientJS: any;
 
@@ -26,6 +27,9 @@ export class AppService
 {  
   public deviceId = ""
   public activeAccount: BrokerAccount;    
+   
+  // Cache some of the data.
+  public orders: Order[];
    
   // Websocket Stuff
   ws = null;
@@ -107,8 +111,9 @@ export class AppService
       break;
     
       // Order refresh
-      case 'Orders:refresh':        
-        this.ordersPush.emit(Order.buildForEmit(msg_data));              
+      case 'Orders:refresh':
+        this.orders = Order.buildForEmit(msg_data);       
+        this.ordersPush.emit(this.orders);              
       break;
 
 /*

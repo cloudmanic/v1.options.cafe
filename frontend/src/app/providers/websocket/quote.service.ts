@@ -10,22 +10,23 @@
 import { EventEmitter } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { MarketQuote } from '../../models/market-quote';
+import { AppCacheService } from '../cache/app.cache.service';
 
 declare var ClientJS: any;
 
 export class QuoteService {
   
-  deviceId = ""
-  quotes = {};
+  public deviceId = ""
+  public quotes = {};
   
   // Websocket Stuff
-  ws = null;
-  heartbeat = null;
-  missed_heartbeats = 0;
+  public ws = null;
+  public heartbeat = null;
+  public missed_heartbeats = 0;
   
   // Emitters
-  wsReconnecting = new EventEmitter<boolean>();
-  marketQuotePushData = new EventEmitter<MarketQuote>();
+  public wsReconnecting = new EventEmitter<boolean>();
+  public marketQuotePushData = new EventEmitter<MarketQuote>();
 
   //
   // Construct!!
@@ -64,23 +65,7 @@ export class QuoteService {
       {        
         // Send quote to angular component
         switch(msg.type)
-        {
-          // Real-time market quote
-          case 'trade':
-            
-            // Have we seen this quote before?
-            if(typeof this.quotes[msg.symbol] == "undefined")
-            {
-              this.quotes[msg.symbol] = new MarketQuote(msg.last, 0, 0, msg.symbol, '');
-            } else
-            {
-              this.quotes[msg.symbol].last = msg.last;             
-            }
-
-            this.marketQuotePushData.emit(this.quotes[msg.symbol]); 
-                     
-          break;
-          
+        {          
           // DetailedQuotes refresh
           case 'DetailedQuotes:refresh':
             
@@ -97,7 +82,7 @@ export class QuoteService {
               this.quotes[msg_data.Symbol].prev_close = msg_data.PrevClose;              
               this.quotes[msg_data.Symbol].description = msg_data.Description;              
             }            
-              
+            
             this.marketQuotePushData.emit(this.quotes[msg_data.Symbol]);
             
           break;          
