@@ -10,7 +10,7 @@ services:
     container_name: ${VIRTUAL_HOST}
     
     ports:
-      - "7652:7652"     
+      - "4200:4200"     
            
     build:
       context: ./build

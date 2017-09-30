@@ -10,7 +10,6 @@
 import { EventEmitter } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { MarketQuote } from '../../models/market-quote';
-import { AppCacheService } from '../cache/app.cache.service';
 
 declare var ClientJS: any;
 

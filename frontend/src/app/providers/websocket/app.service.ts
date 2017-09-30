@@ -18,7 +18,6 @@ import { WatchlistItems } from '../../models/watchlist-items';
 import { MarketStatus } from '../../models/market-status';
 import { UserProfile } from '../../models/user-profile';
 import { BrokerAccount } from '../../models/broker-account';
-import { AppCacheService } from '../cache/app.cache.service';
 
 declare var ClientJS: any;
 
