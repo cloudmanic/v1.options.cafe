@@ -1,0 +1,38 @@
+version: '2.1'
+
+services:
+
+  # App
+  app:
+           
+    hostname: ${VIRTUAL_HOST}
+
+    container_name: ${VIRTUAL_HOST}
+    
+    ports:
+      - "7652:7652"     
+           
+    build:
+      context: ./build
+      dockerfile: Dockerfile-frontend
+      args:
+        P_UID: ${P_UID}
+        P_GID: ${P_GID}       
+    
+    image: ${VIRTUAL_HOST}/frontend          
+
+    restart: ${RESTART}
+    
+    environment:   
+      VIRTUAL_HOST: ${VIRTUAL_HOST} 
+          
+    volumes:
+      - ../:/app:cached,rw
+            
+    networks:
+      - shared     
+  
+networks:
+  shared:
+    external:
+      name: shared 
