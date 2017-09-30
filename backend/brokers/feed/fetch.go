@@ -43,19 +43,7 @@ func (t *Base) RefreshFromCached() error {
   
   if err != nil {
     return fmt.Errorf("RefreshFromCached() WriteDataChannel - Balances:refresh : ", err)
-  }     
-  
-  // Watchlists - Loop through and send data up websocket  
-  for _, row := range t.Watchlists {
-     
-    // Send up websocket.
-    err = t.WriteDataChannel("Watchlist:refresh", row)
-    
-    if err != nil {
-      return fmt.Errorf("RefreshFromCached() WriteDataChannel - Watchlist:refresh : ", err)
-    }    
-    
-  }  
+  }      
   
   // No error
   return nil
@@ -75,6 +63,7 @@ func (t *Base) GetActiveSymbols() []string {
   activeSymbols = append(activeSymbols, "COMP")   
   activeSymbols = append(activeSymbols, "VIX")
   
+/*
   // Watchlists to the active symbols.
   t.muWatchlists.Lock()
   
@@ -88,7 +77,8 @@ func (t *Base) GetActiveSymbols() []string {
     
   }
   
-  t.muWatchlists.Unlock()    
+  t.muWatchlists.Unlock() 
+*/   
   
   // Add in the orders we want.
   t.muOrders.Lock()
@@ -126,7 +116,7 @@ func (t *Base) GetActiveSymbols() []string {
 // ----------------- Market Status ------------------- //
 
 //
-// Do get watchlists
+// Do get market status
 //
 func (t *Base) GetMarketStatus() (error) {
 
@@ -282,41 +272,6 @@ func (t *Base) GetActiveSymbolsDetailedQuotes() (error) {
   } 
   
   // Return happy
-  return nil
-  
-}
-
-// ----------------- Watchlists ------------------- //
-
-//
-// Do get watchlists
-//
-func (t *Base) GetWatchlists() (error) {
-
-  watchlists, err := t.Api.GetWatchLists()
-  
-  if err != nil {
-    return err  
-  } 
-  
-  // Save the watchlists in the fetch object
-  t.muWatchlists.Lock()
-  t.Watchlists = watchlists
-  t.muWatchlists.Unlock()   
-  
-  // Loop through and send data up websocket  
-  for _, row := range watchlists {
-     
-    // Send up websocket.
-    err = t.WriteDataChannel("Watchlist:refresh", row)
-    
-    if err != nil {
-      return fmt.Errorf("GetWatchlists() WriteDataChannel : ", err)
-    }    
-    
-  }
-  
-  // Return Happy
   return nil
   
 }

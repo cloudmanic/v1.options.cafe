@@ -20,9 +20,6 @@ type Base struct {
   muOrders sync.Mutex
   Orders []types.Order
 
-  muWatchlists sync.Mutex
-  Watchlists []types.Watchlist
-
   muBalances sync.Mutex
   Balances []types.Balance  
 
@@ -51,7 +48,6 @@ func (t *Base) Start() {
   // Setup tickers for broker polling.
   go t.DoOrdersTicker()
   go t.DoUserProfileTicker()
-  go t.DoGetWatchlistsTicker()
   go t.DoGetDetailedQuotes()
   go t.DoGetMarketStatusTicker()
   go t.DoGetBalancesTicker()
@@ -148,31 +144,6 @@ func (t *Base) DoOrdersTicker() {
     
     // Sleep for 3 second.
     time.Sleep(time.Second * 3)
-        
-  } 
-
-}
-
-//
-// Ticker - Watchlists : 30 seconds
-//
-func (t *Base) DoGetWatchlistsTicker() {
-
-  for {
-    
-    // Load up our watchlists    
-    err := t.GetWatchlists()
-  
-    if err != nil {
-      services.Error(err, "Error in Brokers/Feed - DoGetWatchlistsTicker()")
-    }
-    
-    // Update any active symbols
-    symbols := t.GetActiveSymbols()
-    t.Api.SetActiveSymbols(symbols)
-    
-    // Sleep for 30 second.
-    time.Sleep(time.Second * 30)
         
   } 
 

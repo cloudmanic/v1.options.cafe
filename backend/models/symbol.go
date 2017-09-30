@@ -8,6 +8,7 @@ package models
 
 import (
   "time"
+  "strings"
   "app.options.cafe/backend/library/services"
 )
 
@@ -30,7 +31,7 @@ func (t * DB) CreateNewSymbol(short string, name string) (Symbol, error) {
   if t.Connection.Where("short_name = ?", short).First(&symb).RecordNotFound() {
 
     // Create entry.
-    symb = Symbol{ Name: name, ShortName: short }
+    symb = Symbol{ Name: name, ShortName: strings.ToLower(short) }
               
     t.Connection.Create(&symb)
     

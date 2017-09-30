@@ -16,8 +16,6 @@ type Api interface {
   GetAllOrders() ([]types.Order, error)
   GetQuotes([]string) ([]types.Quote, error)
   GetUserProfile() (types.UserProfile, error)
-  GetWatchLists() ([]types.Watchlist, error)
-  GetWatchList(string) (types.Watchlist, error)
   DoRefreshAccessTokenIfNeeded(models.User) error 
   
 }
