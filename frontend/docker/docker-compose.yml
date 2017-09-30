@@ -14,7 +14,7 @@ services:
            
     build:
       context: ./build
-      dockerfile: Dockerfile-frontend
+      dockerfile: Dockerfile
       args:
         P_UID: ${P_UID}
         P_GID: ${P_GID}       

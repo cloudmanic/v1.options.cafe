@@ -1,3 +1,9 @@
+//
+// Date: 9/30/2017
+// Author(s): Spicer Matthews (spicer@options.cafe)
+// Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
+//
+
 package models
 
 import (
@@ -38,12 +44,15 @@ func (t * DB) Start() {
   t.Connection.AutoMigrate(&User{})
   t.Connection.AutoMigrate(&Broker{})
   t.Connection.AutoMigrate(&Order{})
+  t.Connection.AutoMigrate(&Symbol{})
   t.Connection.AutoMigrate(&Session{})
   t.Connection.AutoMigrate(&OrderLeg{})
+  t.Connection.AutoMigrate(&Watchlist{})  
+  t.Connection.AutoMigrate(&WatchlistSymbol{})
   t.Connection.AutoMigrate(&Position{}) 
   t.Connection.AutoMigrate(&TradeGroup{})
   t.Connection.AutoMigrate(&ForgotPassword{})   
-  
+   
 }
 
 /* End File */

@@ -1,3 +1,9 @@
+//
+// Date: 9/30/2017
+// Author(s): Spicer Matthews (spicer@options.cafe)
+// Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
+//
+
 package users
 
 import (
@@ -58,6 +64,9 @@ func DoUserFeed(user models.User) {
     services.MajorLog("User Connection Is Already Going : " + user.Email)
     return
   }
+  
+  // Verify some default data.
+  VerifyDefaultWatchList(user)
   
   // Set the user to the object
   Users[user.Id] = &User{
@@ -135,6 +144,67 @@ func DoFeedRequestListen() {
     }
 
   } 
+  
+}
+
+// ------------- Helper Functions ------------------ //
+
+//
+// Verify we have default watchlist in place.
+//
+func VerifyDefaultWatchList(user models.User) {
+  
+  // Setup defaults.
+  type Y struct {
+    SymShort string
+    SymLong string
+  }
+  
+  var m []Y
+  m = append(m, Y{ SymShort: "SPY", SymLong: "SPDR S&P 500" })
+  m = append(m, Y{ SymShort: "IWM", SymLong: "Ishares Russell 2000 Etf" })
+  m = append(m, Y{ SymShort: "VIX", SymLong: "CBOE Volatility S&P 500 Index" })
+  m = append(m, Y{ SymShort: "AMZN", SymLong: "Amazon.com Inc" })
+  m = append(m, Y{ SymShort: "AAPL", SymLong: "Apple Inc." })      
+  m = append(m, Y{ SymShort: "SBUX", SymLong: "Starbucks Corp" })
+  m = append(m, Y{ SymShort: "BAC", SymLong: "Bank Of America Corporation" })
+
+  // See if this user already had a watchlist
+  _, err := DB.GetWatchlistsByUserId(user.Id)
+  
+  // If no watchlists we create a default one with some default symbols.  
+  if err != nil {
+
+    wList, err := DB.CreateNewWatchlist(user, "Default")
+
+    if err != nil {
+      services.Error(err, "(CreateNewWatchlist) Unable to create watchlist Default")
+      return
+    }
+
+    for key, row := range m {
+
+      // Add some default symbols - SPY
+      symb, err := DB.CreateNewSymbol(row.SymShort, row.SymLong)
+      
+      if err != nil {
+        services.Error(err, "(VerifyDefaultWatchList) Unable to create symbol " + row.SymShort)
+        return
+      }
+      
+      // Add lookup
+      _, err2 := DB.CreateNewWatchlistSymbol(wList, symb, user, uint(key))      
+  
+      if err2 != nil {
+        services.Error(err2, "(CreateNewWatchlistSymbol) Unable to create symbol " + row.SymShort + " lookup")
+        return
+      }
+    
+    }
+    
+  }
+  
+  return
   
 }
 
