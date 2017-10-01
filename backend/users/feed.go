@@ -144,7 +144,14 @@ func DoFeedRequestListen() {
 
         // Send watchlist
         WsSendWatchlists(Users[send.UserId])
-        
+      
+      break;
+      
+      // Refresh just the watchlist
+      case "Watchlists:refresh":
+        WsSendWatchlists(Users[send.UserId])
+      break;
+             
     }
 
   } 

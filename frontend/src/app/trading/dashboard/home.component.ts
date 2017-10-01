@@ -40,4 +40,13 @@ export class DashboardComponent implements OnInit {
  
   }
 
+  //
+  // On watchlist settings click.
+  //
+  onWatchlistSettingsClick() {
+    this.appService.RequestWatchlistData();
+  } 
+
 }
+
+/* End File */

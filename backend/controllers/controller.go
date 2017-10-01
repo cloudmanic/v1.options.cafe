@@ -22,7 +22,12 @@ func ProcessRead(conn *WebsocketConnection, message string, data map[string]inte
   
     // Refresh all cached data.
     case "refresh-all-data":
-      RefreshAllData(conn)
+      WsReadChan <- SendStruct{ UserId: conn.userId, Message: "FromCache:refresh" }
+    break;
+
+    // Refresh watchlists
+    case "refresh-watchlists":
+      WsReadChan <- SendStruct{ UserId: conn.userId, Message: "Watchlists:refresh" }
     break;
   
     // The user authenticates.
@@ -30,7 +35,7 @@ func ProcessRead(conn *WebsocketConnection, message string, data map[string]inte
       device_id := gjson.Get(message, "data.device_id").String()
       access_token := gjson.Get(message, "data.access_token").String()
       AuthenticateConnection(conn, access_token, device_id)
-    break; 
+    break;
          
   }
     
@@ -74,20 +79,8 @@ func AuthenticateConnection(conn *WebsocketConnection, access_token string, devi
   go DoWsWriting(conn)
   
   // Send cached data so they do not have to wait for polling.
-  RefreshAllData(conn)
+  WsReadChan <- SendStruct{ UserId: conn.userId, Message: "FromCache:refresh" }
 
-}
-
-//
-// A request from the client to send cached data up the 
-// websocket. This is often used when the page changes
-// or the state of a page changes and they need to 
-// refresh the data on the client.
-//
-func RefreshAllData(conn *WebsocketConnection)  {
-  
-  WsReadChan <- SendStruct{ UserId: conn.userId, Message: "FromCache:refresh" }  
- 
 }
 
 /* End File */

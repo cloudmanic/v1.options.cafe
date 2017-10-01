@@ -67,7 +67,7 @@ export class AppService
     this.activeAccount = account;
     localStorage.setItem('active_account', account.AccountNumber);
     this.activeAccountPush.emit(account);
-    this.requestAllData();
+    this.RequestAllData();
     
   }
 
@@ -192,9 +192,16 @@ export class AppService
   //
   // Request the backend sends all data again. (often do this on state change or page change)
   //
-  public requestAllData() {
+  public RequestAllData() {
     this.ws.send(JSON.stringify({  type: 'refresh-all-data', data: {} }));   
   }
+  
+  //
+  // Request the backend sends watchlist data.
+  //
+  public RequestWatchlistData() {
+    this.ws.send(JSON.stringify({  type: 'refresh-watchlists', data: {} }));   
+  }  
   
   // ---------------------- Websocket Stuff ----------------------- //
 
