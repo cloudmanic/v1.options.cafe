@@ -36,6 +36,12 @@ export class Order {
     
     let orders = [];
     
+    // Sometimes we do not have data yet.
+    if(! data)
+    {
+      return orders;
+    }
+    
     for(let i = 0; i < data.length; i++)
     {
       // Add in the legs

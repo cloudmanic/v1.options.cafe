@@ -25,11 +25,24 @@ func WsSendWatchlists(user *User) {
     return
   }  
   
+  type Wl struct {
+    Id uint    
+    Name string
+    List []string
+  }  
+  
   // Loop through the different watchlists
   for _, row := range wLists {
     
+    // Clean up data we send.
+    l := &Wl{ Id: row.Id, Name: row.Name }
+    
+    for _, row2 := range row.Symbols {
+      l.List = append(l.List, row2.Symbol.ShortName)
+    }
+
     // Convert to a json string.
-    dataJson, err := json.Marshal(row)
+    dataJson, err := json.Marshal(l)
 
     if err != nil {
       services.Error(err, "WsSendWatchlists() json.Marshal (#1)")

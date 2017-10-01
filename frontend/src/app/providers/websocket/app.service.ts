@@ -115,12 +115,13 @@ export class AppService
         this.ordersPush.emit(this.orders);              
       break;
 
-/*
       // Watchlist refresh
       case 'Watchlist:refresh':
-        this.doWatchListRefresh(msg_data);     
+        
+        console.log(msg_data);
+        
+        //this.doWatchListRefresh(msg_data);     
       break;
-*/
     }
     
   }
