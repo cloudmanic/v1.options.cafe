@@ -14,7 +14,6 @@ import { Order } from '../../models/order';
 import { Balance } from '../../models/balance';
 import { OrderLeg } from '../../models/order-leg';
 import { Watchlist } from '../../models/watchlist';
-import { WatchlistItems } from '../../models/watchlist-items';
 import { MarketStatus } from '../../models/market-status';
 import { UserProfile } from '../../models/user-profile';
 import { BrokerAccount } from '../../models/broker-account';
@@ -29,6 +28,7 @@ export class AppService
    
   // Cache some of the data.
   public orders: Order[];
+  public watchlist = new Watchlist("", "", []);
    
   // Websocket Stuff
   ws = null;
@@ -117,40 +117,13 @@ export class AppService
 
       // Watchlist refresh
       case 'Watchlist:refresh':
-        
-        console.log(msg_data);
-        
-        //this.doWatchListRefresh(msg_data);     
+        this.watchlist = Watchlist.buildForEmit(msg_data);
+        this.watchlistPush.emit(this.watchlist); 
       break;
     }
     
   }
-   
-  
-/*  
-  //
-  // Do watchlist Refresh
-  //
-  doWatchListRefresh (data) {
-    
-    // We only care about the default watchlist
-    if(data.Id != 'default')
-    {
-      return false;
-    }
-    
-    let ws = new Watchlist(data.Id, data.Name, []);
-
-    for(var i in data.Symbols)
-    {
-      ws.items.push(new WatchlistItems(data.Symbols[i].id, data.Symbols[i].symbol));
-    }
-    
-    this.watchlistPush.emit(ws);
-    
-  }
-*/  
-
+ 
   // ------------------------ Helper Functions ------------------------------ //
 
   //

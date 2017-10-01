@@ -31,7 +31,7 @@ func (t * DB) CreateNewSymbol(short string, name string) (Symbol, error) {
   if t.Connection.Where("short_name = ?", short).First(&symb).RecordNotFound() {
 
     // Create entry.
-    symb = Symbol{ Name: name, ShortName: strings.ToLower(short) }
+    symb = Symbol{ Name: name, ShortName: strings.ToUpper(short) }
               
     t.Connection.Create(&symb)
     

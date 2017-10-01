@@ -5,6 +5,7 @@ import (
 	"sort"
 	"strings"    
   "encoding/json"
+  "app.options.cafe/backend/models"
   "app.options.cafe/backend/controllers"  
   "app.options.cafe/backend/brokers/types"
   //"app.options.cafe/backend/library/services"   
@@ -63,23 +64,30 @@ func (t *Base) GetActiveSymbols() []string {
   activeSymbols = append(activeSymbols, "COMP")   
   activeSymbols = append(activeSymbols, "VIX")
   
-/*
-  // Watchlists to the active symbols.
-  t.muWatchlists.Lock()
   
-  for _, row := range t.Watchlists {
-    
-    for _, row2 := range row.Symbols {
-    
-      activeSymbols = append(activeSymbols, row2.Name)
+  // See if this user already had a watchlist
+  var DB = models.DB{}
+  DB.Start()
+  defer DB.Connection.Close()  
   
+  // Get the watch lists for this user.
+  watchList, err := DB.GetWatchlistsByUserId(t.User.Id)
+  
+  // Loop through the watchlists and add the symbols  
+  if err == nil {
+  
+    for _, row := range watchList {
+      
+      for _, row2 := range row.Symbols {
+      
+        activeSymbols = append(activeSymbols, row2.Symbol.ShortName)
+    
+      }
+      
     }
-    
-  }
   
-  t.muWatchlists.Unlock() 
-*/   
-  
+  }  
+     
   // Add in the orders we want.
   t.muOrders.Lock()
   

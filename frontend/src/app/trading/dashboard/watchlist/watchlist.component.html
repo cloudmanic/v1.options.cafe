@@ -1,0 +1,55 @@
+<aside class="section__aside box--bordered mobile--hidden">
+										
+  <div class="box__head box__head--relative">
+    <h5 class="box__title">Watchlist</h5><!-- /.box__title -->
+  
+    <div class="dropdown select">
+    	<div class="dropdown__head dropdown--trigger" (click)="onWatchlistSettingsClick()"></div>
+  
+    	<div class="dropdown__body">
+    		<ul class="list-actions">
+    			<li>
+    				<a href="#">Edit Watchlist</a>
+    			</li>
+  
+    			<li>
+    				<a href="ajax/popup-add-watchlist.html" class="popup--trigger">Add Watchlist</a>
+    			</li>
+  
+    			<li>
+    				<a href="ajax/popup-rename-watchlist.html" class="popup--trigger">Rename Watchlist</a>
+    			</li>
+  
+    			<li>
+    				<a href="ajax/popup-delete-watchlist.html" class="popup--trigger">Delete Watchlist</a>
+    			</li>
+    		</ul><!-- /.list-actions -->
+    	</div><!-- /.dropdown__body -->
+    </div><!-- /.dropdown select -->
+  </div><!-- /.box__head box__head-relative -->
+
+  
+  <ul class="stocks">
+    
+  	<li class="stock" *ngFor="let row of watchlist.items">
+  		<h6 class="stock__title">{{ row | uppercase }}</h6>
+  
+  		<ul class="list-prices">
+  			<li>
+  				<strong>{{ quotes[row]?.last | currency:'USD':true:'1.2-2' }}</strong>
+  			</li>
+  
+  			<li>
+  				<strong class="title-red">
+  					{{ quotes[row]?.dailyChange() | currency:'USD':true:'1.2-2' }} <span>({{ quotes[row]?.percentChange() | number:'1.2-2' }}%)</span>
+  				</strong>
+  			</li>
+  		</ul><!-- /.list-prices -->
+  
+  		<footer class="stock__footer">
+  			<em>{{ quotes[row]?.description }}</em>
+  		</footer>
+  	</li>
+  	
+  </ul>
+</aside>

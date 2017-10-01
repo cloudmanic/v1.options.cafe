@@ -35,6 +35,7 @@ import { ReportsHomeComponent } from './reports/home/home.component';
 // Trading
 import { SubnavComponent } from './trading/sub-nav/subnav.component';
 import { TradesComponent } from './trading/trades/home.component';
+import { WatchlistComponent } from './trading/dashboard/watchlist/watchlist.component';
 import { ScreenerComponent } from './trading/screener/home.component';
 import { DashboardComponent } from './trading/dashboard/home.component';
 import { OrdersComponent } from './trading/dashboard/orders/orders.component';
@@ -72,6 +73,7 @@ import { OrdersMultiLegComponent } from './trading/dashboard/orders/orders.multi
     TradesComponent,
     ScreenerComponent,
     DashboardComponent,
+    WatchlistComponent,
     OrdersMultiLegComponent
   ],
   

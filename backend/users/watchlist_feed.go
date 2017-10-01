@@ -80,12 +80,15 @@ func VerifyDefaultWatchList(user models.User) {
   var m []Y
   m = append(m, Y{ SymShort: "SPY", SymLong: "SPDR S&P 500" })
   m = append(m, Y{ SymShort: "IWM", SymLong: "Ishares Russell 2000 Etf" })
-  m = append(m, Y{ SymShort: "VIX", SymLong: "CBOE Volatility S&P 500 Index" })
+  m = append(m, Y{ SymShort: "MCD", SymLong: "McDonald's Corp" })
+  m = append(m, Y{ SymShort: "XLF", SymLong: "SPDR Select Sector Fund - Financial" })
   m = append(m, Y{ SymShort: "AMZN", SymLong: "Amazon.com Inc" })
   m = append(m, Y{ SymShort: "AAPL", SymLong: "Apple Inc." })      
   m = append(m, Y{ SymShort: "SBUX", SymLong: "Starbucks Corp" })
   m = append(m, Y{ SymShort: "BAC", SymLong: "Bank Of America Corporation" })
-
+  m = append(m, Y{ SymShort: "HD", SymLong: "The Home Depot Inc" })
+  m = append(m, Y{ SymShort: "CAT", SymLong: "Caterpillar Inc" })
+  
   // See if this user already had a watchlist
   _, err := DB.GetWatchlistsByUserId(user.Id)
   
