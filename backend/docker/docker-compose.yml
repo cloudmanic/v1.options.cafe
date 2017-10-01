@@ -3,7 +3,7 @@ version: '2.1'
 services:
 
   # App
-  backend-dev:
+  app:
            
     hostname: ${VIRTUAL_HOST}
 

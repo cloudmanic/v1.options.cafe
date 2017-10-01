@@ -69,7 +69,8 @@ export class AuthRegisterComponent implements OnInit {
           console.log('A client-side error occurred:', err.error.message);
         } else 
         {
-          this.errorMsg = err.error.error;
+          var json = JSON.parse(err.error); // Bug....Angular 4.4.4
+          this.errorMsg = json.error;
         }
         
       }

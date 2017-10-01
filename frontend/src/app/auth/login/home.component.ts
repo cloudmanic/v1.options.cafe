@@ -10,8 +10,6 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { environment } from '../../../environments/environment';
 
-declare var app_server: any;
-
 interface LoginResponse {
   status: number, 
   user_id: number,
@@ -97,12 +95,10 @@ export class AuthLoginComponent implements OnInit {
           // A client-side or network error occurred. Handle it accordingly.
           console.log('An error occurred:', err.error.message);
         } else 
-        {
-          // The backend returned an unsuccessful response code.
-          //console.log(`Backend returned code ${err.status}, body was: ${err.error}`);
-          
+        { 
           // Print error message
-          this.errorMsg = err.error.error;
+          var json = JSON.parse(err.error); // Bug....Angular 4.4.4
+          this.errorMsg = json.error;
         }
         
       }

@@ -4,9 +4,9 @@
 
 * In the case of ```$HOME/Development``` Make sure you add a symlink with src. ```ln -s /Users/spicer/Development /Users/spicer/Development/src```
 
-## Note On Backend Docker
+## Note On Backend Development Docker
 
-* ```go run *.go``` the docker way : ```cd backend/docker && docker-compose run --rm -p 7652:7652 backend-dev bash```
+* ```go run *.go``` the docker way : ```cd backend/docker && docker-compose run --rm -p 7652:7652 app bash```
 
 * Add a Docker .env file example located at ```backend/docker/.env```
 

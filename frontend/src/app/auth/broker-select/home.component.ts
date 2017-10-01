@@ -7,8 +7,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm }   from '@angular/forms';
 import { Router } from '@angular/router';
-
-declare var app_server: any;
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'broker-select',
@@ -49,7 +48,7 @@ export class AuthBrokerSelectComponent implements OnInit {
     switch(form.value["field-broker"])
     {
       case 'tradier':
-        window.location.href = app_server + '/tradier/authorize?user=' + localStorage.getItem('user_id');
+        window.location.href = environment.app_server + '/tradier/authorize?user=' + localStorage.getItem('user_id');
       break;
     }
     
