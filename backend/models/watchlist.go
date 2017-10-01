@@ -18,6 +18,7 @@ type Watchlist struct {
   UpdatedAt time.Time
   UserId uint `sql:"not null;index:UserId"` 
   Name string `sql:"not null"`
+  Symbols []WatchlistSymbol
 } 
 
 //
@@ -34,6 +35,19 @@ func (t * DB) GetWatchlistsByUserId(userId uint) ([]Watchlist, error) {
   if len(u) <= 0 {
     return u, errors.New("Records not found")    
   }
+    
+  // Loop through the watchlist and add the items
+  for key, _ := range u {
+  
+    // Add in Symbols Lookup
+    t.Connection.Model(u[key]).Related(&u[key].Symbols)    
+  
+    // Add in Symbols
+    for key2, _ := range u[key].Symbols {
+      t.Connection.Model(u[key].Symbols[key2]).Related(&u[key].Symbols[key2].Symbol)      
+    }
+      
+  } 
   
   // Return the Watchlists.
   return u, nil

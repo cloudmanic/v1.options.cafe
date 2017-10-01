@@ -7,6 +7,7 @@
 package users
 
 import (
+  "encoding/json"
   "app.options.cafe/backend/models"
   "app.options.cafe/backend/controllers"
   "app.options.cafe/backend/brokers"
@@ -26,6 +27,7 @@ var (
  
 type User struct {
   Profile models.User
+  DataChan chan controllers.SendStruct
   BrokerFeed map[uint]*feed.Base
 }
 
@@ -71,6 +73,7 @@ func DoUserFeed(user models.User) {
   // Set the user to the object
   Users[user.Id] = &User{
                       Profile: user,
+                      DataChan: DataChan,
                       BrokerFeed: make(map[uint]*feed.Base),   
                     }
     
@@ -136,10 +139,11 @@ func DoFeedRequestListen() {
         
         // Loop through each broker and refresh the data.
         for _, row := range Users[send.UserId].BrokerFeed {
-          
           row.RefreshFromCached()
-          
         }
+
+        // Send watchlist
+        WsSendWatchlists(Users[send.UserId])
         
     }
 
@@ -147,64 +151,31 @@ func DoFeedRequestListen() {
   
 }
 
-// ------------- Helper Functions ------------------ //
+// ---------------- Helper Functions --------------- //
 
 //
-// Verify we have default watchlist in place.
+// Build json to send up websocket.
 //
-func VerifyDefaultWatchList(user models.User) {
+func WsSendJsonBuild(send_type string, data_json []byte) (string, error) {
   
-  // Setup defaults.
-  type Y struct {
-    SymShort string
-    SymLong string
-  }
+  type SendStruct struct {
+    Type string `json:"type"`
+    Data string `json:"data"`
+  }   
   
-  var m []Y
-  m = append(m, Y{ SymShort: "SPY", SymLong: "SPDR S&P 500" })
-  m = append(m, Y{ SymShort: "IWM", SymLong: "Ishares Russell 2000 Etf" })
-  m = append(m, Y{ SymShort: "VIX", SymLong: "CBOE Volatility S&P 500 Index" })
-  m = append(m, Y{ SymShort: "AMZN", SymLong: "Amazon.com Inc" })
-  m = append(m, Y{ SymShort: "AAPL", SymLong: "Apple Inc." })      
-  m = append(m, Y{ SymShort: "SBUX", SymLong: "Starbucks Corp" })
-  m = append(m, Y{ SymShort: "BAC", SymLong: "Bank Of America Corporation" })
-
-  // See if this user already had a watchlist
-  _, err := DB.GetWatchlistsByUserId(user.Id)
+  // Send Object
+  send := SendStruct{
+    Type: send_type,
+    Data: string(data_json),
+  } 
+  send_json, err := json.Marshal(send)    
   
-  // If no watchlists we create a default one with some default symbols.  
   if err != nil {
-
-    wList, err := DB.CreateNewWatchlist(user, "Default")
-
-    if err != nil {
-      services.Error(err, "(CreateNewWatchlist) Unable to create watchlist Default")
-      return
-    }
-
-    for key, row := range m {
-
-      // Add some default symbols - SPY
-      symb, err := DB.CreateNewSymbol(row.SymShort, row.SymLong)
-      
-      if err != nil {
-        services.Error(err, "(VerifyDefaultWatchList) Unable to create symbol " + row.SymShort)
-        return
-      }
-      
-      // Add lookup
-      _, err2 := DB.CreateNewWatchlistSymbol(wList, symb, user, uint(key))      
-  
-      if err2 != nil {
-        services.Error(err2, "(CreateNewWatchlistSymbol) Unable to create symbol " + row.SymShort + " lookup")
-        return
-      }
-    
-    }
-    
-  }
-  
-  return
+    services.Error(err, "WsSendJsonBuild() json.Marshal")
+    return "", err
+  } 
+ 
+  return string(send_json), nil
   
 }
 

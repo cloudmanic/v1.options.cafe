@@ -19,6 +19,7 @@ type WatchlistSymbol struct {
   WatchlistId uint `sql:"not null;index:WatchlistId"` 
   SymbolId uint `sql:"not null;index:SymbolId"`
   Order uint `sql:"not null"`
+  Symbol Symbol
 } 
      
 //
