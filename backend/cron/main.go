@@ -10,8 +10,9 @@ import(
   "os"
   "runtime"  
   "github.com/joho/godotenv"
-  "app.options.cafe/backend/library/services"
-  "app.options.cafe/backend/utility/data_import"  
+  "github.com/jasonlvhit/gocron"
+  "app.options.cafe/backend/cron/data_import" 
+  "app.options.cafe/backend/library/services"  
 )
 
 //
@@ -29,11 +30,14 @@ func main() {
   }    
   
   // Lets get started
-  services.MajorLog("Utility Started: " + os.Getenv("APP_ENV"))
-  
-  // Start up End of Day Import Services
-  data_import.DoEodOptionsImport()  
-  
+  services.MajorLog("Cron Started: " + os.Getenv("APP_ENV"))
+   
+  // Setup jobs we need to run 
+  gocron.Every(1).Day().At("22:00").Do(data_import.DoEodOptionsImport) 
+
+  // function Start start all the pending jobs
+  <- gocron.Start()  
+
 }
 
 /* End File */

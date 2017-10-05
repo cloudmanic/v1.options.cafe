@@ -20,6 +20,9 @@ import(
 //
 func DoEodOptionsImport() {
 
+  // Log
+  services.Log("Starting DoEodOptionsImport().")
+
   // Get the Dropbox Client (this is where we archive the zip file)
   client := dropy.New(dropbox.New(dropbox.NewConfig(os.Getenv("DROPBOX_ACCESS_TOKEN"))))
   
@@ -80,6 +83,9 @@ func DoEodOptionsImport() {
     }
 
   }
+
+  // Log 
+  services.Log("Done DoEodOptionsImport().")  
 
 }
 
