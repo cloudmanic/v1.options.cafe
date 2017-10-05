@@ -7,3 +7,11 @@ Note: This is not run from typical unix cron. It has its own scheduling built in
 The ```.env``` file is shared with the core application.
 
 This app should be run from docker like all our other apps.
+
+## Note On Backend Development Docker
+
+* ```go run *.go``` the docker way : ```cd ../backend/docker && docker-compose run --rm cron bash```
+
+* This assumes all the .env stuff was setup from the main app. ```../README.md```
+
+* Might need to run ```go get``` from within the docker container

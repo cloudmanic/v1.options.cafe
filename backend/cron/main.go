@@ -31,7 +31,7 @@ func main() {
   
   // Lets get started
   services.MajorLog("Cron Started: " + os.Getenv("APP_ENV"))
-   
+
   // Setup jobs we need to run 
   gocron.Every(1).Day().At("22:00").Do(data_import.DoEodOptionsImport) 
 

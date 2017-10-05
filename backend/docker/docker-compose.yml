@@ -33,7 +33,35 @@ services:
       - ${GO_PATH}/src/github.com:/go/src/github.com:cached,rw
             
     networks:
-      - shared     
+      - shared 
+
+  # Cron
+  cron:
+           
+    hostname: ${VIRTUAL_HOST}
+
+    container_name: ${VIRTUAL_HOST}
+              
+    build:
+      context: ./build
+      dockerfile: Dockerfile-cron
+      args:
+        P_UID: ${P_UID}
+        P_GID: ${P_GID}       
+    
+    image: cron.${VIRTUAL_HOST}/golang:1.8.1-alpine           
+
+    restart: ${RESTART}
+              
+    volumes:
+      - ../:/work:rw
+      - ../../:/go/src/app.options.cafe:cached,rw       
+      - ${GO_PATH}/src/golang.org:/go/src/golang.org:cached,rw
+      - ${GO_PATH}/src/github.com:/go/src/github.com:cached,rw
+            
+    networks:
+      - shared 
+
   
 networks:
   shared:

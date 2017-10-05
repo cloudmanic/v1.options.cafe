@@ -9,6 +9,7 @@ package data_import
 import(
 	"os"
   "io"
+  "net/http"
   "github.com/tj/go-dropy"
   "github.com/tj/go-dropbox"
   "github.com/jlaffaye/ftp"
@@ -82,6 +83,19 @@ func DoEodOptionsImport() {
       continue;      
     }
 
+  }
+
+  // Send health check notice.
+  if len(os.Getenv("HEALTH_CHECK_DOEODOPTIONSIMPORT_URL")) > 0 {
+
+    resp, err := http.Get(os.Getenv("HEALTH_CHECK_DOEODOPTIONSIMPORT_URL"))
+    
+    if err != nil {
+      services.Error(err, "Could send health check - " + os.Getenv("HEALTH_CHECK_DOEODOPTIONSIMPORT_URL"))
+    }
+    
+    defer resp.Body.Close()
+    
   }
 
   // Log 

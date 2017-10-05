@@ -37,3 +37,7 @@ Every user must have a subscription (table: ```User::StripeSubscription```) if t
 ## Best Way To Test Webhooks Locally
 
 You can use https://ngrok.com to send webhooks in locally. The free account changes the url every time you run it. Here is how you start it ```ngrok http 7652```
+
+## Cron Jobs
+
+Checkout ```cron/README.md```
