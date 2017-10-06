@@ -143,7 +143,7 @@ func ProccessAllDeltaNeutralData() error {
   // Loop through files at Dropbox
   for key, _ := range dbFiles {
 
-    fmt.Printf("Downloading: %s (%d/%d)", key, i, total)
+    fmt.Printf("Downloading: %s (%d/%d) \n", key, i, total)
 
     file, err := client.Download("/data/AllOptions/Daily/" + key);    
 
