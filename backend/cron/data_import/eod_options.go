@@ -9,6 +9,7 @@ package data_import
 import(
 	"os"
   "io"
+  "fmt"
   "time"
   "errors"
   "strings"
@@ -136,10 +137,13 @@ func ProccessAllDeltaNeutralData() error {
     return err
   }
 
+  var i = 1;
+  var total = len(dbFiles)
+
   // Loop through files at Dropbox
   for key, _ := range dbFiles {
 
-    services.Log("Downloading: " + key)
+    fmt.Printf("Downloading: %s (%d/%d)", key, i, total)
 
     file, err := client.Download("/data/AllOptions/Daily/" + key);    
 
@@ -169,6 +173,9 @@ func ProccessAllDeltaNeutralData() error {
 
     // Delete file.
     os.Remove("/tmp/" + key)
+
+    // Update count
+    i++
 
   }   
 
@@ -267,7 +274,7 @@ func SymbolImport(filePath string) error {
   }
 
   // Log
-  services.Log("Start SymbolImport - " + filePath)   
+  services.Log("Done SymbolImport - " + filePath)   
 
   // Return happy.
   return nil
