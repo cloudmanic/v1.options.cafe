@@ -435,4 +435,29 @@ func GetProccessedFiles(client *dropy.Client) (map[string]os.FileInfo, error) {
   
 }
 
+
+/*
+    // Delta Neutral Options CSV Format
+    [0] => underlying
+    [1] => underlying_last
+    [2] =>  exchange
+    [3] => optionroot
+    [4] => optionext
+    [5] => type
+    [6] => expiration
+    [7] => quotedate
+    [8] => strike
+    [9] => last
+    [10] => bid
+    [11] => ask
+    [12] => volume
+    [13] => openinterest
+    [14] => impliedvol
+    [15] => delta
+    [16] => gamma
+    [17] => theta
+    [18] => vega
+    [19] => optionalias
+*/
+
 /* End File */
