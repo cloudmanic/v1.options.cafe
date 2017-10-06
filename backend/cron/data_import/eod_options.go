@@ -9,7 +9,6 @@ package data_import
 import(
 	"os"
   "io"
-  "fmt"
   "time"
   "errors"
   "strings"
@@ -120,9 +119,73 @@ func DoEodOptionsImport() {
 }
 
 //
+// Convert all Delta Neutral imports into a per symbol / date CSV file.
+//
+func ProccessAllDeltaNeutralData() error {
+
+  // Log
+  services.Log("Starting ProccessAllDeltaNeutralData().")
+
+  // Get the Dropbox Client (this is where we archive the zip file)
+  client := dropy.New(dropbox.New(dropbox.NewConfig(os.Getenv("DROPBOX_ACCESS_TOKEN"))))
+  
+  // Get files we should skip.
+  dbFiles, err := GetProccessedFiles(client)  
+
+  if err != nil {
+    return err
+  }
+
+  // Loop through files at Dropbox
+  for key, _ := range dbFiles {
+
+    services.Log("Downloading: " + key)
+
+    file, err := client.Download("/data/AllOptions/Daily/" + key);    
+
+    if err != nil {
+      return err
+    }
+
+    // Create Zip file to store
+    outFile, err := os.Create("/tmp/" + key);
+
+    if err != nil {
+      return err
+    }  
+
+    // Copy DB file downloaded.
+    _, err = io.Copy(outFile, file)
+
+    if err != nil {
+      return err
+    }
+
+    // Write file.
+    outFile.Close()
+
+    // Process the downloaded file.
+    SymbolImport("/tmp/" + key)
+
+    // Delete file.
+    os.Remove("/tmp/" + key)
+
+  }   
+
+  // Log 
+  services.Log("Done ProccessAllDeltaNeutralData().")   
+
+  // Return happy.
+  return nil
+}
+
+//
 // Break the data up per symbol
 //
 func SymbolImport(filePath string) error {
+
+  // Log
+  services.Log("Start SymbolImport - " + filePath) 
 
   // Unzip CSV files.
   files, err := Unzip(filePath, "/tmp/output/")
@@ -203,6 +266,9 @@ func SymbolImport(filePath string) error {
 
   }
 
+  // Log
+  services.Log("Start SymbolImport - " + filePath)   
+
   // Return happy.
   return nil
 }
@@ -213,7 +279,7 @@ func SymbolImport(filePath string) error {
 func StoreOneDaySymbol(symbol string, date time.Time, data [][]string) (string, error) {
 
   var fileName = date.Format("2006-01-02") + ".csv"
-  var dirBase = "/cache/options-eod/"
+  var dirBase = os.Getenv("CACHE_DIR") + "/options-eod/"
   var dirPath = dirBase + symbol + "/"
   var csvFile = dirPath + fileName  
   var zipFile = csvFile + ".zip"

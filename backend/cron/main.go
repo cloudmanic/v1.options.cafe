@@ -34,7 +34,7 @@ func main() {
 
   //data_import.DoEodOptionsImport()
 
-  err = data_import.SymbolImport("/tmp/options_20171005.zip")
+  err = data_import.ProccessAllDeltaNeutralData()
 
   if err != nil {
     panic(err)
