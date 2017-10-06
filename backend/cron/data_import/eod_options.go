@@ -27,8 +27,6 @@ import(
 //
 func DoEodOptionsImport() {
 
-  fmt.Println("asdf")
-
   // Log
   services.Log("Starting DoEodOptionsImport().")
 
@@ -190,8 +188,15 @@ func SymbolImport(filePath string) error {
   for key, _ := range symbolMap {  
 
     // Store Symbol to a file based on date and symbol
-    _, err := StoreOneDaySymbol(key, date, symbolMap[key])
+    zipFilePath, err := StoreOneDaySymbol(key, date, symbolMap[key])
     
+    if err != nil {
+      return err
+    }
+
+    // Send the file to AWS for storage
+    err = AWSUpload(zipFilePath, key)
+
     if err != nil {
       return err
     }
