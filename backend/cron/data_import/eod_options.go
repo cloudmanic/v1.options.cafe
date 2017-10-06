@@ -9,10 +9,16 @@ package data_import
 import(
 	"os"
   "io"
+  "fmt"
+  "time"
+  "errors"
+  "strings"
   "net/http"
+  "encoding/csv"
   "github.com/tj/go-dropy"
   "github.com/tj/go-dropbox"
   "github.com/jlaffaye/ftp"
+  "github.com/araddon/dateparse"
   "app.options.cafe/backend/library/services"  
 )
 
@@ -20,6 +26,8 @@ import(
 // Do End of Day Options Import....
 //
 func DoEodOptionsImport() {
+
+  fmt.Println("asdf")
 
   // Log
   services.Log("Starting DoEodOptionsImport().")
@@ -35,6 +43,7 @@ func DoEodOptionsImport() {
     return
   }  
 
+  // Get daily options from vendor
   ftpFiles, err := GetOptionsDailyData()
 
   if err != nil {
@@ -42,6 +51,7 @@ func DoEodOptionsImport() {
     return
   }    
 
+  // Loop through the FTP files.
   for _, row := range ftpFiles {
 
     if _, ok := dbFiles[row.Name]; ok {
@@ -75,7 +85,15 @@ func DoEodOptionsImport() {
     // Log file
     services.Log("Finished uploading " + row.Name + " to Dropbox.")
 
-    // Delete file we uploaded to Dropbox
+    // Import file into different symbols
+    err = SymbolImport(filePath)
+
+    if err != nil {
+      services.Error(err, "Could not import DatabaseImport() - " + row.Name)
+      continue;      
+    }
+
+    // // Delete file we uploaded to Dropbox
     err = os.Remove(filePath)
 
     if err != nil {
@@ -101,6 +119,138 @@ func DoEodOptionsImport() {
   // Log 
   services.Log("Done DoEodOptionsImport().")  
 
+}
+
+//
+// Break the data up per symbol
+//
+func SymbolImport(filePath string) error {
+
+  // Unzip CSV files.
+  files, err := Unzip(filePath, "/tmp/output/")
+
+  if err != nil {
+    return err
+  }
+
+  // Loop through the files paths and find the file we are looking for.
+  var file = ""
+
+  for _, row := range files {
+
+    // We are only interested in one file.
+    i := strings.Index(row, "ptions_")    
+
+    if i > -1 {
+      file = row
+    }
+
+  }
+
+  // Make sure we have a file
+  if len(file) <= 0 {
+    return errors.New("Did not find /tmp/output/options_XXXXXXXX.csv")
+  }
+
+  // Open CSV file
+  f, err := os.Open(file)
+  
+  if err != nil {
+    return err
+  }
+  
+  defer f.Close()
+
+  // Read File into a Variable - https://golangcode.com/how-to-read-a-csv-file-into-a-struct
+  lines, err := csv.NewReader(f).ReadAll()
+  
+  if err != nil {
+    return err
+  }
+
+  // Log import
+  services.Log("Importing option EOD quotes for - " + string(lines[0][7]))
+
+  // Figure out quote date
+  date, err := dateparse.ParseAny(string(lines[0][7]))
+
+  if err != nil {
+    return err
+  }
+
+  // Hash map to keep each symbol array
+  symbolMap := make(map[string][][]string)
+
+  // Loop through lines & turn into object
+  for _, line := range lines {
+    
+    symbolMap[line[0]] = append(symbolMap[line[0]], line)
+
+    // Store Symbol to a file based on date and symbol
+    err = StoreOneDaySymbol(line[0], date, symbolMap[line[0]])
+    
+    if err != nil {
+      return err
+    }
+
+  } 
+
+  // Return happy.
+  return nil
+}
+
+//
+// Store one day's worth of Symbols 
+//
+func StoreOneDaySymbol(symbol string, date time.Time, data [][]string) error {
+
+  var fileName = symbol + "_" + date.Format("2006-01-02") + ".csv"
+  var dirBase = "/cache/options-eod/"
+  var dirPath = dirBase + symbol + "/"
+
+  // Create directory - Base
+  if _, err := os.Stat(dirBase); os.IsNotExist(err) {
+    err = os.Mkdir(dirBase, 0755)
+
+    if err != nil {
+      return err
+    }     
+  }  
+
+  // Create directory - Path
+  if _, err := os.Stat(dirPath); os.IsNotExist(err) {
+    err = os.Mkdir(dirPath, 0755)
+
+    if err != nil {
+      return err
+    }     
+  } 
+
+  // Create CSV file
+  csvFile, err := os.Create(dirPath + fileName);
+
+  if err != nil {
+    return err
+  }  
+
+  defer csvFile.Close()
+
+  // Write to a new CSV file just for this symbol
+  writer := csv.NewWriter(csvFile)
+  defer writer.Flush()
+    
+  // Loop through writing each line to the file.
+  for _, row := range data {
+
+    // Make sure the row is not blank
+    if err := writer.Write(row); err != nil {
+      return err
+    }
+
+  }  
+
+  // Return happy
+  return nil
 }
 
 //
@@ -137,8 +287,8 @@ func DownloadOptionsDailyDataByName(name string) (string, error) {
     return "", err
   }
 
+  // Return file path
   return "/tmp/" + name, nil
-
 }
 
 //
