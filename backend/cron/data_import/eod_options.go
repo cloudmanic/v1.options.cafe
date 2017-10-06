@@ -183,17 +183,20 @@ func SymbolImport(filePath string) error {
 
   // Loop through lines & turn into object
   for _, line := range lines {
-    
     symbolMap[line[0]] = append(symbolMap[line[0]], line)
+  } 
+
+  // Loop through and store to file.
+  for key, _ := range symbolMap {  
 
     // Store Symbol to a file based on date and symbol
-    err = StoreOneDaySymbol(line[0], date, symbolMap[line[0]])
+    _, err := StoreOneDaySymbol(key, date, symbolMap[key])
     
     if err != nil {
       return err
     }
 
-  } 
+  }
 
   // Return happy.
   return nil
@@ -202,18 +205,20 @@ func SymbolImport(filePath string) error {
 //
 // Store one day's worth of Symbols 
 //
-func StoreOneDaySymbol(symbol string, date time.Time, data [][]string) error {
+func StoreOneDaySymbol(symbol string, date time.Time, data [][]string) (string, error) {
 
-  var fileName = symbol + "_" + date.Format("2006-01-02") + ".csv"
+  var fileName = date.Format("2006-01-02") + ".csv"
   var dirBase = "/cache/options-eod/"
   var dirPath = dirBase + symbol + "/"
+  var csvFile = dirPath + fileName  
+  var zipFile = csvFile + ".zip"
 
   // Create directory - Base
   if _, err := os.Stat(dirBase); os.IsNotExist(err) {
     err = os.Mkdir(dirBase, 0755)
 
     if err != nil {
-      return err
+      return "", err
     }     
   }  
 
@@ -222,35 +227,50 @@ func StoreOneDaySymbol(symbol string, date time.Time, data [][]string) error {
     err = os.Mkdir(dirPath, 0755)
 
     if err != nil {
-      return err
+      return "", err
     }     
   } 
 
   // Create CSV file
-  csvFile, err := os.Create(dirPath + fileName);
+  csvFilePtr, err := os.Create(dirPath + fileName);
 
   if err != nil {
-    return err
+    return "", err
   }  
 
-  defer csvFile.Close()
-
   // Write to a new CSV file just for this symbol
-  writer := csv.NewWriter(csvFile)
-  defer writer.Flush()
+  writer := csv.NewWriter(csvFilePtr)
     
   // Loop through writing each line to the file.
   for _, row := range data {
 
     // Make sure the row is not blank
     if err := writer.Write(row); err != nil {
-      return err
+      return "", err
     }
 
   }  
 
+  // Write the file.
+  writer.Flush()
+  csvFilePtr.Close()
+
+  // Zip the file up.
+  err = ZipFiles(zipFile, []string{csvFile})  
+
+  if err != nil {
+    return "", err
+  }
+
+  // Delete unziped file
+  err = os.Remove(csvFile)
+
+  if err != nil {
+    return "", err      
+  }  
+
   // Return happy
-  return nil
+  return zipFile, err
 }
 
 //
