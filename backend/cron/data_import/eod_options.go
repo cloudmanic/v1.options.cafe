@@ -135,7 +135,8 @@ func DoEodOptionsImport() {
 // Convert all Delta Neutral imports into a per symbol / date CSV file. This is a mass import 
 // from Dropbox where we archive Delta Neutral EOD options data. We go through each 
 // EOD file and convert to a per symbol per date archive. We then store this archive at 
-// AWS S3
+// AWS S3. This is used as a one off thing when data at AWS gets messed up or is missing or something.
+// In a perfect world this is only run once ever.
 //
 func ProccessAllDeltaNeutralData() error {
 

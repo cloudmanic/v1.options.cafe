@@ -9,6 +9,7 @@ package services
 import (
   "os"
   "log"
+  "log/syslog"
   "github.com/stvp/rollbar"  
 )
 
@@ -18,7 +19,9 @@ import (
 func Log(message string) {
   
   log.Println(message)
-  
+
+  // Papertrail log.
+  PaperTrailLog(message, "info")
 }
 
 //
@@ -27,7 +30,12 @@ func Log(message string) {
 func Fatal(message string) {
   
   log.Fatal(message)
+
+  // Papertrail log.
+  PaperTrailLog(message, "error")  
   
+  // Rollbar
+  RollbarInfo(message)  
 }
 
 //
@@ -35,15 +43,14 @@ func Fatal(message string) {
 //
 func Error(err error, message string) {
   
-  Log(message + " (" + err.Error()  + ")")
+  // Standard out
+  log.Println(message + " (" + err.Error()  + ")")
 
-  go func() {
-    rollbar.Token = os.Getenv("ROLLBAR_TOKEN")
-    rollbar.Environment = os.Getenv("ROLLBAR_ENV")
-    rollbar.Error(rollbar.ERR, err)
-    rollbar.Wait()
-  }()
-  
+  // Papertrail log.
+  PaperTrailLog(message, "error")  
+
+  // Rollbar
+  RollbarError(err)
 }
 
 //
@@ -51,14 +58,77 @@ func Error(err error, message string) {
 //
 func MajorLog(message string) {
   
-  Log(message)
+  // Standard out
+  log.Println(message)
+
+  // Papertrail log.
+  PaperTrailLog(message, "info")   
   
-  go func() {
-    rollbar.Token = os.Getenv("ROLLBAR_TOKEN")
-    rollbar.Environment = os.Getenv("ROLLBAR_ENV")
-    rollbar.Message("info", "App started.")
-    rollbar.Wait()
-  }()
+  // Rollbar
+  RollbarInfo(message)
+}
+
+//
+// Send log to rollbar
+//
+func RollbarInfo(message string) {
+
+  if len(os.Getenv("ROLLBAR_TOKEN")) > 0 {
+
+    go func() {
+      rollbar.Token = os.Getenv("ROLLBAR_TOKEN")
+      rollbar.Environment = os.Getenv("ROLLBAR_ENV")
+      rollbar.Message("info", message)
+      rollbar.Wait()
+    }()
+
+  }
+}
+
+//
+// Send log to rollbar
+//
+func RollbarError(err error) {
+
+  if len(os.Getenv("ROLLBAR_TOKEN")) > 0 {
+
+    go func() {
+      rollbar.Token = os.Getenv("ROLLBAR_TOKEN")
+      rollbar.Environment = os.Getenv("ROLLBAR_ENV")
+      rollbar.Error(rollbar.ERR, err) 
+      rollbar.Wait()
+    }()
+
+  }
+}
+
+//
+// Send log to PaperTrail
+//
+func PaperTrailLog(message string, msgType string) {
+
+  if len(os.Getenv("PAPERTRAIL_URL")) > 0 {
+
+    go func() {
+      w, err := syslog.Dial("udp", os.Getenv("PAPERTRAIL_URL"), syslog.LOG_EMERG | syslog.LOG_KERN, os.Getenv("APP_NAME"))
+    
+      if err != nil {
+        Error(err, "Failed to dial syslog (PaperTrailLog)")
+      } 
+
+      // Info log
+      if msgType == "info" {
+        w.Info(message)
+      } 
+
+      // Error log
+      if msgType == "error" {
+        w.Err(message)
+      } 
+
+    }()
+
+  }
 }
 
 /* End File */
