@@ -22,8 +22,20 @@ import(
   "app.options.cafe/backend/library/services"  
 )
 
+// Job Struct
+type Job struct {
+  Key string
+  Length int
+  Index int
+  Path string
+}
+
 //
-// Do End of Day Options Import....
+// Do End of Day Options Import. We run this every day from "Cron". It will 
+// connect to the FTP site at DeltaNeutral (our EOD options data provider) and 
+// download any days data that we do not already have. Once we download the file we
+// upload it to Dropbox for achieving. Then we break up the DeltaNeutral export
+// into one file per date per asset symbol. Lastly we upload this data to AWS. 
 //
 func DoEodOptionsImport() {
 
@@ -120,12 +132,19 @@ func DoEodOptionsImport() {
 }
 
 //
-// Convert all Delta Neutral imports into a per symbol / date CSV file.
+// Convert all Delta Neutral imports into a per symbol / date CSV file. This is a mass import 
+// from Dropbox where we archive Delta Neutral EOD options data. We go through each 
+// EOD file and convert to a per symbol per date archive. We then store this archive at 
+// AWS S3
 //
 func ProccessAllDeltaNeutralData() error {
 
   // Log
   services.Log("Starting ProccessAllDeltaNeutralData().")
+
+  // Job queue stuff. (assume we do not have more than 2000 days worth of data)
+  jobs := make(chan Job, 2000)
+  results := make(chan string, 2000)
 
   // Get the Dropbox Client (this is where we archive the zip file)
   client := dropy.New(dropbox.New(dropbox.NewConfig(os.Getenv("DROPBOX_ACCESS_TOKEN"))))
@@ -137,53 +156,95 @@ func ProccessAllDeltaNeutralData() error {
     return err
   }
 
+  // Start workers
+  for w := 1; w <= 50; w++ {
+    go ProccessDeltaNeutralDataWorker(w, jobs, results)
+  }  
+
   var i = 1;
   var total = len(dbFiles)
 
   // Loop through files at Dropbox
   for key, _ := range dbFiles {
 
-    fmt.Printf("Downloading: %s (%d/%d) \n", key, i, total)
-
-    file, err := client.Download("/data/AllOptions/Daily/" + key);    
-
-    if err != nil {
-      return err
-    }
-
-    // Create Zip file to store
-    outFile, err := os.Create("/tmp/" + key);
-
-    if err != nil {
-      return err
-    }  
-
-    // Copy DB file downloaded.
-    _, err = io.Copy(outFile, file)
-
-    if err != nil {
-      return err
-    }
-
-    // Write file.
-    outFile.Close()
-
-    // Process the downloaded file.
-    SymbolImport("/tmp/" + key)
-
-    // Delete file.
-    os.Remove("/tmp/" + key)
+    // Send job to worker
+    jobs <- Job{ Key: key, Index: i, Length: total, Path: "/data/AllOptions/Daily/" + key }
 
     // Update count
     i++
-
   }   
+
+  // Close down jobs
+  close(jobs)
+
+  // Collect the results of the workers
+  for a := 0; a < total; a++ {
+    <-results
+  }
+
+  // Close down results
+  close(results)
 
   // Log 
   services.Log("Done ProccessAllDeltaNeutralData().")   
 
   // Return happy.
   return nil
+}
+
+//
+// A worker to process jobs of DeltaNeutral imports
+//
+func ProccessDeltaNeutralDataWorker(id int, jobs <-chan Job, results chan<- string) {
+
+  // Loop through the different jobs until we have no more jobs.
+  for job := range jobs {
+
+    fmt.Printf("Downloading: %s (%d/%d) (worker #%d) \n", job.Path, job.Index, job.Length, id)
+
+    client := dropy.New(dropbox.New(dropbox.NewConfig(os.Getenv("DROPBOX_ACCESS_TOKEN"))))
+
+    file, err := client.Download(job.Path);    
+
+    if err != nil {
+      services.Error(err, "Could not download from Dropbox. ProccessDeltaNeutralDataWorker()")
+      return
+    }
+
+    // Create Zip file to store
+    outFile, err := os.Create("/Volumes/Drive04/options/" + job.Key);
+
+    if err != nil {
+      services.Error(err, "Could not create file. ProccessDeltaNeutralDataWorker()")      
+      return
+    }  
+
+    // Copy DB file downloaded.
+    _, err = io.Copy(outFile, file)
+
+    if err != nil {
+      services.Error(err, "Could not copy from Dropbox. ProccessDeltaNeutralDataWorker()")      
+      return
+    }
+
+    // Write file.
+    outFile.Close()
+
+    // Import symbol
+    SymbolImport("/Volumes/Drive04/options/" + job.Key)
+
+    // Delete file.
+    os.Remove("/Volumes/Drive04/options/" + job.Key) 
+
+    // Send result back so we know it is done.
+    results <- job.Key
+  }
+
+  // Log and return 
+  fmt.Printf("Worker %d closed.", id)
+
+  // Return happy
+  return
 }
 
 //
