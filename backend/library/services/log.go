@@ -113,6 +113,7 @@ func PaperTrailLog(message string, msgType string) {
   if len(os.Getenv("PAPERTRAIL_URL")) > 0 {
 
     go func() {
+      // TLS????????????
       w, err := syslog.Dial("udp", os.Getenv("PAPERTRAIL_URL"), syslog.LOG_EMERG | syslog.LOG_KERN, os.Getenv("APP_NAME"))
     
       if err != nil {

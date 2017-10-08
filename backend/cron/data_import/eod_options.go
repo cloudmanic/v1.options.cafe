@@ -242,7 +242,7 @@ func ProccessDeltaNeutralDataWorker(id int, jobs <-chan Job, results chan<- stri
   }
 
   // Log and return 
-  fmt.Printf("Worker %d closed.", id)
+  fmt.Printf("Worker %d closed. \n", id)
 
   // Return happy
   return
@@ -257,7 +257,7 @@ func SymbolImport(filePath string) error {
   services.Log("Start SymbolImport - " + filePath) 
 
   // Unzip CSV files.
-  files, err := Unzip(filePath, "/tmp/output/")
+  files, err := Unzip(filePath, "/Volumes/Drive02/output/")
 
   if err != nil {
     return err
@@ -273,6 +273,12 @@ func SymbolImport(filePath string) error {
 
     if i > -1 {
       file = row
+    } else {
+      err := os.Remove(row)
+
+      if err != nil {
+        services.Error(err, "Could not delete file - " + row)      
+      }      
     }
 
   }
@@ -334,6 +340,13 @@ func SymbolImport(filePath string) error {
     }
 
   }
+
+  // Delete output file. 
+  err = os.Remove(file)
+
+  if err != nil {
+    services.Error(err, "Could not delete file - " + file)      
+  }    
 
   // Log
   services.Log("Done SymbolImport - " + filePath)   
