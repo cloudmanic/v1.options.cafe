@@ -213,7 +213,7 @@ func ProccessDeltaNeutralDataWorker(id int, jobs <-chan Job, results chan<- stri
     }
 
     // Create Zip file to store
-    outFile, err := os.Create("/Volumes/Drive04/options/" + job.Key);
+    outFile, err := os.Create("/tmp/" + job.Key);
 
     if err != nil {
       services.Error(err, "Could not create file. ProccessDeltaNeutralDataWorker()")      
@@ -232,10 +232,10 @@ func ProccessDeltaNeutralDataWorker(id int, jobs <-chan Job, results chan<- stri
     outFile.Close()
 
     // Import symbol
-    SymbolImport("/Volumes/Drive04/options/" + job.Key)
+    SymbolImport("/tmp/" + job.Key)
 
     // Delete file.
-    os.Remove("/Volumes/Drive04/options/" + job.Key) 
+    os.Remove("/tmp/" + job.Key) 
 
     // Send result back so we know it is done.
     results <- job.Key
@@ -257,7 +257,7 @@ func SymbolImport(filePath string) error {
   services.Log("Start SymbolImport - " + filePath) 
 
   // Unzip CSV files.
-  files, err := Unzip(filePath, "/Volumes/Drive02/output/")
+  files, err := Unzip(filePath, "/tmp/output/")
 
   if err != nil {
     return err
