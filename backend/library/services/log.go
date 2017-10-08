@@ -103,7 +103,10 @@ func RollbarError(err error) {
 }
 
 //
-// Send log to PaperTrail
+// Send log to PaperTrail 
+//
+// We might not need this as we run within docker and we just setup docker 
+// to send logs to PaperTrail. 
 //
 func PaperTrailLog(message string, msgType string) {
 
