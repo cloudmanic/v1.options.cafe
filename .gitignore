@@ -1,5 +1,6 @@
 .env
 .DS_Store
+deploy.retry
 
 /frontend.old
 /node_modules

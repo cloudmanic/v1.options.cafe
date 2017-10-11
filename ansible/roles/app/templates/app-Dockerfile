@@ -1,3 +1,5 @@
+# {{ ansible_managed }}
+
 FROM golang:1.8.1-alpine
 
 MAINTAINER Spicer Matthews <spicer@cloudmanic.com>
@@ -26,17 +28,22 @@ RUN set -x \
    
 # Setup directory and Set perms for app root
 RUN set -x \
-  && mkdir /work \
-  && chmod 755 /go \
-  && chmod 755 /work \    
-  && chown -R deploy:deploy /go \
-  && chown -R deploy:deploy /work  
+  && mkdir /app \
+  && chmod 755 /app \    
+  && chown -R deploy:deploy /app  
   
-# Expose web socket
+# Copy binary into place.
+COPY app.options.cafe /app/app.options.cafe
+
+# Expose http and https ports
 EXPOSE 7652
+EXPOSE 7653
   
 # This needs to be at the bottom. (back from root)
 USER deploy
 
 # Working directory
-WORKDIR /work
+WORKDIR /app
+
+# Start the server
+CMD ["app.options.cafe"]

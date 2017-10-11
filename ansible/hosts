@@ -1,0 +1,2 @@
+[production]
+web2.cloudmanic.com ansible_ssh_user=optionscafe
