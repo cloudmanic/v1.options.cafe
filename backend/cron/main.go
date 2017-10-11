@@ -8,8 +8,7 @@ package main
 
 import(
   "os"
-  "runtime"  
-  "github.com/joho/godotenv"
+  "runtime"
   "github.com/jasonlvhit/gocron"
   "app.options.cafe/backend/cron/data_import" 
   "app.options.cafe/backend/library/services"  
@@ -22,13 +21,7 @@ func main() {
   
   // Setup CPU stuff.
   runtime.GOMAXPROCS(runtime.NumCPU())  
-         
-  // Load .env file 
-  err := godotenv.Load("../.env")
-  if err != nil {
-    services.Fatal("Error loading .env file")
-  }    
-  
+           
   // Lets get started
   services.MajorLog("Cron Started: " + os.Getenv("APP_ENV"))
 

@@ -24,7 +24,10 @@ services:
     restart: ${RESTART}
     
     environment:   
-      VIRTUAL_HOST: ${VIRTUAL_HOST} 
+      VIRTUAL_HOST: ${VIRTUAL_HOST}
+
+    env_file:
+      - .env                   
           
     volumes:
       - ../:/work:rw
@@ -60,7 +63,10 @@ services:
       - ../../:/go/src/app.options.cafe:cached,rw       
       - ${GO_PATH}/src/golang.org:/go/src/golang.org:cached,rw
       - ${GO_PATH}/src/github.com:/go/src/github.com:cached,rw
-            
+
+    env_file:
+      - .env
+
     networks:
       - shared 
 

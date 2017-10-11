@@ -4,24 +4,13 @@ This is the options trading application we offer to customers. Angular2 front-en
 
 ## Deploying With Ansible (and other actions by hand)
 
-* Login to the new host as root and run this command : ```apt-get install python```
+We assume the server is already setup for us. At Cloudmanic we have a different git repo for setting up docker servers.
 
-* Cd into the ansible directory and run this command : ```ansible-playbook -i inventory bootstrap.yml```
+* To deploy we do this ```cd scripts && ./deploy.sh```
 
-* Log back into the server as root and reboot : ```reboot```
+* We mostly use Ansible for manage our deploys.
 
-* The server is running on a new ssh port now. We now run this : ```ansible-playbook --ask-sudo-pass app.yml```
+* We use ```ansible-vault``` to encrypt our files. (ask someone for the password). We can use ```ansible-vault edit filename``` to edit these files. 
 
-* Log back into the server and setup mysql by hand.
+* You need to add ```ansible/.vault_pass``` with the value password as the only string in the file. https://www.digitalocean.com/community/tutorials/how-to-use-vault-to-protect-sensitive-ansible-data-on-ubuntu-16-04
 
-* Setup ```/home/deploy/.env``` (make sure to close the perms off)
-
-* Run this ```sudo systemctl enable supervisor.service```
-
-* Run this ```sudo mkdir /etc/letsencrypt``` ```sudo chmod 700 /etc/letsencrypt``` ```sudo chown deploy:deploy /etc/letsencrypt/```
-
-* When deploying this is useful for kick starting https://skitch.cloudmanic.com/Lightsail_1E4C5E91.png
-
-* Run this ```sudo rm -rf /root/.ssh```
-
-* Run this ```sudo passwd root``` This sets root's password. Maybe we do not want this. Who knows.....

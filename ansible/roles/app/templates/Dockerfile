@@ -1,3 +1,5 @@
+# {{ ansible_managed }}
+
 FROM golang:1.8.1-alpine
 
 MAINTAINER Spicer Matthews <spicer@cloudmanic.com>
@@ -17,26 +19,31 @@ RUN apk add --no-cache bash git
 RUN set -x \
       && echo "root:x:0:0:root:/root:/bin/ash" > /etc/passwd \
       && echo "root:::0:::::" > /etc/shadow \
-      && echo "root:x:0:root" > /etc/group
-
+      && echo "root:x:0:root" > /etc/group 
+      
 # Ensure deploy user exists (as our local user)
 RUN set -x \ 
   && addgroup -g ${P_GID} -S deploy \
   && adduser -u ${P_UID} -D -S -G deploy deploy 
-
+   
 # Setup directory and Set perms for app root
 RUN set -x \
   && mkdir /work \
-  && chmod 755 /go \
   && chmod 755 /work \    
-  && chown -R deploy:deploy /go \
   && chown -R deploy:deploy /work  
+  
+# Copy binary into place.
+COPY app.options.cafe /work/app
 
+# Expose http and https ports
+EXPOSE 7652
+EXPOSE 7653
+  
 # This needs to be at the bottom. (back from root)
 USER deploy
 
 # Working directory
-WORKDIR /work/cron
+WORKDIR /work
 
 # Start the server
-# CMD ["go", "get", "&&", "go", "run", "*.go"]
+CMD ["./app"]

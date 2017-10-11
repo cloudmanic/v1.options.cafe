@@ -5,4 +5,5 @@
   roles:
     - app
     
-  vars:
+  vars_files:
+    - "vars/env.yml"

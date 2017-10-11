@@ -12,14 +12,30 @@
 - name: Create docker build directory
   file: path=/sites/optionscafe/app.options.cafe/docker/build owner=optionscafe group=optionscafe mode=0755 state=directory
 
-# Install app.options.cafe binary
-- name: Copying app.options.cafe binary to server(s)
-  copy: src=../backend/builds/app.options.cafe dest=/sites/optionscafe/app.options.cafe/docker/build owner=optionscafe group=optionscafe mode=0755  
+# Create cache directory
+- name: Create cache directory
+  file: path=/sites/optionscafe/app.options.cafe/cache owner=optionscafe group=optionscafe mode=0755 state=directory
 
 # Install docker-compose
 - name: Install docker-compose
-  template: src=app-docker-compose.yml dest=/sites/optionscafe/app.options.cafe/docker/docker-compose.yml owner=optionscafe group=optionscafe mode=0644
+  template: src=docker-compose.yml dest=/sites/optionscafe/app.options.cafe/docker/docker-compose.yml owner=optionscafe group=optionscafe mode=0644
 
 # Install Dockerfile
 - name: Install Dockerfile
-  template: src=app-Dockerfile dest=/sites/optionscafe/app.options.cafe/docker/build/Dockerfile owner=optionscafe group=optionscafe mode=0644
+  template: src=Dockerfile dest=/sites/optionscafe/app.options.cafe/docker/build/Dockerfile owner=optionscafe group=optionscafe mode=0644
+
+# Install Dockerfile-cron
+- name: Install Dockerfile-cron
+  template: src=Dockerfile-cron dest=/sites/optionscafe/app.options.cafe/docker/build/Dockerfile-cron owner=optionscafe group=optionscafe mode=0644
+
+# Install ENV File
+- name: Install ENV File
+  template: src=env dest=/sites/optionscafe/app.options.cafe/docker/.env owner=optionscafe group=optionscafe mode=0644
+
+# Install cron.options.cafe binary
+- name: Copying cron.options.cafe binary to server(s)
+  copy: src=../backend/builds/cron.options.cafe dest=/sites/optionscafe/app.options.cafe/docker/build owner=optionscafe group=optionscafe mode=0755  
+
+# Install app.options.cafe binary
+- name: Copying app.options.cafe binary to server(s)
+  copy: src=../backend/builds/app.options.cafe dest=/sites/optionscafe/app.options.cafe/docker/build owner=optionscafe group=optionscafe mode=0755

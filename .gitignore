@@ -1,5 +1,6 @@
 .env
 .DS_Store
+.vault_pass
 deploy.retry
 
 /frontend.old
