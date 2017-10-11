@@ -20,7 +20,7 @@ import (
 // their HTTPS counterpart and immediately terminates all connections.
 func StartSecureServer(mux *http.ServeMux, getCertificate func(clientHello *tls.ClientHelloInfo) (*tls.Certificate, error)) {
 	s := &http.Server{
-		Addr:         ":https",
+		Addr:         ":7443",
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
     IdleTimeout:  120 * time.Second,
@@ -46,6 +46,7 @@ func StartSecureServer(mux *http.ServeMux, getCertificate func(clientHello *tls.
 
 	// Redirect regular HTTP requests to HTTPS.
 	insecure := &http.Server{
+		Addr: ":7080",		
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {

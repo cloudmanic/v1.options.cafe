@@ -51,7 +51,7 @@ func Start() {
   if os.Getenv("APP_ENV") == "local" {
     
 		s := &http.Server{
-			Addr: ":7652",
+			Addr: ":7080",
 			Handler: mux,
       ReadTimeout:  2 * time.Second,
       WriteTimeout: 2 * time.Second,			
@@ -65,7 +65,7 @@ func Start() {
     m := autocert.Manager{
   	  Prompt: autocert.AcceptTOS,
       Cache: autocert.DirCache("/etc/letsencrypt/"),
-      Email: "support@options.cafe",
+      Email: "help@options.cafe",
       HostPolicy: autocert.HostWhitelist("app.options.cafe"),
     }
   

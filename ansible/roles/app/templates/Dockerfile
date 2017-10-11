@@ -36,8 +36,8 @@ RUN set -x \
 COPY app.options.cafe /work/app
 
 # Expose http and https ports
-EXPOSE 7652
-EXPOSE 7653
+EXPOSE 7080
+EXPOSE 7443
   
 # This needs to be at the bottom. (back from root)
 USER deploy

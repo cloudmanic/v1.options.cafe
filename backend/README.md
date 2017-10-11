@@ -6,7 +6,7 @@
 
 ## Note On Backend Development Docker
 
-* ```go run *.go``` the docker way : ```cd backend/docker && docker-compose run --rm -p 7652:7652 app bash```
+* ```go run *.go``` the docker way : ```cd backend/docker && docker-compose run --rm -p 7080:7080 app bash```
 
 * Add a Docker .env file example located at ```backend/docker/.env```
 
@@ -36,8 +36,11 @@ Every user must have a subscription (table: ```User::StripeSubscription```) if t
 
 ## Best Way To Test Webhooks Locally
 
-You can use https://ngrok.com to send webhooks in locally. The free account changes the url every time you run it. Here is how you start it ```ngrok http 7652```
+You can use https://ngrok.com to send webhooks in locally. The free account changes the url every time you run it. Here is how you start it ```ngrok http 7080```
+
+* At stripe add this url ```https://0c1a1ee8.ngrok.io/webhooks/stripe``` (or whatever ngrok changes it to)
 
 ## Cron Jobs
 
 Checkout ```cron/README.md```
+
