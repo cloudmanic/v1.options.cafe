@@ -40,7 +40,7 @@ func main() {
 	defer db.Close()
 
 	// Startup controller & websockets
-	controller := &controllers.Controller{
+	c := &controllers.Controller{
 		DB:                db,
 		WsReadChan:        make(chan controllers.SendStruct, 1000),
 		WsWriteChan:       make(chan controllers.SendStruct, 1000),
@@ -50,14 +50,18 @@ func main() {
 	}
 
 	// Setup users object & Start users feeds
-	users.DB = db
-	users.DataChan = controller.WsWriteChan
-	users.QuoteChan = controller.WsWriteQuoteChan
-	users.FeedRequestChan = controller.WsReadChan
-	users.StartFeeds()
+	u := &users.Base{
+		DB:              db,
+		Users:           make(map[uint]*users.User),
+		DataChan:        c.WsWriteChan,
+		QuoteChan:       c.WsWriteQuoteChan,
+		FeedRequestChan: c.WsReadChan,
+	}
+
+	u.StartFeeds()
 
 	// Start websockets & controllers
-	controller.StartWebServer()
+	c.StartWebServer()
 
 }
 
