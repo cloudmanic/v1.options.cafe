@@ -1,15 +1,15 @@
 package controllers
 
 import (
-  "net/http"   
+	"net/http"
 )
 
 //
 // Return the html tmplate of app.
 //
-func HtmlMainTemplate(w http.ResponseWriter, r *http.Request) {
+func (t *Controller) HtmlMainTemplate(w http.ResponseWriter, r *http.Request) {
 
-  w.Write([]byte(`
+	w.Write([]byte(`
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -47,5 +47,5 @@ func HtmlMainTemplate(w http.ResponseWriter, r *http.Request) {
 </body>
 </html>  
   `))
-  
+
 }

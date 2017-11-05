@@ -1,38 +1,40 @@
 package feed
 
 import (
-  "sync"
-  "time"
-  "app.options.cafe/backend/models"  
-  "app.options.cafe/backend/brokers"
-  "app.options.cafe/backend/controllers"
-  "app.options.cafe/backend/brokers/types"
-  "app.options.cafe/backend/library/services" 
+	"sync"
+	"time"
+
+	"app.options.cafe/backend/brokers"
+	"app.options.cafe/backend/brokers/types"
+	"app.options.cafe/backend/controllers"
+	"app.options.cafe/backend/library/services"
+	"app.options.cafe/backend/models"
 )
 
 type Base struct {
-  User models.User
-  Api brokers.Api
-  
-  DataChan chan controllers.SendStruct
-  QuoteChan chan controllers.SendStruct
-  
-  muOrders sync.Mutex
-  Orders []types.Order
+	User models.User
+	Api  brokers.Api
+	DB   models.Datastore
 
-  muBalances sync.Mutex
-  Balances []types.Balance  
+	DataChan  chan controllers.SendStruct
+	QuoteChan chan controllers.SendStruct
 
-  muMarketStatus sync.Mutex
-  MarketStatus types.MarketStatus
+	muOrders sync.Mutex
+	Orders   []types.Order
 
-  muUserProfile sync.Mutex
-  UserProfile types.UserProfile
+	muBalances sync.Mutex
+	Balances   []types.Balance
+
+	muMarketStatus sync.Mutex
+	MarketStatus   types.MarketStatus
+
+	muUserProfile sync.Mutex
+	UserProfile   types.UserProfile
 }
 
 type SendStruct struct {
-  Type string `json:"type"`
-  Data string `json:"data"`
+	Type string `json:"type"`
+	Data string `json:"data"`
 }
 
 //
@@ -42,22 +44,21 @@ type SendStruct struct {
 // or is revoked.
 //
 func (t *Base) Start() {
-  
-  services.Log("Starting Polling....")
 
-  // Setup tickers for broker polling.
-  go t.DoOrdersTicker()
-  go t.DoUserProfileTicker()
-  go t.DoGetDetailedQuotes()
-  go t.DoGetMarketStatusTicker()
-  go t.DoGetBalancesTicker()
-  go t.DoAccessTokenRefresh()
-  
-  // Do Archive Calls
-  //go t.DoOrdersArchive()
-   
+	services.Log("Starting Polling....")
+
+	// Setup tickers for broker polling.
+	go t.DoOrdersTicker()
+	go t.DoUserProfileTicker()
+	go t.DoGetDetailedQuotes()
+	go t.DoGetMarketStatusTicker()
+	go t.DoGetBalancesTicker()
+	go t.DoAccessTokenRefresh()
+
+	// Do Archive Calls
+	//go t.DoOrdersArchive()
+
 }
-
 
 // ---------------------- Tickers (polling) ---------------------------- //
 
@@ -66,20 +67,20 @@ func (t *Base) Start() {
 //
 func (t *Base) DoUserProfileTicker() {
 
-  var err error
+	var err error
 
-  for {
-    
-    err =  t.GetUserProfile()
+	for {
 
-    if err != nil {
-      services.Error(err, "Error in Brokers/Feed - DoUserProfileTicker()")
-    } 
-    
-    // Sleep for 60 second.
-    time.Sleep(time.Second * 60)
-     
-  }
+		err = t.GetUserProfile()
+
+		if err != nil {
+			services.Error(err, "Error in Brokers/Feed - DoUserProfileTicker()")
+		}
+
+		// Sleep for 60 second.
+		time.Sleep(time.Second * 60)
+
+	}
 
 }
 
@@ -88,41 +89,39 @@ func (t *Base) DoUserProfileTicker() {
 //
 func (t *Base) DoOrdersArchive() {
 
+	/*
+	   //var positions = &[]models.Position{}
+	   //db.Where("user_id = ? AND trade_group_id = ?", t.userId, 132).Find(positions)
+
+	   //archive.ClassifyTradeGroup(positions)
 
 
-/*
-  //var positions = &[]models.Position{}
-  //db.Where("user_id = ? AND trade_group_id = ?", t.userId, 132).Find(positions)  
-
-  //archive.ClassifyTradeGroup(positions)
-  
 
 
-  
 
-  var err error
-  var orders []types.Order
+	   var err error
+	   var orders []types.Order
 
-  for {
-    
-    // Load up all orders 
-    orders, err = t.GetAllOrders()
-        
-    if err != nil {
-      fmt.Println(err)
-    }       
+	   for {
 
-    // Store the orders in our database
-    archive.StoreOrders(db, orders, t.userId)
+	     // Load up all orders
+	     orders, err = t.GetAllOrders()
 
-    // Clear memory
-    orders = nil
-     
-    // Sleep for 24 hours
-    time.Sleep(time.Hour * 24)
-        
-  } 
-*/
+	     if err != nil {
+	       fmt.Println(err)
+	     }
+
+	     // Store the orders in our database
+	     archive.StoreOrders(db, orders, t.userId)
+
+	     // Clear memory
+	     orders = nil
+
+	     // Sleep for 24 hours
+	     time.Sleep(time.Hour * 24)
+
+	   }
+	*/
 
 }
 
@@ -131,21 +130,21 @@ func (t *Base) DoOrdersArchive() {
 //
 func (t *Base) DoOrdersTicker() {
 
-  var err error
+	var err error
 
-  for {
-    
-    // Load up orders 
-    err = t.GetOrders()
-    
-    if err != nil {
-      services.Error(err, "Error in Brokers/Feed - DoOrdersTicker()")
-    }       
-    
-    // Sleep for 3 second.
-    time.Sleep(time.Second * 3)
-        
-  } 
+	for {
+
+		// Load up orders
+		err = t.GetOrders()
+
+		if err != nil {
+			services.Error(err, "Error in Brokers/Feed - DoOrdersTicker()")
+		}
+
+		// Sleep for 3 second.
+		time.Sleep(time.Second * 3)
+
+	}
 
 }
 
@@ -154,19 +153,19 @@ func (t *Base) DoOrdersTicker() {
 //
 func (t *Base) DoGetDetailedQuotes() {
 
-  for {
-    
-    // Load up our DetailedQuotes  
-    err := t.GetActiveSymbolsDetailedQuotes()
-  
-    if err != nil {
-      services.Error(err, "Error in Brokers/Feed - DoGetDetailedQuotes()")
-    }
-    
-    // Sleep for 1 second
-    time.Sleep(time.Second * 1)
-        
-  } 
+	for {
+
+		// Load up our DetailedQuotes
+		err := t.GetActiveSymbolsDetailedQuotes()
+
+		if err != nil {
+			services.Error(err, "Error in Brokers/Feed - DoGetDetailedQuotes()")
+		}
+
+		// Sleep for 1 second
+		time.Sleep(time.Second * 1)
+
+	}
 
 }
 
@@ -175,44 +174,44 @@ func (t *Base) DoGetDetailedQuotes() {
 //
 func (t *Base) DoGetMarketStatusTicker() {
 
-  var err error
+	var err error
 
-  for {
-       
-    // Load up market status. 
-    err = t.GetMarketStatus()
-    
-    if err != nil {
-      services.Error(err, "Error in Brokers/Feed - DoGetMarketStatusTicker")
-    }       
-    
-    // Sleep for 10 second.
-    time.Sleep(time.Second * 5)
-     
-  }
-  
+	for {
+
+		// Load up market status.
+		err = t.GetMarketStatus()
+
+		if err != nil {
+			services.Error(err, "Error in Brokers/Feed - DoGetMarketStatusTicker")
+		}
+
+		// Sleep for 10 second.
+		time.Sleep(time.Second * 5)
+
+	}
+
 }
 
 // Ticker - Get GetBalances : 5 seconds
 //
 func (t *Base) DoGetBalancesTicker() {
 
-  var err error
+	var err error
 
-  for {
-       
-    // Load up market status. 
-    err = t.GetBalances()
-    
-    if err != nil {
-      services.Error(err, "Error in Brokers/Feed - DoGetBalancesTicker")
-    }       
-    
-    // Sleep for 5 second.
-    time.Sleep(time.Second * 5)
-     
-  }
-  
+	for {
+
+		// Load up market status.
+		err = t.GetBalances()
+
+		if err != nil {
+			services.Error(err, "Error in Brokers/Feed - DoGetBalancesTicker")
+		}
+
+		// Sleep for 5 second.
+		time.Sleep(time.Second * 5)
+
+	}
+
 }
 
 //
@@ -220,20 +219,20 @@ func (t *Base) DoGetBalancesTicker() {
 //
 func (t *Base) DoAccessTokenRefresh() {
 
-  var err error
+	var err error
 
-  for {
-    
-    err =  t.AccessTokenRefresh()
+	for {
 
-    if err != nil {
-      services.Error(err, "Error in Brokers/Feed - DoGetBalancesTicker")
-    } 
-    
-    // Sleep for 60 second.
-    time.Sleep(time.Second * 60)
-     
-  }
+		err = t.AccessTokenRefresh()
+
+		if err != nil {
+			services.Error(err, "Error in Brokers/Feed - DoGetBalancesTicker")
+		}
+
+		// Sleep for 60 second.
+		time.Sleep(time.Second * 60)
+
+	}
 
 }
 

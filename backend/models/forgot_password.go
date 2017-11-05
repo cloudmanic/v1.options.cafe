@@ -1,113 +1,114 @@
 package models
 
 import (
-  "os"
-  "time"
-  "errors"
-  "app.options.cafe/backend/library/email"
-  "app.options.cafe/backend/library/services"
+	"errors"
+	"os"
+	"time"
+
+	"app.options.cafe/backend/library/email"
+	"app.options.cafe/backend/library/services"
 )
 
 type ForgotPassword struct {
-  Id uint `gorm:"primary_key"`
-  CreatedAt time.Time
-  UpdatedAt time.Time
-  UserId uint `sql:"not null;index:UserId"` 
-  Token string `sql:"not null"`
-  IpAddress string `sql:"not null"`
+	Id        uint `gorm:"primary_key"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	UserId    uint   `sql:"not null;index:UserId"`
+	Token     string `sql:"not null"`
+	IpAddress string `sql:"not null"`
 }
 
 //
 // Return the user based on the hash passed.
 //
-func (t * DB) GetUserFromToken(token string) (User, error) {
- 
-  var u User
-  var f ForgotPassword
-  
-  // Get the record based on the token we passed in.
-  if t.Connection.Where("Token = ?", token).First(&f).RecordNotFound() {
-    return u, errors.New("Record not found")
-  }
-  
-  // Get the user from based on the user id we got.
-  u, err := t.GetUserById(f.UserId)
-  
-  if err != nil {  
-    return u, err
-  }  
-  
-  // Return the user.
-  return u, nil
-  
+func (t *DB) GetUserFromToken(token string) (User, error) {
+
+	var u User
+	var f ForgotPassword
+
+	// Get the record based on the token we passed in.
+	if t.Where("Token = ?", token).First(&f).RecordNotFound() {
+		return u, errors.New("Record not found")
+	}
+
+	// Get the user from based on the user id we got.
+	u, err := t.GetUserById(f.UserId)
+
+	if err != nil {
+		return u, err
+	}
+
+	// Return the user.
+	return u, nil
+
 }
 
 //
 // Delete record by hash.
 //
-func (t * DB) DeleteForgotPasswordByToken(token string) error {
-  
-  var f ForgotPassword
-  
-  // Get the record based on the token we passed in.
-  if t.Connection.Where("Token = ?", token).First(&f).RecordNotFound() {
-    return errors.New("Record not found")
-  }
-  
-  // Delete record
-  if err := t.Connection.Delete(&f).Error; err != nil {
-    return err     
-  }
+func (t *DB) DeleteForgotPasswordByToken(token string) error {
 
-  // Return success
-  return nil    
-  
+	var f ForgotPassword
+
+	// Get the record based on the token we passed in.
+	if t.Where("Token = ?", token).First(&f).RecordNotFound() {
+		return errors.New("Record not found")
+	}
+
+	// Delete record
+	if err := t.Delete(&f).Error; err != nil {
+		return err
+	}
+
+	// Return success
+	return nil
+
 }
 
 //
 // Reset the user's password and send an email telling them next steps.
 //
-func (t * DB) DoResetPassword(user_email string, ip string) error {
+func (t *DB) DoResetPassword(user_email string, ip string) error {
 
-  // Make sure this is a real email address
-  user, err := t.GetUserByEmail(user_email)
-  
-  if err != nil {  
-    return errors.New("Sorry, we were unable to find our account.")
-  }
+	// Make sure this is a real email address
+	user, err := t.GetUserByEmail(user_email)
 
-  // Generate "hash" to store for the reset token
-  hash, err := GenerateRandomString(30)
-  
-  if err != nil {
-    services.Error(err, "DoResetPassword - Unable to create hash (GenerateRandomString)")
-    return err    
-  }
-  
-  // Store the new reset password hash.
-  rsp := ForgotPassword{UserId: user.Id, Token: hash, IpAddress: ip }
-  t.Connection.Create(&rsp)
-  
-  // Log user creation.
-  services.Log("DoResetPassword - Reset password token for " + user.Email)
-  
-  // Build the url to reset the password.
-  var url = os.Getenv("SITE_URL") + "/reset-password?hash=" + hash
-  
-  // Send email to user asking them to come to the site and reset the password.
-  err = email.Send(
-    user.Email, 
-    "Reset Your Password", 
-    GetForgotPasswordStepOneEmailHtml(user.FirstName, user.Email, url),
-    GetForgotPasswordStepOneEmailText(user.FirstName, user.Email, url))
+	if err != nil {
+		return errors.New("Sorry, we were unable to find our account.")
+	}
 
-  if err != nil { 
-    return err
-  }
+	// Generate "hash" to store for the reset token
+	hash, err := t.GenerateRandomString(30)
 
-  // Everything went as planned.
-  return nil
-  
+	if err != nil {
+		services.Error(err, "DoResetPassword - Unable to create hash (GenerateRandomString)")
+		return err
+	}
+
+	// Store the new reset password hash.
+	rsp := ForgotPassword{UserId: user.Id, Token: hash, IpAddress: ip}
+	t.Create(&rsp)
+
+	// Log user creation.
+	services.Log("DoResetPassword - Reset password token for " + user.Email)
+
+	// Build the url to reset the password.
+	var url = os.Getenv("SITE_URL") + "/reset-password?hash=" + hash
+
+	// Send email to user asking them to come to the site and reset the password.
+	err = email.Send(
+		user.Email,
+		"Reset Your Password",
+		t.GetForgotPasswordStepOneEmailHtml(user.FirstName, user.Email, url),
+		t.GetForgotPasswordStepOneEmailText(user.FirstName, user.Email, url))
+
+	if err != nil {
+		return err
+	}
+
+	// Everything went as planned.
+	return nil
+
 }
 
 // ------------------- Template Emails ------------------------- //
@@ -115,8 +116,8 @@ func (t * DB) DoResetPassword(user_email string, ip string) error {
 //
 // Get the text version of the forgot password email step #1
 //
-func GetForgotPasswordStepOneEmailText(name string, email string, url string) string {
-  return string(`
+func (t *DB) GetForgotPasswordStepOneEmailText(name string, email string, url string) string {
+	return string(`
     Hi ` + name + `,
     
     Can't remember your password? Don't worry about it — it happens.
@@ -137,9 +138,9 @@ func GetForgotPasswordStepOneEmailText(name string, email string, url string) st
 //
 // Get the html version of the forgot password email step #1
 //
-func GetForgotPasswordStepOneEmailHtml(name string, email string, url string) string {
-  
-  return string(`
+func (t *DB) GetForgotPasswordStepOneEmailHtml(name string, email string, url string) string {
+
+	return string(`
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="Generator" content="Made with Mail Designer from equinux">
 	<meta name="Viewport" content="width=device-width, initial-scale=1.0">
@@ -425,7 +426,7 @@ func GetForgotPasswordStepOneEmailHtml(name string, email string, url string) st
 
 </body></html> 
   `)
-  
+
 }
- 
+
 /* End File */

@@ -7,43 +7,43 @@
 package models
 
 import (
-  "time"
-  "strings"
-  "app.options.cafe/backend/library/services"
+	"strings"
+	"time"
+
+	"app.options.cafe/backend/library/services"
 )
 
 type Symbol struct {
-  Id uint `gorm:"primary_key"`
-  CreatedAt time.Time
-  UpdatedAt time.Time 
-  ShortName string `sql:"not null"`  
-  Name string `sql:"not null"`
-}  
+	Id        uint `gorm:"primary_key"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	ShortName string `sql:"not null"`
+	Name      string `sql:"not null"`
+}
 
 //
 // Create a new Symbol entry.
 //
-func (t * DB) CreateNewSymbol(short string, name string) (Symbol, error) {
-    
-  var symb Symbol
-    
-  // First make sure we don't already have this symbol
-  if t.Connection.Where("short_name = ?", short).First(&symb).RecordNotFound() {
+func (t *DB) CreateNewSymbol(short string, name string) (Symbol, error) {
 
-    // Create entry.
-    symb = Symbol{ Name: name, ShortName: strings.ToUpper(short) }
-              
-    t.Connection.Create(&symb)
-    
-    // Log Symbol creation.
-    services.Log("CreateNewSymbol - Created a new Symbol entry - (" + short + ") " + name)      
+	var symb Symbol
 
-  }  
-  
-  // Return the user.
-  return symb, nil  
-   
-} 
-    
-          
+	// First make sure we don't already have this symbol
+	if t.Where("short_name = ?", short).First(&symb).RecordNotFound() {
+
+		// Create entry.
+		symb = Symbol{Name: name, ShortName: strings.ToUpper(short)}
+
+		t.Create(&symb)
+
+		// Log Symbol creation.
+		services.Log("CreateNewSymbol - Created a new Symbol entry - (" + short + ") " + name)
+
+	}
+
+	// Return the user.
+	return symb, nil
+
+}
+
 /* End File */
