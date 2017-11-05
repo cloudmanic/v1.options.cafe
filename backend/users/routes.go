@@ -8,14 +8,27 @@ package users
 
 import "github.com/tidwall/gjson"
 
-// TODO: turn this in an a routes MAP type of code instead of a switch.
-// Something like this....
-// route.Add("refresh-watchlists", t.WsSendWatchlists)
+//
+// Get Routes
+//
+func (t *Base) GetRoutes() map[string]func(*UserFeed, string) {
+
+	routes := make(map[string]func(*UserFeed, string))
+
+	// Set routes
+	routes["refresh-watchlists"] = t.WsSendWatchlists
+	routes["refresh-all-data"] = t.RefreshAllData
+
+	// Return happy
+	return routes
+}
 
 //
 // Listen for incoming feed requests.
 //
 func (t *Base) DoFeedRequestListen() {
+
+	routes := t.GetRoutes()
 
 	for {
 
@@ -24,21 +37,10 @@ func (t *Base) DoFeedRequestListen() {
 		// Get message type
 		msgType := gjson.Get(send.Message, "type").String()
 
-		// Switch based on message type.
-		switch msgType {
-
-		// Refresh just the watchlists
-		case "refresh-watchlists":
-			t.WsSendWatchlists(t.Users[send.UserId], send.Message)
-			break
-
-		// Refresh all data from cache
-		case "refresh-all-data":
-			t.RefreshAllData(t.Users[send.UserId], send.Message)
-			break
-
+		// Make sure we know about this type & Call function to manage request
+		if _, ok := routes[msgType]; ok {
+			routes[msgType](t.Users[send.UserId], send.Message)
 		}
-
 	}
 
 }
