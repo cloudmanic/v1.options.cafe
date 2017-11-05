@@ -115,7 +115,7 @@ func (t *Base) DoUserFeed(user models.User) {
 }
 
 //
-// Listen for incomeing feed requests.
+// Listen for incoming feed requests.
 //
 func (t *Base) DoFeedRequestListen() {
 
