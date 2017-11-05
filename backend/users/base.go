@@ -13,7 +13,7 @@ import (
 
 type Base struct {
 	DB              *models.DB
-	Users           map[uint]*User
+	Users           map[uint]*UserFeed
 	DataChan        chan controllers.SendStruct
 	QuoteChan       chan controllers.SendStruct
 	FeedRequestChan chan controllers.SendStruct

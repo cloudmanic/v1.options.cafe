@@ -39,26 +39,32 @@ func main() {
 	// Close db when this app dies. (This might be useless)
 	defer db.Close()
 
-	// Startup controller & websockets
-	c := &controllers.Controller{
-		DB:                db,
-		WsReadChan:        make(chan controllers.SendStruct, 1000),
-		WsWriteChan:       make(chan controllers.SendStruct, 1000),
-		WsWriteQuoteChan:  make(chan controllers.SendStruct, 1000),
-		Connections:       make(map[*websocket.Conn]*controllers.WebsocketConnection),
-		QuotesConnections: make(map[*websocket.Conn]*controllers.WebsocketConnection),
-	}
+	// Setup shared channels
+	WsReadChan := make(chan controllers.SendStruct, 1000)
+	WsWriteChan := make(chan controllers.SendStruct, 1000)
+	WsWriteQuoteChan := make(chan controllers.SendStruct, 1000)
 
 	// Setup users object & Start users feeds
 	u := &users.Base{
 		DB:              db,
-		Users:           make(map[uint]*users.User),
-		DataChan:        c.WsWriteChan,
-		QuoteChan:       c.WsWriteQuoteChan,
-		FeedRequestChan: c.WsReadChan,
+		Users:           make(map[uint]*users.UserFeed),
+		DataChan:        WsWriteChan,
+		QuoteChan:       WsWriteQuoteChan,
+		FeedRequestChan: WsReadChan,
 	}
 
+	// Start user feed
 	u.StartFeeds()
+
+	// Startup controller & websockets
+	c := &controllers.Controller{
+		DB:                db,
+		WsReadChan:        WsReadChan,
+		WsWriteChan:       WsWriteChan,
+		WsWriteQuoteChan:  WsWriteQuoteChan,
+		Connections:       make(map[*websocket.Conn]*controllers.WebsocketConnection),
+		QuotesConnections: make(map[*websocket.Conn]*controllers.WebsocketConnection),
+	}
 
 	// Start websockets & controllers
 	c.StartWebServer()

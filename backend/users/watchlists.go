@@ -17,7 +17,7 @@ import (
 //
 // Send a user's watchlist up the websocket channel
 //
-func (t *Base) WsSendWatchlists(user *User) {
+func (t *Base) WsSendWatchlists(user *UserFeed) {
 
 	// Get the watchlists
 	wLists, err := t.DB.GetWatchlistsByUserId(user.Profile.Id)

@@ -19,21 +19,26 @@ func (t *Controller) ProcessRead(conn *WebsocketConnection, message string, data
 		conn.writeChan <- "{\"type\":\"pong\"}"
 		break
 
-	// Refresh all cached data.
-	case "refresh-all-data":
-		t.WsReadChan <- SendStruct{UserId: conn.userId, Message: "FromCache:refresh"}
-		break
+	// // Refresh all cached data.
+	// case "refresh-all-data":
+	// 	t.WsReadChan <- SendStruct{UserId: conn.userId, Message: "FromCache:refresh"}
+	// 	break
 
-	// Refresh watchlists
-	case "refresh-watchlists":
-		t.WsReadChan <- SendStruct{UserId: conn.userId, Message: "Watchlists:refresh"}
-		break
+	// // Refresh watchlists
+	// case "refresh-watchlists":
+	// 	t.WsReadChan <- SendStruct{UserId: conn.userId, Message: "Watchlists:refresh"}
+	// 	break
 
 	// The user authenticates.
 	case "set-access-token":
 		device_id := gjson.Get(message, "data.device_id").String()
 		access_token := gjson.Get(message, "data.access_token").String()
 		t.AuthenticateConnection(conn, access_token, device_id)
+		break
+
+	// Default we send over to the user feed.
+	default:
+		t.WsReadChan <- SendStruct{UserId: conn.userId, Message: message}
 		break
 
 	}

@@ -18,7 +18,7 @@ import (
 	"app.options.cafe/backend/models"
 )
 
-type User struct {
+type UserFeed struct {
 	Profile    models.User
 	DataChan   chan controllers.SendStruct
 	BrokerFeed map[uint]*feed.Base
@@ -61,7 +61,7 @@ func (t *Base) DoUserFeed(user models.User) {
 	t.VerifyDefaultWatchList(user)
 
 	// Set the user to the object
-	t.Users[user.Id] = &User{
+	t.Users[user.Id] = &UserFeed{
 		Profile:    user,
 		DataChan:   t.DataChan,
 		BrokerFeed: make(map[uint]*feed.Base),
@@ -111,42 +111,20 @@ func (t *Base) DoUserFeed(user models.User) {
 		// Start fetching data for this user.
 		go t.Users[user.Id].BrokerFeed[row.Id].Start()
 	}
-
 }
 
 //
-// Listen for incoming feed requests.
+// Refresh all data.
 //
-func (t *Base) DoFeedRequestListen() {
+func (t *Base) RefreshAllData(user *UserFeed) {
 
-	for {
-
-		send := <-t.FeedRequestChan
-
-		switch send.Message {
-
-		// Refresh all data from cache - FromCache:refresh
-		case "FromCache:refresh":
-
-			// Loop through each broker and refresh the data.
-			for _, row := range t.Users[send.UserId].BrokerFeed {
-				row.RefreshFromCached()
-			}
-
-			// Send watchlist
-			t.WsSendWatchlists(t.Users[send.UserId])
-
-			break
-
-		// Refresh just the watchlist
-		case "Watchlists:refresh":
-			t.WsSendWatchlists(t.Users[send.UserId])
-			break
-
-		}
-
+	// Loop through each broker and refresh the data.
+	for _, row := range t.Users[user.Profile.Id].BrokerFeed {
+		row.RefreshFromCached()
 	}
 
+	// Send watchlist
+	t.WsSendWatchlists(t.Users[user.Profile.Id])
 }
 
 // ---------------- Helper Functions --------------- //
@@ -174,7 +152,6 @@ func (t *Base) WsSendJsonBuild(send_type string, data_json []byte) (string, erro
 	}
 
 	return string(send_json), nil
-
 }
 
 /* End File */
