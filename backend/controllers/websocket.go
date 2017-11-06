@@ -3,7 +3,6 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
-	"sync"
 	"time"
 
 	"app.options.cafe/backend/library/services"
@@ -11,29 +10,6 @@ import (
 )
 
 const writeWait = 5 * time.Second
-
-type WebsocketConnection struct {
-	writeChan  chan string
-	connection *websocket.Conn
-
-	muUserId sync.Mutex
-	userId   uint
-
-	muDeviceId sync.Mutex
-	deviceId   string
-}
-
-type TradierApiKeyStruct struct {
-	Type string `json:"type"`
-	Data struct {
-		Key string `json:"key"`
-	}
-}
-
-type SendStruct struct {
-	UserId  uint
-	Message string
-}
 
 //
 // Check Origin

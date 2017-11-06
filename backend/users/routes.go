@@ -6,14 +6,17 @@
 
 package users
 
-import "github.com/tidwall/gjson"
+import (
+	"app.options.cafe/backend/controllers"
+	"github.com/tidwall/gjson"
+)
 
 //
 // Get Routes
 //
-func (t *Base) GetRoutes() map[string]func(*UserFeed, string) {
+func (t *Base) GetRoutes() map[string]func(*UserFeed, controllers.ReceivedStruct) {
 
-	routes := make(map[string]func(*UserFeed, string))
+	routes := make(map[string]func(*UserFeed, controllers.ReceivedStruct))
 
 	// Set routes
 	routes["refresh-watchlists"] = t.WsSendWatchlists
@@ -39,7 +42,7 @@ func (t *Base) DoFeedRequestListen() {
 
 		// Make sure we know about this type & Call function to manage request
 		if _, ok := routes[msgType]; ok {
-			routes[msgType](t.Users[send.UserId], send.Message)
+			routes[msgType](t.Users[send.UserId], send)
 		}
 	}
 

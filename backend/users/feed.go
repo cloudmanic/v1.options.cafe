@@ -116,7 +116,7 @@ func (t *Base) DoUserFeed(user models.User) {
 //
 // Refresh all data.
 //
-func (t *Base) RefreshAllData(user *UserFeed, payload string) {
+func (t *Base) RefreshAllData(user *UserFeed, request controllers.ReceivedStruct) {
 
 	// Loop through each broker and refresh the data.
 	for _, row := range t.Users[user.Profile.Id].BrokerFeed {
@@ -124,7 +124,7 @@ func (t *Base) RefreshAllData(user *UserFeed, payload string) {
 	}
 
 	// Send watchlist
-	t.WsSendWatchlists(t.Users[user.Profile.Id], payload)
+	t.WsSendWatchlists(t.Users[user.Profile.Id], request)
 }
 
 // ---------------- Helper Functions --------------- //

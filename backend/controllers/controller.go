@@ -38,7 +38,7 @@ func (t *Controller) ProcessRead(conn *WebsocketConnection, message string, data
 
 	// Default we send over to the user feed.
 	default:
-		t.WsReadChan <- SendStruct{UserId: conn.userId, Message: message}
+		t.WsReadChan <- ReceivedStruct{UserId: conn.userId, Message: message, Connection: conn}
 		break
 
 	}
@@ -85,7 +85,7 @@ func (t *Controller) AuthenticateConnection(conn *WebsocketConnection, accessTok
 	go t.DoWsWriting(conn)
 
 	// Send cached data so they do not have to wait for polling.
-	t.WsReadChan <- SendStruct{UserId: conn.userId, Message: "FromCache:refresh"}
+	t.WsReadChan <- ReceivedStruct{UserId: conn.userId, Message: "refresh-all-data", Connection: conn}
 
 }
 

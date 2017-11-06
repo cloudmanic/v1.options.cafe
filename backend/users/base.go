@@ -16,7 +16,7 @@ type Base struct {
 	Users           map[uint]*UserFeed
 	DataChan        chan controllers.SendStruct
 	QuoteChan       chan controllers.SendStruct
-	FeedRequestChan chan controllers.SendStruct
+	FeedRequestChan chan controllers.ReceivedStruct
 }
 
 /* End File */

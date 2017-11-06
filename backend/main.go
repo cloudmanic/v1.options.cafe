@@ -40,7 +40,7 @@ func main() {
 	defer db.Close()
 
 	// Setup shared channels
-	WsReadChan := make(chan controllers.SendStruct, 1000)
+	WsReadChan := make(chan controllers.ReceivedStruct, 1000)
 	WsWriteChan := make(chan controllers.SendStruct, 1000)
 	WsWriteQuoteChan := make(chan controllers.SendStruct, 1000)
 
