@@ -58,8 +58,16 @@ func (t *Base) WsSendWatchlists(user *UserFeed, request controllers.ReceivedStru
 			continue
 		}
 
+		// Create JSON
+		send_json, err := json.Marshal(controllers.SendStruct{UserId: user.Profile.Id, Message: string(jsonSend)})
+
+		if err != nil {
+			services.Error(err, "WsSendWatchlists() json.Marshal (#3)")
+			continue
+		}
+
 		// Send up the websocket
-		user.DataChan <- controllers.SendStruct{UserId: user.Profile.Id, Message: string(jsonSend)}
+		request.Connection.WriteChan <- string(send_json)
 
 	}
 

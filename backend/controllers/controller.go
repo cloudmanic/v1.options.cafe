@@ -16,7 +16,7 @@ func (t *Controller) ProcessRead(conn *WebsocketConnection, message string, data
 
 	// Ping to make sure we are alive.
 	case "ping":
-		conn.writeChan <- "{\"type\":\"pong\"}"
+		conn.WriteChan <- "{\"type\":\"pong\"}"
 		break
 
 	// // Refresh all cached data.

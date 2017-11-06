@@ -23,7 +23,7 @@ type Controller struct {
 }
 
 type WebsocketConnection struct {
-	writeChan  chan string
+	WriteChan  chan string
 	connection *websocket.Conn
 
 	muUserId sync.Mutex
