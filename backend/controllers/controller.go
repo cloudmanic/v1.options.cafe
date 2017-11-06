@@ -12,33 +12,23 @@ import (
 //
 func (t *Controller) ProcessRead(conn *WebsocketConnection, message string, data map[string]interface{}) {
 
-	switch data["type"] {
+	switch data["uri"] {
 
 	// Ping to make sure we are alive.
 	case "ping":
-		conn.writeChan <- "{\"type\":\"pong\"}"
+		conn.WriteChan <- "{\"uri\":\"pong\"}"
 		break
-
-	// // Refresh all cached data.
-	// case "refresh-all-data":
-	// 	t.WsReadChan <- SendStruct{UserId: conn.userId, Message: "FromCache:refresh"}
-	// 	break
-
-	// // Refresh watchlists
-	// case "refresh-watchlists":
-	// 	t.WsReadChan <- SendStruct{UserId: conn.userId, Message: "Watchlists:refresh"}
-	// 	break
 
 	// The user authenticates.
 	case "set-access-token":
-		device_id := gjson.Get(message, "data.device_id").String()
-		access_token := gjson.Get(message, "data.access_token").String()
+		device_id := gjson.Get(message, "body.device_id").String()
+		access_token := gjson.Get(message, "body.access_token").String()
 		t.AuthenticateConnection(conn, access_token, device_id)
 		break
 
 	// Default we send over to the user feed.
 	default:
-		t.WsReadChan <- ReceivedStruct{UserId: conn.userId, Message: message, Connection: conn}
+		t.WsReadChan <- ReceivedStruct{UserId: conn.userId, Body: message, Connection: conn}
 		break
 
 	}
@@ -85,7 +75,7 @@ func (t *Controller) AuthenticateConnection(conn *WebsocketConnection, accessTok
 	go t.DoWsWriting(conn)
 
 	// Send cached data so they do not have to wait for polling.
-	t.WsReadChan <- ReceivedStruct{UserId: conn.userId, Message: "refresh-all-data", Connection: conn}
+	t.WsReadChan <- ReceivedStruct{UserId: conn.userId, Body: "{\"uri\":\"data/all\",\"body\":{}}", Connection: conn}
 
 }
 

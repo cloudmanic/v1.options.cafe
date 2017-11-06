@@ -64,7 +64,7 @@
 						<li>
 							<h6>US stock market</h6>
               
-              <span [ngSwitch]="marketStatus?.state">
+              <span [ngSwitch]="marketStatus?.description">
 							  <strong *ngSwitchCase="'open'">Open</strong>
 							  <strong *ngSwitchDefault>Closed</strong>
               </span>

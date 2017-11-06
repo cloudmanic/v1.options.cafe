@@ -8,7 +8,6 @@ import (
 
 	"app.options.cafe/backend/brokers/types"
 	"app.options.cafe/backend/controllers"
-	//"app.options.cafe/backend/library/services"
 )
 
 //
@@ -19,31 +18,31 @@ import (
 func (t *Base) RefreshFromCached() error {
 
 	// UserProfile - Send up websocket.
-	err := t.WriteDataChannel("UserProfile:refresh", t.UserProfile)
+	err := t.WriteDataChannel("user/profile", t.UserProfile)
 
 	if err != nil {
-		return fmt.Errorf("RefreshFromCached() WriteDataChannel - UserProfile:refresh : ", err)
+		return fmt.Errorf("RefreshFromCached() WriteDataChannel - user/profile : ", err)
 	}
 
 	// MarketStatus - Send up websocket.
-	err = t.WriteDataChannel("MarketStatus:refresh", t.MarketStatus)
+	err = t.WriteDataChannel("market/status", t.MarketStatus)
 
 	if err != nil {
-		return fmt.Errorf("RefreshFromCached() WriteDataChannel - MarketStatus:refresh : ", err)
+		return fmt.Errorf("RefreshFromCached() WriteDataChannel - market/status : ", err)
 	}
 
 	// Orders - Send up websocket.
-	err = t.WriteDataChannel("Orders:refresh", t.Orders)
+	err = t.WriteDataChannel("orders", t.Orders)
 
 	if err != nil {
-		return fmt.Errorf("RefreshFromCached() WriteDataChannel - Orders:refresh : ", err)
+		return fmt.Errorf("RefreshFromCached() WriteDataChannel - orders : ", err)
 	}
 
 	// Balances - Send up websocket.
-	err = t.WriteDataChannel("Balances:refresh", t.Balances)
+	err = t.WriteDataChannel("balances", t.Balances)
 
 	if err != nil {
-		return fmt.Errorf("RefreshFromCached() WriteDataChannel - Balances:refresh : ", err)
+		return fmt.Errorf("RefreshFromCached() WriteDataChannel - balances : ", err)
 	}
 
 	// No error
@@ -135,7 +134,7 @@ func (t *Base) GetMarketStatus() error {
 	t.muMarketStatus.Unlock()
 
 	// Send up websocket.
-	err = t.WriteDataChannel("MarketStatus:refresh", marketStatus)
+	err = t.WriteDataChannel("market/status", marketStatus)
 
 	if err != nil {
 		return fmt.Errorf("GetMarketStatus() WriteDataChannel : ", err)
@@ -166,7 +165,7 @@ func (t *Base) GetUserProfile() error {
 	t.muUserProfile.Unlock()
 
 	// Send up websocket.
-	err = t.WriteDataChannel("UserProfile:refresh", userProfile)
+	err = t.WriteDataChannel("user/profile", userProfile)
 
 	if err != nil {
 		return fmt.Errorf("GetUserProfile() WriteDataChannel : ", err)
@@ -184,7 +183,7 @@ func (t *Base) GetUserProfile() error {
 //
 func (t *Base) GetOrders() error {
 
-	var orders []types.Order
+	orders := []types.Order{}
 
 	// Make API call
 	orders, err := t.Api.GetOrders()
@@ -199,7 +198,7 @@ func (t *Base) GetOrders() error {
 	t.muOrders.Unlock()
 
 	// Send up websocket.
-	err = t.WriteDataChannel("Orders:refresh", orders)
+	err = t.WriteDataChannel("orders", orders)
 
 	if err != nil {
 		return fmt.Errorf("Fetch.GetOrders() : ", err)
@@ -256,7 +255,7 @@ func (t *Base) GetActiveSymbolsDetailedQuotes() error {
 		}
 
 		// Send data up websocket.
-		send_json, err := t.GetSendJson("DetailedQuotes:refresh", string(data_json))
+		send_json, err := t.GetSendJson("quote", string(data_json))
 
 		if err != nil {
 			fmt.Println("DoDetailedQuotes() GetSendJson Send Object : ", err)
@@ -296,7 +295,7 @@ func (t *Base) GetBalances() error {
 	t.muBalances.Unlock()
 
 	// Send up websocket.
-	err = t.WriteDataChannel("Balances:refresh", balances)
+	err = t.WriteDataChannel("balances", balances)
 
 	if err != nil {
 		return fmt.Errorf("GetBalances() WriteDataChannel : ", err)
@@ -330,12 +329,12 @@ func (t *Base) AccessTokenRefresh() error {
 //
 // Return a json object ready to be sent up the websocket
 //
-func (t *Base) GetSendJson(send_type string, data_json string) (string, error) {
+func (t *Base) GetSendJson(uri string, data_json string) (string, error) {
 
 	// Send Object
 	send := SendStruct{
-		Type: send_type,
-		Data: data_json,
+		Uri:  uri,
+		Body: data_json,
 	}
 
 	send_json, err := json.Marshal(send)
@@ -367,7 +366,7 @@ func (t *Base) WriteDataChannel(send_type string, sendObject interface{}) error 
 	}
 
 	// Write data out websocket
-	t.DataChan <- controllers.SendStruct{UserId: t.User.Id, Message: sendJson}
+	t.DataChan <- controllers.SendStruct{UserId: t.User.Id, Body: sendJson}
 
 	// Return happy.
 	return nil
@@ -379,7 +378,7 @@ func (t *Base) WriteDataChannel(send_type string, sendObject interface{}) error 
 func (t *Base) WriteQuoteChannel(sendJson string) error {
 
 	// Write data out websocket
-	t.QuoteChan <- controllers.SendStruct{UserId: t.User.Id, Message: sendJson}
+	t.QuoteChan <- controllers.SendStruct{UserId: t.User.Id, Body: sendJson}
 
 	// Return happy.
 	return nil

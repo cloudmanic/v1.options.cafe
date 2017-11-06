@@ -63,7 +63,7 @@ func (t *Controller) DoWebsocketConnection(w http.ResponseWriter, r *http.Reques
 	defer conn.Close()
 
 	// Add the connection to our connection array
-	r_con := WebsocketConnection{connection: conn, writeChan: make(chan string, 100)}
+	r_con := WebsocketConnection{connection: conn, WriteChan: make(chan string, 100)}
 
 	t.Connections[conn] = &r_con
 
@@ -97,7 +97,7 @@ func (t *Controller) DoQuoteWebsocketConnection(w http.ResponseWriter, r *http.R
 	defer conn.Close()
 
 	// Add the connection to our connection array
-	r_con := WebsocketConnection{connection: conn, writeChan: make(chan string, 1000)}
+	r_con := WebsocketConnection{connection: conn, WriteChan: make(chan string, 1000)}
 
 	t.QuotesConnections[conn] = &r_con
 
@@ -114,7 +114,7 @@ func (t *Controller) DoWsWriting(conn *WebsocketConnection) {
 
 	for {
 
-		message := <-conn.writeChan
+		message := <-conn.WriteChan
 		conn.connection.WriteMessage(websocket.TextMessage, []byte(message))
 		conn.connection.SetWriteDeadline(time.Now().Add(writeWait))
 

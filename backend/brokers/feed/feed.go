@@ -33,8 +33,8 @@ type Base struct {
 }
 
 type SendStruct struct {
-	Type string `json:"type"`
-	Data string `json:"data"`
+	Uri  string `json:"uri"`
+	Body string `json:"body"`
 }
 
 //

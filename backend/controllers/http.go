@@ -59,7 +59,7 @@ func (t *Controller) DoWsDispatch() {
 
 					select {
 
-					case t.Connections[i].writeChan <- send.Message:
+					case t.Connections[i].WriteChan <- send.Body:
 
 					default:
 						services.MajorLog("Channel full. Discarding value (Core channel)")
@@ -80,7 +80,7 @@ func (t *Controller) DoWsDispatch() {
 
 					select {
 
-					case t.QuotesConnections[i].writeChan <- send.Message:
+					case t.QuotesConnections[i].WriteChan <- send.Body:
 
 					default:
 						services.MajorLog("Channel full. Discarding value (Quotes channel)")

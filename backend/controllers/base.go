@@ -23,7 +23,7 @@ type Controller struct {
 }
 
 type WebsocketConnection struct {
-	writeChan  chan string
+	WriteChan  chan string
 	connection *websocket.Conn
 
 	muUserId sync.Mutex
@@ -34,13 +34,13 @@ type WebsocketConnection struct {
 }
 
 type SendStruct struct {
-	UserId  uint
-	Message string
+	Body   string
+	UserId uint
 }
 
 type ReceivedStruct struct {
+	Body       string
 	UserId     uint
-	Message    string
 	Connection *WebsocketConnection
 }
 
