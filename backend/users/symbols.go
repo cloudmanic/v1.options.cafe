@@ -27,6 +27,7 @@ func (t *Base) SearchBySymbolOrCompanyName(user *UserFeed, request controllers.R
 	syms, err := user.BrokerFeed[1].Api.SearchBySymbolOrCompanyName(query)
 
 	if err != nil {
+		services.Error(err, "SearchBySymbolOrCompanyName() API call.")
 		return
 	}
 
@@ -48,7 +49,7 @@ func (t *Base) SearchBySymbolOrCompanyName(user *UserFeed, request controllers.R
 	dataJson, err := json.Marshal(symbols)
 
 	if err != nil {
-		services.Error(err, "WsSendWatchlists() json.Marshal (#1)")
+		services.Error(err, "SearchBySymbolOrCompanyName() json.Marshal (#1)")
 		return
 	}
 
