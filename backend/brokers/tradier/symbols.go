@@ -97,7 +97,7 @@ func (t *Api) SearchBySymbolName(query string) ([]types.Symbol, error) {
 func (t *Api) SearchByCompanyName(query string) ([]types.Symbol, error) {
 
 	// Make get request.
-	body, err := t.SendGetRequest("/markets/search?q=" + query)
+	body, err := t.SendGetRequest("/markets/search?indexes=true&q=" + query)
 
 	if err != nil {
 		return []types.Symbol{}, err

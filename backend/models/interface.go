@@ -38,6 +38,7 @@ type Datastore interface {
 	CreateSession(UserId uint, UserAgent string, LastIpAddress string) (Session, error)
 
 	// Symbols
+	GetAllSymbols() []Symbol
 	CreateNewSymbol(short string, name string) (Symbol, error)
 
 	// Users

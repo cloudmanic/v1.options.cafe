@@ -46,4 +46,16 @@ func (t *DB) CreateNewSymbol(short string, name string) (Symbol, error) {
 
 }
 
+//
+// Get all symbols.
+//
+func (t *DB) GetAllSymbols() []Symbol {
+
+	var symbols []Symbol
+
+	t.Find(&symbols)
+
+	return symbols
+}
+
 /* End File */
