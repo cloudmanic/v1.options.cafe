@@ -20,8 +20,9 @@ export class WatchlistComponent implements OnInit {
 
   public quotes = {}
   public watchlist: Watchlist;
-  public typeAheadList: Symbol[];  
-  public watchlistEditState = true;
+  public typeAheadList: Symbol[];
+  public typeAheadShow = false;  
+  public watchlistEditState = false;
   public watchlistSettingsActive = false;
 
   //
@@ -70,6 +71,23 @@ export class WatchlistComponent implements OnInit {
   } 
 
   //
+  // Do edit watchlist
+  //
+  onEditWatchList() {
+    this.watchlistEditState = true;
+    this.watchlistSettingsActive = false;
+  }
+
+  //
+  // Do static watchlist
+  //
+  onEditWatchListDone() {
+    this.watchlistEditState = false;
+    this.watchlistSettingsActive = false;
+  }
+
+
+  //
   // On search...
   //
   onSearchKeyUp(event) {
@@ -77,7 +95,12 @@ export class WatchlistComponent implements OnInit {
     // Send search to backend.
     if(event.target.value.length > 0)
     {
+      this.typeAheadShow = true;
       this.appService.RequestSymbolSearch(event.target.value);
+    } else
+    {
+      this.typeAheadList = []
+      this.typeAheadShow = false;
     }
   }
 

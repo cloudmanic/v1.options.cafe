@@ -10,7 +10,7 @@
     	<div class="dropdown__body">
     		<ul class="list-actions">
     			<li>
-    				<a href="#">Edit Watchlist</a>
+    				<a (click)="onEditWatchList()">Edit Watchlist</a>
     			</li>
   
     			<li>
@@ -63,27 +63,29 @@
     <h5 class="box__title">Edit Watchlist</h5>
     
     <div class="box__absolute">
-      <a class="link-action link-action--small" (click)="onWatchlistSettingsClick()">Done</a>
+      <a class="link-action link-action--small" (click)="onEditWatchListDone()">Done</a>
     </div>
   </div>
 
   <div class="box__search">
     <div class="dropdown dropdown--search active">
       
-      <input type="text" value="" placeholder="Search to add..." class="field" (keyup)="onSearchKeyUp($event)" />
+      <input type="text" value="" placeholder="Search" class="field" (keyup)="onSearchKeyUp($event)" />
       
-      <div class="dropdown__body">
+      <span [hidden]="! typeAheadShow">
+        <div class="dropdown__body">  
 
-        <ul class="list-actions">
-          <li *ngFor="let row of typeAheadList">
-            <a href="#">
-              <span>{{ row.Name | uppercase }}</span>
-              {{ row.Description }}
-            </a>
-          </li>
-        </ul>
-      
-      </div>
+          <ul class="list-actions">
+            <li *ngFor="let row of typeAheadList">
+              <a href="#">
+                <span>{{ row.Name | uppercase }}</span>
+                {{ row.Description }}
+              </a>
+            </li>
+          </ul>
+        
+        </div>
+      </span>
 
     </div>
   </div>

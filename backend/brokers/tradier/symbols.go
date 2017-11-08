@@ -11,17 +11,19 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"sort"
+	"strings"
 
 	"app.options.cafe/backend/brokers/types"
 	"github.com/tidwall/gjson"
 )
 
 //
-// Search for symbols or companies
+// Search for symbols or companies. We stack the result. Symbols are are on top of the array.
+// Perfect matches go on top.
 //
 func (t *Api) SearchBySymbolOrCompanyName(query string) ([]types.Symbol, error) {
 
+	queryUpper := strings.ToUpper(query)
 	m := make(map[string]types.Symbol)
 
 	// Search by Symbol
@@ -38,30 +40,39 @@ func (t *Api) SearchBySymbolOrCompanyName(query string) ([]types.Symbol, error) 
 		return []types.Symbol{}, err
 	}
 
+	// What we return.
+	var symbols []types.Symbol
+
 	// Put results of both searches into a map.
 	for _, row := range symbs {
 		m[row.Name] = row
+
+		// Put match first.
+		if row.Name == queryUpper {
+			symbols = append(symbols, row)
+		}
 	}
 
+	// Add symbols on top.
+	for _, row := range symbs {
+
+		// Already managed this one.
+		if row.Name == queryUpper {
+			continue
+		}
+
+		symbols = append(symbols, row)
+	}
+
+	// Loop through companies.
 	for _, row := range companies {
-		m[row.Name] = row
-	}
 
-	// Order the companies
-	mk := make([]string, len(m))
-	i := 0
-	for key, _ := range m {
-		mk[i] = key
-		i++
-	}
+		// Do we already have this one from the symbols
+		_, ok := m[row.Name]
 
-	sort.Strings(mk)
-
-	// Put map back into []types.Symbol format.
-	var symbols []types.Symbol
-
-	for _, row := range mk {
-		symbols = append(symbols, m[row])
+		if ok == false {
+			symbols = append(symbols, row)
+		}
 	}
 
 	// Return happy

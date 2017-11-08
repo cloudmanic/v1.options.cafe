@@ -46,10 +46,10 @@ func TestSearchBySymbolOrCompanyName(t *testing.T) {
 
 	// Verify the data was return as expected
 	st.Expect(t, len(symbols), 66)
-	st.Expect(t, symbols[0].Name, "106677:OOTC")
-	st.Expect(t, symbols[0].Description, "STARINVEST GROUP INC by StarInvest Group, Inc.")
-	st.Expect(t, symbols[1].Name, "ATRKD")
-	st.Expect(t, symbols[1].Description, "STAR ALLIANCE INTL CORP by Star Alliance International Corp.")
+	st.Expect(t, symbols[0].Name, "SBUX")
+	st.Expect(t, symbols[0].Description, "Starbucks Corp")
+	st.Expect(t, symbols[1].Name, "SBUM")
+	st.Expect(t, symbols[1].Description, "Silver Buckle Mines Inc")
 
 	// Verify that we don't have pending mocks
 	st.Expect(t, gock.IsDone(), true)
