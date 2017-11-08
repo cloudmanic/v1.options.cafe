@@ -11,10 +11,62 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"sort"
 
 	"app.options.cafe/backend/brokers/types"
 	"github.com/tidwall/gjson"
 )
+
+//
+// Search for symbols or companies
+//
+func (t *Api) SearchBySymbolOrCompanyName(query string) ([]types.Symbol, error) {
+
+	m := make(map[string]types.Symbol)
+
+	// Search by Symbol
+	symbs, err := t.SearchBySymbolName(query)
+
+	if err != nil {
+		return []types.Symbol{}, err
+	}
+
+	// Search by company name
+	companies, err := t.SearchByCompanyName(query)
+
+	if err != nil {
+		return []types.Symbol{}, err
+	}
+
+	// Put results of both searches into a map.
+	for _, row := range symbs {
+		m[row.Name] = row
+	}
+
+	for _, row := range companies {
+		m[row.Name] = row
+	}
+
+	// Order the companies
+	mk := make([]string, len(m))
+	i := 0
+	for key, _ := range m {
+		mk[i] = key
+		i++
+	}
+
+	sort.Strings(mk)
+
+	// Put map back into []types.Symbol format.
+	var symbols []types.Symbol
+
+	for _, row := range mk {
+		symbols = append(symbols, m[row])
+	}
+
+	// Return happy
+	return symbols, nil
+}
 
 //
 // Search for Symbol
