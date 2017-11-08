@@ -39,6 +39,7 @@ type Datastore interface {
 
 	// Symbols
 	GetAllSymbols() []Symbol
+	SearchSymbols(query string) ([]Symbol, error)
 	CreateNewSymbol(short string, name string) (Symbol, error)
 
 	// Users

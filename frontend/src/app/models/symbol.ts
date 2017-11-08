@@ -6,8 +6,8 @@
 
 export class Symbol {
   constructor(
-    public Name: string,
-    public Description: string  
+    public ShortName: string,
+    public Name: string  
   ){}
 
   //
@@ -19,7 +19,7 @@ export class Symbol {
 
     for(let i = 0; i < data.length; i++)
     {
-      symbols.push(new Symbol(data[i].Name, data[i].Description));
+      symbols.push(new Symbol(data[i].ShortName, data[i].Name));
     }    
 
     return symbols; 

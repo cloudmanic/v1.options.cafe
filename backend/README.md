@@ -48,5 +48,5 @@ Checkout ```cron/README.md```
 
 Some data needs to be imported to kick the application off. For example import a list of symbols to populate the symbols table.
 
-* ```go run *.go --action=symbol-import```
+* ```cd cron && go run *.go --action=symbol-import```
 

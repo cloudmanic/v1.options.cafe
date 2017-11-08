@@ -78,8 +78,8 @@
           <ul class="list-actions">
             <li *ngFor="let row of typeAheadList">
               <a href="#">
-                <span>{{ row.Name | uppercase }}</span>
-                {{ row.Description }}
+                <span>{{ row.ShortName | uppercase }}</span>
+                {{ row.Name }}
               </a>
             </li>
           </ul>

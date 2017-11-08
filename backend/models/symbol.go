@@ -37,7 +37,7 @@ func (t *DB) CreateNewSymbol(short string, name string) (Symbol, error) {
 		t.Create(&symb)
 
 		// Log Symbol creation.
-		services.Log("CreateNewSymbol - Created a new Symbol entry - (" + short + ") " + name)
+		services.Log("[Models:CreateNewSymbol] - Created a new Symbol entry - (" + short + ") " + name)
 
 	}
 
@@ -56,6 +56,44 @@ func (t *DB) GetAllSymbols() []Symbol {
 	t.Find(&symbols)
 
 	return symbols
+}
+
+//
+// Search for symbols by query string.
+//
+func (t *DB) SearchSymbols(query string) ([]Symbol, error) {
+
+	var symbols []Symbol
+
+	var sql = `SELECT *,
+    IF(short_name = ?,  40, IF(short_name LIKE ?, 10, 0))
+	  + IF(short_name LIKE ?, 20,  0)    
+		+ IF(name LIKE ?, 10,  0)    
+    + IF(name LIKE ?, 5,  0)
+    AS weight
+		FROM symbols
+		WHERE (short_name LIKE ? OR name LIKE ?)
+		ORDER BY weight DESC
+		LIMIT 10`
+
+	rows, err := t.Raw(sql, query, "%"+query+"%", query+"%", query+"%", "%"+query+"%", "%"+query+"%", "%"+query+"%").Rows()
+
+	if err != nil {
+		services.Error(err, "[Models:SearchSymbols] - Unable to search for symbols.")
+		return symbols, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+
+		var s Symbol
+		t.ScanRows(rows, &s)
+
+		symbols = append(symbols, s)
+	}
+
+	return symbols, nil
 }
 
 /* End File */
