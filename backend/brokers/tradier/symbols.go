@@ -7,10 +7,6 @@
 package tradier
 
 import (
-	"errors"
-	"fmt"
-	"io/ioutil"
-	"net/http"
 	"strings"
 
 	"app.options.cafe/backend/brokers/types"
@@ -84,33 +80,15 @@ func (t *Api) SearchBySymbolOrCompanyName(query string) ([]types.Symbol, error) 
 //
 func (t *Api) SearchBySymbolName(query string) ([]types.Symbol, error) {
 
-	// Setup http client
-	client := &http.Client{}
-
-	// Setup api request
-	req, _ := http.NewRequest("GET", apiBaseUrl+"/markets/lookup?q="+query, nil)
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Authorization", fmt.Sprint("Bearer ", t.ApiKey))
-
-	res, err := client.Do(req)
+	// Make get request.
+	body, err := t.SendGetRequest("/markets/lookup?q=" + query)
 
 	if err != nil {
 		return []types.Symbol{}, err
 	}
 
-	// Close Body
-	defer res.Body.Close()
-
-	// Make sure the api responded with a 200
-	if res.StatusCode != 200 {
-		return []types.Symbol{}, errors.New(fmt.Sprint("Search for symbols by name API did not return 200, It returned ", res.StatusCode))
-	}
-
-	// Read the data we got.
-	body, _ := ioutil.ReadAll(res.Body)
-
 	// Parse and return.
-	return parseSearchJsonResponse(string(body))
+	return parseSearchJsonResponse(body)
 }
 
 //
@@ -118,33 +96,15 @@ func (t *Api) SearchBySymbolName(query string) ([]types.Symbol, error) {
 //
 func (t *Api) SearchByCompanyName(query string) ([]types.Symbol, error) {
 
-	// Setup http client
-	client := &http.Client{}
-
-	// Setup api request
-	req, _ := http.NewRequest("GET", apiBaseUrl+"/markets/search?q="+query, nil)
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Authorization", fmt.Sprint("Bearer ", t.ApiKey))
-
-	res, err := client.Do(req)
+	// Make get request.
+	body, err := t.SendGetRequest("/markets/search?q=" + query)
 
 	if err != nil {
 		return []types.Symbol{}, err
 	}
 
-	// Close Body
-	defer res.Body.Close()
-
-	// Make sure the api responded with a 200
-	if res.StatusCode != 200 {
-		return []types.Symbol{}, errors.New(fmt.Sprint("Search for company by name API did not return 200, It returned ", res.StatusCode))
-	}
-
-	// Read the data we got.
-	body, _ := ioutil.ReadAll(res.Body)
-
 	// Parse and return.
-	return parseSearchJsonResponse(string(body))
+	return parseSearchJsonResponse(body)
 }
 
 //
