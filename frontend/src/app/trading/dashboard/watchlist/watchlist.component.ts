@@ -4,25 +4,34 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef } from '@angular/core';
 import { AppService } from '../../../providers/websocket/app.service';
 import { QuoteService } from '../../../providers/websocket/quote.service';
 import { Watchlist } from '../../../models/watchlist';
 
 @Component({
   selector: 'app-watchlist',
-  templateUrl: './watchlist.component.html'
+  templateUrl: './watchlist.component.html',
+  host: { '(document:click)': 'onDocClick($event)' }
 })
 
 export class WatchlistComponent implements OnInit {
 
   public quotes = {}
   public watchlist: Watchlist;
+  public watchlistEditState = true;
+  public watchlistSettingsActive = false;
+
+  public typeAheadList = [
+    { symbol: 'spy', description: 'SPDR S&P 500 ETF Trust' },
+    { symbol: 'sbux', description: 'Starbucks Corp' },
+    { symbol: 'bac', description: 'Bank of America' }       
+  ];
 
   //
   // Construct...
   //
-  constructor(private appService: AppService, private quoteService: QuoteService) { }
+  constructor(private _eref: ElementRef, private appService: AppService, private quoteService: QuoteService) { }
 
   //
   // On Init...
@@ -47,8 +56,30 @@ export class WatchlistComponent implements OnInit {
   // On watchlist settings click.
   //
   onWatchlistSettingsClick() {
-    this.appService.RequestWatchlistData();
+
+    if(this.watchlistSettingsActive)
+    {
+      this.watchlistSettingsActive = false;
+    } else
+    {
+      this.watchlistSettingsActive = true;      
+    }
+
+    //this.appService.RequestWatchlistData();
   } 
+
+  //
+  // Click anywhere on the screen.
+  //
+  onDocClick(event) {
+   
+     // Remove active buttons
+    if(! this._eref.nativeElement.contains(event.target))
+    {
+      this.watchlistSettingsActive = false;
+    }
+
+  }  
 
 }
 
