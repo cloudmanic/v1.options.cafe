@@ -120,6 +120,12 @@ export class AppService
         this.watchlist = Watchlist.buildForEmit(msg_data);
         this.watchlistPush.emit(this.watchlist); 
       break;
+
+      // Response : symbols/search
+      case 'symbols/search':
+        this.watchlist = Watchlist.buildForEmit(msg_data);
+        this.watchlistPush.emit(this.watchlist); 
+      break;      
     }
     
   }
@@ -176,6 +182,13 @@ export class AppService
     this.ws.send(JSON.stringify({ uri: 'watchlists', body: {} }));   
   }  
   
+  //
+  // Request the backend searches for a symbol sends symbol data.
+  //
+  public RequestSymbolSearch(query: string) {
+    this.ws.send(JSON.stringify({ uri: 'symbols/search', body: { "query": query } }));   
+  }
+
   // ---------------------- Websocket Stuff ----------------------- //
 
 

@@ -19,7 +19,7 @@ export class WatchlistComponent implements OnInit {
 
   public quotes = {}
   public watchlist: Watchlist;
-  public watchlistEditState = true;
+  public watchlistEditState = false;
   public watchlistSettingsActive = false;
 
   public typeAheadList = [
@@ -56,6 +56,8 @@ export class WatchlistComponent implements OnInit {
   // On watchlist settings click.
   //
   onWatchlistSettingsClick() {
+
+    this.appService.RequestSymbolSearch('sbux');
 
     if(this.watchlistSettingsActive)
     {
