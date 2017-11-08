@@ -9,6 +9,7 @@ package users
 import (
 	"encoding/json"
 
+	"app.options.cafe/backend/brokers/types"
 	"app.options.cafe/backend/controllers"
 	"app.options.cafe/backend/library/services"
 	"github.com/tidwall/gjson"
@@ -23,10 +24,24 @@ func (t *Base) SearchBySymbolOrCompanyName(user *UserFeed, request controllers.R
 	query := gjson.Get(request.Body, "body.query").String()
 
 	// Search for this query
-	symbols, err := user.BrokerFeed[1].Api.SearchBySymbolOrCompanyName(query)
+	syms, err := user.BrokerFeed[1].Api.SearchBySymbolOrCompanyName(query)
 
 	if err != nil {
 		return
+	}
+
+	// We really only want to return the top 10 results.
+	count := 0
+	symbols := []types.Symbol{}
+	for _, row := range syms {
+
+		symbols = append(symbols, row)
+
+		count++
+
+		if count >= 5 {
+			break
+		}
 	}
 
 	// Convert to a json string.

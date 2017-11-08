@@ -11,6 +11,7 @@
 import { EventEmitter /* Injectable */ } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { Order } from '../../models/order';
+import { Symbol } from '../../models/symbol';
 import { Balance } from '../../models/balance';
 import { OrderLeg } from '../../models/order-leg';
 import { Watchlist } from '../../models/watchlist';
@@ -43,6 +44,7 @@ export class AppService
   marketStatusPush = new EventEmitter<MarketStatus>();
   watchlistPush = new EventEmitter<Watchlist>();
   activeAccountPush = new EventEmitter<BrokerAccount>();    
+  symbolsSearchPush = new EventEmitter<Symbol[]>(); 
   
   //
   // Construct!!
@@ -123,8 +125,7 @@ export class AppService
 
       // Response : symbols/search
       case 'symbols/search':
-        this.watchlist = Watchlist.buildForEmit(msg_data);
-        this.watchlistPush.emit(this.watchlist); 
+        this.symbolsSearchPush.emit(Symbol.buildForEmit(msg_data)); 
       break;      
     }
     

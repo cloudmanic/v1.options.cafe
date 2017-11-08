@@ -145,7 +145,6 @@ func parseSearchJsonResponse(body string) ([]types.Symbol, error) {
 	vo := gjson.Get(body, "securities.security")
 
 	if !vo.Exists() {
-		fmt.Println("No Results.")
 		return []types.Symbol{}, nil
 	}
 

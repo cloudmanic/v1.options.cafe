@@ -7,6 +7,7 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import { AppService } from '../../../providers/websocket/app.service';
 import { QuoteService } from '../../../providers/websocket/quote.service';
+import { Symbol } from '../../../models/symbol';
 import { Watchlist } from '../../../models/watchlist';
 
 @Component({
@@ -19,14 +20,9 @@ export class WatchlistComponent implements OnInit {
 
   public quotes = {}
   public watchlist: Watchlist;
-  public watchlistEditState = false;
+  public typeAheadList: Symbol[];  
+  public watchlistEditState = true;
   public watchlistSettingsActive = false;
-
-  public typeAheadList = [
-    { symbol: 'spy', description: 'SPDR S&P 500 ETF Trust' },
-    { symbol: 'sbux', description: 'Starbucks Corp' },
-    { symbol: 'bac', description: 'Bank of America' }       
-  ];
 
   //
   // Construct...
@@ -41,7 +37,7 @@ export class WatchlistComponent implements OnInit {
     this.watchlist = this.appService.watchlist;
     
     // Subscribe to data updates from the backend - Watchlist
-    this.appService.watchlistPush.subscribe(data => {      
+    this.appService.watchlistPush.subscribe(data => { 
       this.watchlist = data;
     });    
     
@@ -49,6 +45,11 @@ export class WatchlistComponent implements OnInit {
     this.quoteService.marketQuotePushData.subscribe(data => {
       this.quotes[data.symbol] = data;
     });   
+
+    // Subscribe to data updates from the backend - Symbol search
+    this.appService.symbolsSearchPush.subscribe(data => {
+      this.typeAheadList = data;
+    });     
  
   }
 
@@ -56,8 +57,6 @@ export class WatchlistComponent implements OnInit {
   // On watchlist settings click.
   //
   onWatchlistSettingsClick() {
-
-    this.appService.RequestSymbolSearch('sbux');
 
     if(this.watchlistSettingsActive)
     {
@@ -69,6 +68,18 @@ export class WatchlistComponent implements OnInit {
 
     //this.appService.RequestWatchlistData();
   } 
+
+  //
+  // On search...
+  //
+  onSearchKeyUp(event) {
+
+    // Send search to backend.
+    if(event.target.value.length > 0)
+    {
+      this.appService.RequestSymbolSearch(event.target.value);
+    }
+  }
 
   //
   // Click anywhere on the screen.
