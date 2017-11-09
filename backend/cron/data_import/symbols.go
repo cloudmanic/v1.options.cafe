@@ -7,11 +7,13 @@
 package data_import
 
 import (
+	"net/http"
 	"os"
 	"strconv"
 
 	"app.options.cafe/backend/brokers/tradier"
 	"app.options.cafe/backend/library/services"
+	"app.options.cafe/backend/models"
 )
 
 var chars = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
@@ -21,13 +23,13 @@ var chars = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
 //
 func (t *Base) DoSymbolImport() {
 
-	knownSymbols := make(map[string]string)
+	knownSymbols := make(map[string]models.Symbol)
 
 	// Map known symbols
 	s := t.DB.GetAllSymbols()
 
 	for _, row := range s {
-		knownSymbols[row.ShortName] = row.Name
+		knownSymbols[row.ShortName] = row
 	}
 
 	// Log...
@@ -37,12 +39,25 @@ func (t *Base) DoSymbolImport() {
 	for _, row := range chars {
 		t.ProcessLetter(row, knownSymbols)
 	}
+
+	// Send health check notice.
+	if len(os.Getenv("HEALTH_CHECK_SYMBOLS_IMPORT_URL")) > 0 {
+
+		resp, err := http.Get(os.Getenv("HEALTH_CHECK_SYMBOLS_IMPORT_URL"))
+
+		if err != nil {
+			services.Error(err, "Could send health check - "+os.Getenv("HEALTH_CHECK_SYMBOLS_IMPORT_URL"))
+		}
+
+		defer resp.Body.Close()
+
+	}
 }
 
 //
 // Process a letter.
 //
-func (t *Base) ProcessLetter(letter string, knownSymbols map[string]string) {
+func (t *Base) ProcessLetter(letter string, knownSymbols map[string]models.Symbol) {
 
 	// Create new tradier instance
 	tr := &tradier.Api{ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN")}
@@ -64,6 +79,9 @@ func (t *Base) ProcessLetter(letter string, knownSymbols map[string]string) {
 		if _, ok := knownSymbols[row.Name]; ok {
 
 			// TODO: See if the company name updated.....
+			if row.Description != knownSymbols[row.Name].Name {
+				t.DB.UpdateSymbol(knownSymbols[row.Name].Id, row.Name, row.Description)
+			}
 
 			// Continue nothing to do.
 			continue

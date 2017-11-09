@@ -16,8 +16,6 @@ type Api interface {
 	GetQuotes([]string) ([]types.Quote, error)
 	GetUserProfile() (types.UserProfile, error)
 	DoRefreshAccessTokenIfNeeded(models.User) error
-
-	SearchBySymbolOrCompanyName(query string) ([]types.Symbol, error)
 }
 
 /* End File */

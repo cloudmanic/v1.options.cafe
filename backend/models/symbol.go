@@ -47,6 +47,30 @@ func (t *DB) CreateNewSymbol(short string, name string) (Symbol, error) {
 }
 
 //
+// Update Symbol entry.
+//
+func (t *DB) UpdateSymbol(id uint, short string, name string) (Symbol, error) {
+
+	var symb Symbol
+
+	t.First(&symb, id)
+	symb.Name = name
+	symb.ShortName = strings.ToUpper(short)
+	err := t.Save(&symb).Error
+
+	if err != nil {
+		services.Error(err, "[Models:UpdateSymbol] - Unable to update symbol.")
+		return symb, err
+	}
+
+	// Log Symbol creation.
+	services.Log("[Models:CreateNewSymbol] - Update a new Symbol entry - (" + short + ") " + name)
+
+	// Return the user.
+	return symb, nil
+}
+
+//
 // Get all symbols.
 //
 func (t *DB) GetAllSymbols() []Symbol {
