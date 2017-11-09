@@ -9,9 +9,11 @@ package controllers
 import (
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"app.options.cafe/backend/library/services"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 //
@@ -28,15 +30,31 @@ func (t *Controller) StartWebServer() {
 	// Register Routes
 	t.DoRoutes(mux)
 
-	// Are we in testing mode?
-	s := &http.Server{
-		Addr:         ":7080",
-		Handler:      mux,
-		ReadTimeout:  2 * time.Second,
-		WriteTimeout: 2 * time.Second,
-	}
+	// Are we in testing mode? If not give us some SSL
+	if os.Getenv("APP_ENV") == "local" {
 
-	log.Fatal(s.ListenAndServe())
+		s := &http.Server{
+			Addr:         ":7080",
+			Handler:      mux,
+			ReadTimeout:  2 * time.Second,
+			WriteTimeout: 2 * time.Second,
+		}
+
+		log.Fatal(s.ListenAndServe())
+
+	} else {
+
+		// Secure it with a TLS certificate using Let's  Encrypt:
+		m := autocert.Manager{
+			Prompt:     autocert.AcceptTOS,
+			Cache:      autocert.DirCache("/letsencrypt/"),
+			Email:      "help@options.cafe",
+			HostPolicy: autocert.HostWhitelist("app.options.cafe"),
+		}
+
+		// Start a secure server:
+		StartSecureServer(mux, m.GetCertificate)
+	}
 }
 
 //

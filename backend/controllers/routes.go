@@ -18,7 +18,6 @@ import (
 func (t *Controller) DoRoutes(mux *http.ServeMux) {
 
 	// Http Routes
-	mux.HandleFunc("/", t.HtmlMainTemplate)
 	mux.HandleFunc("/login", t.DoLogin)
 	mux.HandleFunc("/register", t.DoRegister)
 	mux.HandleFunc("/reset-password", t.DoResetPassword)
@@ -35,6 +34,9 @@ func (t *Controller) DoRoutes(mux *http.ServeMux) {
 	// Setup websocket
 	mux.HandleFunc("/ws/core", t.DoWebsocketConnection)
 	mux.HandleFunc("/ws/quotes", t.DoQuoteWebsocketConnection)
+
+	// Static files.
+	mux.Handle("/", http.FileServer(http.Dir("/frontend")))
 }
 
 /* End File */

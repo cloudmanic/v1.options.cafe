@@ -31,11 +31,11 @@ func (t *Controller) DoRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Make sure this is a post request.
-	if r.Method == http.MethodGet {
-		t.HtmlMainTemplate(w, r)
-		return
-	}
+	// // Make sure this is a post request.
+	// if r.Method == http.MethodGet {
+	// 	t.HtmlMainTemplate(w, r)
+	// 	return
+	// }
 
 	// Make sure this is a post request.
 	if r.Method != http.MethodPost {

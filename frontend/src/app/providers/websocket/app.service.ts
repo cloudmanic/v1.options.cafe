@@ -130,6 +130,29 @@ export class AppService
     }
     
   }
+
+  // ------------------------ Push Data Back To Backend --------------------- //
+  
+  //
+  // Request the backend sends all data again. (often do this on state change or page change)
+  //
+  public RequestAllData() {
+    this.ws.send(JSON.stringify({ uri: 'data/all', body: {} }));   
+  }
+  
+  //
+  // Request the backend sends watchlist data.
+  //
+  public RequestWatchlistData() {
+    this.ws.send(JSON.stringify({ uri: 'watchlists', body: {} }));   
+  }  
+  
+  //
+  // Request the backend searches for a symbol sends symbol data.
+  //
+  public RequestSymbolSearch(query: string) {
+    this.ws.send(JSON.stringify({ uri: 'symbols/search', body: { "query": query } }));   
+  }  
  
   // ------------------------ Helper Functions ------------------------------ //
 
@@ -165,29 +188,6 @@ export class AppService
       }
     }
          
-  }
-
-  // ------------------------ Push Data Back To Backend --------------------- //
-  
-  //
-  // Request the backend sends all data again. (often do this on state change or page change)
-  //
-  public RequestAllData() {
-    this.ws.send(JSON.stringify({ uri: 'data/all', body: {} }));   
-  }
-  
-  //
-  // Request the backend sends watchlist data.
-  //
-  public RequestWatchlistData() {
-    this.ws.send(JSON.stringify({ uri: 'watchlists', body: {} }));   
-  }  
-  
-  //
-  // Request the backend searches for a symbol sends symbol data.
-  //
-  public RequestSymbolSearch(query: string) {
-    this.ws.send(JSON.stringify({ uri: 'symbols/search', body: { "query": query } }));   
   }
 
   // ---------------------- Websocket Stuff ----------------------- //
