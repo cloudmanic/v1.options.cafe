@@ -37,12 +37,12 @@
   
   		<ul class="list-prices">
   			<li>
-  				<strong>{{ quotes[row]?.last | currency:'USD':true:'1.2-2' }}</strong>
+  				<strong>{{ quotes[row]?.last | currency:'USD':'symbol':'1.2-2' }}</strong>
   			</li>
   
   			<li>
   				<strong class="title-red">
-  					{{ quotes[row]?.dailyChange() | currency:'USD':true:'1.2-2' }} <span>({{ quotes[row]?.percentChange() | number:'1.2-2' }}%)</span>
+  					{{ quotes[row]?.dailyChange() | currency:'USD':'symbol':'1.2-2' }} <span>({{ quotes[row]?.percentChange() | number:'1.2-2' }}%)</span>
   				</strong>
   			</li>
   		</ul><!-- /.list-prices -->

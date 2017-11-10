@@ -38,7 +38,7 @@
   		<tr *ngFor="let row of order.Legs; let i = index">
   			<td>{{ quotes[row.OptionSymbol]?.description }}</td>
 
-  			<td>{{ quotes[row.OptionSymbol]?.last | currency:'USD':true:'1.2-2' }}</td>
+  			<td>{{ quotes[row.OptionSymbol]?.last | currency:'USD':'symbol':'1.2-2' }}</td>
 
   			<td>{{ row.Quantity }}</td>
 
@@ -49,16 +49,16 @@
   			<td *ngIf="i > 0">&nbsp;</td>
 
   			<td *ngIf="i == 0">
-          <span [hidden]="row.Type != 'debit'">{{ order.Price | currency:'USD':true:'1.2-2' }}</span>
-          <span [hidden]="row.Type != 'credit'">{{ order.Price | currency:'USD':true:'1.2-2' }}</span>
-          <span [hidden]="row.Type != 'stop'">{{ order.StopPrice | currency:'USD':true:'1.2-2' }}</span>
-          <span [hidden]="row.Type != 'limit'">{{ order.Price | currency:'USD':true:'1.2-2' }}</span> 
+          <span [hidden]="row.Type != 'debit'">{{ order.Price | currency:'USD':'symbol':'1.2-2' }}</span>
+          <span [hidden]="row.Type != 'credit'">{{ order.Price | currency:'USD':'symbol':'1.2-2' }}</span>
+          <span [hidden]="row.Type != 'stop'">{{ order.StopPrice | currency:'USD':'symbol':'1.2-2' }}</span>
+          <span [hidden]="row.Type != 'limit'">{{ order.Price | currency:'USD':'symbol':'1.2-2' }}</span> 
           <span [hidden]="row.Type != 'market'">---</span>     					
   			</td>
   			<td *ngIf="i > 0">&nbsp;</td>
 
         <td *ngIf="i == 0">
-          <span [hidden]="row.Status != 'filled'">{{ order.AvgFillPrice | currency:'USD':true:'1.2-2' }}</span>
+          <span [hidden]="row.Status != 'filled'">{{ order.AvgFillPrice | currency:'USD':'symbol':'1.2-2' }}</span>
           <span [hidden]="row.Status != 'open'">---</span>
           <span [hidden]="row.Status != 'canceled'">---</span>
           <span [hidden]="row.Status != 'expired'">---</span>
