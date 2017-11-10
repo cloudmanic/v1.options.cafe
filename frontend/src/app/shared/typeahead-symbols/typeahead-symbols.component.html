@@ -1,0 +1,16 @@
+<input type="text" value="" placeholder="Search" class="field" (keyup)="onSearchKeyUp($event)" />
+
+<span [hidden]="! typeAheadShow">
+  <div class="dropdown__body">  
+
+    <ul class="list-actions">
+      <li *ngFor="let row of typeAheadList">
+        <a (click)="onSelected(row)">
+          <span>{{ row.short_name | uppercase }}</span>
+          {{ row.name }}
+        </a>
+      </li>
+    </ul>
+
+  </div>
+</span>

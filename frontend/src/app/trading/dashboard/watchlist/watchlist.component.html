@@ -70,22 +70,7 @@
   <div class="box__search">
     <div class="dropdown dropdown--search active">
       
-      <input type="text" value="" placeholder="Search" class="field" (keyup)="onSearchKeyUp($event)" />
-      
-      <span [hidden]="! typeAheadShow">
-        <div class="dropdown__body">  
-
-          <ul class="list-actions">
-            <li *ngFor="let row of typeAheadList">
-              <a href="#">
-                <span>{{ row.short_name | uppercase }}</span>
-                {{ row.name }}
-              </a>
-            </li>
-          </ul>
-        
-        </div>
-      </span>
+      <app-typeahead-symbols (selected)="onSearchTypeAheadClick($event)"></app-typeahead-symbols>
 
     </div>
   </div>
