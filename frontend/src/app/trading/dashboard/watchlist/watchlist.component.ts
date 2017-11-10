@@ -53,13 +53,7 @@ export class WatchlistComponent implements OnInit {
     // Subscribe to data updates from the quotes - Market Quotes
     this.quoteService.marketQuotePushData.subscribe(data => {
       this.quotes[data.symbol] = data;
-    });   
-
-    // // Subscribe to data updates from the backend - Symbol search
-    // this.appService.symbolsSearchPush.subscribe(data => {
-    //   this.typeAheadList = data;
-    // });     
- 
+    }); 
   }
 
   //
@@ -104,7 +98,6 @@ export class WatchlistComponent implements OnInit {
     if(event.target.value.length > 0)
     {
       this.typeAheadShow = true;
-      // this.appService.RequestSymbolSearch(event.target.value);
     } else
     {
       this.typeAheadList = []
@@ -142,19 +135,7 @@ export class WatchlistComponent implements OnInit {
           console.log(json)
         }
       }
-    ); 
-
-
-    // // Send search to backend.
-    // if(event.target.value.length > 0)
-    // {
-    //   this.typeAheadShow = true;
-    //   this.appService.RequestSymbolSearch(event.target.value);
-    // } else
-    // {
-    //   this.typeAheadList = []
-    //   this.typeAheadShow = false;
-    // }
+    );
   }
 
   //
@@ -167,7 +148,6 @@ export class WatchlistComponent implements OnInit {
     {
       this.watchlistSettingsActive = false;
     }
-
   }  
 
 }

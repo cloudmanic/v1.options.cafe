@@ -21,7 +21,6 @@ func (t *Base) GetRoutes() map[string]func(*UserFeed, controllers.ReceivedStruct
 	// Set routes
 	routes["watchlists"] = t.WsSendWatchlists
 	routes["data/all"] = t.RefreshAllData
-	routes["symbols/search"] = t.SearchBySymbolOrCompanyName
 
 	// Return happy
 	return routes

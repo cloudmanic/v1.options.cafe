@@ -11,7 +11,6 @@
 import { EventEmitter /* Injectable */ } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { Order } from '../../models/order';
-import { Symbol } from '../../models/symbol';
 import { Balance } from '../../models/balance';
 import { OrderLeg } from '../../models/order-leg';
 import { Watchlist } from '../../models/watchlist';
@@ -43,8 +42,7 @@ export class AppService
   userProfilePush = new EventEmitter<UserProfile>();
   marketStatusPush = new EventEmitter<MarketStatus>();
   watchlistPush = new EventEmitter<Watchlist>();
-  activeAccountPush = new EventEmitter<BrokerAccount>();    
-  symbolsSearchPush = new EventEmitter<Symbol[]>(); 
+  activeAccountPush = new EventEmitter<BrokerAccount>();
   
   //
   // Construct!!
@@ -121,12 +119,7 @@ export class AppService
       case 'watchlists':
         this.watchlist = Watchlist.buildForEmit(msg_data);
         this.watchlistPush.emit(this.watchlist); 
-      break;
-
-      // Response : symbols/search
-      case 'symbols/search':
-        this.symbolsSearchPush.emit(Symbol.buildForEmit(msg_data)); 
-      break;      
+      break;    
     }
     
   }
@@ -145,14 +138,7 @@ export class AppService
   //
   public RequestWatchlistData() {
     this.ws.send(JSON.stringify({ uri: 'watchlists', body: {} }));   
-  }  
-  
-  //
-  // Request the backend searches for a symbol sends symbol data.
-  //
-  public RequestSymbolSearch(query: string) {
-    this.ws.send(JSON.stringify({ uri: 'symbols/search', body: { "query": query } }));   
-  }  
+  }
  
   // ------------------------ Helper Functions ------------------------------ //
 
