@@ -17,6 +17,11 @@ docker-compose run --rm cron /work/scripts/build_cron.sh
 
 cd ../../scripts
 
+echo "Building Frontend"
+cd ../frontend
+ng build -prod
+cd ../scripts
+
 # Deploy to backend with Ansible
 cd ../ansible
 ansible-playbook deploy.yml

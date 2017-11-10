@@ -886,7 +886,7 @@ blockquote:last-child { margin-bottom: 0; }
 .dropdown--search .list-actions { padding: 0 10px; }
 .dropdown--search .list-actions li { padding: 10px 0; }
 .dropdown--search .list-actions a { padding-bottom: 8px; }
-.dropdown--search .list-actions a:hover { background: #d4ecf4; }
+.dropdown--search .list-actions a:hover, .dropdown--search .list-actions a.active { background: #d4ecf4; }
 /* Mobile */
 @media (max-width: 767px) {
 	.dropdown--search .dropdown__body { width: 100%; }

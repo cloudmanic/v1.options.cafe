@@ -1,15 +1,16 @@
-<aside class="section__aside box--bordered mobile--hidden">
+<!-- ********************* Watchlist Static State *********************  -->
+<aside class="section__aside box--bordered mobile--hidden" [hidden]="watchlistEditState">
 										
   <div class="box__head box__head--relative">
-    <h5 class="box__title">Watchlist</h5><!-- /.box__title -->
+    <h5 class="box__title">Watchlist</h5>
   
-    <div class="dropdown select">
+    <div class="dropdown select" [ngClass]="{ 'active': watchlistSettingsActive }">
     	<div class="dropdown__head dropdown--trigger" (click)="onWatchlistSettingsClick()"></div>
   
     	<div class="dropdown__body">
     		<ul class="list-actions">
     			<li>
-    				<a href="#">Edit Watchlist</a>
+    				<a (click)="onEditWatchList()">Edit Watchlist</a>
     			</li>
   
     			<li>
@@ -36,12 +37,12 @@
   
   		<ul class="list-prices">
   			<li>
-  				<strong>{{ quotes[row]?.last | currency:'USD':true:'1.2-2' }}</strong>
+  				<strong>{{ quotes[row]?.last | currency:'USD':'symbol':'1.2-2' }}</strong>
   			</li>
   
   			<li>
   				<strong class="title-red">
-  					{{ quotes[row]?.dailyChange() | currency:'USD':true:'1.2-2' }} <span>({{ quotes[row]?.percentChange() | number:'1.2-2' }}%)</span>
+  					{{ quotes[row]?.dailyChange() | currency:'USD':'symbol':'1.2-2' }} <span>({{ quotes[row]?.percentChange() | number:'1.2-2' }}%)</span>
   				</strong>
   			</li>
   		</ul><!-- /.list-prices -->
@@ -51,5 +52,44 @@
   		</footer>
   	</li>
   	
+  </ul>
+</aside>
+
+
+<!-- ********************* Watchlist Edit State *********************  -->
+<aside class="section__aside box--bordered mobile--hidden" [hidden]="! watchlistEditState">
+ 
+  <div class="box__head box__head--relative box__head--medium">
+    <h5 class="box__title">Edit Watchlist</h5>
+    
+    <div class="box__absolute">
+      <a class="link-action link-action--small" (click)="onEditWatchListDone()">Done</a>
+    </div>
+  </div>
+
+  <div class="box__search">
+    <div class="dropdown dropdown--search active">
+      
+      <app-typeahead-symbols (selected)="onSearchTypeAheadClick($event)"></app-typeahead-symbols>
+
+    </div>
+  </div>
+
+  <ul class="list-results">
+    <li *ngFor="let row of watchlist.items">
+      <h6>{{ row | uppercase }}</h6>
+      
+      <p>
+        <em>{{ quotes[row]?.description }}</em>
+      </p>
+      
+      <a href="#" class="btn-action btn--delete">
+        <i class="fa fa-trash"></i>
+      </a>
+      
+      <a href="#" class="btn-action">
+        <i class="fa fa-bars"></i>
+      </a>
+    </li>
   </ul>
 </aside>

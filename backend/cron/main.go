@@ -6,30 +6,67 @@
 
 package main
 
-import(
-  "os"
-  "runtime"
-  "github.com/jasonlvhit/gocron"
-  "app.options.cafe/backend/cron/data_import" 
-  "app.options.cafe/backend/library/services"  
+import (
+	"flag"
+	"os"
+	"runtime"
+
+	"app.options.cafe/backend/cron/data_import"
+	"app.options.cafe/backend/library/services"
+	"app.options.cafe/backend/models"
+	"github.com/jasonlvhit/gocron"
 )
 
 //
 // Main....
 //
 func main() {
-  
-  // Setup CPU stuff.
-  runtime.GOMAXPROCS(runtime.NumCPU())  
-           
-  // Lets get started
-  services.MajorLog("Cron Started: " + os.Getenv("APP_ENV"))
 
-  // Setup jobs we need to run 
-  gocron.Every(1).Day().At("22:00").Do(data_import.DoEodOptionsImport) 
+	// Setup CPU stuff.
+	runtime.GOMAXPROCS(runtime.NumCPU())
 
-  // function Start start all the pending jobs
-  <- gocron.Start()
+	// Start the db connection.
+	db, err := models.NewDB()
+
+	if err != nil {
+		services.Fatal("Failed to connect database")
+	}
+
+	// Close db when this app dies. (This might be useless)
+	defer db.Close()
+
+	// Grab flags
+	action := flag.String("action", "none", "If you want to run just one command you can use action. { symbol-import }")
+	flag.Parse()
+
+	// Setup instance
+	d := data_import.Base{DB: db}
+
+	// Run one action at a time or start cron.
+	if *action != "none" {
+
+		switch *action {
+
+		// Symbol import
+		case "symbol-import":
+			d.DoSymbolImport()
+			break
+
+		}
+
+	} else {
+
+		// Lets get started
+		services.MajorLog("Cron Started: " + os.Getenv("APP_ENV"))
+
+		// Setup jobs we need to run
+		gocron.Every(1).Day().At("14:00").Do(d.DoSymbolImport)
+		gocron.Every(1).Day().At("22:00").Do(data_import.DoEodOptionsImport)
+
+		// function Start start all the pending jobs
+		<-gocron.Start()
+	}
+
 }
 
 /* End File */

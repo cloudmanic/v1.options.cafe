@@ -40,6 +40,7 @@ import { ScreenerComponent } from './trading/screener/home.component';
 import { DashboardComponent } from './trading/dashboard/home.component';
 import { OrdersComponent } from './trading/dashboard/orders/orders.component';
 import { OrdersMultiLegComponent } from './trading/dashboard/orders/orders.multileg.component';
+import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-symbols.component';
 
 @NgModule({
   declarations: [
@@ -74,7 +75,8 @@ import { OrdersMultiLegComponent } from './trading/dashboard/orders/orders.multi
     ScreenerComponent,
     DashboardComponent,
     WatchlistComponent,
-    OrdersMultiLegComponent
+    OrdersMultiLegComponent,
+    TypeaheadSymbolsComponent
   ],
   
   imports: [

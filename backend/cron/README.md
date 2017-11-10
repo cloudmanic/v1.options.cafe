@@ -15,3 +15,9 @@ This app should be run from docker like all our other apps.
 * This assumes all the .env stuff was setup from the main app. ```../README.md```
 
 * Might need to run ```go get``` from within the docker container
+
+## To Run One Command At A Time.
+
+You can simply pass ```--action={action name}```. Here is a list of commands you can run.
+
+* ```go run *.go --action=symbol-import```

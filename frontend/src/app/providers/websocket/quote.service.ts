@@ -57,18 +57,18 @@ export class QuoteService {
       let msg = JSON.parse(e.data);
       
       // Is this a pong to our ping or some other return.
-      if(msg.type == 'pong')
+      if(msg.uri == 'pong')
       {
         this.missed_heartbeats--;
       } else
       {        
         // Send quote to angular component
-        switch(msg.type)
+        switch(msg.uri)
         {          
-          // DetailedQuotes refresh
-          case 'DetailedQuotes:refresh':
+          // quote refresh
+          case 'quote':
             
-            let msg_data = JSON.parse(msg.data);
+            let msg_data = JSON.parse(msg.body);
             
             // Have we seen this quote before?
             if(typeof this.quotes[msg_data.Symbol] == "undefined")
@@ -95,8 +95,8 @@ export class QuoteService {
       // Send Access Token (Give a few moments to get started)
       setTimeout(() => { 
         this.ws.send(JSON.stringify({ 
-          type: 'set-access-token', 
-          data: { access_token: localStorage.getItem('access_token'), device_id: this.deviceId }
+          uri: 'set-access-token', 
+          body: { access_token: localStorage.getItem('access_token'), device_id: this.deviceId }
         }));
       }, 1000);      
           
@@ -118,7 +118,7 @@ export class QuoteService {
               throw new Error('Too many missed heartbeats (quotes).');
             }
             
-            this.ws.send(JSON.stringify({ type: 'ping' }));
+            this.ws.send(JSON.stringify({ uri: 'ping' }));
             
           } catch(e) 
           {

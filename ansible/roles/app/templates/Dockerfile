@@ -35,10 +35,13 @@ RUN set -x \
 # Copy binary into place.
 COPY app.options.cafe /work/app
 
-# Expose http and https ports
+# Copy frontend into place.
+COPY frontend /frontend
+
+# Expose http and https ports (we do not use 80 & 443 as we run the docker container as non-root)
 EXPOSE 7080
-EXPOSE 7443
-  
+EXPOSE 7043  
+
 # This needs to be at the bottom. (back from root)
 USER deploy
 

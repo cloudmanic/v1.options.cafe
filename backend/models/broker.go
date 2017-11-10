@@ -60,16 +60,16 @@ func (t *DB) CreateNewBroker(name string, user User, accessToken string, refresh
 	encryptAccessToken, err := helpers.Encrypt(accessToken)
 
 	if err != nil {
-		services.Error(err, "(CreateNewBroker) Unable to encrypt message (#1)")
-		return Broker{}, errors.New("(CreateNewBroker) Unable to encrypt message (#1)")
+		services.Error(err, "[Models:CreateNewBroker] Unable to encrypt message (#1)")
+		return Broker{}, errors.New("[CreateNewBroker] Unable to encrypt message (#1)")
 	}
 
 	// Encrypt the refresh token
 	encryptRefreshToken, err := helpers.Encrypt(refreshToken)
 
 	if err != nil {
-		services.Error(err, "(CreateNewBroker) Unable to encrypt message (#2)")
-		return Broker{}, errors.New("(CreateNewBroker) Unable to encrypt message (#2)")
+		services.Error(err, "[Models:CreateNewBroker] Unable to encrypt message (#2)")
+		return Broker{}, errors.New("[Models:CreateNewBroker] Unable to encrypt message (#2)")
 	}
 
 	// Create entry.
@@ -84,7 +84,7 @@ func (t *DB) CreateNewBroker(name string, user User, accessToken string, refresh
 	t.Create(&broker)
 
 	// Log broker creation.
-	services.Log("CreateNewBroker - Created a new broker entry - " + name + " " + user.Email)
+	services.Log("[Models:CreateNewBroker] - Created a new broker entry - " + name + " " + user.Email)
 
 	// Return the user.
 	return broker, nil

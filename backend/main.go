@@ -9,7 +9,6 @@ import (
 	"app.options.cafe/backend/models"
 	"app.options.cafe/backend/users"
 	"github.com/gorilla/websocket"
-	"github.com/joho/godotenv"
 )
 
 //
@@ -19,12 +18,6 @@ func main() {
 
 	// Setup CPU stuff.
 	runtime.GOMAXPROCS(runtime.NumCPU())
-
-	// Load .env file
-	err := godotenv.Load()
-	if err != nil {
-		services.Fatal("Error loading .env file")
-	}
 
 	// Lets get started
 	services.MajorLog("App Started: " + os.Getenv("APP_ENV"))

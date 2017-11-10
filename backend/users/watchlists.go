@@ -51,23 +51,18 @@ func (t *Base) WsSendWatchlists(user *UserFeed, request controllers.ReceivedStru
 		}
 
 		// Build JSON we send
-		jsonSend, err := t.WsSendJsonBuild("Watchlist:refresh", dataJson)
+		jsonSend, err := t.WsSendJsonBuild("watchlists", dataJson)
 
 		if err != nil {
 			services.Error(err, "WsSendWatchlists() WsSendJsonBuild (#2)")
 			continue
 		}
 
-		// Create JSON
-		send_json, err := json.Marshal(controllers.SendStruct{UserId: user.Profile.Id, Message: string(jsonSend)})
-
-		if err != nil {
-			services.Error(err, "WsSendWatchlists() json.Marshal (#3)")
-			continue
-		}
-
 		// Send up the websocket
-		request.Connection.WriteChan <- string(send_json)
+		user.DataChan <- controllers.SendStruct{UserId: user.Profile.Id, Body: string(jsonSend)}
+
+		// Example to send back to just the current connection. (this is useful for validation)
+		//request.Connection.WriteChan <- jsonSend
 
 	}
 

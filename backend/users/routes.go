@@ -19,8 +19,8 @@ func (t *Base) GetRoutes() map[string]func(*UserFeed, controllers.ReceivedStruct
 	routes := make(map[string]func(*UserFeed, controllers.ReceivedStruct))
 
 	// Set routes
-	routes["refresh-watchlists"] = t.WsSendWatchlists
-	routes["refresh-all-data"] = t.RefreshAllData
+	routes["watchlists"] = t.WsSendWatchlists
+	routes["data/all"] = t.RefreshAllData
 
 	// Return happy
 	return routes
@@ -37,8 +37,10 @@ func (t *Base) DoFeedRequestListen() {
 
 		send := <-t.FeedRequestChan
 
+		//fmt.Println(send.Body)
+
 		// Get message type
-		msgType := gjson.Get(send.Message, "type").String()
+		msgType := gjson.Get(send.Body, "uri").String()
 
 		// Make sure we know about this type & Call function to manage request
 		if _, ok := routes[msgType]; ok {

@@ -9,9 +9,13 @@ package controllers
 import (
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"app.options.cafe/backend/library/services"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 //
@@ -22,21 +26,77 @@ func (t *Controller) StartWebServer() {
 	// Listen for data from our broker feeds.
 	go t.DoWsDispatch()
 
-	// Register some handlers:
-	mux := http.NewServeMux()
+	// Set Router
+	r := mux.NewRouter()
 
 	// Register Routes
-	t.DoRoutes(mux)
+	t.DoRoutes(r)
 
-	// Are we in testing mode?
-	s := &http.Server{
-		Addr:         ":7080",
-		Handler:      mux,
-		ReadTimeout:  2 * time.Second,
-		WriteTimeout: 2 * time.Second,
+	// Setup handler
+	var handler = t.AuthMiddleware(r)
+
+	if os.Getenv("HTTP_LOG_REQUESTS") == "true" {
+		handler = handlers.CombinedLoggingHandler(os.Stdout, t.AuthMiddleware(r))
 	}
 
-	log.Fatal(s.ListenAndServe())
+	// Are we in testing mode? If not give us some SSL
+	if os.Getenv("APP_ENV") == "local" {
+
+		s := &http.Server{
+			Addr:         ":7080",
+			Handler:      handler,
+			ReadTimeout:  2 * time.Second,
+			WriteTimeout: 2 * time.Second,
+		}
+
+		log.Fatal(s.ListenAndServe())
+
+	} else {
+
+		// Secure it with a TLS certificate using Let's  Encrypt:
+		m := autocert.Manager{
+			Prompt:     autocert.AcceptTOS,
+			Cache:      autocert.DirCache("/letsencrypt/"),
+			Email:      "help@options.cafe",
+			HostPolicy: autocert.HostWhitelist("app.options.cafe"),
+		}
+
+		// Start a secure server:
+		StartSecureServer(handler, m.GetCertificate)
+	}
+}
+
+//
+// Here we make sure we passed in a proper Bearer Access Token.
+//
+func (t *Controller) AuthMiddleware(next http.Handler) http.Handler {
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		// // Make sure we have a Bearer token.
+		// auth := strings.SplitN(r.Header.Get("Authorization"), " ", 2)
+
+		// if len(auth) != 2 || auth[0] != "Bearer" {
+		//   t.RespondError(w, http.StatusUnauthorized, "Authorization Failed (#001)")
+		//   return
+		// }
+
+		// // Make sure we have a known access token.
+		// if auth[1] != os.Getenv("ACCESS_TOKEN") {
+		//   t.RespondError(w, http.StatusUnauthorized, "Authorization Failed (#002)")
+		//   return
+		// }
+
+		// Manage OPTIONS requests
+		if os.Getenv("APP_ENV") == "local" {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Allow-Headers", "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range")
+		}
+
+		// On to next request in the Middleware chain.
+		next.ServeHTTP(w, r)
+
+	})
 }
 
 //
@@ -59,7 +119,7 @@ func (t *Controller) DoWsDispatch() {
 
 					select {
 
-					case t.Connections[i].WriteChan <- send.Message:
+					case t.Connections[i].WriteChan <- send.Body:
 
 					default:
 						services.MajorLog("Channel full. Discarding value (Core channel)")
@@ -80,7 +140,7 @@ func (t *Controller) DoWsDispatch() {
 
 					select {
 
-					case t.QuotesConnections[i].WriteChan <- send.Message:
+					case t.QuotesConnections[i].WriteChan <- send.Body:
 
 					default:
 						services.MajorLog("Channel full. Discarding value (Quotes channel)")

@@ -30,25 +30,25 @@
 						<li>
 							<h6>Total account value</h6>
 
-							<strong>{{ balance?.AccountValue | currency:'USD':true:'1.2-2' }}</strong>
+							<strong>{{ balance?.AccountValue | currency:'USD':'symbol':'1.2-2' }}</strong>
 						</li>
 
 						<li>
 							<h6>Total cash</h6>
 
-							<strong>{{ balance?.TotalCash | currency:'USD':true:'1.2-2' }}</strong>
+							<strong>{{ balance?.TotalCash | currency:'USD':'symbol':'1.2-2' }}</strong>
 						</li>
 
 						<li>
 							<h6>Option buying power</h6>
 
-							<strong>{{ balance?.OptionBuyingPower | currency:'USD':true:'1.2-2' }}</strong>
+							<strong>{{ balance?.OptionBuyingPower | currency:'USD':'symbol':'1.2-2' }}</strong>
 						</li>
 
 						<li>
 							<h6>Stock buying power</h6>
 
-							<strong>{{ balance?.StockBuyingPower | currency:'USD':true:'1.2-2' }}</strong>
+							<strong>{{ balance?.StockBuyingPower | currency:'USD':'symbol':'1.2-2' }}</strong>
 						</li>
 					</ul><!-- /.list-details -->
 				</div><!-- /.widget__body -->
@@ -64,7 +64,7 @@
 						<li>
 							<h6>US stock market</h6>
               
-              <span [ngSwitch]="marketStatus?.state">
+              <span [ngSwitch]="marketStatus?.description">
 							  <strong *ngSwitchCase="'open'">Open</strong>
 							  <strong *ngSwitchDefault>Closed</strong>
               </span>

@@ -42,7 +42,7 @@ export class AppService
   userProfilePush = new EventEmitter<UserProfile>();
   marketStatusPush = new EventEmitter<MarketStatus>();
   watchlistPush = new EventEmitter<Watchlist>();
-  activeAccountPush = new EventEmitter<BrokerAccount>();    
+  activeAccountPush = new EventEmitter<BrokerAccount>();
   
   //
   // Construct!!
@@ -85,43 +85,59 @@ export class AppService
   //
   private processIncomingData(msg)
   {
-    let msg_data = JSON.parse(msg.data);
+    let msg_data = JSON.parse(msg.body);
 
     // console.log(msg_data);
         
     // Send quote to angular component
-    switch(msg.type)
+    switch(msg.uri)
     {
       // User Profile refresh
-      case 'UserProfile:refresh':
+      case 'user/profile':
         var obj = UserProfile.buildForEmit(msg_data);
         this.calcActiveAccount(obj);
         this.userProfilePush.emit(obj);  
       break;
       
       // Balances refresh
-      case 'Balances:refresh':
+      case 'balances':
         this.balancesPush.emit(Balance.buildForEmit(msg_data));
       break;      
 
       // Market Status refresh
-      case 'MarketStatus:refresh':
+      case 'market/status':
         this.marketStatusPush.emit(MarketStatus.buildForEmit(msg_data));   
       break;
     
       // Order refresh
-      case 'Orders:refresh':
+      case 'orders':
         this.orders = Order.buildForEmit(msg_data);       
         this.ordersPush.emit(this.orders);              
       break;
 
       // Watchlist refresh
-      case 'Watchlist:refresh':
+      case 'watchlists':
         this.watchlist = Watchlist.buildForEmit(msg_data);
         this.watchlistPush.emit(this.watchlist); 
-      break;
+      break;    
     }
     
+  }
+
+  // ------------------------ Push Data Back To Backend --------------------- //
+  
+  //
+  // Request the backend sends all data again. (often do this on state change or page change)
+  //
+  public RequestAllData() {
+    this.ws.send(JSON.stringify({ uri: 'data/all', body: {} }));   
+  }
+  
+  //
+  // Request the backend sends watchlist data.
+  //
+  public RequestWatchlistData() {
+    this.ws.send(JSON.stringify({ uri: 'watchlists', body: {} }));   
   }
  
   // ------------------------ Helper Functions ------------------------------ //
@@ -160,22 +176,6 @@ export class AppService
          
   }
 
-  // ------------------------ Push Data Back To Backend --------------------- //
-  
-  //
-  // Request the backend sends all data again. (often do this on state change or page change)
-  //
-  public RequestAllData() {
-    this.ws.send(JSON.stringify({  type: 'refresh-all-data', data: {} }));   
-  }
-  
-  //
-  // Request the backend sends watchlist data.
-  //
-  public RequestWatchlistData() {
-    this.ws.send(JSON.stringify({  type: 'refresh-watchlists', data: {} }));   
-  }  
-  
   // ---------------------- Websocket Stuff ----------------------- //
 
 
@@ -195,7 +195,7 @@ export class AppService
       let msg = JSON.parse(e.data);
       
       // Is this a pong to our ping or some other return.
-      if(msg.type == 'pong')
+      if(msg.uri == 'pong')
       {
         this.missed_heartbeats--;
       } else
@@ -210,8 +210,8 @@ export class AppService
       // Send Access Token (Give a few moments to get started)
       setTimeout(() => { 
         this.ws.send(JSON.stringify({ 
-          type: 'set-access-token', 
-          data: { access_token: localStorage.getItem('access_token'), device_id: this.deviceId }
+          uri: 'set-access-token', 
+          body: { access_token: localStorage.getItem('access_token'), device_id: this.deviceId }
         }));
       }, 1000);
       
@@ -233,7 +233,7 @@ export class AppService
               throw new Error('Too many missed heartbeats.');
             }
             
-            this.ws.send(JSON.stringify({ type: 'ping' }));
+            this.ws.send(JSON.stringify({ uri: 'ping' }));
             
           } catch(e) 
           {

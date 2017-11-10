@@ -4,42 +4,48 @@ version: '2.1'
 
 services:
 
-  # # App
-  # app:
+  # App
+  app:
            
-  #   hostname: app.options.cafe
+    hostname: app.options.cafe
 
-  #   container_name: app.options.cafe
+    container_name: app.options.cafe         
+
+    ports:
+      - "80:7080"
+      - "443:7043"
+
+    build:
+      context: ./build
+      dockerfile: Dockerfile
+      args:
+        P_UID: 1002
+        P_GID: 1002     
     
-  #   ports:
-  #     - "80:7080"     
-  #     - "443:7443"           
+    image: app.options.cafe/golang:1.8.1-alpine
 
-  #   build:
-  #     context: ./build
-  #     dockerfile: Dockerfile
-  #     args:
-  #       P_UID: 1002
-  #       P_GID: 1002     
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: tcp+tls://logs6.papertrailapp.com:49242
+        tag: app.options.cafe
+
+    volumes:
+      - ../cache:/cache:rw
+      - ../letsencrypt:/letsencrypt:rw 
+
+    environment:
+      VIRTUAL_HOST: app.options.cafe
+      LETSENCRYPT_HOST: app.options.cafe
+      LETSENCRYPT_EMAIL: help@options.cafe                     
+
+    restart: always
     
-  #   image: app.options.cafe/golang:1.8.1-alpine
-
-    # logging:
-    #   driver: "syslog"
-    #   options:
-    #     syslog-address: tcp+tls://logs6.papertrailapp.com:49242
-    #     tag: app.options.cafe
-
-  #   volumes:
-  #     - ../cache:/cache:rw                 
-
-  #   restart: always
-    
-  #   env_file:
-  #     - .env      
+    env_file:
+      - .env      
                       
-  #   networks:
-  #     - shared 
+    networks:
+      - shared 
 
   # Cron
   cron:
@@ -62,9 +68,6 @@ services:
       options:
         syslog-address: tcp+tls://logs6.papertrailapp.com:49242
         tag: cron.options.cafe
-
-    # volumes_from:
-    #   - app
 
     volumes:
       - ../cache:/cache:rw

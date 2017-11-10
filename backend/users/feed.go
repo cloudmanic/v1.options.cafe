@@ -132,17 +132,17 @@ func (t *Base) RefreshAllData(user *UserFeed, request controllers.ReceivedStruct
 //
 // Build json to send up websocket.
 //
-func (t *Base) WsSendJsonBuild(send_type string, data_json []byte) (string, error) {
+func (t *Base) WsSendJsonBuild(uri string, data_json []byte) (string, error) {
 
 	type SendStruct struct {
-		Type string `json:"type"`
-		Data string `json:"data"`
+		Uri  string `json:"uri"`
+		Body string `json:"body"`
 	}
 
 	// Send Object
 	send := SendStruct{
-		Type: send_type,
-		Data: string(data_json),
+		Uri:  uri,
+		Body: string(data_json),
 	}
 	send_json, err := json.Marshal(send)
 
