@@ -14,11 +14,11 @@ import (
 )
 
 type Symbol struct {
-	Id        uint `gorm:"primary_key"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	ShortName string `sql:"not null"`
-	Name      string `sql:"not null"`
+	Id        uint      `gorm:"primary_key" json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	ShortName string    `sql:"not null" json:"short_name"`
+	Name      string    `sql:"not null" json:"name"`
 }
 
 //

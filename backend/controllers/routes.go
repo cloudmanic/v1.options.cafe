@@ -10,33 +10,37 @@ import (
 	"net/http"
 
 	"app.options.cafe/backend/brokers/tradier"
+	"github.com/gorilla/mux"
 )
 
 //
 // Do Routes
 //
-func (t *Controller) DoRoutes(mux *http.ServeMux) {
+func (t *Controller) DoRoutes(r *mux.Router) {
 
-	// Http Routes
-	mux.HandleFunc("/login", t.DoLogin)
-	mux.HandleFunc("/register", t.DoRegister)
-	mux.HandleFunc("/reset-password", t.DoResetPassword)
-	mux.HandleFunc("/forgot-password", t.DoForgotPassword)
+	// Auth Routes
+	r.HandleFunc("/login", t.DoLogin).Methods("POST", "OPTIONS")
+	r.HandleFunc("/register", t.DoRegister).Methods("POST", "OPTIONS")
+	r.HandleFunc("/reset-password", t.DoResetPassword).Methods("POST", "OPTIONS")
+	r.HandleFunc("/forgot-password", t.DoForgotPassword).Methods("POST", "OPTIONS")
+
+	// Symbols
+	r.HandleFunc("/api/v1/symbols", t.GetSymbols).Methods("GET", "OPTIONS")
 
 	// Webhooks
-	mux.HandleFunc("/webhooks/stripe", t.DoStripeWebhook)
+	r.HandleFunc("/webhooks/stripe", t.DoStripeWebhook).Methods("POST", "OPTIONS")
 
 	// Tradier Oauth
 	tr := &tradier.TradierAuth{DB: t.DB}
-	mux.HandleFunc("/tradier/authorize", tr.DoAuthCode)
-	mux.HandleFunc("/tradier/callback", tr.DoAuthCallback)
+	r.HandleFunc("/tradier/authorize", tr.DoAuthCode).Methods("GET", "OPTIONS")
+	r.HandleFunc("/tradier/callback", tr.DoAuthCallback).Methods("GET", "OPTIONS")
 
 	// Setup websocket
-	mux.HandleFunc("/ws/core", t.DoWebsocketConnection)
-	mux.HandleFunc("/ws/quotes", t.DoQuoteWebsocketConnection)
+	r.HandleFunc("/ws/core", t.DoWebsocketConnection)
+	r.HandleFunc("/ws/quotes", t.DoQuoteWebsocketConnection)
 
 	// Static files.
-	mux.Handle("/", http.FileServer(http.Dir("/frontend")))
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir("/frontend")))
 }
 
 /* End File */

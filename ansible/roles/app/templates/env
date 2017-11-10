@@ -4,6 +4,7 @@ APP_ENV=production
 APP_NAME=app.options.cafe
 SITE_URL=https://app.options.cafe
 CACHE_DIR=/cache
+HTTP_LOG_REQUESTS=true
 ENCRYPTION_KEY={{ ENCRYPTION_KEY }}
 
 DB_HOST=tcp(mysql-5.5:3306)

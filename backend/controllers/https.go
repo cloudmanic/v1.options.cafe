@@ -24,13 +24,13 @@ import (
 //
 // (we do not use 80 & 443 as we run the docker container as non-root)
 //
-func StartSecureServer(mux *http.ServeMux, getCertificate func(clientHello *tls.ClientHelloInfo) (*tls.Certificate, error)) {
+func StartSecureServer(r http.Handler, getCertificate func(clientHello *tls.ClientHelloInfo) (*tls.Certificate, error)) {
 	s := &http.Server{
 		Addr:         ":7043",
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  120 * time.Second,
-		Handler:      NewHSTS(mux),
+		Handler:      MiddlewareHSTS(r),
 		TLSConfig: &tls.Config{
 			GetCertificate: getCertificate,
 			MinVersion:     tls.VersionTLS12,
@@ -67,19 +67,18 @@ func StartSecureServer(mux *http.ServeMux, getCertificate func(clientHello *tls.
 	log.Fatal(s.ListenAndServeTLS("", ""))
 }
 
-type htstMux struct {
-	*http.ServeMux
-}
-
-// NewHSTS returns an HTTP handler that sets HSTS headers on all requests.
-func NewHSTS(mux *http.ServeMux) http.Handler {
-	return htstMux{
-		ServeMux: mux,
-	}
-}
-
+//
 // ServeHTTP implements http.Handler.
-func (h htstMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Strict-Transport-Security", "max-age=86400; includeSubDomains")
-	h.ServeMux.ServeHTTP(w, r)
+//
+func MiddlewareHSTS(next http.Handler) http.Handler {
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		w.Header().Set("Strict-Transport-Security", "max-age=86400; includeSubDomains")
+
+		// On to next request in the Middleware chain.
+		next.ServeHTTP(w, r)
+	})
 }
+
+/* End File */

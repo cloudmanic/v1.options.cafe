@@ -5,10 +5,18 @@
 //
 
 import { Component, OnInit, ElementRef } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AppService } from '../../../providers/websocket/app.service';
 import { QuoteService } from '../../../providers/websocket/quote.service';
 import { Symbol } from '../../../models/symbol';
 import { Watchlist } from '../../../models/watchlist';
+import { environment } from '../../../../environments/environment';
+
+// interface SymbolResponse {
+//   Id: number, 
+//   Name: string,
+//   ShortName: string
+// }
 
 @Component({
   selector: 'app-watchlist',
@@ -28,7 +36,7 @@ export class WatchlistComponent implements OnInit {
   //
   // Construct...
   //
-  constructor(private _eref: ElementRef, private appService: AppService, private quoteService: QuoteService) { }
+  constructor(private http: HttpClient, private _eref: ElementRef, private appService: AppService, private quoteService: QuoteService) { }
 
   //
   // On Init...
@@ -47,10 +55,10 @@ export class WatchlistComponent implements OnInit {
       this.quotes[data.symbol] = data;
     });   
 
-    // Subscribe to data updates from the backend - Symbol search
-    this.appService.symbolsSearchPush.subscribe(data => {
-      this.typeAheadList = data;
-    });     
+    // // Subscribe to data updates from the backend - Symbol search
+    // this.appService.symbolsSearchPush.subscribe(data => {
+    //   this.typeAheadList = data;
+    // });     
  
   }
 
@@ -96,12 +104,57 @@ export class WatchlistComponent implements OnInit {
     if(event.target.value.length > 0)
     {
       this.typeAheadShow = true;
-      this.appService.RequestSymbolSearch(event.target.value);
+      // this.appService.RequestSymbolSearch(event.target.value);
     } else
     {
       this.typeAheadList = []
       this.typeAheadShow = false;
+      return false; // No ajax call needed.
     }
+
+    // Send this search even to the server to get results.
+    this.http.get<Symbol[]>(environment.app_server + '/api/v1/symbols?search=' + event.target.value).subscribe(
+      
+      // Success
+      data => {
+        if(data)
+        {
+          this.typeAheadList = data;
+          this.typeAheadShow = true;
+        } else
+        {
+          this.typeAheadList = []
+          this.typeAheadShow = false;
+        }
+      },
+      
+      // Error
+      (err: HttpErrorResponse) => {
+
+        if(err.error instanceof Error) 
+        {
+          // A client-side or network error occurred. Handle it accordingly.
+          console.log('An error occurred:', err.error.message);
+        } else 
+        { 
+          // Print error message
+          var json = JSON.parse(err.error); // Bug....Angular 4.4.4
+          console.log(json)
+        }
+      }
+    ); 
+
+
+    // // Send search to backend.
+    // if(event.target.value.length > 0)
+    // {
+    //   this.typeAheadShow = true;
+    //   this.appService.RequestSymbolSearch(event.target.value);
+    // } else
+    // {
+    //   this.typeAheadList = []
+    //   this.typeAheadShow = false;
+    // }
   }
 
   //
