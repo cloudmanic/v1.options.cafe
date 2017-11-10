@@ -110,10 +110,10 @@ export class TypeaheadSymbolsComponent implements OnInit {
     this.http.get<Symbol[]>(environment.app_server + '/api/v1/symbols?search=' + event.target.value).subscribe(
       
       // Success
-      (symbols: Symbol[]) => {
-        if(symbols)
+      (data) => {
+        if(data)
         {
-          this.typeAheadList = symbols;
+          this.typeAheadList = data;
           this.typeAheadShow = true;
         } else
         {

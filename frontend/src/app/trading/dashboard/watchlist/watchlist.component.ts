@@ -38,7 +38,7 @@ export class WatchlistComponent implements OnInit {
     this.watchlist = this.appService.watchlist;
     
     // Subscribe to data updates from the backend - Watchlist
-    this.appService.watchlistPush.subscribe(data => { 
+    this.appService.watchlistPush.subscribe(data => {
       this.watchlist = data;
     });    
     

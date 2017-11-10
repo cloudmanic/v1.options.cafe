@@ -5,25 +5,11 @@
 //
 
 export class Symbol {
-  constructor(
-    public ShortName: string,
-    public Name: string  
-  ){}
-
-  //
-  // Build object for emitting to the app.
-  //
-  public static buildForEmit(data) : Symbol[]  {
-
-    let symbols = [];
-
-    for(let i = 0; i < data.length; i++)
-    {
-      symbols.push(new Symbol(data[i].ShortName, data[i].Name));
-    }    
-
-    return symbols; 
-  }  
+  id: number,
+  name: string,
+  short_name: string,
+  created_at: string,
+  updated_at: string 
 }
 
 /* End Find */
