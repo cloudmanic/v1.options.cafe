@@ -53,20 +53,23 @@ type ReceivedStruct struct {
 //
 // RespondJSON makes the response with payload as json format
 //
-func (t *Controller) RespondJSON(w http.ResponseWriter, status int, payload interface{}) {
+func (t *Controller) RespondJSON(w http.ResponseWriter, status int, payload interface{}) string {
 
 	response, err := json.Marshal(payload)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
-		return
+		return ""
 	}
 
 	// Return json.
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	w.Write([]byte(response))
+
+	// We return the raw JSON
+	return string(response)
 }
 
 //
@@ -89,6 +92,31 @@ func (t *Controller) DoRespondError(w http.ResponseWriter, err error, msg string
 
 	// No error.
 	return false
+}
+
+//
+// Build json to send up websocket.
+//
+func (t *Controller) WsSendJsonBuild(uri string, data_json string) (string, error) {
+
+	type SendStruct struct {
+		Uri  string `json:"uri"`
+		Body string `json:"body"`
+	}
+
+	// Send Object
+	send := SendStruct{
+		Uri:  uri,
+		Body: string(data_json),
+	}
+	send_json, err := json.Marshal(send)
+
+	if err != nil {
+		services.Error(err, "WsSendJsonBuild() json.Marshal")
+		return "", err
+	}
+
+	return string(send_json), nil
 }
 
 /* End File */

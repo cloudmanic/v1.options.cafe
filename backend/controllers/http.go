@@ -75,6 +75,22 @@ func (t *Controller) AuthMiddleware(next http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
+		// Setup routes we skip. (TODO: this is a little hacky we should revisit.)
+		skip := make(map[string]bool)
+		skip["/"] = true
+		skip["/login"] = true
+		skip["/register"] = true
+		skip["/forgot-password"] = true
+		skip["/ws/core"] = true
+		skip["/ws/quotes"] = true
+		skip["/webhooks/stripe"] = true
+
+		if _, ok := skip[r.URL.Path]; ok {
+			fmt.Println(r.URL.Path)
+			next.ServeHTTP(w, r)
+		}
+
+		// Set access token and start the auth proccess
 		var access_token = ""
 
 		// Make sure we have a Bearer token.

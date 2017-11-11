@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"app.options.cafe/backend/library/services"
 	"github.com/gorilla/mux"
 	"github.com/tidwall/gjson"
 )
@@ -80,7 +81,27 @@ func (t *Controller) CreateWatchlist(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Return happy JSON
-	t.RespondJSON(w, http.StatusOK, wLists)
+	json := t.RespondJSON(w, http.StatusOK, wLists)
+
+	// Send new watchlist up websocket.
+	t.SendWatchlistUpWS(json)
+}
+
+//
+// Send watchlist up websocket.
+//
+func (t *Controller) SendWatchlistUpWS(json string) {
+
+	// Build JSON we send
+	jsonSend, err := t.WsSendJsonBuild("watchlists", json)
+
+	if err != nil {
+		services.Error(err, "GetWatchlists() WsSendJsonBuild (#1)")
+		return
+	}
+
+	// Send new watchlist through the websocket.
+	t.WsWriteChan <- SendStruct{UserId: 1, Body: jsonSend}
 }
 
 /* End File */
