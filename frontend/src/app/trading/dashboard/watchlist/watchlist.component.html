@@ -7,8 +7,54 @@
     <div class="dropdown select" [ngClass]="{ 'active': watchlistSettingsActive }">
     	<div class="dropdown__head dropdown--trigger" (click)="onWatchlistSettingsClick()"></div>
   
-    	<div class="dropdown__body">
-    		<ul class="list-actions">
+    	<div class="dropdown__body dropdown__body--medium">
+
+        <ul class="list-actions list-actions--padded">
+          <li>
+            <p>
+              <small>
+                <em>Choose Watchlist</em>
+              </small>
+            </p>
+          </li>
+          <li class="list--checked">
+            <a href="#">
+              <i class="ico-check"></i>
+              Hot List
+            </a>
+          </li><!-- /.list-checked -->
+          <li>
+            <a href="#">
+              <i class="ico-check"></i>
+              Watchlist Watchlist 24ch
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class="ico-check"></i>
+              New Watchlist 3
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class="ico-check"></i>
+              Tech Stocks
+            </a>
+          </li>
+        </ul>
+
+
+    		<ul class="list-actions list-actions--padded">
+
+          <li>
+            <p>
+              <small>
+                <em>Actions</em>
+              </small>
+            </p>
+          </li>
+
+
     			<li>
     				<a (click)="onEditWatchList()">Edit Watchlist</a>
     			</li>
