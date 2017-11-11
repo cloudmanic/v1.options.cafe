@@ -15,12 +15,12 @@ docker-compose run --rm app /work/scripts/build.sh
 echo "Building cron.options.cafe"
 docker-compose run --rm cron /work/scripts/build_cron.sh
 
-cd ../../scripts
+cd ../../frontend/docker
 
 echo "Building Frontend"
-cd ../frontend
-ng build -prod
-cd ../scripts
+docker-compose run --rm app ng build -prod
+
+cd ../../scripts
 
 # Deploy to backend with Ansible
 cd ../ansible

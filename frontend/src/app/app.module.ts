@@ -11,6 +11,9 @@ import { AuthGuard } from './auth/guards/auth.service';
 import { AppService } from './providers/websocket/app.service';
 import { QuoteService } from './providers/websocket/quote.service';
 
+// Providers - http
+import { SymbolService } from './providers/http/symbol.service';
+
 // Layout
 import { SidebarComponent } from './layouts/sidebar/sidebar.component';
 import { MainNavComponent } from './layouts/main-nav/main-nav.component';
@@ -86,7 +89,7 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     HttpClientModule
   ],
   
-  providers: [ AppService, QuoteService, AuthGuard ],
+  providers: [ AppService, QuoteService, AuthGuard, SymbolService ],
   
   bootstrap: [AppComponent]
 })

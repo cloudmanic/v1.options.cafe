@@ -4,12 +4,42 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+//
+// Symbol Model
+//
 export class Symbol {
-  id: number,
-  name: string,
-  short_name: string,
-  created_at: string,
-  updated_at: string 
+  public Id: number;
+  public Name: string;
+  public ShortName: string;
+
+  //
+  // Constructor
+  //
+  constructor(Id: number, Name: string, ShortName: string) {
+    this.Id = Id;
+    this.Name = Name;
+    this.ShortName = ShortName;
+  }
+
+  //
+  // Build object for emitting to the app.
+  //
+  public static buildForEmit(data) : Symbol[]  {
+
+    let symbols = [];
+
+    if(! data)
+    {
+      return symbols;      
+    }
+
+    for(let i = 0; i < data.length; i++)
+    {
+      symbols.push(new Symbol(data[i].id, data[i].name, data[i].short_name));
+    }    
+
+    return symbols; 
+  }
 }
 
 /* End Find */
