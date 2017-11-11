@@ -5,6 +5,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { Routing } from './app.routing';
+import { SortablejsModule } from 'angular-sortablejs';
 
 // Providers
 import { AuthGuard } from './auth/guards/auth.service';
@@ -86,6 +87,7 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     Routing,
     FormsModule,
     BrowserModule,
+    SortablejsModule,
     HttpClientModule
   ],
   

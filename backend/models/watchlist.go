@@ -14,12 +14,12 @@ import (
 )
 
 type Watchlist struct {
-	Id        uint `gorm:"primary_key"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	UserId    uint   `sql:"not null;index:UserId"`
-	Name      string `sql:"not null"`
-	Symbols   []WatchlistSymbol
+	Id        uint              `gorm:"primary_key" json:"id"`
+	CreatedAt time.Time         `json:"-"`
+	UpdatedAt time.Time         `json:"-"`
+	UserId    uint              `sql:"not null;index:UserId" json:"user_id"`
+	Name      string            `sql:"not null" json:"name"`
+	Symbols   []WatchlistSymbol `json:"symbols"`
 }
 
 //

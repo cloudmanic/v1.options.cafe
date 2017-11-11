@@ -6,6 +6,7 @@
 
 import { Component, OnInit, ElementRef } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { SortablejsOptions } from 'angular-sortablejs';
 import { AppService } from '../../../providers/websocket/app.service';
 import { QuoteService } from '../../../providers/websocket/quote.service';
 import { Symbol } from '../../../models/symbol';
@@ -20,10 +21,11 @@ import { environment } from '../../../../environments/environment';
 
 export class WatchlistComponent implements OnInit {
 
-  public quotes = {}
-  public watchlist: Watchlist;
-  public watchlistEditState = false;
-  public watchlistSettingsActive = false;
+  quotes = {}
+  watchlist: Watchlist;
+  watchlistEditState = false;
+  watchlistSettingsActive = false;
+  sortOptions: SortablejsOptions = { animation: 150, handle: ".drag-handle" };
 
   //
   // Construct...
@@ -34,8 +36,23 @@ export class WatchlistComponent implements OnInit {
   // On Init...
   //
   ngOnInit() {
-    
+      
+    // Load watchlist from cache
     this.watchlist = this.appService.watchlist;
+
+    // Watch for changes on the watchlist order.
+    this.sortOptions.onUpdate = (event: any) => {
+
+      var ids = [];
+
+      for(let i = 0; i < event.to.getElementsByTagName("li").length; i++)
+      {
+        ids.push(event.to.getElementsByTagName("li")[i].id);
+      }
+
+      // This is the new list. (watchlist_symbols)
+      console.log(ids);
+    };
     
     // Subscribe to data updates from the backend - Watchlist
     this.appService.watchlistPush.subscribe(data => {

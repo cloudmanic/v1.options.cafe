@@ -1118,6 +1118,7 @@ select::-ms-expand { display: none; }
 .list-results p { color: #a0a1a3; margin: 0; }
 .list-results .btn-action { font-size: 22px; position: absolute; top: 4px; right: 10px; transition: visibility .5s, opacity .5s; }
 .list-results .btn--delete { font-size: 18px; top: 6px; right: 47px; visibility: hidden; opacity: 0; }
+.list-results .drag-handle { cursor: move; cursor: -webkit-grabbing; }
 /* Tablet Portrait */
 @media (max-width: 1023px) {
 	.list-results li { padding: 13px 25px 13px 14px; }
