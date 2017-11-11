@@ -7,9 +7,11 @@
 package controllers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"app.options.cafe/backend/library/services"
@@ -73,19 +75,49 @@ func (t *Controller) AuthMiddleware(next http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		// // Make sure we have a Bearer token.
-		// auth := strings.SplitN(r.Header.Get("Authorization"), " ", 2)
+		var access_token = ""
 
-		// if len(auth) != 2 || auth[0] != "Bearer" {
-		//   t.RespondError(w, http.StatusUnauthorized, "Authorization Failed (#001)")
-		//   return
-		// }
+		// Make sure we have a Bearer token.
+		auth := strings.SplitN(r.Header.Get("Authorization"), " ", 2)
 
-		// // Make sure we have a known access token.
-		// if auth[1] != os.Getenv("ACCESS_TOKEN") {
-		//   t.RespondError(w, http.StatusUnauthorized, "Authorization Failed (#002)")
-		//   return
-		// }
+		if len(auth) != 2 || auth[0] != "Bearer" {
+
+			// We allow access token from the command line
+			if os.Getenv("APP_ENV") == "local" {
+
+				access_token = r.URL.Query().Get("access_token")
+
+				if len(access_token) <= 0 {
+					t.RespondError(w, http.StatusUnauthorized, "Authorization Failed (#101)")
+					return
+				}
+
+			} else {
+				t.RespondError(w, http.StatusUnauthorized, "Authorization Failed (#001)")
+				return
+			}
+
+		} else {
+			access_token = auth[1]
+		}
+
+		// See if this session is in our db.
+		session, err := t.DB.GetByAccessToken(access_token)
+
+		if err != nil {
+			services.MajorLog("Access Token Not Found - Unable to Authenticate via HTTP")
+			t.RespondError(w, http.StatusUnauthorized, "Authorization Failed (#002)")
+			return
+		}
+
+		// Get this user is in our db.
+		user, err := t.DB.GetUserById(session.UserId)
+
+		if err != nil {
+			services.MajorLog("User Not Found - Unable to Authenticate - UserId (HTTP) : " + fmt.Sprint(session.UserId) + " - Session Id : " + fmt.Sprint(session.Id))
+			t.RespondError(w, http.StatusUnauthorized, "Authorization Failed (#003)")
+			return
+		}
 
 		// Manage OPTIONS requests
 		if os.Getenv("APP_ENV") == "local" {
@@ -93,9 +125,10 @@ func (t *Controller) AuthMiddleware(next http.Handler) http.Handler {
 			w.Header().Set("Access-Control-Allow-Headers", "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range")
 		}
 
+		fmt.Println(user.Id)
+
 		// On to next request in the Middleware chain.
 		next.ServeHTTP(w, r)
-
 	})
 }
 

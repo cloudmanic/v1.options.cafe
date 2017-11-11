@@ -123,7 +123,7 @@
     </div>
   </div>
 
-  <ul class="list-results" [sortablejs]="watchlist.Items" [sortablejsOptions]="sortOptions">
+  <ul class="list-results" [sortablejs]="watchlist.Symbols" [sortablejsOptions]="sortOptions">
     <li *ngFor="let row of watchlist.Symbols" class="item" data-id="{{ row.Id }}">
       <h6>{{ row.Symbol.ShortName | uppercase }}</h6>
       

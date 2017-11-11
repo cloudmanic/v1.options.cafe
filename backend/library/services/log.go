@@ -45,6 +45,15 @@ func Error(err error, message string) {
 }
 
 //
+// Error Log. Not a major error. But should log.
+//
+func LogErrorOnly(err error) {
+
+	// Standard out
+	log.Println("[App Log] " + err.Error())
+}
+
+//
 // Major Log - Log to every place.
 //
 func MajorLog(message string) {

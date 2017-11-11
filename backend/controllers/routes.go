@@ -27,6 +27,11 @@ func (t *Controller) DoRoutes(r *mux.Router) {
 	// Symbols
 	r.HandleFunc("/api/v1/symbols", t.GetSymbols).Methods("GET", "OPTIONS")
 
+	// Watchlists
+	r.HandleFunc("/api/v1/watchlists", t.GetWatchlists).Methods("GET", "OPTIONS")
+	r.HandleFunc("/api/v1/watchlists", t.CreateWatchlist).Methods("POST", "OPTIONS")
+	r.HandleFunc("/api/v1/watchlists/{id:[0-9]+}", t.GetWatchlist).Methods("GET", "OPTIONS")
+
 	// Webhooks
 	r.HandleFunc("/webhooks/stripe", t.DoStripeWebhook).Methods("POST", "OPTIONS")
 

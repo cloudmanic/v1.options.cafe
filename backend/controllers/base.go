@@ -11,9 +11,13 @@ import (
 	"net/http"
 	"sync"
 
+	"app.options.cafe/backend/library/services"
 	"app.options.cafe/backend/models"
 	"github.com/gorilla/websocket"
 )
+
+const httpNoRecordFound = "No Record Found."
+const httpGenericErrMsg = "Please contact support at help@options.cafe."
 
 type Controller struct {
 	DB                models.Datastore
@@ -70,6 +74,21 @@ func (t *Controller) RespondJSON(w http.ResponseWriter, status int, payload inte
 //
 func (t *Controller) RespondError(w http.ResponseWriter, code int, message string) {
 	t.RespondJSON(w, code, map[string]string{"error": message})
+}
+
+//
+// Return error.
+//
+func (t *Controller) DoRespondError(w http.ResponseWriter, err error, msg string) bool {
+
+	if err != nil {
+		services.LogErrorOnly(err)
+		t.RespondError(w, http.StatusBadRequest, msg)
+		return true
+	}
+
+	// No error.
+	return false
 }
 
 /* End File */
