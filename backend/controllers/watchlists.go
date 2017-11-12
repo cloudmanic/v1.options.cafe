@@ -21,8 +21,11 @@ import (
 //
 func (t *Controller) GetWatchlists(w http.ResponseWriter, r *http.Request) {
 
+	// Get the user id.
+	userId := t.GetUserIdFromContext(r)
+
 	// Get the watchlists
-	wLists, err := t.DB.GetWatchlistsByUserId(1)
+	wLists, err := t.DB.GetWatchlistsByUserId(userId)
 
 	if t.DoRespondError(w, err, httpGenericErrMsg) {
 		return
@@ -39,6 +42,9 @@ func (t *Controller) GetWatchlist(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 
+	// Get the user id.
+	userId := t.GetUserIdFromContext(r)
+
 	// Set as int
 	id, err := strconv.ParseInt(vars["id"], 10, 32)
 
@@ -47,7 +53,7 @@ func (t *Controller) GetWatchlist(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the watchlist by id.
-	wLists, err := t.DB.GetWatchlistsById(uint(id))
+	wLists, err := t.DB.GetWatchlistsByIdAndUserId(uint(id), userId)
 
 	if t.DoRespondError(w, err, httpNoRecordFound) {
 		return
@@ -64,6 +70,9 @@ func (t *Controller) GetWatchlist(w http.ResponseWriter, r *http.Request) {
 //
 func (t *Controller) CreateWatchlist(w http.ResponseWriter, r *http.Request) {
 
+	// Get the user id.
+	userId := t.GetUserIdFromContext(r)
+
 	// Parse json body
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -74,7 +83,7 @@ func (t *Controller) CreateWatchlist(w http.ResponseWriter, r *http.Request) {
 	name := gjson.Get(string(body), "name").String()
 
 	// Get the watchlists
-	wLists, err := t.DB.CreateWatchlist(1, name)
+	wLists, err := t.DB.CreateWatchlist(userId, name)
 
 	if t.DoRespondError(w, err, httpGenericErrMsg) {
 		return
@@ -84,13 +93,13 @@ func (t *Controller) CreateWatchlist(w http.ResponseWriter, r *http.Request) {
 	json := t.RespondJSON(w, http.StatusOK, wLists)
 
 	// Send new watchlist up websocket.
-	t.SendWatchlistUpWS(json)
+	t.SendWatchlistUpWS(userId, json)
 }
 
 //
 // Send watchlist up websocket.
 //
-func (t *Controller) SendWatchlistUpWS(json string) {
+func (t *Controller) SendWatchlistUpWS(userId uint, json string) {
 
 	// Build JSON we send
 	jsonSend, err := t.WsSendJsonBuild("watchlists", json)
@@ -101,7 +110,7 @@ func (t *Controller) SendWatchlistUpWS(json string) {
 	}
 
 	// Send new watchlist through the websocket.
-	t.WsWriteChan <- SendStruct{UserId: 1, Body: jsonSend}
+	t.WsWriteChan <- SendStruct{UserId: userId, Body: jsonSend}
 }
 
 /* End File */

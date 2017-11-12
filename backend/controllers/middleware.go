@@ -7,6 +7,7 @@
 package controllers
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -21,6 +22,15 @@ import (
 func (t *Controller) AuthMiddleware(next http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		// Manage OPTIONS requests
+		if (os.Getenv("APP_ENV") == "local") && (r.Method == http.MethodOptions) {
+			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range")
+			return
+		}
 
 		// See if this is a route we do not auth against.
 		if _, ok := noAuthRoutes[r.URL.Path]; ok {
@@ -72,17 +82,26 @@ func (t *Controller) AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// Manage OPTIONS requests
+		// Add this user to the context
+		ctx := context.WithValue(r.Context(), "userId", user.Id)
+
+		// CORS for local development.
 		if os.Getenv("APP_ENV") == "local" {
 			w.Header().Set("Access-Control-Allow-Origin", "*")
-			w.Header().Set("Access-Control-Allow-Headers", "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range")
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range")
 		}
 
-		fmt.Println(user.Id)
-
 		// On to next request in the Middleware chain.
-		next.ServeHTTP(w, r)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+//
+// Get User Id from context
+//
+func (t *Controller) GetUserIdFromContext(r *http.Request) uint {
+	return r.Context().Value("userId").(uint)
 }
 
 /* End File */

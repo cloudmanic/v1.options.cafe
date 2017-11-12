@@ -28,7 +28,31 @@ func (t *DB) GetWatchlistsById(id uint) (Watchlist, error) {
 	var u Watchlist
 
 	if t.Find(&u, id).RecordNotFound() {
-		return u, errors.New("[Models:GetWatchlistsById] Records not found")
+		return u, errors.New("[Models:GetWatchlistsById] Record not found")
+	}
+
+	// Add in Symbols Lookup
+	t.Model(u).Related(&u.Symbols) // Add in Symbols
+
+	// Add in symbols
+	for key := range u.Symbols {
+		t.Model(u.Symbols[key]).Related(&u.Symbols[key].Symbol)
+	}
+
+	// Return the Watchlists.
+	return u, nil
+}
+
+//
+// Get the watchlist by user and id. This is useful to make sure we do not give the
+// watchlist to the wrong user (security).
+//
+func (t *DB) GetWatchlistsByIdAndUserId(id uint, userId uint) (Watchlist, error) {
+
+	var u Watchlist
+
+	if t.Where("user_id = ? AND id = ?", userId, id).First(&u).RecordNotFound() {
+		return u, errors.New("[Models:GetWatchlistsByIdAndUserId] Record not found")
 	}
 
 	// Add in Symbols Lookup

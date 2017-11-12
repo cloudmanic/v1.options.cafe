@@ -66,6 +66,18 @@ func MajorLog(message string) {
 }
 
 //
+// Major Error - Log to every place.
+//
+func MajorError(err error, message string) {
+
+	// Standard out
+	log.Println("[App Log] " + message + " (" + err.Error() + ")")
+
+	// Rollbar
+	RollbarError(err)
+}
+
+//
 // Send log to rollbar
 //
 func RollbarInfo(message string) {

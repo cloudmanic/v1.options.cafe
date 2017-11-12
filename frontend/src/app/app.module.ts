@@ -6,6 +6,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { Routing } from './app.routing';
 import { SortablejsModule } from 'angular-sortablejs';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TokenInterceptor } from './providers/http/token.interceptor';
 
 // Providers
 import { AuthGuard } from './auth/guards/auth.service';
@@ -88,10 +90,16 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     FormsModule,
     BrowserModule,
     SortablejsModule,
-    HttpClientModule
+    HttpClientModule   
   ],
   
-  providers: [ AppService, QuoteService, AuthGuard, SymbolService ],
+  providers: [ 
+    AppService, 
+    QuoteService, 
+    AuthGuard, 
+    SymbolService,
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }    
+  ],
   
   bootstrap: [AppComponent]
 })

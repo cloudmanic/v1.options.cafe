@@ -36,7 +36,7 @@ func (t *Controller) DoRoutes(r *mux.Router) {
 	apiV1 := r.PathPrefix("/api/v1").Subrouter()
 
 	// Symbols
-	apiV1.HandleFunc("/symbols", t.GetSymbols).Methods("GET")
+	apiV1.HandleFunc("/symbols", t.GetSymbols).Methods("GET", "OPTIONS")
 
 	// Watchlists
 	apiV1.HandleFunc("/watchlists", t.GetWatchlists).Methods("GET")
