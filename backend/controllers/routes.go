@@ -13,24 +13,43 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var noAuthRoutes map[string]bool
+
 //
 // Do Routes
 //
 func (t *Controller) DoRoutes(r *mux.Router) {
+
+	// Set the routes we do not want to authenticate against.
+	setRoutesWeSkipAuthOn([]string{
+		"/",
+		"/login",
+		"/register",
+		"/forgot-password",
+		"/ws/core",
+		"/ws/quotes",
+		"/webhooks/stripe",
+	})
+
+	// --------- API V1 sub-routes ----------- //
+
+	apiV1 := r.PathPrefix("/api/v1").Subrouter()
+
+	// Symbols
+	apiV1.HandleFunc("/symbols", t.GetSymbols).Methods("GET")
+
+	// Watchlists
+	apiV1.HandleFunc("/watchlists", t.GetWatchlists).Methods("GET")
+	apiV1.HandleFunc("/watchlists", t.CreateWatchlist).Methods("POST", "OPTIONS")
+	apiV1.HandleFunc("/watchlists/{id:[0-9]+}", t.GetWatchlist).Methods("GET")
+
+	// ------- End API V1 sub-routes --------- //
 
 	// Auth Routes
 	r.HandleFunc("/login", t.DoLogin).Methods("POST", "OPTIONS")
 	r.HandleFunc("/register", t.DoRegister).Methods("POST", "OPTIONS")
 	r.HandleFunc("/reset-password", t.DoResetPassword).Methods("POST", "OPTIONS")
 	r.HandleFunc("/forgot-password", t.DoForgotPassword).Methods("POST", "OPTIONS")
-
-	// Symbols
-	r.HandleFunc("/api/v1/symbols", t.GetSymbols).Methods("GET", "OPTIONS")
-
-	// Watchlists
-	r.HandleFunc("/api/v1/watchlists", t.GetWatchlists).Methods("GET", "OPTIONS")
-	r.HandleFunc("/api/v1/watchlists", t.CreateWatchlist).Methods("POST", "OPTIONS")
-	r.HandleFunc("/api/v1/watchlists/{id:[0-9]+}", t.GetWatchlist).Methods("GET", "OPTIONS")
 
 	// Webhooks
 	r.HandleFunc("/webhooks/stripe", t.DoStripeWebhook).Methods("POST", "OPTIONS")
@@ -46,6 +65,18 @@ func (t *Controller) DoRoutes(r *mux.Router) {
 
 	// Static files.
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("/frontend")))
+}
+
+//
+// Setup routes we skip auth on.
+//
+func setRoutesWeSkipAuthOn(skips []string) {
+
+	noAuthRoutes = make(map[string]bool)
+
+	for _, row := range skips {
+		noAuthRoutes[row] = true
+	}
 }
 
 /* End File */
