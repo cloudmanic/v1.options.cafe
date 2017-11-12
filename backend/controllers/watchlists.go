@@ -12,55 +12,53 @@ import (
 	"strconv"
 
 	"app.options.cafe/backend/library/services"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 )
 
 //
 // Return watchlists in our database.
 //
-func (t *Controller) GetWatchlists(w http.ResponseWriter, r *http.Request) {
+func (t *Controller) GetWatchlists(c *gin.Context) {
 
 	// Get the user id.
-	userId := t.GetUserIdFromContext(r)
+	userId := c.MustGet("userId").(uint)
 
 	// Get the watchlists
 	wLists, err := t.DB.GetWatchlistsByUserId(userId)
 
-	if t.DoRespondError(w, err, httpGenericErrMsg) {
+	if t.RespondError(c, err, httpGenericErrMsg) {
 		return
 	}
 
 	// Return happy JSON
-	t.RespondJSON(w, http.StatusOK, wLists)
+	c.JSON(200, wLists)
 }
 
 //
 // Return watchlist in our database.
 //
-func (t *Controller) GetWatchlist(w http.ResponseWriter, r *http.Request) {
-
-	vars := mux.Vars(r)
+func (t *Controller) GetWatchlist(c *gin.Context) {
 
 	// Get the user id.
-	userId := t.GetUserIdFromContext(r)
+	userId := c.MustGet("userId").(uint)
 
 	// Set as int
-	id, err := strconv.ParseInt(vars["id"], 10, 32)
+	id, err := strconv.ParseInt(c.Param("id"), 10, 32)
 
-	if t.DoRespondError(w, err, httpGenericErrMsg) {
+	if t.RespondError(c, err, httpGenericErrMsg) {
 		return
 	}
 
 	// Get the watchlist by id.
-	wLists, err := t.DB.GetWatchlistsByIdAndUserId(uint(id), userId)
+	wList, err := t.DB.GetWatchlistsByIdAndUserId(uint(id), userId)
 
-	if t.DoRespondError(w, err, httpNoRecordFound) {
+	if t.RespondError(c, err, httpNoRecordFound) {
 		return
 	}
 
 	// Return happy JSON
-	t.RespondJSON(w, http.StatusOK, wLists)
+	c.JSON(200, wList)
 }
 
 //
@@ -68,15 +66,15 @@ func (t *Controller) GetWatchlist(w http.ResponseWriter, r *http.Request) {
 //
 // curl -H "Content-Type: application/json" -X POST -d '{"name":"Super Cool Watchlist"}' -H "Authorization: Bearer XXXXXX" http://localhost:7080/api/v1/watchlists
 //
-func (t *Controller) CreateWatchlist(w http.ResponseWriter, r *http.Request) {
+func (t *Controller) CreateWatchlist(c *gin.Context) {
 
-	// Get the user id.
-	userId := t.GetUserIdFromContext(r)
+	// // // Get the user id.
+	userId := c.MustGet("userId").(uint)
 
 	// Parse json body
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := ioutil.ReadAll(c.Request.Body)
 
-	if t.DoRespondError(w, err, httpGenericErrMsg) {
+	if t.RespondError(c, err, httpGenericErrMsg) {
 		return
 	}
 
@@ -85,12 +83,12 @@ func (t *Controller) CreateWatchlist(w http.ResponseWriter, r *http.Request) {
 	// Get the watchlists
 	wLists, err := t.DB.CreateWatchlist(userId, name)
 
-	if t.DoRespondError(w, err, httpGenericErrMsg) {
+	if t.RespondError(c, err, httpGenericErrMsg) {
 		return
 	}
 
 	// Return happy JSON
-	json := t.RespondJSON(w, http.StatusOK, wLists)
+	json := t.RespondJSON(c, http.StatusOK, wLists)
 
 	// Send new watchlist up websocket.
 	t.SendWatchlistUpWS(userId, json)

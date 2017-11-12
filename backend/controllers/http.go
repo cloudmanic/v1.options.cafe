@@ -13,8 +13,7 @@ import (
 	"time"
 
 	"app.options.cafe/backend/library/services"
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/acme/autocert"
 )
 
@@ -26,25 +25,22 @@ func (t *Controller) StartWebServer() {
 	// Listen for data from our broker feeds.
 	go t.DoWsDispatch()
 
+	// Set GIN Settings
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+
 	// Set Router
-	r := mux.NewRouter()
+	router := gin.Default()
 
 	// Register Routes
-	t.DoRoutes(r)
-
-	// Setup handler
-	var handler http.Handler = r
-
-	if os.Getenv("HTTP_LOG_REQUESTS") == "true" {
-		handler = handlers.CombinedLoggingHandler(os.Stdout, handler)
-	}
+	t.DoRoutes(router)
 
 	// Are we in testing mode? If not give us some SSL
 	if os.Getenv("APP_ENV") == "local" {
 
 		s := &http.Server{
 			Addr:         ":7080",
-			Handler:      handler,
+			Handler:      router,
 			ReadTimeout:  2 * time.Second,
 			WriteTimeout: 2 * time.Second,
 		}
@@ -62,7 +58,7 @@ func (t *Controller) StartWebServer() {
 		}
 
 		// Start a secure server:
-		StartSecureServer(handler, m.GetCertificate)
+		StartSecureServer(router, m.GetCertificate)
 	}
 }
 

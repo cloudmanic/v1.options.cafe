@@ -13,6 +13,7 @@ import (
 
 	"app.options.cafe/backend/library/services"
 	"app.options.cafe/backend/models"
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
 
@@ -51,42 +52,33 @@ type ReceivedStruct struct {
 }
 
 //
-// RespondJSON makes the response with payload as json format
+// RespondJSON makes the response with payload as json format.
+// This is used when we want the json back (used in websockets).
+// If you do not need the json back just use c.JSON()
 //
-func (t *Controller) RespondJSON(w http.ResponseWriter, status int, payload interface{}) string {
+func (t *Controller) RespondJSON(c *gin.Context, status int, payload interface{}) string {
 
 	response, err := json.Marshal(payload)
 
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+	if t.RespondError(c, err, httpGenericErrMsg) {
 		return ""
 	}
 
 	// Return json.
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	w.Write([]byte(response))
+	c.JSON(200, payload)
 
 	// We return the raw JSON
 	return string(response)
 }
 
 //
-// RespondError makes the error response with payload as json format
-//
-func (t *Controller) RespondError(w http.ResponseWriter, code int, message string) {
-	t.RespondJSON(w, code, map[string]string{"error": message})
-}
-
-//
 // Return error.
 //
-func (t *Controller) DoRespondError(w http.ResponseWriter, err error, msg string) bool {
+func (t *Controller) RespondError(c *gin.Context, err error, msg string) bool {
 
 	if err != nil {
 		services.LogErrorOnly(err)
-		t.RespondError(w, http.StatusBadRequest, msg)
+		c.JSON(http.StatusBadRequest, gin.H{"error": msg})
 		return true
 	}
 

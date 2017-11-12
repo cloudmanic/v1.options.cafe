@@ -9,51 +9,102 @@ package controllers
 import (
 	"net/http"
 
-	"app.options.cafe/backend/brokers/tradier"
-	"github.com/gorilla/mux"
+	"github.com/gin-contrib/static"
+	"github.com/gin-gonic/gin"
 )
-
-var noAuthRoutes map[string]bool
 
 //
 // Do Routes
 //
-func (t *Controller) DoRoutes(r *mux.Router) {
+func (t *Controller) DoRoutes(router *gin.Engine) {
 
 	// --------- API V1 sub-routes ----------- //
 
-	apiV1 := r.PathPrefix("/api/v1").Subrouter()
+	apiV1 := router.Group("/api/v1")
 
-	// Symbols
-	apiV1.Handle("/symbols", t.AuthMiddleware(http.HandlerFunc(t.GetSymbols))).Methods("GET", "OPTIONS")
+	apiV1.Use(t.AuthMiddleware())
+	{
+		// Symbols
+		apiV1.GET("/symbols", t.GetSymbols)
 
-	// Watchlists
-	apiV1.Handle("/watchlists", t.AuthMiddleware(http.HandlerFunc(t.GetWatchlists))).Methods("GET", "OPTIONS")
-	apiV1.Handle("/watchlists", t.AuthMiddleware(http.HandlerFunc(t.CreateWatchlist))).Methods("POST", "OPTIONS")
-	apiV1.Handle("/watchlists/{id:[0-9]+}", t.AuthMiddleware(http.HandlerFunc(t.GetWatchlist))).Methods("GET", "OPTIONS")
+		// // Watchlists
+		apiV1.GET("/watchlists", t.GetWatchlists)
+		apiV1.POST("/watchlists", t.CreateWatchlist)
+		apiV1.GET("/watchlists/:id", t.GetWatchlist)
+	}
 
-	// ------- End API V1 sub-routes --------- //
+	// ------- Websockets --------- //
 
-	// Auth Routes
-	r.Handle("/login", t.CorsMiddleware(http.HandlerFunc(t.DoLogin))).Methods("POST", "OPTIONS")
-	r.Handle("/register", t.CorsMiddleware(http.HandlerFunc(t.DoRegister))).Methods("POST", "OPTIONS")
-	r.Handle("/reset-password", t.CorsMiddleware(http.HandlerFunc(t.DoResetPassword))).Methods("POST", "OPTIONS")
-	r.Handle("/forgot-password", t.CorsMiddleware(http.HandlerFunc(t.DoForgotPassword))).Methods("POST", "OPTIONS")
+	// Setup websocket - Core
+	router.GET("/ws/core", func(c *gin.Context) {
+		handler := http.HandlerFunc(t.DoWebsocketConnection)
+		handler.ServeHTTP(c.Writer, c.Request)
+	})
 
-	// Webhooks
-	r.HandleFunc("/webhooks/stripe", t.DoStripeWebhook).Methods("POST")
+	// Setup websocket - Quotes
+	router.GET("/ws/quotes", func(c *gin.Context) {
+		handler := http.HandlerFunc(t.DoQuoteWebsocketConnection)
+		handler.ServeHTTP(c.Writer, c.Request)
+	})
 
-	// Tradier Oauth
-	tr := &tradier.TradierAuth{DB: t.DB}
-	r.HandleFunc("/tradier/authorize", tr.DoAuthCode).Methods("GET")
-	r.HandleFunc("/tradier/callback", tr.DoAuthCallback).Methods("GET")
+	// -------- Static Files ------------ //
 
-	// Setup websocket
-	r.HandleFunc("/ws/core", t.DoWebsocketConnection)
-	r.HandleFunc("/ws/quotes", t.DoQuoteWebsocketConnection)
+	router.Use(static.Serve("/", static.LocalFile("/frontend", true)))
+	router.Use(static.Serve("/login", static.LocalFile("/frontend", true)))
+	router.Use(static.Serve("/screener", static.LocalFile("/frontend", true)))
 
-	// Static files.
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("/frontend")))
+	// router.StaticFile("/", "/frontend/index.html")
+	// router.Static("/assets", "/frontend/assets")
+	// router.Static("*.css", "/frontend")
+
+	// // Auth Routes
+	// r.Handle("/login", t.CorsMiddleware(http.HandlerFunc(t.DoLogin))).Methods("POST", "OPTIONS")
+	// r.Handle("/register", t.CorsMiddleware(http.HandlerFunc(t.DoRegister))).Methods("POST", "OPTIONS")
+	// r.Handle("/reset-password", t.CorsMiddleware(http.HandlerFunc(t.DoResetPassword))).Methods("POST", "OPTIONS")
+	// r.Handle("/forgot-password", t.CorsMiddleware(http.HandlerFunc(t.DoForgotPassword))).Methods("POST", "OPTIONS")
+
+	// // Webhooks
+	// r.HandleFunc("/webhooks/stripe", t.DoStripeWebhook).Methods("POST")
+
+	// // Tradier Oauth
+	// tr := &tradier.TradierAuth{DB: t.DB}
+	// r.HandleFunc("/tradier/authorize", tr.DoAuthCode).Methods("GET")
+	// r.HandleFunc("/tradier/callback", tr.DoAuthCallback).Methods("GET")
+
+	// // Setup websocket
+	// r.HandleFunc("/ws/core", t.DoWebsocketConnection)
+	// r.HandleFunc("/ws/quotes", t.DoQuoteWebsocketConnection)
+
+	// // Static files.
+	// fs := http.FileServer(http.Dir("/frontend/"))
+	// r.PathPrefix("/").Handler(fs)
+	// r.Handle("/screener/", http.StripPrefix("/screener/", fs))
+
+	// // ------- End API V1 sub-routes --------- //
+
+	// // Auth Routes
+	// r.Handle("/login", t.CorsMiddleware(http.HandlerFunc(t.DoLogin))).Methods("POST", "OPTIONS")
+	// r.Handle("/register", t.CorsMiddleware(http.HandlerFunc(t.DoRegister))).Methods("POST", "OPTIONS")
+	// r.Handle("/reset-password", t.CorsMiddleware(http.HandlerFunc(t.DoResetPassword))).Methods("POST", "OPTIONS")
+	// r.Handle("/forgot-password", t.CorsMiddleware(http.HandlerFunc(t.DoForgotPassword))).Methods("POST", "OPTIONS")
+
+	// // Webhooks
+	// r.HandleFunc("/webhooks/stripe", t.DoStripeWebhook).Methods("POST")
+
+	// // Tradier Oauth
+	// tr := &tradier.TradierAuth{DB: t.DB}
+	// r.HandleFunc("/tradier/authorize", tr.DoAuthCode).Methods("GET")
+	// r.HandleFunc("/tradier/callback", tr.DoAuthCallback).Methods("GET")
+
+	// // Setup websocket
+	// r.HandleFunc("/ws/core", t.DoWebsocketConnection)
+	// r.HandleFunc("/ws/quotes", t.DoQuoteWebsocketConnection)
+
+	// // Static files.
+	// fs := http.FileServer(http.Dir("/frontend/"))
+	// r.PathPrefix("/").Handler(fs)
+	// r.Handle("/screener/", http.StripPrefix("/screener/", fs))
+
 }
 
 /* End File */

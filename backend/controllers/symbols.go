@@ -10,40 +10,38 @@ import (
 	"net/http"
 
 	"app.options.cafe/backend/library/services"
+	"github.com/gin-gonic/gin"
 )
 
 //
 // Return symbols in our database.
 //
-func (t *Controller) GetSymbols(w http.ResponseWriter, r *http.Request) {
-
-	// Get the GET parms
-	search := r.URL.Query().Get("search")
+func (t *Controller) GetSymbols(c *gin.Context) {
 
 	// Search for symbol
-	if search != "" {
-		t.DoSymbolSearch(w, r)
+	if c.Query("search") != "" {
+		t.DoSymbolSearch(c)
 	}
 }
 
 //
 // Do Symbol Search
 //
-func (t *Controller) DoSymbolSearch(w http.ResponseWriter, r *http.Request) {
+func (t *Controller) DoSymbolSearch(c *gin.Context) {
 
 	// Get the query.
-	search := r.URL.Query().Get("search")
+	search := c.Query("search")
 
 	// Run DB query
 	symbols, err := t.DB.SearchSymbols(search)
 
 	if err != nil {
 		services.Error(err, "Controller:SearchBySymbolOrCompanyName() Mysql Call.")
-		t.RespondError(w, http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
 	// Return happy JSON
-	t.RespondJSON(w, http.StatusOK, symbols)
+	c.JSON(200, symbols)
 }
 
 /* End File */
