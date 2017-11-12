@@ -33,10 +33,10 @@ func (t *Controller) StartWebServer() {
 	t.DoRoutes(r)
 
 	// Setup handler
-	var handler = t.AuthMiddleware(r)
+	var handler http.Handler = r
 
 	if os.Getenv("HTTP_LOG_REQUESTS") == "true" {
-		handler = handlers.CombinedLoggingHandler(os.Stdout, t.AuthMiddleware(r))
+		handler = handlers.CombinedLoggingHandler(os.Stdout, handler)
 	}
 
 	// Are we in testing mode? If not give us some SSL

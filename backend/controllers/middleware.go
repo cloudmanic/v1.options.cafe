@@ -17,6 +17,27 @@ import (
 )
 
 //
+// Cors middleware for local development.
+//
+func (t *Controller) CorsMiddleware(next http.Handler) http.Handler {
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		// Manage OPTIONS requests
+		if (os.Getenv("APP_ENV") == "local") && (r.Method == http.MethodOptions) {
+			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range")
+			return
+		}
+
+		// On to next request in the Middleware chain.
+		next.ServeHTTP(w, r)
+	})
+}
+
+//
 // Here we make sure we passed in a proper Bearer Access Token.
 //
 func (t *Controller) AuthMiddleware(next http.Handler) http.Handler {
@@ -30,11 +51,6 @@ func (t *Controller) AuthMiddleware(next http.Handler) http.Handler {
 			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS")
 			w.Header().Set("Access-Control-Allow-Headers", "Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range")
 			return
-		}
-
-		// See if this is a route we do not auth against.
-		if _, ok := noAuthRoutes[r.URL.Path]; ok {
-			next.ServeHTTP(w, r)
 		}
 
 		// Set access token and start the auth process
@@ -68,7 +84,7 @@ func (t *Controller) AuthMiddleware(next http.Handler) http.Handler {
 		session, err := t.DB.GetByAccessToken(access_token)
 
 		if err != nil {
-			services.MajorLog("Access Token Not Found - Unable to Authenticate via HTTP")
+			services.MajorLog("Access Token Not Found - Unable to Authenticate via HTTP (#002)")
 			t.RespondError(w, http.StatusUnauthorized, "Authorization Failed (#002)")
 			return
 		}
