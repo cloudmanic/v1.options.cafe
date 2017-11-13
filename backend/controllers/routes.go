@@ -7,8 +7,6 @@
 package controllers
 
 import (
-	"net/http"
-
 	"app.options.cafe/backend/brokers/tradier"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
@@ -34,19 +32,13 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		apiV1.GET("/watchlists/:id", t.GetWatchlist)
 	}
 
-	// ------- Websockets --------- //
+	// ---------- Websockets -------------- //
 
-	// Setup websocket - Core
-	r.GET("/ws/core", func(c *gin.Context) {
-		handler := http.HandlerFunc(t.DoWebsocketConnection)
-		handler.ServeHTTP(c.Writer, c.Request)
-	})
-
-	// Setup websocket - Quotes
-	r.GET("/ws/quotes", func(c *gin.Context) {
-		handler := http.HandlerFunc(t.DoQuoteWebsocketConnection)
-		handler.ServeHTTP(c.Writer, c.Request)
-	})
+	ws := r.Group("/ws")
+	{
+		ws.GET("/core", t.DoWebsocketConnection)
+		ws.GET("/quotes", t.DoQuoteWebsocketConnection)
+	}
 
 	// ------------ Non-Auth Routes ------ //
 

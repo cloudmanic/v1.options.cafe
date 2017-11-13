@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"app.options.cafe/backend/library/services"
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
 
@@ -40,7 +41,7 @@ func (t *Controller) CheckOrigin(r *http.Request) bool {
 //
 // Handle new connections to the app.
 //
-func (t *Controller) DoWebsocketConnection(w http.ResponseWriter, r *http.Request) {
+func (t *Controller) DoWebsocketConnection(c *gin.Context) {
 
 	// setup upgrader
 	var upgrader = websocket.Upgrader{
@@ -50,7 +51,7 @@ func (t *Controller) DoWebsocketConnection(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Upgrade connection
-	conn, err := upgrader.Upgrade(w, r, nil)
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 
 	if err != nil {
 		services.Error(err, "Upable to upgrade Websocket")
@@ -74,7 +75,7 @@ func (t *Controller) DoWebsocketConnection(w http.ResponseWriter, r *http.Reques
 //
 // Handle new quote connections to the app.
 //
-func (t *Controller) DoQuoteWebsocketConnection(w http.ResponseWriter, r *http.Request) {
+func (t *Controller) DoQuoteWebsocketConnection(c *gin.Context) {
 
 	// setup upgrader
 	var upgrader = websocket.Upgrader{
@@ -84,7 +85,7 @@ func (t *Controller) DoQuoteWebsocketConnection(w http.ResponseWriter, r *http.R
 	}
 
 	// Upgrade connection
-	conn, err := upgrader.Upgrade(w, r, nil)
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 
 	if err != nil {
 		services.Error(err, "(DoQuoteWebsocketConnection) Unable to upgrade Quote Websocket")
