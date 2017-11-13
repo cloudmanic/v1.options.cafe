@@ -7,41 +7,37 @@
 package controllers
 
 import (
-	"fmt"
 	"io/ioutil"
-	"net/http"
 	"os"
 
 	"app.options.cafe/backend/emails"
 	"app.options.cafe/backend/library/email"
 	"app.options.cafe/backend/library/services"
 	"app.options.cafe/backend/models"
+	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/webhook"
 )
 
 //
 // Manage webhooks from strip.
 //
-func (t *Controller) DoStripeWebhook(w http.ResponseWriter, r *http.Request) {
+func (t *Controller) DoStripeWebhook(c *gin.Context) {
 
 	// Get body of the request.
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := ioutil.ReadAll(c.Request.Body)
 
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+	if t.RespondError(c, err, httpGenericErrMsg) {
 		return
 	}
 
 	// Pass the request body & Stripe-Signature header to ConstructEvent, along with the webhook signing key
-	event, err := webhook.ConstructEvent(body, r.Header.Get("Stripe-Signature"), os.Getenv("STRIPE_SIGNING_SECRET"))
+	event, err := webhook.ConstructEvent(body, c.Request.Header.Get("Stripe-Signature"), os.Getenv("STRIPE_SIGNING_SECRET"))
 
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
-		fmt.Fprintf(w, "%v", err)
+	if t.RespondError(c, err, httpGenericErrMsg) {
 		return
 	}
 
-	defer r.Body.Close()
+	defer c.Request.Body.Close()
 
 	// Log the event.
 	services.Log("Stripe Webhook Received : " + event.Type + " - " + event.ID)
@@ -50,17 +46,14 @@ func (t *Controller) DoStripeWebhook(w http.ResponseWriter, r *http.Request) {
 	// As of now all the events we care about have a customer attached to them.
 	if len(event.GetObjValue("customer")) == 0 {
 		services.Log("Stripe no customer data found (this is expected).")
-		fmt.Fprintf(w, "Done")
+		c.JSON(200, gin.H{"status": "success"})
 		return
 	}
 
 	// Figure out what user this event is for.
 	user, err := t.DB.GetUserByStripeCustomer(event.GetObjValue("customer"))
 
-	if err != nil {
-		services.MajorLog("Stripe Webhook Unknown user found in event : " + event.Type + " - " + event.ID)
-		w.WriteHeader(http.StatusBadRequest) // Return a 400 error
-		fmt.Fprintf(w, "%v", err)
+	if t.RespondError(c, err, httpGenericErrMsg) {
 		return
 	}
 
@@ -74,8 +67,7 @@ func (t *Controller) DoStripeWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Tell stripe all went well.
-	fmt.Fprintf(w, "Done")
-
+	c.JSON(200, gin.H{"status": "success"})
 }
 
 // -------------------- Stripe Events --------------------------- //

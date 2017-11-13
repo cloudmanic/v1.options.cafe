@@ -30,7 +30,18 @@ func (t *Controller) StartWebServer() {
 	gin.DisableConsoleColor()
 
 	// Set Router
-	router := gin.Default()
+	router := gin.New()
+
+	// Logger - Global middleware
+	if os.Getenv("HTTP_LOG_REQUESTS") == "true" {
+		router.Use(gin.Logger())
+	}
+
+	// Recovery middleware recovers from any panics and writes a 500 if there was one.
+	router.Use(gin.Recovery())
+
+	// CORS Middleware - Global middleware
+	router.Use(t.CorsMiddleware())
 
 	// Register Routes
 	t.DoRoutes(router)

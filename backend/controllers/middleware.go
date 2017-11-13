@@ -29,6 +29,7 @@ func (t *Controller) CorsMiddleware() gin.HandlerFunc {
 			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 			c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS")
 			c.Writer.Header().Set("Access-Control-Allow-Headers", "Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range")
+			c.AbortWithStatus(200)
 			return
 		}
 
@@ -43,15 +44,6 @@ func (t *Controller) CorsMiddleware() gin.HandlerFunc {
 func (t *Controller) AuthMiddleware() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
-
-		// Manage OPTIONS requests
-		if (os.Getenv("APP_ENV") == "local") && (c.Request.Method == http.MethodOptions) {
-			c.Writer.Header().Set("Content-Type", "application/json")
-			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-			c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS")
-			c.Writer.Header().Set("Access-Control-Allow-Headers", "Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range")
-			return
-		}
 
 		// Set access token and start the auth process
 		var access_token = ""
@@ -108,8 +100,6 @@ func (t *Controller) AuthMiddleware() gin.HandlerFunc {
 		// CORS for local development.
 		if os.Getenv("APP_ENV") == "local" {
 			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-			c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS")
-			c.Writer.Header().Set("Access-Control-Allow-Headers", "Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range")
 		}
 
 		// On to next request in the Middleware chain.

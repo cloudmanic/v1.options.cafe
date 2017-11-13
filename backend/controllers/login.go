@@ -13,6 +13,7 @@ import (
 
 	"app.options.cafe/backend/library/realip"
 	"app.options.cafe/backend/library/services"
+	"github.com/gin-gonic/gin"
 )
 
 // TODO: Lots of duplicate code in here with setting headers and such. Should clean up. Also see Forgot Password, and Register.
@@ -20,38 +21,15 @@ import (
 //
 // Login to account.
 //
-func (t *Controller) DoLogin(w http.ResponseWriter, r *http.Request) {
-
-	// Manage OPTIONS requests
-	if (os.Getenv("APP_ENV") == "local") && (r.Method == http.MethodOptions) {
-		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range")
-		return
-	}
-
-	// // Make sure this is a post request.
-	// if r.Method == http.MethodGet {
-	// 	t.HtmlMainTemplate(w, r)
-	// 	return
-	// }
-
-	// Make sure this is a post request.
-	if r.Method != http.MethodPost {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
-	}
+func (t *Controller) DoLogin(c *gin.Context) {
 
 	// Set response
 	if os.Getenv("APP_ENV") == "local" {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-
 	// Decode json passed in
-	decoder := json.NewDecoder(r.Body)
+	decoder := json.NewDecoder(c.Request.Body)
 
 	type LoginPost struct {
 		Email    string
@@ -64,33 +42,28 @@ func (t *Controller) DoLogin(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		services.Error(err, "DoLogin - Failed to decode JSON posted in")
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("{\"status\":0, \"error\":\"Something went wrong while logging into your account. Please try again or contact help@options.cafe. Sorry for the trouble.\"}"))
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong while logging into your account. Please try again or contact help@options.cafe. Sorry for the trouble."})
 		return
 	}
 
-	defer r.Body.Close()
+	defer c.Request.Body.Close()
 
 	// Validate user.
 	if err := t.DB.ValidateUserLogin(post.Email, post.Password); err != nil {
 
 		// Respond with error
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("{\"status\":0, \"error\":\"" + err.Error() + "\"}"))
-
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	// Login user in by email and password
-	user, err := t.DB.LoginUserByEmailPass(post.Email, post.Password, r.UserAgent(), realip.RealIP(r))
+	user, err := t.DB.LoginUserByEmailPass(post.Email, post.Password, c.Request.UserAgent(), realip.RealIP(c.Request))
 
 	if err != nil {
 		services.Error(err, "DoLogin - Unable to log user in. (CreateUser)")
 
 		// Respond with error
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("{\"status\":0, \"error\":\"Sorry, we could not find your account.\"}"))
-
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Sorry, we could not find your account."})
 		return
 	}
 
@@ -111,20 +84,8 @@ func (t *Controller) DoLogin(w http.ResponseWriter, r *http.Request) {
 		BrokerCount: brokerCount,
 	}
 
-	resJson, err := json.Marshal(resObj)
-
-	if err != nil {
-		services.Error(err, "DoLogin - Unable to log user in. (json.Marshal)")
-
-		// Respond with error
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("{\"status\":0, \"error\":\"Something went wrong while logging into your account. Please try again or contact help@options.cafe. Sorry for the trouble.\"}"))
-
-		return
-	}
-
 	// Return success json.
-	w.Write(resJson)
+	c.JSON(200, resObj)
 }
 
 /* End File */
