@@ -9,6 +9,7 @@ import (
 	"github.com/app.options.cafe/backend/models"
 	"github.com/app.options.cafe/backend/users"
 	"github.com/gorilla/websocket"
+	_ "github.com/jpfuentes2/go-env/autoload"
 )
 
 //
