@@ -6,7 +6,7 @@ import (
   "strconv"
   "gopkg.in/gomail.v2"
   "gopkg.in/mailgun/mailgun-go.v1"
-  "app.options.cafe/backend/library/services"
+  "github.com/app.options.cafe/backend/library/services"
 )
 
 var (

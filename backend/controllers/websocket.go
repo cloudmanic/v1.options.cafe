@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"app.options.cafe/backend/library/services"
+	"github.com/app.options.cafe/backend/library/services"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )

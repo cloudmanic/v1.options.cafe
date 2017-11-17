@@ -5,8 +5,8 @@ import (
   "time"
   "github.com/jinzhu/gorm"  
   "github.com/stvp/rollbar"
-  "app.options.cafe/backend/models"
-  "app.options.cafe/backend/brokers/types"     
+  "github.com/app.options.cafe/backend/models"
+  "github.com/app.options.cafe/backend/brokers/types"     
 )
 
 //

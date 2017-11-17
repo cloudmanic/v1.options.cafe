@@ -11,9 +11,9 @@ import (
 	"os"
 	"runtime"
 
-	"app.options.cafe/backend/cron/data_import"
-	"app.options.cafe/backend/library/services"
-	"app.options.cafe/backend/models"
+	"github.com/app.options.cafe/backend/cron/data_import"
+	"github.com/app.options.cafe/backend/library/services"
+	"github.com/app.options.cafe/backend/models"
 	"github.com/jasonlvhit/gocron"
 )
 

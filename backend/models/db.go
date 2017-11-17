@@ -10,7 +10,7 @@ import (
 	"log"
 	"os"
 
-	"app.options.cafe/backend/library/services"
+	"github.com/app.options.cafe/backend/library/services"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 )
@@ -31,8 +31,8 @@ func NewDB() (*DB, error) {
 	}
 
 	// Enable
-	db.LogMode(true)
-	db.SetLogger(log.New(os.Stdout, "\r\n", 0))
+	//db.LogMode(true)
+	//db.SetLogger(log.New(os.Stdout, "\r\n", 0))
 
 	// Migrate the schemas (one per table).
 	db.AutoMigrate(&User{})

@@ -7,8 +7,8 @@
 package users
 
 import (
-	"app.options.cafe/backend/controllers"
-	"app.options.cafe/backend/models"
+	"github.com/app.options.cafe/backend/controllers"
+	"github.com/app.options.cafe/backend/models"
 )
 
 type Base struct {

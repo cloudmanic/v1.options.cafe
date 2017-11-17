@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
-	"app.options.cafe/backend/library/email"
-	"app.options.cafe/backend/library/services"
+	"github.com/app.options.cafe/backend/library/email"
+	"github.com/app.options.cafe/backend/library/services"
 )
 
 type ForgotPassword struct {

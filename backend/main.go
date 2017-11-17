@@ -4,10 +4,10 @@ import (
 	"os"
 	"runtime"
 
-	"app.options.cafe/backend/controllers"
-	"app.options.cafe/backend/library/services"
-	"app.options.cafe/backend/models"
-	"app.options.cafe/backend/users"
+	"github.com/app.options.cafe/backend/controllers"
+	"github.com/app.options.cafe/backend/library/services"
+	"github.com/app.options.cafe/backend/models"
+	"github.com/app.options.cafe/backend/users"
 	"github.com/gorilla/websocket"
 )
 

@@ -10,10 +10,10 @@ import (
 	"io/ioutil"
 	"os"
 
-	"app.options.cafe/backend/emails"
-	"app.options.cafe/backend/library/email"
-	"app.options.cafe/backend/library/services"
-	"app.options.cafe/backend/models"
+	"github.com/app.options.cafe/backend/emails"
+	"github.com/app.options.cafe/backend/library/email"
+	"github.com/app.options.cafe/backend/library/services"
+	"github.com/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/webhook"
 )

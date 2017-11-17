@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"app.options.cafe/backend/library/services"
+	"github.com/app.options.cafe/backend/library/services"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 )

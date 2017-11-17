@@ -9,7 +9,7 @@ package tradier
 import (
 	"strings"
 
-	"app.options.cafe/backend/brokers/types"
+	"github.com/app.options.cafe/backend/brokers/types"
 	"github.com/tidwall/gjson"
 )
 

@@ -1,8 +1,8 @@
 package brokers
 
 import (
-	"app.options.cafe/backend/brokers/types"
-	"app.options.cafe/backend/models"
+	"github.com/app.options.cafe/backend/brokers/types"
+	"github.com/app.options.cafe/backend/models"
 )
 
 type Api interface {

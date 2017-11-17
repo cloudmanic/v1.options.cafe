@@ -12,7 +12,7 @@ import (
 	"os"
 	"time"
 
-	"app.options.cafe/backend/library/services"
+	"github.com/app.options.cafe/backend/library/services"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/acme/autocert"
 )

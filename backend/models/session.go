@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"app.options.cafe/backend/library/services"
+	"github.com/app.options.cafe/backend/library/services"
 )
 
 type Session struct {

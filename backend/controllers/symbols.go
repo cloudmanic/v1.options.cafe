@@ -9,7 +9,7 @@ package controllers
 import (
 	"net/http"
 
-	"app.options.cafe/backend/library/services"
+	"github.com/app.options.cafe/backend/library/services"
 	"github.com/gin-gonic/gin"
 )
 

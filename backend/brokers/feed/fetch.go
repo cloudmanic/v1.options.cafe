@@ -6,8 +6,8 @@ import (
 	"sort"
 	"strings"
 
-	"app.options.cafe/backend/brokers/types"
-	"app.options.cafe/backend/controllers"
+	"github.com/app.options.cafe/backend/brokers/types"
+	"github.com/app.options.cafe/backend/controllers"
 )
 
 //

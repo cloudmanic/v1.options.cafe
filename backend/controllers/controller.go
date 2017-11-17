@@ -3,7 +3,7 @@ package controllers
 import (
 	"fmt"
 
-	"app.options.cafe/backend/library/services"
+	"github.com/app.options.cafe/backend/library/services"
 	"github.com/tidwall/gjson"
 )
 

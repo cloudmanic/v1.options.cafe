@@ -11,8 +11,8 @@ import (
 	"net/http"
 	"sync"
 
-	"app.options.cafe/backend/library/services"
-	"app.options.cafe/backend/models"
+	"github.com/app.options.cafe/backend/library/services"
+	"github.com/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )

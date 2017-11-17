@@ -6,7 +6,7 @@
 
 package data_import
 
-import "app.options.cafe/backend/models"
+import "github.com/app.options.cafe/backend/models"
 
 type Base struct {
 	DB models.Datastore

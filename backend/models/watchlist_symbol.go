@@ -9,7 +9,7 @@ package models
 import (
 	"time"
 
-	"app.options.cafe/backend/library/services"
+	"github.com/app.options.cafe/backend/library/services"
 )
 
 type WatchlistSymbol struct {
