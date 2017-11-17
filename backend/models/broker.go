@@ -9,15 +9,25 @@ import (
 )
 
 type Broker struct {
-	Id                  uint `gorm:"primary_key"`
-	CreatedAt           time.Time
-	UpdatedAt           time.Time
-	UserId              uint   `sql:"not null;index:UserId"`
-	Name                string `sql:"not null;type:ENUM('Tradier', 'Tradeking', 'Etrade', 'Interactive Brokers'); default:'Tradier'"`
-	AccessToken         string `sql:"not null"`
-	RefreshToken        string `sql:"not null"`
-	TokenExpirationDate time.Time
+	Id                  uint      `gorm:"primary_key"`
+	CreatedAt           time.Time `json:"-"`
+	UpdatedAt           time.Time `json:"-"`
+	UserId              uint      `gorm:"index" sql:"not null;index:UserId" json:"-"`
+	Name                string    `sql:"not null;type:ENUM('Tradier', 'Tradeking', 'Etrade', 'Interactive Brokers'); default:'Tradier'"`
+	AccessToken         string    `sql:"not null" json:"-"`
+	RefreshToken        string    `sql:"not null" json:"-"`
+	TokenExpirationDate time.Time `json:"-"`
 }
+
+// func (t *DB) Test() {
+
+// 	var u []User
+// 	t.Preload("Brokers").Find(&u)
+
+// 	res2B, _ := json.Marshal(u)
+// 	fmt.Println(string(res2B))
+
+// }
 
 //
 // Get a broker by Id.

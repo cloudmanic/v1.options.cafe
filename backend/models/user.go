@@ -19,18 +19,18 @@ import (
 )
 
 type User struct {
-	Id                 uint `gorm:"primary_key"`
-	CreatedAt          time.Time
-	UpdatedAt          time.Time
-	FirstName          string `sql:"not null"`
-	LastName           string `sql:"not null"`
-	Email              string `sql:"not null"`
-	Password           string `sql:"not null"`
-	Status             string `sql:"not null;type:ENUM('Active', 'Disable');default:'Active'"`
-	Session            Session
+	Id                 uint      `gorm:"primary_key"`
+	CreatedAt          time.Time `json:"-"`
+	UpdatedAt          time.Time `json:"-"`
+	FirstName          string    `sql:"not null"`
+	LastName           string    `sql:"not null"`
+	Email              string    `sql:"not null"`
+	Password           string    `sql:"not null" json:"-"`
+	Status             string    `sql:"not null;type:ENUM('Active', 'Disable');default:'Active'" json:"-"`
+	Session            Session   `json:"-"`
 	Brokers            []Broker
-	StripeCustomer     string `sql:"not null"`
-	StripeSubscription string `sql:"not null"`
+	StripeCustomer     string `sql:"not null" json:"-"`
+	StripeSubscription string `sql:"not null" json:"-"`
 }
 
 //

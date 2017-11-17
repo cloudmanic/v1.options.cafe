@@ -31,8 +31,8 @@ func NewDB() (*DB, error) {
 	}
 
 	// Enable
-	//db.LogMode(true)
-	//db.SetLogger(log.New(os.Stdout, "\r\n", 0))
+	db.LogMode(true)
+	db.SetLogger(log.New(os.Stdout, "\r\n", 0))
 
 	// Migrate the schemas (one per table).
 	db.AutoMigrate(&User{})
