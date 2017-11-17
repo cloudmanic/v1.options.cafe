@@ -29,6 +29,11 @@ func (t *DB) GetByAccessToken(accessToken string) (Session, error) {
 		return Session{}, errors.New("Access Token Not Found - Unable to Authenticate")
 	}
 
+	// Double check because of case sensitivity
+	//if session.AccessToken == accessToken {
+	//	return Session{}, errors.New("Access Token Not Found - Unable to Authenticate")
+	//}
+
 	// Return happy
 	return session, nil
 }

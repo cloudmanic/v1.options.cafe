@@ -7,40 +7,56 @@
 package controllers
 
 import (
-	"net/http"
-
 	"app.options.cafe/backend/brokers/tradier"
-	"github.com/gorilla/mux"
+	"github.com/gin-contrib/static"
+	"github.com/gin-gonic/gin"
 )
 
 //
 // Do Routes
 //
-func (t *Controller) DoRoutes(r *mux.Router) {
+func (t *Controller) DoRoutes(r *gin.Engine) {
 
-	// Auth Routes
-	r.HandleFunc("/login", t.DoLogin).Methods("POST", "OPTIONS")
-	r.HandleFunc("/register", t.DoRegister).Methods("POST", "OPTIONS")
-	r.HandleFunc("/reset-password", t.DoResetPassword).Methods("POST", "OPTIONS")
-	r.HandleFunc("/forgot-password", t.DoForgotPassword).Methods("POST", "OPTIONS")
+	// --------- API V1 sub-routes ----------- //
 
-	// Symbols
-	r.HandleFunc("/api/v1/symbols", t.GetSymbols).Methods("GET", "OPTIONS")
+	apiV1 := r.Group("/api/v1")
+
+	apiV1.Use(t.AuthMiddleware())
+	{
+		// Symbols
+		apiV1.GET("/symbols", t.GetSymbols)
+
+		// // Watchlists
+		apiV1.GET("/watchlists", t.GetWatchlists)
+		apiV1.POST("/watchlists", t.CreateWatchlist)
+		apiV1.GET("/watchlists/:id", t.GetWatchlist)
+	}
+
+	// ---------- Websockets -------------- //
+
+	r.GET("/ws/core", t.DoWebsocketConnection)
+	r.GET("/ws/quotes", t.DoQuoteWebsocketConnection)
+
+	// ------------ Non-Auth Routes ------ //
+
+	// // Auth Routes
+	r.POST("/login", t.DoLogin)
+	r.POST("/register", t.DoRegister)
+	r.POST("/reset-password", t.DoResetPassword)
+	r.POST("/forgot-password", t.DoForgotPassword)
 
 	// Webhooks
-	r.HandleFunc("/webhooks/stripe", t.DoStripeWebhook).Methods("POST", "OPTIONS")
+	r.GET("/webhooks/stripe", t.DoStripeWebhook)
 
-	// Tradier Oauth
+	// // Tradier Oauth
 	tr := &tradier.TradierAuth{DB: t.DB}
-	r.HandleFunc("/tradier/authorize", tr.DoAuthCode).Methods("GET", "OPTIONS")
-	r.HandleFunc("/tradier/callback", tr.DoAuthCallback).Methods("GET", "OPTIONS")
+	r.GET("/tradier/authorize", tr.DoAuthCode)
+	r.GET("/tradier/callback", tr.DoAuthCallback)
 
-	// Setup websocket
-	r.HandleFunc("/ws/core", t.DoWebsocketConnection)
-	r.HandleFunc("/ws/quotes", t.DoQuoteWebsocketConnection)
+	// -------- Static Files ------------ //
 
-	// Static files.
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("/frontend")))
+	r.Use(static.Serve("/", static.LocalFile("/frontend", true)))
+	r.NoRoute(func(c *gin.Context) { c.File("/frontend/index.html") })
 }
 
 /* End File */

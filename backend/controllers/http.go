@@ -13,8 +13,7 @@ import (
 	"time"
 
 	"app.options.cafe/backend/library/services"
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/acme/autocert"
 )
 
@@ -26,25 +25,33 @@ func (t *Controller) StartWebServer() {
 	// Listen for data from our broker feeds.
 	go t.DoWsDispatch()
 
+	// Set GIN Settings
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+
 	// Set Router
-	r := mux.NewRouter()
+	router := gin.New()
+
+	// Logger - Global middleware
+	if os.Getenv("HTTP_LOG_REQUESTS") == "true" {
+		router.Use(gin.Logger())
+	}
+
+	// Recovery middleware recovers from any panics and writes a 500 if there was one.
+	router.Use(gin.Recovery())
+
+	// CORS Middleware - Global middleware
+	router.Use(t.CorsMiddleware())
 
 	// Register Routes
-	t.DoRoutes(r)
-
-	// Setup handler
-	var handler = t.AuthMiddleware(r)
-
-	if os.Getenv("HTTP_LOG_REQUESTS") == "true" {
-		handler = handlers.CombinedLoggingHandler(os.Stdout, t.AuthMiddleware(r))
-	}
+	t.DoRoutes(router)
 
 	// Are we in testing mode? If not give us some SSL
 	if os.Getenv("APP_ENV") == "local" {
 
 		s := &http.Server{
 			Addr:         ":7080",
-			Handler:      handler,
+			Handler:      router,
 			ReadTimeout:  2 * time.Second,
 			WriteTimeout: 2 * time.Second,
 		}
@@ -62,41 +69,8 @@ func (t *Controller) StartWebServer() {
 		}
 
 		// Start a secure server:
-		StartSecureServer(handler, m.GetCertificate)
+		StartSecureServer(router, m.GetCertificate)
 	}
-}
-
-//
-// Here we make sure we passed in a proper Bearer Access Token.
-//
-func (t *Controller) AuthMiddleware(next http.Handler) http.Handler {
-
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		// // Make sure we have a Bearer token.
-		// auth := strings.SplitN(r.Header.Get("Authorization"), " ", 2)
-
-		// if len(auth) != 2 || auth[0] != "Bearer" {
-		//   t.RespondError(w, http.StatusUnauthorized, "Authorization Failed (#001)")
-		//   return
-		// }
-
-		// // Make sure we have a known access token.
-		// if auth[1] != os.Getenv("ACCESS_TOKEN") {
-		//   t.RespondError(w, http.StatusUnauthorized, "Authorization Failed (#002)")
-		//   return
-		// }
-
-		// Manage OPTIONS requests
-		if os.Getenv("APP_ENV") == "local" {
-			w.Header().Set("Access-Control-Allow-Origin", "*")
-			w.Header().Set("Access-Control-Allow-Headers", "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range")
-		}
-
-		// On to next request in the Middleware chain.
-		next.ServeHTTP(w, r)
-
-	})
 }
 
 //

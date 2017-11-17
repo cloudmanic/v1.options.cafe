@@ -19,6 +19,7 @@ import (
 	"app.options.cafe/backend/library/helpers"
 	"app.options.cafe/backend/library/services"
 	"app.options.cafe/backend/models"
+	"github.com/gin-gonic/gin"
 )
 
 type TradierAuth struct {
@@ -42,16 +43,22 @@ type tokenResponse struct {
 //
 // Obtain an Authorization Code - http://localhost:7652/tradier/authorize?user=1
 //
-func (t *TradierAuth) DoAuthCode(w http.ResponseWriter, r *http.Request) {
+func (t *TradierAuth) DoAuthCode(c *gin.Context) {
 
 	// Make sure we have a user id.
-	userId := r.URL.Query().Get("user")
+	userId := c.Query("user")
 
 	if userId == "" {
 		var msg = "Tradier - DoAuthCode - No user id provided."
 		services.Error(errors.New(msg), msg)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(genericError)
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
+		return
+	}
+
+	if userId == "" {
+		var msg = "Tradier - DoAuthCode - No user id provided."
+		services.Error(errors.New(msg), msg)
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
 
@@ -61,8 +68,7 @@ func (t *TradierAuth) DoAuthCode(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		services.Error(err, "Tradier - DoAuthCode - No user found.")
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(genericError)
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
 
@@ -71,34 +77,31 @@ func (t *TradierAuth) DoAuthCode(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect to tradier to auth
 	var url = apiBaseUrl + "/oauth/authorize?client_id=" + os.Getenv("TRADIER_CONSUMER_KEY") + "&scope=read,write,market,trade,stream&state=" + strconv.Itoa(int((user.Id)))
-	http.Redirect(w, r, url, 302)
-
+	c.Redirect(302, url)
 }
 
 //
 // Do Obtain an Authorization Code Callback - http://localhost:7652/tradier/callback
 //
-func (t *TradierAuth) DoAuthCallback(w http.ResponseWriter, r *http.Request) {
+func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 
 	// Make sure we have a code.
-	code := r.URL.Query().Get("code")
+	code := c.Query("code")
 
 	if code == "" {
 		var msg = "Tradier - DoAuthCallback - No auth code provided. (#1)"
 		services.Error(errors.New(msg), msg)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(genericError)
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
 
 	// Make sure we have a state.
-	state := r.URL.Query().Get("state")
+	state := c.Query("state")
 
 	if state == "" {
 		var msg = "Tradier - DoAuthCallback - No auth code provided. (#2)"
 		services.Error(errors.New(msg), msg)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(genericError)
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
 
@@ -109,8 +112,7 @@ func (t *TradierAuth) DoAuthCallback(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		services.Error(err, "Tradier - DoAuthCallback - Failed to get access token. (#1)")
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(genericError)
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
 
@@ -122,8 +124,7 @@ func (t *TradierAuth) DoAuthCallback(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		services.Error(err, "Tradier - DoAuthCallback - Failed to get access token. (#2)")
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(genericError)
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
 
@@ -132,8 +133,7 @@ func (t *TradierAuth) DoAuthCallback(w http.ResponseWriter, r *http.Request) {
 	// Make sure we got a good status code
 	if resp.StatusCode != http.StatusOK {
 		services.Error(err, "Tradier - DoAuthCallback - Failed to get access token. (#3)")
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(genericError)
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
 
@@ -142,8 +142,7 @@ func (t *TradierAuth) DoAuthCallback(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		services.Error(err, "Tradier - DoAuthCallback - Failed to get access token. (#4)")
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(genericError)
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
 
@@ -154,16 +153,14 @@ func (t *TradierAuth) DoAuthCallback(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		services.Error(err, "Tradier - DoAuthCallback - Failed to get access token. (#5)")
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(genericError)
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
 
 	// Make sure this request was approved.
 	if tr.Status != "approved" {
 		services.Error(err, "Tradier - DoAuthCallback - Failed to get access token. (#6)")
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(genericError)
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
 
@@ -174,8 +171,7 @@ func (t *TradierAuth) DoAuthCallback(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		var msg = "Tradier - DoAuthCallback - No user found."
 		services.Error(err, msg)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(genericError)
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
 
@@ -185,8 +181,7 @@ func (t *TradierAuth) DoAuthCallback(w http.ResponseWriter, r *http.Request) {
 	if err2 != nil {
 		var msg = "Tradier - DoAuthCallback - Failed to create broker."
 		services.Error(err2, msg)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(genericError)
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
 
@@ -194,8 +189,7 @@ func (t *TradierAuth) DoAuthCallback(w http.ResponseWriter, r *http.Request) {
 	services.Log("Tradier authorization completed for " + user.Email)
 
 	// Return success redirect
-	http.Redirect(w, r, os.Getenv("SITE_URL"), 302)
-
+	c.Redirect(302, os.Getenv("SITE_URL"))
 }
 
 //

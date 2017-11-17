@@ -4,10 +4,11 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import 'rxjs/Rx'
 import { Symbol } from '../../models/symbol';
+import { SymbolService } from '../../providers/http/symbol.service';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-typeahead-symbols',
@@ -27,7 +28,7 @@ export class TypeaheadSymbolsComponent implements OnInit {
   //
   // Construct.
   //
-  constructor(private http: HttpClient) { }
+  constructor(private symbolService: SymbolService) { }
 
   //
   // On Init.
@@ -107,38 +108,20 @@ export class TypeaheadSymbolsComponent implements OnInit {
     }
 
     // Send this search even to the server to get results.
-    this.http.get<Symbol[]>(environment.app_server + '/api/v1/symbols?search=' + event.target.value).subscribe(
+    this.symbolService.searchSymbols(event.target.value).subscribe((data) => {
       
-      // Success
-      (data) => {
-        if(data)
-        {
-          this.typeAheadList = data;
-          this.typeAheadShow = true;
-        } else
-        {
-          this.typeAheadList = []
-          this.typeAheadShow = false;
-        }
-      },
-      
-      // Error
-      (err: HttpErrorResponse) => {
-
-        if(err.error instanceof Error) 
-        {
-          // A client-side or network error occurred. Handle it accordingly.
-          console.log('An error occurred:', err.error.message);
-        } else 
-        { 
-          // Print error message
-          var json = JSON.parse(err.error); // Bug....Angular 4.4.4
-          console.log(json)
-        }
+      if(data)
+      {
+        this.typeAheadList = data;
+        this.typeAheadShow = true;
+      } else
+      {
+        this.typeAheadList = []
+        this.typeAheadShow = false;
       }
-    );
-  }
 
+    });
+  }
 }
 
 /* End File */

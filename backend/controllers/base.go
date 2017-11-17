@@ -11,9 +11,14 @@ import (
 	"net/http"
 	"sync"
 
+	"app.options.cafe/backend/library/services"
 	"app.options.cafe/backend/models"
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
+
+const httpNoRecordFound = "No Record Found."
+const httpGenericErrMsg = "Please contact support at help@options.cafe."
 
 type Controller struct {
 	DB                models.Datastore
@@ -47,29 +52,63 @@ type ReceivedStruct struct {
 }
 
 //
-// RespondJSON makes the response with payload as json format
+// RespondJSON makes the response with payload as json format.
+// This is used when we want the json back (used in websockets).
+// If you do not need the json back just use c.JSON()
 //
-func (t *Controller) RespondJSON(w http.ResponseWriter, status int, payload interface{}) {
+func (t *Controller) RespondJSON(c *gin.Context, status int, payload interface{}) string {
 
 	response, err := json.Marshal(payload)
 
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
-		return
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return ""
 	}
 
 	// Return json.
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	w.Write([]byte(response))
+	c.JSON(200, payload)
+
+	// We return the raw JSON
+	return string(response)
 }
 
 //
-// RespondError makes the error response with payload as json format
+// Return error.
 //
-func (t *Controller) RespondError(w http.ResponseWriter, code int, message string) {
-	t.RespondJSON(w, code, map[string]string{"error": message})
+func (t *Controller) RespondError(c *gin.Context, err error, msg string) bool {
+
+	if err != nil {
+		services.LogErrorOnly(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": msg})
+		return true
+	}
+
+	// No error.
+	return false
+}
+
+//
+// Build json to send up websocket.
+//
+func (t *Controller) WsSendJsonBuild(uri string, data_json string) (string, error) {
+
+	type SendStruct struct {
+		Uri  string `json:"uri"`
+		Body string `json:"body"`
+	}
+
+	// Send Object
+	send := SendStruct{
+		Uri:  uri,
+		Body: string(data_json),
+	}
+	send_json, err := json.Marshal(send)
+
+	if err != nil {
+		services.Error(err, "WsSendJsonBuild() json.Marshal")
+		return "", err
+	}
+
+	return string(send_json), nil
 }
 
 /* End File */

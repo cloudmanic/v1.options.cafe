@@ -15,8 +15,8 @@ import (
 
 type Symbol struct {
 	Id        uint      `gorm:"primary_key" json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"-"`
 	ShortName string    `sql:"not null" json:"short_name"`
 	Name      string    `sql:"not null" json:"name"`
 }

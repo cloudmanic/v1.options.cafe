@@ -7,8 +7,56 @@
     <div class="dropdown select" [ngClass]="{ 'active': watchlistSettingsActive }">
     	<div class="dropdown__head dropdown--trigger" (click)="onWatchlistSettingsClick()"></div>
   
-    	<div class="dropdown__body">
-    		<ul class="list-actions">
+    	<div class="dropdown__body dropdown__body--medium">
+
+        <ul class="list-actions list-actions--padded">
+          <li>
+            <p>
+              <small>
+                <em>Choose Watchlist</em>
+              </small>
+            </p>
+          </li>
+
+          <li class="list--checked">
+            <a href="#">
+              <i class="ico-check"></i>
+              Hot List
+            </a>
+          </li><!-- /.list-checked -->
+          
+          <li>
+            <a href="#">
+              <i class="ico-check"></i>
+              Watchlist Watchlist 24ch
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class="ico-check"></i>
+              New Watchlist 3
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class="ico-check"></i>
+              Tech Stocks
+            </a>
+          </li>
+        </ul>
+
+
+    		<ul class="list-actions list-actions--padded">
+
+          <li>
+            <p>
+              <small>
+                <em>Actions</em>
+              </small>
+            </p>
+          </li>
+
+
     			<li>
     				<a (click)="onEditWatchList()">Edit Watchlist</a>
     			</li>
@@ -32,23 +80,23 @@
   
   <ul class="stocks">
     
-  	<li class="stock" *ngFor="let row of watchlist.items">
-  		<h6 class="stock__title">{{ row | uppercase }}</h6>
+  	<li class="stock" *ngFor="let row of watchlist.Symbols">
+  		<h6 class="stock__title">{{ row.Symbol.ShortName | uppercase }}</h6>
   
   		<ul class="list-prices">
   			<li>
-  				<strong>{{ quotes[row]?.last | currency:'USD':'symbol':'1.2-2' }}</strong>
+  				<strong>{{ quotes[row.Symbol.ShortName]?.last | currency:'USD':'symbol':'1.2-2' }}</strong>
   			</li>
   
   			<li>
   				<strong class="title-red">
-  					{{ quotes[row]?.dailyChange() | currency:'USD':'symbol':'1.2-2' }} <span>({{ quotes[row]?.percentChange() | number:'1.2-2' }}%)</span>
+  					{{ quotes[row.Symbol.ShortName]?.dailyChange() | currency:'USD':'symbol':'1.2-2' }} <span>({{ quotes[row.Symbol.ShortName]?.percentChange() | number:'1.2-2' }}%)</span>
   				</strong>
   			</li>
   		</ul><!-- /.list-prices -->
   
   		<footer class="stock__footer">
-  			<em>{{ quotes[row]?.description }}</em>
+  			<em>{{ row.Symbol.Name }}</em>
   		</footer>
   	</li>
   	
@@ -75,19 +123,19 @@
     </div>
   </div>
 
-  <ul class="list-results">
-    <li *ngFor="let row of watchlist.items">
-      <h6>{{ row | uppercase }}</h6>
+  <ul class="list-results" [sortablejs]="watchlist.Symbols" [sortablejsOptions]="sortOptions">
+    <li *ngFor="let row of watchlist.Symbols" class="item" data-id="{{ row.Id }}">
+      <h6>{{ row.Symbol.ShortName | uppercase }}</h6>
       
       <p>
-        <em>{{ quotes[row]?.description }}</em>
+        <em>{{ row.Symbol.Name }}</em>
       </p>
       
       <a href="#" class="btn-action btn--delete">
         <i class="fa fa-trash"></i>
       </a>
       
-      <a href="#" class="btn-action">
+      <a class="btn-action drag-handle">
         <i class="fa fa-bars"></i>
       </a>
     </li>

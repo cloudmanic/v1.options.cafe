@@ -68,8 +68,17 @@
         </td>        
         <td *ngIf="i > 0">&nbsp;</td>
 
-  			<td *ngIf="i == 0"><strong class="title-green" >{{ order.Status }}</strong></td>
+        <td *ngIf="i == 0">
+          <span [hidden]="order.Status != 'filled'"><strong class="title-green">{{ order.Status }}</strong></span>
+          <span [hidden]="order.Status != 'open'"><strong class="title-grey">{{ order.Status }}</strong></span>
+          <span [hidden]="order.Status != 'canceled'"><strong class="title-grey">{{ order.Status }}</strong></span>
+          <span [hidden]="order.Status != 'expired'"><strong class="title-grey">{{ order.Status }}</strong></span>
+          <span [hidden]="order.Status != 'rejected'"><strong class="title-red">{{ order.Status }}</strong></span>
+          <span [hidden]="order.Status != 'pending'"><strong class="title-grey">{{ order.Status }}</strong></span> 
+          <span [hidden]="order.Status != 'partially_filled'"><strong class="title-grey">{{ order.Status }}</strong></span>
+        </td>
   			<td *ngIf="i > 0">&nbsp;</td>
+
   		</tr>
 
   	</table>

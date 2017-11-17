@@ -5,11 +5,17 @@ import { Routes, RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { Routing } from './app.routing';
+import { SortablejsModule } from 'angular-sortablejs';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TokenInterceptor } from './providers/http/token.interceptor';
 
 // Providers
 import { AuthGuard } from './auth/guards/auth.service';
 import { AppService } from './providers/websocket/app.service';
 import { QuoteService } from './providers/websocket/quote.service';
+
+// Providers - http
+import { SymbolService } from './providers/http/symbol.service';
 
 // Layout
 import { SidebarComponent } from './layouts/sidebar/sidebar.component';
@@ -83,10 +89,17 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     Routing,
     FormsModule,
     BrowserModule,
-    HttpClientModule
+    SortablejsModule,
+    HttpClientModule   
   ],
   
-  providers: [ AppService, QuoteService, AuthGuard ],
+  providers: [ 
+    AppService, 
+    QuoteService, 
+    AuthGuard, 
+    SymbolService,
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }    
+  ],
   
   bootstrap: [AppComponent]
 })

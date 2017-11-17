@@ -6,8 +6,8 @@
     <ul class="list-actions">
       <li *ngFor="let row of typeAheadList; let i = index">
         <a (click)="onSelected(row)" [ngClass]="{ 'active': (activeItem == i) }">
-          <span>{{ row.short_name | uppercase }}</span>
-          {{ row.name }}
+          <span>{{ row.ShortName | uppercase }}</span>
+          {{ row.Name }}
         </a>
       </li>
     </ul>
