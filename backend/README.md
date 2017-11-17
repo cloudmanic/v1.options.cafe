@@ -2,27 +2,7 @@
 
 * Make sure the GoPATH is setup. This is what I have set ```export GOPATH=$HOME/Development/golang:$HOME/Development```
 
-* In the case of ```$HOME/Development``` Make sure you add a symlink with src. ```ln -s /Users/spicer/Development /Users/spicer/Development/src```
-
-## Note On Backend Development Docker
-
-* ```go run *.go``` the docker way : ```cd backend/docker && docker-compose run --rm -p 7080:7080 app bash```
-
-* Add a Docker .env file example located at ```backend/docker/.env```
-
-```
-P_UID=501
-P_GID=20
-RESTART=always
-VIRTUAL_HOST=app.options.dev
-COMPOSE_PROJECT_NAME=app.options.dev
-GO_PATH=/Users/spicer/Development/golang
-```
-
-* When connecting to a docker host we have to do this in the ```backend/.env``` file. 
-
-```DB_HOST=tcp(mysql-5.5:3306)```
- 
+* In the case of ```$HOME/Development``` Make sure you add a symlink with src. ```ln -s /Users/spicer/Development/app.options.cafe /Users/spicer/Development/src/github/app.options.cafe```
 
 ## Backend Unit Testing....
 
