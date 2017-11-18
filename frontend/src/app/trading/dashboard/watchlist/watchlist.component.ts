@@ -22,6 +22,10 @@ import { environment } from '../../../../environments/environment';
 export class WatchlistComponent implements OnInit {
 
   quotes = {}
+  showAddWatchlist = false;
+  showRenameWatchlist = false;
+  showDeleteWatchlist = false;
+
   watchlist: Watchlist;
   watchlistEditState = false;
   watchlistSettingsActive = false;
