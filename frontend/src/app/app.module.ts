@@ -9,6 +9,9 @@ import { SortablejsModule } from 'angular-sortablejs';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './providers/http/token.interceptor';
 
+// Shared
+import { DialogComponent } from './shared/dialog/dialog.component';
+
 // Providers
 import { AuthGuard } from './auth/guards/auth.service';
 import { AppService } from './providers/websocket/app.service';
@@ -58,6 +61,9 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     MainNavComponent,
     LayoutCoreComponent,    
     
+    // Shared
+    DialogComponent,    
+
     // Auth
     AuthLayoutComponent,
     AuthLoginComponent,
@@ -82,7 +88,7 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     DashboardComponent,
     WatchlistComponent,
     OrdersMultiLegComponent,
-    TypeaheadSymbolsComponent
+    TypeaheadSymbolsComponent,
   ],
   
   imports: [

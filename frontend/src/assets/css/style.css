@@ -1017,7 +1017,7 @@ select::-ms-expand { display: none; }
 /* ------------------------------------------------------------ *\
 	Form Menage
 \* ------------------------------------------------------------ */
-.form--menage { background: #fff; border: 1px solid #a0a1a3; border-radius: 2px; padding: 8px 17px 8px 15px; }
+.form--menage { background: #fff; border: 1px solid #a0a1a3; border-radius: 2px; padding: 15px 20px 15px 20px; }
 .form--menage .form__head { margin-bottom: 16px; }
 .form--menage .form__title { font-weight: 700; }
 .form--menage .form__actions { padding: 17px 0 0 1px; }

@@ -62,7 +62,7 @@
     			</li>
   
     			<li>
-    				<a href="ajax/popup-add-watchlist.html" class="popup--trigger">Add Watchlist</a>
+    				<a (click)="showAddWatchlist = !showAddWatchlist"  class="popup--trigger">Add Watchlist</a>
     			</li>
   
     			<li>
@@ -141,3 +141,51 @@
     </li>
   </ul>
 </aside>
+
+
+<!-- ********************* Add Watchlist *********************  -->
+<app-dialog [(visible)]="showAddWatchlist">
+
+  <div class="popup">
+    <div class="shell shell--medium">
+      <div class="form form--menage">
+
+        <form action="?" method="post">
+          <section class="form__section">
+            <div class="form__head">
+              <h6 class="form__title">Add Watchlist</h6>
+            </div>
+
+            <div class="form__body">
+              <div class="form__row">
+                <label for="field-watchlist-name" class="hidden">Watchlist Name</label> 
+
+                <div class="form__controls">
+                  <input type="text" class="field" name="field-watchlist-name" id="field-watchlist-name" required />
+                </div>
+
+              </div>
+            </div> 
+
+            <div class="form__actions">
+              <p class="form__hint">
+                <em>50 characters left</em>
+              </p> 
+
+              <div class="form__actions__inner">
+
+
+
+                <a (click)="showAddWatchlist = !showAddWatchlist" class="link-action link-action--small popup--close">Cancel</a>  
+
+                <input type="submit" value="Add" class="btn btn--red form__btn" />
+              </div>
+            </div>
+          </section>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</app-dialog>

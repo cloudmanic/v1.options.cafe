@@ -6,15 +6,17 @@
 #
 # Deploy the entire app (frontend and backend). We do some compiling locally and then deploy.
 
-# Build the backend app within the docker container.
-cd ../backend/docker
+# Build backend
+cd ../backend
 
 echo "Building app.options.cafe"
-docker-compose run --rm app /work/scripts/build.sh
+env GOOS=linux GOARCH=amd64 go build -o builds/app.options.cafe
 
 echo "Building cron.options.cafe"
-docker-compose run --rm cron /work/scripts/build_cron.sh
+cd cron
+env GOOS=linux GOARCH=amd64 go build -o ../builds/cron.options.cafe
 
+# Build frontend
 cd ../../frontend/docker
 
 echo "Building Frontend"

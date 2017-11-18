@@ -32,16 +32,14 @@
 			event.preventDefault();
 		});
 
-		// Popup
-		$('.popup--trigger').magnificPopup({
-			type: 'ajax'
-		});
+		// // Popup
+		// $('.popup--trigger').magnificPopup({ mainClass: 'mfp-fade' });
 
-		$('body').on('click', '.popup--close', function(event) {
-			$.magnificPopup.close();
+		// $('body').on('click', '.popup--close', function(event) {
+		// 	$.magnificPopup.close();
 
-			event.preventDefault();
-		});
+		// 	event.preventDefault();
+		// });
 
 		// Set Padding Top of Content Block
 		setContentPadding();
