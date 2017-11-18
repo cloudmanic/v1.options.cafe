@@ -56,7 +56,6 @@
             </p>
           </li>
 
-
     			<li>
     				<a (click)="onEditWatchList()">Edit Watchlist</a>
     			</li>
@@ -66,16 +65,17 @@
     			</li>
   
     			<li>
-    				<a href="ajax/popup-rename-watchlist.html" class="popup--trigger">Rename Watchlist</a>
+    				<a (click)="showRenameWatchlist = !showRenameWatchlist" class="popup--trigger">Rename Watchlist</a>
     			</li>
-  
+
     			<li>
-    				<a href="ajax/popup-delete-watchlist.html" class="popup--trigger">Delete Watchlist</a>
+    				<a (click)="showDeleteWatchlist = !showDeleteWatchlist" class="popup--trigger">Delete Watchlist</a>
     			</li>
-    		</ul><!-- /.list-actions -->
-    	</div><!-- /.dropdown__body -->
-    </div><!-- /.dropdown select -->
-  </div><!-- /.box__head box__head-relative -->
+    		</ul>
+
+    	</div>
+    </div>
+  </div>
 
   
   <ul class="stocks">
@@ -174,8 +174,6 @@
 
               <div class="form__actions__inner">
 
-
-
                 <a (click)="showAddWatchlist = !showAddWatchlist" class="link-action link-action--small popup--close">Cancel</a>  
 
                 <input type="submit" value="Add" class="btn btn--red form__btn" />
@@ -189,3 +187,78 @@
   </div>
 
 </app-dialog>
+
+
+<!-- ********************* Rename Watchlist *********************  -->
+<app-dialog [(visible)]="showRenameWatchlist">
+
+  <div class="popup">
+    <div class="shell shell--smaller">
+      <div class="form form--menage"> 
+
+        <form action="?" method="post">
+          <section class="form__section">
+            <div class="form__head">
+              <h6 class="form__title">Rename Watchlist</h6>
+            </div>  
+
+            <div class="form__body">
+              <div class="form__row">
+                <label for="field-watchlist-name" class="hidden">Watchlist Name</label> 
+
+                <div class="form__controls">
+                  <input type="text" class="field" name="field-watchlist-name" id="field-watchlist-name" required />
+                </div>
+              </div>
+            </div>  
+
+            <div class="form__actions">
+              <p class="form__hint">
+                <em>24 characters left</em>
+              </p>  
+
+              <div class="form__actions__inner">
+                <a (click)="showRenameWatchlist = !showRenameWatchlist" class="link-action link-action--small popup--close">Cancel</a>  
+
+                <input type="submit" value="Save" class="btn btn--red form__btn" />
+              </div>
+            </div>
+          </section>
+        </form> 
+
+      </div>
+    </div>
+  </div>
+
+</app-dialog>
+
+
+<!-- ********************* Delete Watchlist *********************  -->
+<app-dialog [(visible)]="showDeleteWatchlist">
+
+  <div class="popup">
+    <div class="shell shell--xxsmall">
+      <div class="form form--menage">
+
+        <form action="?" method="post">
+          <section class="form__section">
+            <div class="form__head">
+              <h6 class="form__title">Delete watchlist</h6>
+            </div> 
+
+            <div class="form__actions">
+              <div class="form__actions__inner">
+                <a (click)="showDeleteWatchlist = !showDeleteWatchlist" class="link-action link-action--small popup--close">Cancel</a>  
+
+                <input type="submit" value="Delete" class="btn btn--red form__btn" />
+              </div>
+            </div>
+          </section>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</app-dialog>
+
