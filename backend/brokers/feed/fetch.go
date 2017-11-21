@@ -239,7 +239,6 @@ func (t *Base) GetActiveSymbolsDetailedQuotes() error {
 	detailedQuotes, err := t.Api.GetQuotes(symbols)
 
 	if err != nil {
-		fmt.Println("DoDetailedQuotes() t.Api.GetQuotes : ", err)
 		return err
 	}
 
@@ -250,7 +249,6 @@ func (t *Base) GetActiveSymbolsDetailedQuotes() error {
 		data_json, err := json.Marshal(row)
 
 		if err != nil {
-			fmt.Println("DoDetailedQuotes() json.Marshal : ", err)
 			return err
 		}
 
@@ -258,7 +256,6 @@ func (t *Base) GetActiveSymbolsDetailedQuotes() error {
 		send_json, err := t.GetSendJson("quote", string(data_json))
 
 		if err != nil {
-			fmt.Println("DoDetailedQuotes() GetSendJson Send Object : ", err)
 			return err
 		}
 

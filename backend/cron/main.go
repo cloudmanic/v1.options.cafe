@@ -15,6 +15,7 @@ import (
 	"github.com/app.options.cafe/backend/library/services"
 	"github.com/app.options.cafe/backend/models"
 	"github.com/jasonlvhit/gocron"
+	env "github.com/jpfuentes2/go-env"
 )
 
 //
@@ -25,11 +26,14 @@ func main() {
 	// Setup CPU stuff.
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
+	// Load ENV (if we have it.)
+	env.ReadEnv("../.env")
+
 	// Start the db connection.
 	db, err := models.NewDB()
 
 	if err != nil {
-		services.Fatal("Failed to connect database")
+		services.Fatal(err)
 	}
 
 	// Close db when this app dies. (This might be useless)
@@ -57,7 +61,7 @@ func main() {
 	} else {
 
 		// Lets get started
-		services.MajorLog("Cron Started: " + os.Getenv("APP_ENV"))
+		services.Critical("Cron Started: " + os.Getenv("APP_ENV"))
 
 		// Setup jobs we need to run
 		gocron.Every(1).Day().At("14:00").Do(d.DoSymbolImport)

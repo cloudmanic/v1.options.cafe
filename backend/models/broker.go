@@ -94,7 +94,7 @@ func (t *DB) CreateNewBroker(name string, user User, accessToken string, refresh
 	t.Create(&broker)
 
 	// Log broker creation.
-	services.Log("[Models:CreateNewBroker] - Created a new broker entry - " + name + " " + user.Email)
+	services.Info("[Models:CreateNewBroker] - Created a new broker entry - " + name + " " + user.Email)
 
 	// Return the user.
 	return broker, nil

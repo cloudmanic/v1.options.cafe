@@ -37,7 +37,7 @@ func (t *DB) CreateNewSymbol(short string, name string) (Symbol, error) {
 		t.Create(&symb)
 
 		// Log Symbol creation.
-		services.Log("[Models:CreateNewSymbol] - Created a new Symbol entry - (" + short + ") " + name)
+		services.Info("[Models:CreateNewSymbol] - Created a new Symbol entry - (" + short + ") " + name)
 
 	}
 
@@ -64,7 +64,7 @@ func (t *DB) UpdateSymbol(id uint, short string, name string) (Symbol, error) {
 	}
 
 	// Log Symbol creation.
-	services.Log("[Models:CreateNewSymbol] - Update a new Symbol entry - (" + short + ") " + name)
+	services.Info("[Models:CreateNewSymbol] - Update a new Symbol entry - (" + short + ") " + name)
 
 	// Return the user.
 	return symb, nil

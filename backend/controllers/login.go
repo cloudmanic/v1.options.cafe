@@ -41,7 +41,7 @@ func (t *Controller) DoLogin(c *gin.Context) {
 	err := decoder.Decode(&post)
 
 	if err != nil {
-		services.Error(err, "DoLogin - Failed to decode JSON posted in")
+		services.BetterError(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong while logging into your account. Please try again or contact help@options.cafe. Sorry for the trouble."})
 		return
 	}
@@ -60,7 +60,7 @@ func (t *Controller) DoLogin(c *gin.Context) {
 	user, err := t.DB.LoginUserByEmailPass(post.Email, post.Password, c.Request.UserAgent(), realip.RealIP(c.Request))
 
 	if err != nil {
-		services.Error(err, "DoLogin - Unable to log user in. (CreateUser)")
+		services.BetterError(err)
 
 		// Respond with error
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Sorry, we could not find your account."})

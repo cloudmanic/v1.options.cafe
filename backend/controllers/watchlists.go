@@ -103,7 +103,7 @@ func (t *Controller) SendWatchlistUpWS(userId uint, json string) {
 	jsonSend, err := t.WsSendJsonBuild("watchlists", json)
 
 	if err != nil {
-		services.Error(err, "GetWatchlists() WsSendJsonBuild (#1)")
+		services.BetterError(err)
 		return
 	}
 

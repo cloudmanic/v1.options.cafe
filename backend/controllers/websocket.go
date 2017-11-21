@@ -54,11 +54,11 @@ func (t *Controller) DoWebsocketConnection(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 
 	if err != nil {
-		services.Error(err, "Upable to upgrade Websocket")
+		services.BetterError(err)
 		return
 	}
 
-	services.Log("New Websocket Connection - Standard")
+	services.Info("New Websocket Connection - Standard")
 
 	// Close connection when this function ends
 	defer conn.Close()
@@ -88,11 +88,11 @@ func (t *Controller) DoQuoteWebsocketConnection(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 
 	if err != nil {
-		services.Error(err, "(DoQuoteWebsocketConnection) Unable to upgrade Quote Websocket")
+		services.BetterError(err)
 		return
 	}
 
-	services.Log("New Websocket Connection - Quote")
+	services.Info("New Websocket Connection - Quote")
 
 	// Close connection when this function ends
 	defer conn.Close()
@@ -140,14 +140,14 @@ func (t *Controller) DoWsReading(conn *WebsocketConnection) {
 
 			if ok {
 				delete(t.Connections, conn.connection)
-				services.Log("Client Disconnected (" + conn.deviceId + ") ...")
+				services.Info("Client Disconnected (" + conn.deviceId + ") ...")
 			}
 
 			_, ok2 := t.QuotesConnections[conn.connection]
 
 			if ok2 {
 				delete(t.QuotesConnections, conn.connection)
-				services.Log("Client Quote Disconnected (" + conn.deviceId + ") ...")
+				services.Info("Client Quote Disconnected (" + conn.deviceId + ") ...")
 			}
 
 			break
@@ -155,14 +155,14 @@ func (t *Controller) DoWsReading(conn *WebsocketConnection) {
 
 		// this should come after the mt test.
 		if err != nil {
-			services.Error(err, "Error in DoWsReading")
+			services.BetterError(err)
 			break
 		}
 
 		// Json decode message.
 		var data map[string]interface{}
 		if err := json.Unmarshal(message, &data); err != nil {
-			services.Error(err, "(DoWsReading) Unable to decode json")
+			services.BetterError(err)
 			break
 		}
 

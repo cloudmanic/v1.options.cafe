@@ -45,7 +45,7 @@ type SendStruct struct {
 //
 func (t *Base) Start() {
 
-	services.Log("Starting Polling....")
+	services.Info("Starting Polling....")
 
 	// Setup tickers for broker polling.
 	go t.DoOrdersTicker()
@@ -74,7 +74,7 @@ func (t *Base) DoUserProfileTicker() {
 		err = t.GetUserProfile()
 
 		if err != nil {
-			services.Error(err, "Error in Brokers/Feed - DoUserProfileTicker()")
+			services.Warning(err)
 		}
 
 		// Sleep for 60 second.
@@ -138,7 +138,7 @@ func (t *Base) DoOrdersTicker() {
 		err = t.GetOrders()
 
 		if err != nil {
-			services.Error(err, "Error in Brokers/Feed - DoOrdersTicker()")
+			services.Warning(err)
 		}
 
 		// Sleep for 3 second.
@@ -159,7 +159,7 @@ func (t *Base) DoGetDetailedQuotes() {
 		err := t.GetActiveSymbolsDetailedQuotes()
 
 		if err != nil {
-			services.Error(err, "Error in Brokers/Feed - DoGetDetailedQuotes()")
+			services.Warning(err)
 		}
 
 		// Sleep for 1 second
@@ -182,7 +182,7 @@ func (t *Base) DoGetMarketStatusTicker() {
 		err = t.GetMarketStatus()
 
 		if err != nil {
-			services.Error(err, "Error in Brokers/Feed - DoGetMarketStatusTicker")
+			services.Warning(err)
 		}
 
 		// Sleep for 10 second.
@@ -204,7 +204,7 @@ func (t *Base) DoGetBalancesTicker() {
 		err = t.GetBalances()
 
 		if err != nil {
-			services.Error(err, "Error in Brokers/Feed - DoGetBalancesTicker")
+			services.Warning(err)
 		}
 
 		// Sleep for 5 second.
@@ -226,7 +226,7 @@ func (t *Base) DoAccessTokenRefresh() {
 		err = t.AccessTokenRefresh()
 
 		if err != nil {
-			services.Error(err, "Error in Brokers/Feed - DoGetBalancesTicker")
+			services.Warning(err)
 		}
 
 		// Sleep for 60 second.

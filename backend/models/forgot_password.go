@@ -90,7 +90,7 @@ func (t *DB) DoResetPassword(user_email string, ip string) error {
 	t.Create(&rsp)
 
 	// Log user creation.
-	services.Log("DoResetPassword - Reset password token for " + user.Email)
+	services.Info("DoResetPassword - Reset password token for " + user.Email)
 
 	// Build the url to reset the password.
 	var url = os.Getenv("SITE_URL") + "/reset-password?hash=" + hash

@@ -36,7 +36,7 @@ func (t *Controller) DoSymbolSearch(c *gin.Context) {
 	symbols, err := t.DB.SearchSymbols(search)
 
 	if err != nil {
-		services.Error(err, "Controller:SearchBySymbolOrCompanyName() Mysql Call.")
+		services.BetterError(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 

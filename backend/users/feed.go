@@ -49,11 +49,11 @@ func (t *Base) DoUserFeed(user models.User) {
 
 	var brokerApi brokers.Api
 
-	services.Log("Starting User Connection : " + user.Email)
+	services.Info("Starting User Connection : " + user.Email)
 
 	// This should not happen. But we double check this user is not already started.
 	if _, ok := t.Users[user.Id]; ok {
-		services.MajorLog("User Connection Is Already Going : " + user.Email)
+		services.Critical("User Connection Is Already Going : " + user.Email)
 		return
 	}
 
@@ -72,7 +72,7 @@ func (t *Base) DoUserFeed(user models.User) {
 
 		// Need an access token to continue
 		if len(row.AccessToken) <= 0 {
-			services.MajorLog("User Connection (Brokers) No Access Token Found : " + user.Email + " (" + row.Name + ")")
+			services.Critical("User Connection (Brokers) No Access Token Found : " + user.Email + " (" + row.Name + ")")
 			continue
 		}
 
@@ -91,13 +91,13 @@ func (t *Base) DoUserFeed(user models.User) {
 			brokerApi = &tradier.Api{ApiKey: decryptAccessToken, DB: t.DB}
 
 		default:
-			services.MajorLog("Unknown Broker : " + row.Name + " (" + user.Email + ")")
+			services.Critical("Unknown Broker : " + row.Name + " (" + user.Email + ")")
 			continue
 
 		}
 
 		// Log magic
-		services.Log("Setting up to use " + row.Name + " as the broker for " + user.Email)
+		services.Info("Setting up to use " + row.Name + " as the broker for " + user.Email)
 
 		// Set the library we use to fetching data from our broker's API
 		t.Users[user.Id].BrokerFeed[row.Id] = &feed.Base{

@@ -77,7 +77,7 @@ func (t *Controller) RespondJSON(c *gin.Context, status int, payload interface{}
 func (t *Controller) RespondError(c *gin.Context, err error, msg string) bool {
 
 	if err != nil {
-		services.LogErrorOnly(err)
+		services.Warning(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": msg})
 		return true
 	}
@@ -104,7 +104,7 @@ func (t *Controller) WsSendJsonBuild(uri string, data_json string) (string, erro
 	send_json, err := json.Marshal(send)
 
 	if err != nil {
-		services.Error(err, "WsSendJsonBuild() json.Marshal")
+		services.BetterError(err)
 		return "", err
 	}
 

@@ -40,12 +40,12 @@ func (t *Controller) DoStripeWebhook(c *gin.Context) {
 	defer c.Request.Body.Close()
 
 	// Log the event.
-	services.Log("Stripe Webhook Received : " + event.Type + " - " + event.ID)
+	services.Info("Stripe Webhook Received : " + event.Type + " - " + event.ID)
 
 	// If there is no customer value there is nothing we need to do.
 	// As of now all the events we care about have a customer attached to them.
 	if len(event.GetObjValue("customer")) == 0 {
-		services.Log("Stripe no customer data found (this is expected).")
+		services.Info("Stripe no customer data found (this is expected).")
 		c.JSON(200, gin.H{"status": "success"})
 		return
 	}
@@ -82,7 +82,7 @@ func (t *Controller) StripeEventSubscriptionDeleted(user models.User) {
 	t.DB.UpdateUser(&user)
 
 	// Log event.
-	services.Log("Stripe Subscription Deleted: " + user.Email)
+	services.Info("Stripe Subscription Deleted: " + user.Email)
 
 	// Send email telling the user this happened.
 	var url = "https://app.options.cafe"

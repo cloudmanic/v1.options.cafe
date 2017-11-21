@@ -6,191 +6,192 @@
 
 package data_import
 
-import(
+import (
+	"encoding/csv"
+	"errors"
+	"fmt"
+	"io"
+	"net/http"
 	"os"
-  "io"
-  "fmt"
-  "time"
-  "errors"
-  "strings"
-  "net/http"
-  "encoding/csv"
-  "github.com/tj/go-dropy"
-  "github.com/tj/go-dropbox"
-  "github.com/jlaffaye/ftp"
-  "github.com/araddon/dateparse"
-  "github.com/app.options.cafe/backend/library/services"  
+	"strings"
+	"time"
+
+	"github.com/app.options.cafe/backend/library/services"
+	"github.com/araddon/dateparse"
+	"github.com/jlaffaye/ftp"
+	"github.com/tj/go-dropbox"
+	"github.com/tj/go-dropy"
 )
 
 // Job Struct
 type Job struct {
-  Key string
-  Length int
-  Index int
-  Path string
+	Key    string
+	Length int
+	Index  int
+	Path   string
 }
 
 //
-// Do End of Day Options Import. We run this every day from "Cron". It will 
-// connect to the FTP site at DeltaNeutral (our EOD options data provider) and 
+// Do End of Day Options Import. We run this every day from "Cron". It will
+// connect to the FTP site at DeltaNeutral (our EOD options data provider) and
 // download any days data that we do not already have. Once we download the file we
 // upload it to Dropbox for achieving. Then we break up the DeltaNeutral export
-// into one file per date per asset symbol. Lastly we upload this data to AWS. 
+// into one file per date per asset symbol. Lastly we upload this data to AWS.
 //
 func DoEodOptionsImport() {
 
-  // Log
-  services.Log("Starting DoEodOptionsImport().")
+	// Log
+	services.Info("Starting DoEodOptionsImport().")
 
-  // Get the Dropbox Client (this is where we archive the zip file)
-  client := dropy.New(dropbox.New(dropbox.NewConfig(os.Getenv("DROPBOX_ACCESS_TOKEN"))))
-  
-  // Get files we should skip.
-  dbFiles, err := GetProccessedFiles(client)
-  
-  if err != nil {
-    services.Error(err, "Could not get dbFiles files in GetProccessedFiles()")
-    return
-  }  
+	// Get the Dropbox Client (this is where we archive the zip file)
+	client := dropy.New(dropbox.New(dropbox.NewConfig(os.Getenv("DROPBOX_ACCESS_TOKEN"))))
 
-  // Get daily options from vendor
-  ftpFiles, err := GetOptionsDailyData()
+	// Get files we should skip.
+	dbFiles, err := GetProccessedFiles(client)
 
-  if err != nil {
-    services.Error(err, "Could not get ftp files in GetOptionsDailyData()")
-    return
-  }    
+	if err != nil {
+		services.Error(err, "Could not get dbFiles files in GetProccessedFiles()")
+		return
+	}
 
-  // Loop through the FTP files.
-  for _, row := range ftpFiles {
+	// Get daily options from vendor
+	ftpFiles, err := GetOptionsDailyData()
 
-    if _, ok := dbFiles[row.Name]; ok {
-      continue;
-    }
+	if err != nil {
+		services.Error(err, "Could not get ftp files in GetOptionsDailyData()")
+		return
+	}
 
-    // Download file.
-    filePath, err := DownloadOptionsDailyDataByName(row.Name)
+	// Loop through the FTP files.
+	for _, row := range ftpFiles {
 
-    if err != nil {
-      services.Error(err, "Could not download ftp file in DownloadOptionsDailyDataByName() - " + row.Name)
-      continue;
-    }
+		if _, ok := dbFiles[row.Name]; ok {
+			continue
+		}
 
-    // Open file we upload.
-    file, err := os.Open(filePath)
+		// Download file.
+		filePath, err := DownloadOptionsDailyDataByName(row.Name)
 
-    if err != nil {
-      services.Error(err, "Could not open ftp file os.Open() - " + row.Name)
-      continue;      
-    }
+		if err != nil {
+			services.Error(err, "Could not download ftp file in DownloadOptionsDailyDataByName() - "+row.Name)
+			continue
+		}
 
-    // Upload the file to Dropbox
-    client.Upload("/data/AllOptions/Daily/" + row.Name, file)
+		// Open file we upload.
+		file, err := os.Open(filePath)
 
-    if err != nil {
-      services.Error(err, "Could not upload to Dropbox - " + row.Name)
-      continue;      
-    }
+		if err != nil {
+			services.Error(err, "Could not open ftp file os.Open() - "+row.Name)
+			continue
+		}
 
-    // Log file
-    services.Log("Finished uploading " + row.Name + " to Dropbox.")
+		// Upload the file to Dropbox
+		client.Upload("/data/AllOptions/Daily/"+row.Name, file)
 
-    // Import file into different symbols
-    err = SymbolImport(filePath)
+		if err != nil {
+			services.Error(err, "Could not upload to Dropbox - "+row.Name)
+			continue
+		}
 
-    if err != nil {
-      services.Error(err, "Could not import DatabaseImport() - " + row.Name)
-      continue;      
-    }
+		// Log file
+		services.Info("Finished uploading " + row.Name + " to Dropbox.")
 
-    // // Delete file we uploaded to Dropbox
-    err = os.Remove(filePath)
+		// Import file into different symbols
+		err = SymbolImport(filePath)
 
-    if err != nil {
-      services.Error(err, "Could not delete file - " + filePath)
-      continue;      
-    }
+		if err != nil {
+			services.Error(err, "Could not import DatabaseImport() - "+row.Name)
+			continue
+		}
 
-  }
+		// // Delete file we uploaded to Dropbox
+		err = os.Remove(filePath)
 
-  // Send health check notice.
-  if len(os.Getenv("HEALTH_CHECK_DOEODOPTIONSIMPORT_URL")) > 0 {
+		if err != nil {
+			services.Error(err, "Could not delete file - "+filePath)
+			continue
+		}
 
-    resp, err := http.Get(os.Getenv("HEALTH_CHECK_DOEODOPTIONSIMPORT_URL"))
-    
-    if err != nil {
-      services.Error(err, "Could send health check - " + os.Getenv("HEALTH_CHECK_DOEODOPTIONSIMPORT_URL"))
-    }
-    
-    defer resp.Body.Close()
-    
-  }
+	}
 
-  // Log 
-  services.Log("Done DoEodOptionsImport().")  
+	// Send health check notice.
+	if len(os.Getenv("HEALTH_CHECK_DOEODOPTIONSIMPORT_URL")) > 0 {
+
+		resp, err := http.Get(os.Getenv("HEALTH_CHECK_DOEODOPTIONSIMPORT_URL"))
+
+		if err != nil {
+			services.Error(err, "Could send health check - "+os.Getenv("HEALTH_CHECK_DOEODOPTIONSIMPORT_URL"))
+		}
+
+		defer resp.Body.Close()
+
+	}
+
+	// Log
+	services.Info("Done DoEodOptionsImport().")
 
 }
 
 //
-// Convert all Delta Neutral imports into a per symbol / date CSV file. This is a mass import 
-// from Dropbox where we archive Delta Neutral EOD options data. We go through each 
-// EOD file and convert to a per symbol per date archive. We then store this archive at 
+// Convert all Delta Neutral imports into a per symbol / date CSV file. This is a mass import
+// from Dropbox where we archive Delta Neutral EOD options data. We go through each
+// EOD file and convert to a per symbol per date archive. We then store this archive at
 // AWS S3. This is used as a one off thing when data at AWS gets messed up or is missing or something.
 // In a perfect world this is only run once ever.
 //
 func ProccessAllDeltaNeutralData() error {
 
-  // Log
-  services.Log("Starting ProccessAllDeltaNeutralData().")
+	// Log
+	services.Info("Starting ProccessAllDeltaNeutralData().")
 
-  // Job queue stuff. (assume we do not have more than 2000 days worth of data)
-  jobs := make(chan Job, 2000)
-  results := make(chan string, 2000)
+	// Job queue stuff. (assume we do not have more than 2000 days worth of data)
+	jobs := make(chan Job, 2000)
+	results := make(chan string, 2000)
 
-  // Get the Dropbox Client (this is where we archive the zip file)
-  client := dropy.New(dropbox.New(dropbox.NewConfig(os.Getenv("DROPBOX_ACCESS_TOKEN"))))
-  
-  // Get files we should skip.
-  dbFiles, err := GetProccessedFiles(client)  
+	// Get the Dropbox Client (this is where we archive the zip file)
+	client := dropy.New(dropbox.New(dropbox.NewConfig(os.Getenv("DROPBOX_ACCESS_TOKEN"))))
 
-  if err != nil {
-    return err
-  }
+	// Get files we should skip.
+	dbFiles, err := GetProccessedFiles(client)
 
-  // Start workers
-  for w := 1; w <= 50; w++ {
-    go ProccessDeltaNeutralDataWorker(w, jobs, results)
-  }  
+	if err != nil {
+		return err
+	}
 
-  var i = 1;
-  var total = len(dbFiles)
+	// Start workers
+	for w := 1; w <= 50; w++ {
+		go ProccessDeltaNeutralDataWorker(w, jobs, results)
+	}
 
-  // Loop through files at Dropbox
-  for key, _ := range dbFiles {
+	var i = 1
+	var total = len(dbFiles)
 
-    // Send job to worker
-    jobs <- Job{ Key: key, Index: i, Length: total, Path: "/data/AllOptions/Daily/" + key }
+	// Loop through files at Dropbox
+	for key := range dbFiles {
 
-    // Update count
-    i++
-  }   
+		// Send job to worker
+		jobs <- Job{Key: key, Index: i, Length: total, Path: "/data/AllOptions/Daily/" + key}
 
-  // Close down jobs
-  close(jobs)
+		// Update count
+		i++
+	}
 
-  // Collect the results of the workers
-  for a := 0; a < total; a++ {
-    <-results
-  }
+	// Close down jobs
+	close(jobs)
 
-  // Close down results
-  close(results)
+	// Collect the results of the workers
+	for a := 0; a < total; a++ {
+		<-results
+	}
 
-  // Log 
-  services.Log("Done ProccessAllDeltaNeutralData().")   
+	// Close down results
+	close(results)
 
-  // Return happy.
-  return nil
+	// Log
+	services.Info("Done ProccessAllDeltaNeutralData().")
+
+	// Return happy.
+	return nil
 }
 
 //
@@ -198,54 +199,54 @@ func ProccessAllDeltaNeutralData() error {
 //
 func ProccessDeltaNeutralDataWorker(id int, jobs <-chan Job, results chan<- string) {
 
-  // Loop through the different jobs until we have no more jobs.
-  for job := range jobs {
+	// Loop through the different jobs until we have no more jobs.
+	for job := range jobs {
 
-    fmt.Printf("Downloading: %s (%d/%d) (worker #%d) \n", job.Path, job.Index, job.Length, id)
+		fmt.Printf("Downloading: %s (%d/%d) (worker #%d) \n", job.Path, job.Index, job.Length, id)
 
-    client := dropy.New(dropbox.New(dropbox.NewConfig(os.Getenv("DROPBOX_ACCESS_TOKEN"))))
+		client := dropy.New(dropbox.New(dropbox.NewConfig(os.Getenv("DROPBOX_ACCESS_TOKEN"))))
 
-    file, err := client.Download(job.Path);    
+		file, err := client.Download(job.Path)
 
-    if err != nil {
-      services.Error(err, "Could not download from Dropbox. ProccessDeltaNeutralDataWorker()")
-      return
-    }
+		if err != nil {
+			services.Error(err, "Could not download from Dropbox. ProccessDeltaNeutralDataWorker()")
+			return
+		}
 
-    // Create Zip file to store
-    outFile, err := os.Create("/tmp/" + job.Key);
+		// Create Zip file to store
+		outFile, err := os.Create("/tmp/" + job.Key)
 
-    if err != nil {
-      services.Error(err, "Could not create file. ProccessDeltaNeutralDataWorker()")      
-      return
-    }  
+		if err != nil {
+			services.Error(err, "Could not create file. ProccessDeltaNeutralDataWorker()")
+			return
+		}
 
-    // Copy DB file downloaded.
-    _, err = io.Copy(outFile, file)
+		// Copy DB file downloaded.
+		_, err = io.Copy(outFile, file)
 
-    if err != nil {
-      services.Error(err, "Could not copy from Dropbox. ProccessDeltaNeutralDataWorker()")      
-      return
-    }
+		if err != nil {
+			services.Error(err, "Could not copy from Dropbox. ProccessDeltaNeutralDataWorker()")
+			return
+		}
 
-    // Write file.
-    outFile.Close()
+		// Write file.
+		outFile.Close()
 
-    // Import symbol
-    SymbolImport("/tmp/" + job.Key)
+		// Import symbol
+		SymbolImport("/tmp/" + job.Key)
 
-    // Delete file.
-    os.Remove("/tmp/" + job.Key) 
+		// Delete file.
+		os.Remove("/tmp/" + job.Key)
 
-    // Send result back so we know it is done.
-    results <- job.Key
-  }
+		// Send result back so we know it is done.
+		results <- job.Key
+	}
 
-  // Log and return 
-  fmt.Printf("Worker %d closed. \n", id)
+	// Log and return
+	fmt.Printf("Worker %d closed. \n", id)
 
-  // Return happy
-  return
+	// Return happy
+	return
 }
 
 //
@@ -253,177 +254,177 @@ func ProccessDeltaNeutralDataWorker(id int, jobs <-chan Job, results chan<- stri
 //
 func SymbolImport(filePath string) error {
 
-  // Log
-  services.Log("Start SymbolImport - " + filePath) 
+	// Log
+	services.Info("Start SymbolImport - " + filePath)
 
-  // Unzip CSV files.
-  files, err := Unzip(filePath, "/tmp/output/")
+	// Unzip CSV files.
+	files, err := Unzip(filePath, "/tmp/output/")
 
-  if err != nil {
-    return err
-  }
+	if err != nil {
+		return err
+	}
 
-  // Loop through the files paths and find the file we are looking for.
-  var file = ""
+	// Loop through the files paths and find the file we are looking for.
+	var file = ""
 
-  for _, row := range files {
+	for _, row := range files {
 
-    // We are only interested in one file.
-    i := strings.Index(row, "ptions_")    
+		// We are only interested in one file.
+		i := strings.Index(row, "ptions_")
 
-    if i > -1 {
-      file = row
-    } else {
-      err := os.Remove(row)
+		if i > -1 {
+			file = row
+		} else {
+			err := os.Remove(row)
 
-      if err != nil {
-        services.Error(err, "Could not delete file - " + row)      
-      }      
-    }
+			if err != nil {
+				services.Error(err, "Could not delete file - "+row)
+			}
+		}
 
-  }
+	}
 
-  // Make sure we have a file
-  if len(file) <= 0 {
-    return errors.New("Did not find /tmp/output/options_XXXXXXXX.csv")
-  }
+	// Make sure we have a file
+	if len(file) <= 0 {
+		return errors.New("Did not find /tmp/output/options_XXXXXXXX.csv")
+	}
 
-  // Open CSV file
-  f, err := os.Open(file)
-  
-  if err != nil {
-    return err
-  }
-  
-  defer f.Close()
+	// Open CSV file
+	f, err := os.Open(file)
 
-  // Read File into a Variable - https://golangcode.com/how-to-read-a-csv-file-into-a-struct
-  lines, err := csv.NewReader(f).ReadAll()
-  
-  if err != nil {
-    return err
-  }
+	if err != nil {
+		return err
+	}
 
-  // Log import
-  services.Log("Importing option EOD quotes for - " + string(lines[0][7]))
+	defer f.Close()
 
-  // Figure out quote date
-  date, err := dateparse.ParseAny(string(lines[0][7]))
+	// Read File into a Variable - https://golangcode.com/how-to-read-a-csv-file-into-a-struct
+	lines, err := csv.NewReader(f).ReadAll()
 
-  if err != nil {
-    return err
-  }
+	if err != nil {
+		return err
+	}
 
-  // Hash map to keep each symbol array
-  symbolMap := make(map[string][][]string)
+	// Log import
+	services.Info("Importing option EOD quotes for - " + string(lines[0][7]))
 
-  // Loop through lines & turn into object
-  for _, line := range lines {
-    symbolMap[line[0]] = append(symbolMap[line[0]], line)
-  } 
+	// Figure out quote date
+	date, err := dateparse.ParseAny(string(lines[0][7]))
 
-  // Loop through and store to file.
-  for key, _ := range symbolMap {  
+	if err != nil {
+		return err
+	}
 
-    // Store Symbol to a file based on date and symbol
-    zipFilePath, err := StoreOneDaySymbol(key, date, symbolMap[key])
-    
-    if err != nil {
-      return err
-    }
+	// Hash map to keep each symbol array
+	symbolMap := make(map[string][][]string)
 
-    // Send the file to AWS for storage
-    err = AWSUpload(zipFilePath, key)
+	// Loop through lines & turn into object
+	for _, line := range lines {
+		symbolMap[line[0]] = append(symbolMap[line[0]], line)
+	}
 
-    if err != nil {
-      return err
-    }
+	// Loop through and store to file.
+	for key := range symbolMap {
 
-  }
+		// Store Symbol to a file based on date and symbol
+		zipFilePath, err := StoreOneDaySymbol(key, date, symbolMap[key])
 
-  // Delete output file. 
-  err = os.Remove(file)
+		if err != nil {
+			return err
+		}
 
-  if err != nil {
-    services.Error(err, "Could not delete file - " + file)      
-  }    
+		// Send the file to AWS for storage
+		err = AWSUpload(zipFilePath, key)
 
-  // Log
-  services.Log("Done SymbolImport - " + filePath)   
+		if err != nil {
+			return err
+		}
 
-  // Return happy.
-  return nil
+	}
+
+	// Delete output file.
+	err = os.Remove(file)
+
+	if err != nil {
+		services.Error(err, "Could not delete file - "+file)
+	}
+
+	// Log
+	services.Info("Done SymbolImport - " + filePath)
+
+	// Return happy.
+	return nil
 }
 
 //
-// Store one day's worth of Symbols 
+// Store one day's worth of Symbols
 //
 func StoreOneDaySymbol(symbol string, date time.Time, data [][]string) (string, error) {
 
-  var fileName = date.Format("2006-01-02") + ".csv"
-  var dirBase = os.Getenv("CACHE_DIR") + "/options-eod/"
-  var dirPath = dirBase + symbol + "/"
-  var csvFile = dirPath + fileName  
-  var zipFile = csvFile + ".zip"
+	var fileName = date.Format("2006-01-02") + ".csv"
+	var dirBase = os.Getenv("CACHE_DIR") + "/options-eod/"
+	var dirPath = dirBase + symbol + "/"
+	var csvFile = dirPath + fileName
+	var zipFile = csvFile + ".zip"
 
-  // Create directory - Base
-  if _, err := os.Stat(dirBase); os.IsNotExist(err) {
-    err = os.Mkdir(dirBase, 0755)
+	// Create directory - Base
+	if _, err := os.Stat(dirBase); os.IsNotExist(err) {
+		err = os.Mkdir(dirBase, 0755)
 
-    if err != nil {
-      return "", err
-    }     
-  }  
+		if err != nil {
+			return "", err
+		}
+	}
 
-  // Create directory - Path
-  if _, err := os.Stat(dirPath); os.IsNotExist(err) {
-    err = os.Mkdir(dirPath, 0755)
+	// Create directory - Path
+	if _, err := os.Stat(dirPath); os.IsNotExist(err) {
+		err = os.Mkdir(dirPath, 0755)
 
-    if err != nil {
-      return "", err
-    }     
-  } 
+		if err != nil {
+			return "", err
+		}
+	}
 
-  // Create CSV file
-  csvFilePtr, err := os.Create(dirPath + fileName);
+	// Create CSV file
+	csvFilePtr, err := os.Create(dirPath + fileName)
 
-  if err != nil {
-    return "", err
-  }  
+	if err != nil {
+		return "", err
+	}
 
-  // Write to a new CSV file just for this symbol
-  writer := csv.NewWriter(csvFilePtr)
-    
-  // Loop through writing each line to the file.
-  for _, row := range data {
+	// Write to a new CSV file just for this symbol
+	writer := csv.NewWriter(csvFilePtr)
 
-    // Make sure the row is not blank
-    if err := writer.Write(row); err != nil {
-      return "", err
-    }
+	// Loop through writing each line to the file.
+	for _, row := range data {
 
-  }  
+		// Make sure the row is not blank
+		if err := writer.Write(row); err != nil {
+			return "", err
+		}
 
-  // Write the file.
-  writer.Flush()
-  csvFilePtr.Close()
+	}
 
-  // Zip the file up.
-  err = ZipFiles(zipFile, []string{csvFile})  
+	// Write the file.
+	writer.Flush()
+	csvFilePtr.Close()
 
-  if err != nil {
-    return "", err
-  }
+	// Zip the file up.
+	err = ZipFiles(zipFile, []string{csvFile})
 
-  // Delete unziped file
-  err = os.Remove(csvFile)
+	if err != nil {
+		return "", err
+	}
 
-  if err != nil {
-    return "", err      
-  }  
+	// Delete unziped file
+	err = os.Remove(csvFile)
 
-  // Return happy
-  return zipFile, err
+	if err != nil {
+		return "", err
+	}
+
+	// Return happy
+	return zipFile, err
 }
 
 //
@@ -431,37 +432,37 @@ func StoreOneDaySymbol(symbol string, date time.Time, data [][]string) (string, 
 //
 func DownloadOptionsDailyDataByName(name string) (string, error) {
 
-  client, err := ftp.Dial("eodftp.deltaneutral.com:21")
+	client, err := ftp.Dial("eodftp.deltaneutral.com:21")
 
-  defer client.Quit()
+	defer client.Quit()
 
-  if err != nil {
-    return "", err
-  }
+	if err != nil {
+		return "", err
+	}
 
-  if err := client.Login(os.Getenv("DELTA_NEUTRAL_USERNAME"), os.Getenv("DELTA_NEUTRAL_PASSWORD")); err != nil {
-    return "", err
-  }
+	if err := client.Login(os.Getenv("DELTA_NEUTRAL_USERNAME"), os.Getenv("DELTA_NEUTRAL_PASSWORD")); err != nil {
+		return "", err
+	}
 
-  reader, err := client.Retr("/dbupdate/" + name)
+	reader, err := client.Retr("/dbupdate/" + name)
 
-  if err != nil {
-    return "", err
-  }
+	if err != nil {
+		return "", err
+	}
 
-  // Save file locally
-  writer, err := os.Create("/tmp/" + name)
+	// Save file locally
+	writer, err := os.Create("/tmp/" + name)
 
-  if err != nil {
-    return "", err
-  }
+	if err != nil {
+		return "", err
+	}
 
-  if _, err = io.Copy(writer, reader); err != nil {
-    return "", err
-  }
+	if _, err = io.Copy(writer, reader); err != nil {
+		return "", err
+	}
 
-  // Return file path
-  return "/tmp/" + name, nil
+	// Return file path
+	return "/tmp/" + name, nil
 }
 
 //
@@ -469,70 +470,69 @@ func DownloadOptionsDailyDataByName(name string) (string, error) {
 //
 func GetOptionsDailyData() ([]*ftp.Entry, error) {
 
-  client, err := ftp.Dial("eodftp.deltaneutral.com:21")
+	client, err := ftp.Dial("eodftp.deltaneutral.com:21")
 
-  defer client.Quit()
+	defer client.Quit()
 
-  if err != nil {
-    return nil, err
-  }
+	if err != nil {
+		return nil, err
+	}
 
-  if err := client.Login(os.Getenv("DELTA_NEUTRAL_USERNAME"), os.Getenv("DELTA_NEUTRAL_PASSWORD")); err != nil {
-    return nil, err
-  }
+	if err := client.Login(os.Getenv("DELTA_NEUTRAL_USERNAME"), os.Getenv("DELTA_NEUTRAL_PASSWORD")); err != nil {
+		return nil, err
+	}
 
-  entries, _ := client.List("/dbupdate/options_*.zip")
+	entries, _ := client.List("/dbupdate/options_*.zip")
 
-  return entries, nil
+	return entries, nil
 }
 
 //
 // Get a map of files we have already processed.
 //
 func GetProccessedFiles(client *dropy.Client) (map[string]os.FileInfo, error) {
-  
-  // Files that we already have imported
-  skip := make(map[string]os.FileInfo)  
-  
-  // Get a list of all the EOD zip files from Dropbox
-  files, err := client.List("/data/AllOptions/Daily")
-  
-  if err != nil {
-    return nil, err
-  }
-  
-  // Create a map (hash table) of all the files we already have at Dropbox
-  for _, row := range files {
-    skip[row.Name()] = row    
-  }
-  
-  return skip, nil
-  
+
+	// Files that we already have imported
+	skip := make(map[string]os.FileInfo)
+
+	// Get a list of all the EOD zip files from Dropbox
+	files, err := client.List("/data/AllOptions/Daily")
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Create a map (hash table) of all the files we already have at Dropbox
+	for _, row := range files {
+		skip[row.Name()] = row
+	}
+
+	return skip, nil
+
 }
 
-
 /*
-    // Delta Neutral Options CSV Format
-    [0] => underlying
-    [1] => underlying_last
-    [2] =>  exchange
-    [3] => optionroot
-    [4] => optionext
-    [5] => type
-    [6] => expiration
-    [7] => quotedate
-    [8] => strike
-    [9] => last
-    [10] => bid
-    [11] => ask
-    [12] => volume
-    [13] => openinterest
-    [14] => impliedvol
-    [15] => delta
-    [16] => gamma
-    [17] => theta
-    [18] => vega
-    [19] => optionalias
+   // Delta Neutral Options CSV Format
+   [0] => underlying
+   [1] => underlying_last
+   [2] =>  exchange
+   [3] => optionroot
+   [4] => optionext
+   [5] => type
+   [6] => expiration
+   [7] => quotedate
+   [8] => strike
+   [9] => last
+   [10] => bid
+   [11] => ask
+   [12] => volume
+   [13] => openinterest
+   [14] => impliedvol
+   [15] => delta
+   [16] => gamma
+   [17] => theta
+   [18] => vega
+   [19] => optionalias
 */
 
 /* End File */

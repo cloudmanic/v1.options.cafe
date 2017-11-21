@@ -224,7 +224,7 @@ func (t *DB) CreateUser(first string, last string, email string, password string
 	t.Create(&user)
 
 	// Log user creation.
-	services.Log("CreateUser - Created a new user account - " + first + " " + last + " " + email)
+	services.Info("CreateUser - Created a new user account - " + first + " " + last + " " + email)
 
 	// Create a session so we get an access_token
 	session, err := t.CreateSession(user.Id, userAgent, ipAddress)

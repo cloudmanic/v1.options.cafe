@@ -7,71 +7,73 @@
 package services
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"path/filepath"
+	"runtime"
+	"strings"
 
+	"github.com/mgutz/ansi"
 	"github.com/stvp/rollbar"
 )
 
-//
-// Normal Log.
-//
-func Log(message string) {
+// --------------- TODO: Get Rid Of These Functions ----------- //
 
-	log.Println("[App Log] " + message)
+func Error(err error, message string) {
+	BetterError(err)
+}
+
+// -------------- END Get Rid Of -------------------- //
+
+//
+// Info Log.
+//
+func Info(message string) {
+	log.Println("[App:Info] " + MyCaller() + " : " + ansi.Color(message, "magenta"))
+}
+
+//
+// Critical.
+//
+func Critical(message string) {
+
+	caller := MyCaller()
+
+	// Standard out
+	log.Println(ansi.Color("[App:Critical] "+caller+" : "+message, "yellow"))
+
+	// Rollbar
+	RollbarInfo(caller + " : " + message)
 }
 
 //
 // Fatal Log.
 //
-func Fatal(message string) {
+func Fatal(err error) {
 
-	log.Fatal("[App Log] " + message)
-
-	// Rollbar
-	RollbarInfo(message)
-}
-
-//
-// Error Log.
-//
-func Error(err error, message string) {
-
-	// Standard out
-	log.Println("[App Log] " + message + " (" + err.Error() + ")")
+	log.Fatal(ansi.Color("[App:Fatal] "+MyCaller()+" : "+err.Error(), "red"))
 
 	// Rollbar
 	RollbarError(err)
 }
 
 //
-// Error Log. Not a major error. But should log.
+// Warning Log. (error type only)
 //
-func LogErrorOnly(err error) {
-
-	// Standard out
-	log.Println("[App Log] " + err.Error())
+func Warning(err error) {
+	log.Println(ansi.Color("[App:Warning] "+MyCaller()+" : "+err.Error(), "yellow+b"))
 }
 
 //
-// Major Log - Log to every place.
+// Error Log. TODO: Convert this to normal Error Bettererror sucks as a name
 //
-func MajorLog(message string) {
+func BetterError(err error) {
+
+	caller := MyCaller()
 
 	// Standard out
-	log.Println("[App Log] " + message)
-
-	// Rollbar
-	RollbarInfo(message)
-}
-
-//
-// Major Error - Log to every place.
-//
-func MajorError(err error, message string) {
-
-	// Standard out
-	log.Println("[App Log] " + message + " (" + err.Error() + ")")
+	log.Println(ansi.Color("[App:Error] "+caller+" : "+err.Error(), "red"))
 
 	// Rollbar
 	RollbarError(err)
@@ -109,6 +111,41 @@ func RollbarError(err error) {
 		}()
 
 	}
+}
+
+//
+// MyCaller returns the caller of the function that called the logger :)
+//
+func MyCaller() string {
+	var filePath string
+	var fnName string
+
+	pc, file, line, ok := runtime.Caller(3)
+
+	if !ok {
+		file = "?"
+		line = 0
+	}
+
+	fn := runtime.FuncForPC(pc)
+
+	if fn == nil {
+		fnName = "?()"
+	} else {
+		dotName := filepath.Ext(fn.Name())
+		fnName = strings.TrimLeft(dotName, ".") + "()"
+	}
+
+	// Make the base of this code.
+	parts := strings.Split(file, "app.options.cafe")
+
+	if len(parts) == 2 {
+		filePath = "app.options.cafe" + parts[1]
+	} else {
+		filePath = filepath.Base(file)
+	}
+
+	return fmt.Sprintf("%s:%d %s", filePath, line, fnName)
 }
 
 /* End File */

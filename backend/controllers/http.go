@@ -96,7 +96,7 @@ func (t *Controller) DoWsDispatch() {
 					case t.Connections[i].WriteChan <- send.Body:
 
 					default:
-						services.MajorLog("Channel full. Discarding value (Core channel)")
+						services.Critical("Channel full. Discarding value (Core channel)")
 
 					}
 
@@ -117,7 +117,7 @@ func (t *Controller) DoWsDispatch() {
 					case t.QuotesConnections[i].WriteChan <- send.Body:
 
 					default:
-						services.MajorLog("Channel full. Discarding value (Quotes channel)")
+						services.Critical("Channel full. Discarding value (Quotes channel)")
 
 					}
 

@@ -33,7 +33,7 @@ func (t *Base) DoSymbolImport() {
 	}
 
 	// Log...
-	services.Log("[DoSymbolImport] Found " + strconv.Itoa(len(knownSymbols)) + " known symbols.")
+	services.Info("[DoSymbolImport] Found " + strconv.Itoa(len(knownSymbols)) + " known symbols.")
 
 	// Loop through each char and import into db.
 	for _, row := range chars {
@@ -70,7 +70,7 @@ func (t *Base) ProcessLetter(letter string, knownSymbols map[string]models.Symbo
 	}
 
 	// Log...
-	services.Log("[DoSymbolImport] Processing letter " + letter + " found " + strconv.Itoa(len(symbols)) + " symbols from Tradier.")
+	services.Info("[DoSymbolImport] Processing letter " + letter + " found " + strconv.Itoa(len(symbols)) + " symbols from Tradier.")
 
 	// Loop through each result and add to db.
 	for _, row := range symbols {

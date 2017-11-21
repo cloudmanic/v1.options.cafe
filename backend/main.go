@@ -21,13 +21,13 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	// Lets get started
-	services.MajorLog("App Started: " + os.Getenv("APP_ENV"))
+	services.Critical("App Started: " + os.Getenv("APP_ENV"))
 
 	// Start the db connection.
 	db, err := models.NewDB()
 
 	if err != nil {
-		services.Fatal("Failed to connect database")
+		services.Fatal(err)
 	}
 
 	// Close db when this app dies. (This might be useless)
