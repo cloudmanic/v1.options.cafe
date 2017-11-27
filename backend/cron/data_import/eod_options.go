@@ -19,8 +19,6 @@ import (
 	"github.com/app.options.cafe/backend/library/services"
 	"github.com/araddon/dateparse"
 	"github.com/jlaffaye/ftp"
-	"github.com/tj/go-dropbox"
-	"github.com/tj/go-dropy"
 )
 
 // Job Struct

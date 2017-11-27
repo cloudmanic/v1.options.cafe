@@ -7,13 +7,14 @@
 package data_import
 
 import (
-  "os"
-  "path"  
-  "bytes"
-  "net/http"
-  "github.com/aws/aws-sdk-go/aws"
-  "github.com/aws/aws-sdk-go/aws/session"
-  "github.com/aws/aws-sdk-go/service/s3"
+	"bytes"
+	"net/http"
+	"os"
+	"path"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 //
@@ -21,22 +22,22 @@ import (
 //
 func AWSUpload(filePath string, symbol string) error {
 
-  // Create a single AWS session (we can re use this if we're uploading many files)
-  s, err := session.NewSession(&aws.Config{Region: aws.String(os.Getenv("AWS_REGION"))})
-  
-  if err != nil {
-    return err
-  } 
+	// Create a single AWS session (we can re use this if we're uploading many files)
+	s, err := session.NewSession(&aws.Config{Region: aws.String(os.Getenv("AWS_REGION"))})
 
-  // Upload
-  err = AddFileToS3(s, filePath, symbol)
-  
-  if err != nil {
-    return err
-  }
+	if err != nil {
+		return err
+	}
 
-  // Return happy
-  return nil    
+	// Upload
+	err = AddFileToS3(s, filePath, symbol)
+
+	if err != nil {
+		return err
+	}
+
+	// Return happy
+	return nil
 }
 
 //
@@ -45,32 +46,32 @@ func AWSUpload(filePath string, symbol string) error {
 //
 func AddFileToS3(s *session.Session, fileDir string, symbol string) error {
 
-  // Open the file for use
-  file, err := os.Open(fileDir)
-  if err != nil {
-    return err
-  }
-  defer file.Close()
+	// Open the file for use
+	file, err := os.Open(fileDir)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
 
-  // Get file size and read the file content into a buffer
-  fileInfo, _ := file.Stat()
-  var size int64 = fileInfo.Size()
-  buffer := make([]byte, size)
-  file.Read(buffer)
-  
-  // Config settings: this is where you choose the bucket, filename, content-type etc.
-  // of the file you're uploading.
-  _, err = s3.New(s).PutObject(&s3.PutObjectInput{
-      Bucket: aws.String(os.Getenv("AWS_BUCKET")),
-      Key: aws.String("options-eod/" + symbol + "/" + path.Base(fileDir)),
-      ACL: aws.String("private"),
-      Body: bytes.NewReader(buffer),
-      ContentLength: aws.Int64(size),
-      ContentType: aws.String(http.DetectContentType(buffer)),
-      //ServerSideEncryption: aws.String("AES256"),
-  })
-  
-  return err
+	// Get file size and read the file content into a buffer
+	fileInfo, _ := file.Stat()
+	var size int64 = fileInfo.Size()
+	buffer := make([]byte, size)
+	file.Read(buffer)
+
+	// Config settings: this is where you choose the bucket, filename, content-type etc.
+	// of the file you're uploading.
+	_, err = s3.New(s).PutObject(&s3.PutObjectInput{
+		Bucket:        aws.String(os.Getenv("AWS_BUCKET")),
+		Key:           aws.String("options-eod/" + symbol + "/" + path.Base(fileDir)),
+		ACL:           aws.String("private"),
+		Body:          bytes.NewReader(buffer),
+		ContentLength: aws.Int64(size),
+		ContentType:   aws.String(http.DetectContentType(buffer)),
+		//ServerSideEncryption: aws.String("AES256"),
+	})
+
+	return err
 }
 
 /* End File */
