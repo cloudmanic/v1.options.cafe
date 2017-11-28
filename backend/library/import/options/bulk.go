@@ -10,6 +10,7 @@ import (
 	"bufio"
 	"encoding/csv"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -20,6 +21,11 @@ import (
 	"github.com/app.options.cafe/backend/library/store/object"
 	"github.com/araddon/dateparse"
 )
+
+// Job Struct
+type Job struct {
+	Key string
+}
 
 //
 // Here we do a bulk import of all End of Day options data.
@@ -45,9 +51,46 @@ func DoBulkEodImportToPerSymbolDay() {
 }
 
 //
+// A worker to process jobs of EOD imports
+//
+func EodImportWorker(id int, jobs <-chan Job, results chan<- string) {
+
+	// Loop through the different jobs until we have no more jobs.
+	for job := range jobs {
+
+		// Download and process.
+		err := DoOneMonthsEodData(job.Key)
+
+		// Should never get error. So we panic.
+		if err != nil {
+			panic(err)
+		}
+
+		// Send result back so we know it is done.
+		results <- job.Key
+	}
+
+	// Log and return
+	fmt.Printf("Worker %d closed. \n", id)
+
+	// Return happy
+	return
+
+}
+
+//
 // Do Historical Monthly EOD data processing.
 //
 func DoHistoricalMonthlyEodData() error {
+
+	// Job queue stuff. (assume we do not have more than 2000 days worth of data)
+	jobs := make(chan Job, 2000)
+	results := make(chan string, 2000)
+
+	// Start workers
+	for w := 1; w <= 50; w++ {
+		go EodImportWorker(w, jobs, results)
+	}
 
 	// Get a map of monthly EOD's that we have already done.
 	monthlyDone, err := ReadMonthlyEodImportLog()
@@ -65,6 +108,8 @@ func DoHistoricalMonthlyEodData() error {
 	}
 
 	// Loop through each month / year zip file in options-eod-monthly.
+	var total = 0
+
 	for _, row := range objects {
 
 		// Check to see if we already did this key (maybe the program died and we are resuming)
@@ -73,15 +118,22 @@ func DoHistoricalMonthlyEodData() error {
 			continue
 		}
 
-		// TODO: pass this off to a worker.
-		// Process one Month's worth of EOD data.
-		err := DoOneMonthsEodData(row.Key)
+		// Send job to worker
+		jobs <- Job{Key: row.Key}
 
-		if err != nil {
-			return err
-		}
-
+		total++
 	}
+
+	// Close down jobs
+	close(jobs)
+
+	// Collect the results of the workers
+	for a := 0; a < total; a++ {
+		<-results
+	}
+
+	// Close down results
+	close(results)
 
 	// Return Happy.
 	return nil
@@ -137,7 +189,7 @@ func OneMonthEodImport(zipFilePath string) error {
 	files, err := files.Unzip(zipFilePath, os.Getenv("CACHE_DIR"))
 
 	if err != nil {
-		return err
+		return errors.New("files.Unzip: " + err.Error() + " - " + zipFilePath)
 	}
 
 	// Loop through the files paths and find the file we are looking for.
@@ -238,20 +290,25 @@ func OneDayEodImport(csvFile string) error {
 	for key := range symbolMap {
 
 		// Store Symbol to a file based on date and symbol
-		_, err := OneDayEodSymbol(key, date, symbolMap[key])
+		zipFile, err := OneDayEodSymbol(key, date, symbolMap[key])
 
 		if err != nil {
 			return err
 		}
 
-		//fmt.Println(zipFilePath)
+		// Upload to the object store.
+		err = object.UploadObject(zipFile, "options-eod/"+key+"/"+filepath.Base(zipFile))
 
-		// // Send the file to AWS for storage
-		// err = AWSUpload(zipFilePath, key)
+		if err != nil {
+			return errors.New("object.UploadObject: " + err.Error() + " - " + key + " - " + zipFile)
+		}
 
-		// if err != nil {
-		// 	return err
-		// }
+		// Delete zipFile file.
+		err = os.Remove(zipFile)
+
+		if err != nil {
+			return errors.New("Could not delete file - " + zipFile)
+		}
 
 	}
 
@@ -323,7 +380,7 @@ func OneDayEodSymbol(symbol string, date time.Time, data [][]string) (string, er
 	err = files.ZipFiles(zipFile, []string{csvFile})
 
 	if err != nil {
-		return "", err
+		return "", errors.New("files.ZipFiles: " + err.Error() + " - " + zipFile)
 	}
 
 	// Delete unziped file
@@ -342,6 +399,10 @@ func OneDayEodSymbol(symbol string, date time.Time, data [][]string) (string, er
 //
 func ReadMonthlyEodImportLog() (map[string]bool, error) {
 	log := make(map[string]bool)
+
+	if _, err := os.Stat(os.Getenv("CACHE_DIR") + "/OneMonthEodImport.log"); os.IsNotExist(err) {
+		return log, nil
+	}
 
 	file, err := os.Open(os.Getenv("CACHE_DIR") + "/OneMonthEodImport.log")
 

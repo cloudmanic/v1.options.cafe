@@ -51,6 +51,29 @@ func ListObjects(prefix string) ([]minio.ObjectInfo, error) {
 }
 
 //
+// Upload to object store.
+//
+func UploadObject(filePath string, storePath string) error {
+
+	// New returns an Amazon S3 compatible client object.
+	minioClient, err := minio.New(os.Getenv("OBJECT_ENDPOINT"), os.Getenv("OBJECT_ACCESS_KEY_ID"), os.Getenv("OBJECT_SECRET_ACCESS_KEY"), true)
+
+	if err != nil {
+		return err
+	}
+
+	// Upload file.
+	_, err = minioClient.FPutObject(os.Getenv("OBJECT_BUCKET"), storePath, filePath, minio.PutObjectOptions{})
+
+	if err != nil {
+		return err
+	}
+
+	// Return happy
+	return nil
+}
+
+//
 // Download an object to our cache directory.
 //
 func DownloadObject(objectPath string) (string, error) {
