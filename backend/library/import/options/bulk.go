@@ -88,7 +88,7 @@ func DoHistoricalMonthlyEodData() error {
 	results := make(chan string, 2000)
 
 	// Start workers
-	for w := 1; w <= 50; w++ {
+	for w := 1; w <= 12; w++ {
 		go EodImportWorker(w, jobs, results)
 	}
 
@@ -328,6 +328,7 @@ func OneDayEodImport(csvFile string) error {
 //
 func OneDayEodSymbol(symbol string, date time.Time, data [][]string) (string, error) {
 
+	symbol = strings.Replace(symbol, "/", "-", -1)
 	var fileName = date.Format("2006-01-02") + ".csv"
 	var dirBase = os.Getenv("CACHE_DIR") + "/options-eod/"
 	var dirPath = dirBase + symbol + "/"
@@ -339,7 +340,7 @@ func OneDayEodSymbol(symbol string, date time.Time, data [][]string) (string, er
 		err = os.Mkdir(dirBase, 0755)
 
 		if err != nil {
-			return "", err
+			return "", errors.New("os.Mkdir (001) - " + dirBase + " - " + err.Error())
 		}
 	}
 
@@ -348,7 +349,7 @@ func OneDayEodSymbol(symbol string, date time.Time, data [][]string) (string, er
 		err = os.Mkdir(dirPath, 0755)
 
 		if err != nil {
-			return "", err
+			return "", errors.New("os.Mkdir (002) - " + dirPath + " - " + symbol + " - " + err.Error())
 		}
 	}
 
