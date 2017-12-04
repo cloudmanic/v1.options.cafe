@@ -22,11 +22,6 @@ import (
 	"github.com/araddon/dateparse"
 )
 
-// Job Struct
-type Job struct {
-	Key string
-}
-
 //
 // Here we do a bulk import of all End of Day options data.
 // First we go over historical data stored in a per month zip file.

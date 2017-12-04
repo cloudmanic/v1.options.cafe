@@ -4,40 +4,48 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-package main
+package cmd
 
 import (
 	"flag"
-	"runtime"
+	"fmt"
 
 	"github.com/app.options.cafe/backend/library/import/options"
-	env "github.com/jpfuentes2/go-env"
 )
 
 //
-// Main....
+// Run this and see if we have any commands to run.
 //
-func main() {
-
-	// Setup CPU stuff.
-	runtime.GOMAXPROCS(runtime.NumCPU())
-
-	// Load ENV (if we have it.)
-	env.ReadEnv("../.env")
+func Run() bool {
 
 	// Grab flags
-	action := flag.String("action", "none", "bulk-eod-options-import")
+	action := flag.String("cmd", "none", "bulk-eod-options-import")
 	flag.Parse()
 
 	switch *action {
 
-	// Symbol import
+	// Bulk EOD options import
 	case "bulk-eod-options-import":
 		options.DoBulkEodImportToPerSymbolDay()
+		return true
+		break
+
+	// EOD options import
+	case "eod-options-import":
+		options.DoEodOptionsImport()
+		return true
+		break
+
+	// Just a test
+	case "test":
+		fmt.Println("CMD Works....")
+		return true
 		break
 
 	}
 
+	// This is not a command. Run the server.
+	return false
 }
 
 /* End File */

@@ -4,6 +4,7 @@ import (
 	"os"
 	"runtime"
 
+	"github.com/app.options.cafe/backend/cmd"
 	"github.com/app.options.cafe/backend/controllers"
 	"github.com/app.options.cafe/backend/library/services"
 	"github.com/app.options.cafe/backend/models"
@@ -20,15 +21,24 @@ func main() {
 	// Setup CPU stuff.
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	// Lets get started
-	services.Critical("App Started: " + os.Getenv("APP_ENV"))
-
 	// Start the db connection.
 	db, err := models.NewDB()
 
 	if err != nil {
 		services.Fatal(err)
 	}
+
+	// See if this a command. If so run the command and do not start the app.
+	status := cmd.Run()
+
+	if status == true {
+		return
+	}
+
+	// -------------- If we made it this far it is time to start the http server -------------- //
+
+	// Lets get started
+	services.Critical("App Started: " + os.Getenv("APP_ENV"))
 
 	// Close db when this app dies. (This might be useless)
 	defer db.Close()

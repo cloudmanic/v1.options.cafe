@@ -4,30 +4,27 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-package data_import
+package options
 
 import (
 	"encoding/csv"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/app.options.cafe/backend/library/files"
 	"github.com/app.options.cafe/backend/library/services"
+	"github.com/app.options.cafe/backend/library/store/object"
 	"github.com/araddon/dateparse"
 	"github.com/jlaffaye/ftp"
+	minio "github.com/minio/minio-go"
+	dropbox "github.com/tj/go-dropbox"
+	dropy "github.com/tj/go-dropy"
 )
-
-// Job Struct
-type Job struct {
-	Key    string
-	Length int
-	Index  int
-	Path   string
-}
 
 //
 // Do End of Day Options Import. We run this every day from "Cron". It will
@@ -41,14 +38,11 @@ func DoEodOptionsImport() {
 	// Log
 	services.Info("Starting DoEodOptionsImport().")
 
-	// Get the Dropbox Client (this is where we archive the zip file)
-	client := dropy.New(dropbox.New(dropbox.NewConfig(os.Getenv("DROPBOX_ACCESS_TOKEN"))))
-
 	// Get files we should skip.
-	dbFiles, err := GetProccessedFiles(client)
+	proccessedFiles, err := GetProccessedFiles()
 
 	if err != nil {
-		services.Error(err, "Could not get dbFiles files in GetProccessedFiles()")
+		services.Error(err, "Could not get proccessedFiles files in GetProccessedFiles()")
 		return
 	}
 
@@ -63,9 +57,13 @@ func DoEodOptionsImport() {
 	// Loop through the FTP files.
 	for _, row := range ftpFiles {
 
-		if _, ok := dbFiles[row.Name]; ok {
+		// Have we already processed this day?
+		if _, ok := proccessedFiles[row.Name]; ok {
 			continue
 		}
+
+		// Processing Log
+		services.Info("Processing " + row.Name + " from data provider.")
 
 		// Download file.
 		filePath, err := DownloadOptionsDailyDataByName(row.Name)
@@ -75,6 +73,25 @@ func DoEodOptionsImport() {
 			continue
 		}
 
+		// Import file into different symbols (we do this first and then upload the archive we if things go wrong we can re run this.)
+		err = SymbolImport(filePath)
+
+		if err != nil {
+			services.Error(err, "Could not import DatabaseImport() - "+row.Name)
+			continue
+		}
+
+		// Upload file to object store.
+		err = object.UploadObject(filePath, "options-eod-daily/"+filepath.Base(filePath))
+
+		if err != nil {
+			services.Error(err, "Could not upload to Object Store - "+row.Name)
+			continue
+		}
+
+		// Log file
+		services.Info("Finished uploading " + row.Name + " to Object Store.")
+
 		// Open file we upload.
 		file, err := os.Open(filePath)
 
@@ -83,8 +100,9 @@ func DoEodOptionsImport() {
 			continue
 		}
 
-		// Upload the file to Dropbox
-		client.Upload("/data/AllOptions/Daily/"+row.Name, file)
+		// Upload the file to Dropbox (just for safe keeping, all processing is done with the object store.)
+		client := dropy.New(dropbox.New(dropbox.NewConfig(os.Getenv("DROPBOX_ACCESS_TOKEN"))))
+		client.Upload("/data/options-eod-daily/"+row.Name, file)
 
 		if err != nil {
 			services.Error(err, "Could not upload to Dropbox - "+row.Name)
@@ -93,14 +111,6 @@ func DoEodOptionsImport() {
 
 		// Log file
 		services.Info("Finished uploading " + row.Name + " to Dropbox.")
-
-		// Import file into different symbols
-		err = SymbolImport(filePath)
-
-		if err != nil {
-			services.Error(err, "Could not import DatabaseImport() - "+row.Name)
-			continue
-		}
 
 		// // Delete file we uploaded to Dropbox
 		err = os.Remove(filePath)
@@ -127,124 +137,6 @@ func DoEodOptionsImport() {
 
 	// Log
 	services.Info("Done DoEodOptionsImport().")
-
-}
-
-//
-// Convert all Delta Neutral imports into a per symbol / date CSV file. This is a mass import
-// from Dropbox where we archive Delta Neutral EOD options data. We go through each
-// EOD file and convert to a per symbol per date archive. We then store this archive at
-// AWS S3. This is used as a one off thing when data at AWS gets messed up or is missing or something.
-// In a perfect world this is only run once ever.
-//
-func ProccessAllDeltaNeutralData() error {
-
-	// Log
-	services.Info("Starting ProccessAllDeltaNeutralData().")
-
-	// Job queue stuff. (assume we do not have more than 2000 days worth of data)
-	jobs := make(chan Job, 2000)
-	results := make(chan string, 2000)
-
-	// Get the Dropbox Client (this is where we archive the zip file)
-	client := dropy.New(dropbox.New(dropbox.NewConfig(os.Getenv("DROPBOX_ACCESS_TOKEN"))))
-
-	// Get files we should skip.
-	dbFiles, err := GetProccessedFiles(client)
-
-	if err != nil {
-		return err
-	}
-
-	// Start workers
-	for w := 1; w <= 50; w++ {
-		go ProccessDeltaNeutralDataWorker(w, jobs, results)
-	}
-
-	var i = 1
-	var total = len(dbFiles)
-
-	// Loop through files at Dropbox
-	for key := range dbFiles {
-
-		// Send job to worker
-		jobs <- Job{Key: key, Index: i, Length: total, Path: "/data/AllOptions/Daily/" + key}
-
-		// Update count
-		i++
-	}
-
-	// Close down jobs
-	close(jobs)
-
-	// Collect the results of the workers
-	for a := 0; a < total; a++ {
-		<-results
-	}
-
-	// Close down results
-	close(results)
-
-	// Log
-	services.Info("Done ProccessAllDeltaNeutralData().")
-
-	// Return happy.
-	return nil
-}
-
-//
-// A worker to process jobs of DeltaNeutral imports
-//
-func ProccessDeltaNeutralDataWorker(id int, jobs <-chan Job, results chan<- string) {
-
-	// Loop through the different jobs until we have no more jobs.
-	for job := range jobs {
-
-		fmt.Printf("Downloading: %s (%d/%d) (worker #%d) \n", job.Path, job.Index, job.Length, id)
-
-		client := dropy.New(dropbox.New(dropbox.NewConfig(os.Getenv("DROPBOX_ACCESS_TOKEN"))))
-
-		file, err := client.Download(job.Path)
-
-		if err != nil {
-			services.Error(err, "Could not download from Dropbox. ProccessDeltaNeutralDataWorker()")
-			return
-		}
-
-		// Create Zip file to store
-		outFile, err := os.Create("/tmp/" + job.Key)
-
-		if err != nil {
-			services.Error(err, "Could not create file. ProccessDeltaNeutralDataWorker()")
-			return
-		}
-
-		// Copy DB file downloaded.
-		_, err = io.Copy(outFile, file)
-
-		if err != nil {
-			services.Error(err, "Could not copy from Dropbox. ProccessDeltaNeutralDataWorker()")
-			return
-		}
-
-		// Write file.
-		outFile.Close()
-
-		// Import symbol
-		SymbolImport("/tmp/" + job.Key)
-
-		// Delete file.
-		os.Remove("/tmp/" + job.Key)
-
-		// Send result back so we know it is done.
-		results <- job.Key
-	}
-
-	// Log and return
-	fmt.Printf("Worker %d closed. \n", id)
-
-	// Return happy
-	return
 }
 
 //
@@ -256,7 +148,7 @@ func SymbolImport(filePath string) error {
 	services.Info("Start SymbolImport - " + filePath)
 
 	// Unzip CSV files.
-	files, err := Unzip(filePath, "/tmp/output/")
+	files, err := files.Unzip(filePath, "/tmp/output/")
 
 	if err != nil {
 		return err
@@ -325,17 +217,24 @@ func SymbolImport(filePath string) error {
 	for key := range symbolMap {
 
 		// Store Symbol to a file based on date and symbol
-		zipFilePath, err := StoreOneDaySymbol(key, date, symbolMap[key])
+		zipFile, err := StoreOneDaySymbol(key, date, symbolMap[key])
 
 		if err != nil {
 			return err
 		}
 
-		// Send the file to AWS for storage
-		err = AWSUpload(zipFilePath, key)
+		// Upload to the object store.
+		err = object.UploadObject(zipFile, "options-eod/"+key+"/"+filepath.Base(zipFile))
 
 		if err != nil {
-			return err
+			return errors.New("object.UploadObject: " + err.Error() + " - " + key + " - " + zipFile)
+		}
+
+		// Delete zipFile file.
+		err = os.Remove(zipFile)
+
+		if err != nil {
+			return errors.New("Could not delete file - " + zipFile)
 		}
 
 	}
@@ -408,7 +307,7 @@ func StoreOneDaySymbol(symbol string, date time.Time, data [][]string) (string, 
 	csvFilePtr.Close()
 
 	// Zip the file up.
-	err = ZipFiles(zipFile, []string{csvFile})
+	err = files.ZipFiles(zipFile, []string{csvFile})
 
 	if err != nil {
 		return "", err
@@ -488,25 +387,25 @@ func GetOptionsDailyData() ([]*ftp.Entry, error) {
 //
 // Get a map of files we have already processed.
 //
-func GetProccessedFiles(client *dropy.Client) (map[string]os.FileInfo, error) {
+func GetProccessedFiles() (map[string]minio.ObjectInfo, error) {
 
 	// Files that we already have imported
-	skip := make(map[string]os.FileInfo)
+	skip := make(map[string]minio.ObjectInfo)
 
-	// Get a list of all the EOD zip files from Dropbox
-	files, err := client.List("/data/AllOptions/Daily")
+	// Get all files stored at AWS object store.
+	files, err := object.ListObjects("options-eod-daily")
 
 	if err != nil {
 		return nil, err
 	}
 
-	// Create a map (hash table) of all the files we already have at Dropbox
+	// Create a map (hash table) of all the files we already have at Object store
 	for _, row := range files {
-		skip[row.Name()] = row
+		skip[filepath.Base(row.Key)] = row
 	}
 
+	// Return happy.
 	return skip, nil
-
 }
 
 /*
