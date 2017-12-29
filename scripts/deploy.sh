@@ -24,7 +24,7 @@ env GOOS=linux GOARCH=amd64 go build -o ../builds/cmd.options.cafe
 cd ../../frontend/docker
 
 echo "Building Frontend"
-#docker-compose run --rm app ng build -prod
+docker-compose run --rm app ng build -prod
 
 cd ../../scripts
 
