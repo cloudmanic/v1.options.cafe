@@ -34,6 +34,7 @@ RUN set -x \
   
 # Copy binary into place.
 COPY cron.options.cafe /work/app
+COPY cmd.options.cafe /work/cmd
 
 # This needs to be at the bottom. (back from root)
 USER deploy
