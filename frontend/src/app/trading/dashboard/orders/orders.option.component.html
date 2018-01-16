@@ -1,0 +1,39 @@
+<tr>
+  <td>{{ quotes[order.Symbol]?.description }}</td>  
+
+  <td>{{ quotes[order.Symbol]?.last | currency:'USD':'symbol':'1.2-2' }}</td> 
+
+  <td>{{ order.Quantity }}</td> 
+
+  <td>{{ order.Duration }}</td> 
+
+  <td>{{ order.Type }}</td> 
+
+  <td>
+    <span [hidden]="order.Type != 'debit'">{{ order.Price | currency:'USD':'symbol':'1.2-2' }}</span>
+    <span [hidden]="order.Type != 'credit'">{{ order.Price | currency:'USD':'symbol':'1.2-2' }}</span>
+    <span [hidden]="order.Type != 'stop'">{{ order.StopPrice | currency:'USD':'symbol':'1.2-2' }}</span>
+    <span [hidden]="order.Type != 'limit'">{{ order.Price | currency:'USD':'symbol':'1.2-2' }}</span> 
+    <span [hidden]="order.Type != 'market'">---</span>     					
+  </td> 
+
+  <td>
+    <span [hidden]="order.Status != 'filled'">{{ order.AvgFillPrice | currency:'USD':'symbol':'1.2-2' }}</span>
+    <span [hidden]="order.Status != 'open'">---</span>
+    <span [hidden]="order.Status != 'canceled'">---</span>
+    <span [hidden]="order.Status != 'expired'">---</span>
+    <span [hidden]="order.Status != 'rejected'">---</span>
+    <span [hidden]="order.Status != 'pending'">---</span> 
+    <span [hidden]="order.Status != 'partially_filled'">---</span>
+  </td>         
+
+  <td>
+    <span [hidden]="order.Status != 'filled'"><strong class="title-green">{{ order.Status }}</strong></span>
+    <span [hidden]="order.Status != 'open'"><strong class="title-grey">{{ order.Status }}</strong></span>
+    <span [hidden]="order.Status != 'canceled'"><strong class="title-grey">{{ order.Status }}</strong></span>
+    <span [hidden]="order.Status != 'expired'"><strong class="title-grey">{{ order.Status }}</strong></span>
+    <span [hidden]="order.Status != 'rejected'"><strong class="title-red">{{ order.Status }}</strong></span>
+    <span [hidden]="order.Status != 'pending'"><strong class="title-grey">{{ order.Status }}</strong></span> 
+    <span [hidden]="order.Status != 'partially_filled'"><strong class="title-grey">{{ order.Status }}</strong></span>
+  </td>
+</tr>

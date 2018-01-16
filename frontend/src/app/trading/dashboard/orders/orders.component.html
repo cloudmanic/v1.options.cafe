@@ -6,8 +6,161 @@
   
   <div class="box__inner" *ngFor="let row of orders">
     
-    <app-trading-orders-multileg [order]="row" [quotes]="quotes" *ngIf="row.Class == 'multileg'"></app-trading-orders-multileg>
-    
+    <div class="table table--large">
+      <div class="table__inner">
+        <table>
+          <tr>
+            <td>
+              <ins>Symbols</ins>
+            </td>   
+
+            <td>
+              <ins>Last</ins>
+            </td>   
+
+            <td>
+              <ins>Quantity</ins>
+            </td>   
+
+            <td>
+              <ins>Type</ins>
+            </td>   
+
+            <td>
+              <ins>Type</ins>
+            </td>   
+
+            <td>
+              <ins>Price</ins>
+            </td>   
+
+            <td>
+              <ins>Filled</ins>
+            </td>   
+
+            <td>
+              <ins>Status</ins>
+            </td>
+          </tr>
+
+
+          <!-- Option Order -->
+          <tr *ngIf="row.Class == 'option'">
+            <td>{{ quotes[row.Symbol]?.description }}</td>  
+          
+            <td>{{ quotes[row.Symbol]?.last | currency:'USD':'symbol':'1.2-2' }}</td> 
+          
+            <td>{{ row.Quantity }}</td> 
+          
+            <td>{{ row.Duration }}</td> 
+          
+            <td>{{ row.Type }}</td> 
+          
+            <td>
+              <span [hidden]="row.Type != 'debit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</span>
+              <span [hidden]="row.Type != 'credit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</span>
+              <span [hidden]="row.Type != 'stop'">{{ row.StopPrice | currency:'USD':'symbol':'1.2-2' }}</span>
+              <span [hidden]="row.Type != 'limit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</span> 
+              <span [hidden]="row.Type != 'market'">---</span>     					
+            </td> 
+          
+            <td>
+              <span [hidden]="row.Status != 'filled'">{{ row.AvgFillPrice | currency:'USD':'symbol':'1.2-2' }}</span>
+              <span [hidden]="row.Status != 'open'">---</span>
+              <span [hidden]="row.Status != 'canceled'">---</span>
+              <span [hidden]="row.Status != 'expired'">---</span>
+              <span [hidden]="row.Status != 'rejected'">---</span>
+              <span [hidden]="row.Status != 'pending'">---</span> 
+              <span [hidden]="row.Status != 'partially_filled'">---</span>
+            </td>         
+          
+            <td>
+              <span [hidden]="row.Status != 'filled'"><strong class="title-green">{{ row.Status }}</strong></span>
+              <span [hidden]="row.Status != 'open'"><strong class="title-grey">{{ row.Status }}</strong></span>
+              <span [hidden]="row.Status != 'canceled'"><strong class="title-grey">{{ row.Status }}</strong></span>
+              <span [hidden]="row.Status != 'expired'"><strong class="title-grey">{{ row.Status }}</strong></span>
+              <span [hidden]="row.Status != 'rejected'"><strong class="title-red">{{ row.Status }}</strong></span>
+              <span [hidden]="row.Status != 'pending'"><strong class="title-grey">{{ row.Status }}</strong></span> 
+              <span [hidden]="row.Status != 'partially_filled'"><strong class="title-grey">{{ row.Status }}</strong></span>
+            </td>
+          </tr>
+
+
+          <!-- Multi Leg Order -->
+          <tr *ngFor="let row2 of row.Legs; let i = index" *ngIf="row.Class == 'multileg'">
+            <td>{{ quotes[row2.OptionSymbol]?.description }}</td>
+          
+            <td>{{ quotes[row2.OptionSymbol]?.last | currency:'USD':'symbol':'1.2-2' }}</td>
+          
+            <td>{{ row2.Quantity }}</td>
+          
+            <td *ngIf="i == 0">{{ row.Duration }}</td>
+            <td *ngIf="i > 0">&nbsp;</td>
+          
+            <td *ngIf="i == 0">{{ row.Type }}</td>
+            <td *ngIf="i > 0">&nbsp;</td>
+          
+            <td *ngIf="i == 0">
+              <span [hidden]="row2.Type != 'debit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</span>
+              <span [hidden]="row2.Type != 'credit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</span>
+              <span [hidden]="row2.Type != 'stop'">{{ row.StopPrice | currency:'USD':'symbol':'1.2-2' }}</span>
+              <span [hidden]="row2.Type != 'limit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</span> 
+              <span [hidden]="row2.Type != 'market'">---</span>     					
+            </td>
+            <td *ngIf="i > 0">&nbsp;</td>
+          
+            <td *ngIf="i == 0">
+              <span [hidden]="row2.Status != 'filled'">{{ row.AvgFillPrice | currency:'USD':'symbol':'1.2-2' }}</span>
+              <span [hidden]="row2.Status != 'open'">---</span>
+              <span [hidden]="row2.Status != 'canceled'">---</span>
+              <span [hidden]="row2.Status != 'expired'">---</span>
+              <span [hidden]="row2.Status != 'rejected'">---</span>
+              <span [hidden]="row2.Status != 'pending'">---</span> 
+              <span [hidden]="row2.Status != 'partially_filled'">---</span>
+            </td>        
+            <td *ngIf="i > 0">&nbsp;</td>
+          
+            <td *ngIf="i == 0">
+              <span [hidden]="row.Status != 'filled'"><strong class="title-green">{{ row.Status }}</strong></span>
+              <span [hidden]="row.Status != 'open'"><strong class="title-grey">{{ row.Status }}</strong></span>
+              <span [hidden]="row.Status != 'canceled'"><strong class="title-grey">{{ row.Status }}</strong></span>
+              <span [hidden]="row.Status != 'expired'"><strong class="title-grey">{{ row.Status }}</strong></span>
+              <span [hidden]="row.Status != 'rejected'"><strong class="title-red">{{ row.Status }}</strong></span>
+              <span [hidden]="row.Status != 'pending'"><strong class="title-grey">{{ row.Status }}</strong></span> 
+              <span [hidden]="row.Status != 'partially_filled'"><strong class="title-grey">{{ row.Status }}</strong></span>
+            </td>
+            <td *ngIf="i > 0">&nbsp;</td>
+          </tr>
+
+
+        </table>
+      </div>  
+
+      <div class="dropdown select">
+        <div class="dropdown__head dropdown--trigger"></div>   
+
+        <div class="dropdown__body">
+          <ul class="list-actions">
+            <li>
+              <a href="#">Position Details</a>
+            </li>   
+
+            <li>
+              <a href="#">Close Trade @ $0.03</a>
+            </li>   
+
+            <li>
+              <a href="#">Close Trade @ Market</a>
+            </li>   
+
+            <li>
+              <a href="#">Close Trade @ Limit</a>
+            </li>
+          </ul><!-- /.list-actions -->
+        </div><!-- /.dropdown__body -->
+      </div><!-- /.dropdown select -->
+    </div><!-- /.table table-large -->
+
   </div>
 
 </div>

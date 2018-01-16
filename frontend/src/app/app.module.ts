@@ -48,6 +48,7 @@ import { WatchlistComponent } from './trading/dashboard/watchlist/watchlist.comp
 import { ScreenerComponent } from './trading/screener/home.component';
 import { DashboardComponent } from './trading/dashboard/home.component';
 import { OrdersComponent } from './trading/dashboard/orders/orders.component';
+import { OrdersOptionComponent } from './trading/dashboard/orders/orders.option.component';
 import { OrdersMultiLegComponent } from './trading/dashboard/orders/orders.multileg.component';
 import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-symbols.component';
 
@@ -87,6 +88,7 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     ScreenerComponent,
     DashboardComponent,
     WatchlistComponent,
+    OrdersOptionComponent,
     OrdersMultiLegComponent,
     TypeaheadSymbolsComponent,
   ],

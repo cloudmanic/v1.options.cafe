@@ -1,40 +1,3 @@
-<div class="table table--large">
-  <div class="table__inner">
-  	<table>
-  		<tr>
-  			<td>
-  				<ins>Symbols</ins>
-  			</td>
-
-  			<td>
-  				<ins>Last</ins>
-  			</td>
-
-  			<td>
-  				<ins>Quantity</ins>
-  			</td>
-
-  			<td>
-  				<ins>Type</ins>
-  			</td>
-
-  			<td>
-  				<ins>Type</ins>
-  			</td>
-
-  			<td>
-  				<ins>Price</ins>
-  			</td>
-
-  			<td>
-  				<ins>Filled</ins>
-  			</td>
-
-  			<td>
-  				<ins>Status</ins>
-  			</td>
-  		</tr>
-
   		<tr *ngFor="let row of order.Legs; let i = index">
   			<td>{{ quotes[row.OptionSymbol]?.description }}</td>
 
@@ -78,33 +41,4 @@
           <span [hidden]="order.Status != 'partially_filled'"><strong class="title-grey">{{ order.Status }}</strong></span>
         </td>
   			<td *ngIf="i > 0">&nbsp;</td>
-
   		</tr>
-
-  	</table>
-  </div><!-- /.table__inner -->
-
-  <div class="dropdown select">
-  	<div class="dropdown__head dropdown--trigger"></div><!-- /.dropdown__head dropdown-trigger -->
-
-  	<div class="dropdown__body">
-  		<ul class="list-actions">
-  			<li>
-  				<a href="#">Position Details</a>
-  			</li>
-
-  			<li>
-  				<a href="#">Close Trade @ $0.03</a>
-  			</li>
-
-  			<li>
-  				<a href="#">Close Trade @ Market</a>
-  			</li>
-
-  			<li>
-  				<a href="#">Close Trade @ Limit</a>
-  			</li>
-  		</ul><!-- /.list-actions -->
-  	</div><!-- /.dropdown__body -->
-  </div><!-- /.dropdown select -->
-</div><!-- /.table table-large -->
