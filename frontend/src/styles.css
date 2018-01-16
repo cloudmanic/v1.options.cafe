@@ -1230,6 +1230,8 @@ select::-ms-expand { display: none; }
 .table--large tr:first-child td { padding: 0 48px 18px 0; }
 .table--large td { padding: 0 48px 12px 0; }
 .table--large tr:last-child td { padding-bottom: 0; }
+.table--large.orders tbody:last-child td { padding-bottom: 0; }
+.table--large.orders td { padding-bottom: 18px !important; }
 .table--large td .dropdown { position: relative; bottom: 0; }
 .table--large .dropdown { position: absolute; bottom: 5px; right: 0; }
 /* Desktop */

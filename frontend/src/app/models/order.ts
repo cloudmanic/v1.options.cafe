@@ -26,6 +26,7 @@ export class Order {
     public Symbol: string,
     public TransactionDate: string,
     public Type: string,
+    public OptionSymbol: string,
     public Legs: OrderLeg[]
   ){}
 
@@ -90,6 +91,7 @@ export class Order {
           data[i].Symbol,
           data[i].TransactionDate,
           data[i].Type,
+          data[i].OptionSymbol,
           legs));
                
     }

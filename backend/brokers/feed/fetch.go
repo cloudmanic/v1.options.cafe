@@ -86,8 +86,10 @@ func (t *Base) GetActiveSymbols() []string {
 
 	for _, row := range t.Orders {
 
+		// Stock symbol
 		activeSymbols = append(activeSymbols, row.Symbol)
 
+		// Multi leg trade
 		if row.NumLegs > 0 {
 
 			for _, row2 := range row.Legs {
@@ -96,6 +98,11 @@ func (t *Base) GetActiveSymbols() []string {
 
 			}
 
+		}
+
+		// Single option order
+		if len(row.OptionSymbol) > 0 {
+			activeSymbols = append(activeSymbols, row.OptionSymbol)
 		}
 
 	}

@@ -52,13 +52,6 @@ export class OrdersComponent implements OnInit {
   //
   private setOrders(orders: Order[]) {
     
-    console.log(this.orders);
-
-    if(this.orders)
-    {
-      return;
-    }
-
     var rt = []
     
     // Set the active account.

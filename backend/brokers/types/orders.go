@@ -1,82 +1,84 @@
 package types
 
 type Order struct {
-  Id int
-  AccountId string  
-  Type string
-  Symbol string
-  Side string
-  Quantity float64
-  Status string
-  Duration string
-  Price float64
-  AvgFillPrice float64 
-  ExecQuantity float64 
-  LastFillPrice float64
-  LastFillQuantity float64
-  RemainingQuantity float64
-  CreateDate string
-  TransactionDate string
-  Class string
-  NumLegs int
-  Legs []OrderLeg   
+	Id                int
+	AccountId         string
+	Type              string
+	Symbol            string
+	Side              string
+	Quantity          float64
+	Status            string
+	Duration          string
+	Price             float64
+	AvgFillPrice      float64
+	ExecQuantity      float64
+	LastFillPrice     float64
+	LastFillQuantity  float64
+	RemainingQuantity float64
+	CreateDate        string
+	TransactionDate   string
+	Class             string
+	OptionSymbol      string
+	NumLegs           int
+	Legs              []OrderLeg
 }
 
 type OrderLeg struct {
-  Type string
-  Symbol string
-  OptionSymbol string
-  Side string
-  Quantity float64
-  Status string
-  Duration string
-  AvgFillPrice float64
-  ExecQuantity float64
-  LastFillPrice float64
-  LastFillQuantity float64
-  RemainingQuantity float64
-  CreateDate string
-  TransactionDate string  
+	Type              string
+	Symbol            string
+	OptionSymbol      string
+	Side              string
+	Quantity          float64
+	Status            string
+	Duration          string
+	AvgFillPrice      float64
+	ExecQuantity      float64
+	LastFillPrice     float64
+	LastFillQuantity  float64
+	RemainingQuantity float64
+	CreateDate        string
+	TransactionDate   string
 }
 
 // Tradier Temp Object for json decodeing
 type TradierOrder struct {
-  Id int
-  AccountId string   
-  Type string
-  Symbol string
-  Side string
-  Quantity float64
-  Status string
-  Duration string
-  Price float64
-  AvgFillPrice float64 `json:"avg_fill_price"`
-  ExecQuantity float64 `json:"exec_quantity"`
-  LastFillPrice float64 `json:"last_fill_price"`
-  LastFillQuantity float64 `json:"last_fill_quantity"`
-  RemainingQuantity float64 `json:"remaining_quantity"`
-  CreateDate string `json:"create_date"`
-  TransactionDate string `json:"transaction_date"`
-  Class string
-  NumLegs int `json:"num_legs"`
-  Legs []TradierOrderLeg `json:"leg"`   
+	Id                int
+	AccountId         string
+	Type              string
+	Symbol            string
+	Side              string
+	Quantity          float64
+	Status            string
+	Duration          string
+	Price             float64
+	AvgFillPrice      float64 `json:"avg_fill_price"`
+	ExecQuantity      float64 `json:"exec_quantity"`
+	LastFillPrice     float64 `json:"last_fill_price"`
+	LastFillQuantity  float64 `json:"last_fill_quantity"`
+	RemainingQuantity float64 `json:"remaining_quantity"`
+	CreateDate        string  `json:"create_date"`
+	TransactionDate   string  `json:"transaction_date"`
+	Class             string
+	OptionSymbol      string            `json:"option_symbol"`
+	NumLegs           int               `json:"num_legs"`
+	Legs              []TradierOrderLeg `json:"leg"`
 }
 
 type TradierOrderLeg struct {
-  Type string
-  Symbol string
-  OptionSymbol string `json:"option_symbol"`
-  Side string
-  Quantity float64
-  Status string
-  Duration string
-  AvgFillPrice float64 `json:"avg_fill_price"`
-  ExecQuantity float64 `json:"exec_quantity"`
-  LastFillPrice float64 `json:"last_fill_price"`
-  LastFillQuantity float64 `json:"last_fill_quantity"`
-  RemainingQuantity float64 `json:"remaining_quantity"`
-  CreateDate string `json:"create_date"`
-  TransactionDate string `json:"transaction_date"`  
+	Type              string
+	Symbol            string
+	OptionSymbol      string `json:"option_symbol"`
+	Side              string
+	Quantity          float64
+	Status            string
+	Duration          string
+	AvgFillPrice      float64 `json:"avg_fill_price"`
+	ExecQuantity      float64 `json:"exec_quantity"`
+	LastFillPrice     float64 `json:"last_fill_price"`
+	LastFillQuantity  float64 `json:"last_fill_quantity"`
+	RemainingQuantity float64 `json:"remaining_quantity"`
+	CreateDate        string  `json:"create_date"`
+	TransactionDate   string  `json:"transaction_date"`
 }
 
 /*
