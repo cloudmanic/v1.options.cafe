@@ -59,6 +59,17 @@ func Fatal(err error) {
 }
 
 //
+// Fatal with a message Log.
+//
+func FatalMsg(err error, message string) {
+
+	log.Fatal(ansi.Color("[App:Fatal] "+MyCaller()+" : "+err.Error()+" - "+message, "red"))
+
+	// Rollbar
+	RollbarError(err)
+}
+
+//
 // Warning Log. (error type only)
 //
 func Warning(err error) {

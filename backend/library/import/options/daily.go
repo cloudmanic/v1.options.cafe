@@ -42,7 +42,7 @@ func DoEodOptionsImport() {
 	proccessedFiles, err := GetProccessedFiles()
 
 	if err != nil {
-		services.Error(err, "Could not get proccessedFiles files in GetProccessedFiles()")
+		services.FatalMsg(err, "Could not get proccessedFiles files in GetProccessedFiles()")
 		return
 	}
 
@@ -50,7 +50,7 @@ func DoEodOptionsImport() {
 	ftpFiles, err := GetOptionsDailyData()
 
 	if err != nil {
-		services.Error(err, "Could not get ftp files in GetOptionsDailyData()")
+		services.FatalMsg(err, "Could not get ftp files in GetOptionsDailyData()")
 		return
 	}
 
@@ -69,7 +69,7 @@ func DoEodOptionsImport() {
 		filePath, err := DownloadOptionsDailyDataByName(row.Name)
 
 		if err != nil {
-			services.Error(err, "Could not download ftp file in DownloadOptionsDailyDataByName() - "+row.Name)
+			services.FatalMsg(err, "Could not download ftp file in DownloadOptionsDailyDataByName() - "+row.Name)
 			continue
 		}
 
@@ -77,7 +77,7 @@ func DoEodOptionsImport() {
 		err = SymbolImport(filePath)
 
 		if err != nil {
-			services.Error(err, "Could not import DatabaseImport() - "+row.Name)
+			services.FatalMsg(err, "Could not import DatabaseImport() - "+row.Name)
 			continue
 		}
 
@@ -85,7 +85,7 @@ func DoEodOptionsImport() {
 		err = object.UploadObject(filePath, "options-eod-daily/"+filepath.Base(filePath))
 
 		if err != nil {
-			services.Error(err, "Could not upload to Object Store - "+row.Name)
+			services.FatalMsg(err, "Could not upload to Object Store - "+row.Name)
 			continue
 		}
 
@@ -96,7 +96,7 @@ func DoEodOptionsImport() {
 		file, err := os.Open(filePath)
 
 		if err != nil {
-			services.Error(err, "Could not open ftp file os.Open() - "+row.Name)
+			services.FatalMsg(err, "Could not open ftp file os.Open() - "+row.Name)
 			continue
 		}
 
@@ -105,7 +105,7 @@ func DoEodOptionsImport() {
 		client.Upload("/data/options-eod-daily/"+row.Name, file)
 
 		if err != nil {
-			services.Error(err, "Could not upload to Dropbox - "+row.Name)
+			services.FatalMsg(err, "Could not upload to Dropbox - "+row.Name)
 			continue
 		}
 
@@ -116,7 +116,7 @@ func DoEodOptionsImport() {
 		err = os.Remove(filePath)
 
 		if err != nil {
-			services.Error(err, "Could not delete file - "+filePath)
+			services.FatalMsg(err, "Could not delete file - "+filePath)
 			continue
 		}
 
@@ -128,7 +128,7 @@ func DoEodOptionsImport() {
 		resp, err := http.Get(os.Getenv("HEALTH_CHECK_DOEODOPTIONSIMPORT_URL"))
 
 		if err != nil {
-			services.Error(err, "Could send health check - "+os.Getenv("HEALTH_CHECK_DOEODOPTIONSIMPORT_URL"))
+			services.FatalMsg(err, "Could send health check - "+os.Getenv("HEALTH_CHECK_DOEODOPTIONSIMPORT_URL"))
 		}
 
 		defer resp.Body.Close()
@@ -168,7 +168,7 @@ func SymbolImport(filePath string) error {
 			err := os.Remove(row)
 
 			if err != nil {
-				services.Error(err, "Could not delete file - "+row)
+				services.FatalMsg(err, "Could not delete file - "+row)
 			}
 		}
 
@@ -243,7 +243,7 @@ func SymbolImport(filePath string) error {
 	err = os.Remove(file)
 
 	if err != nil {
-		services.Error(err, "Could not delete file - "+file)
+		services.FatalMsg(err, "Could not delete file - "+file)
 	}
 
 	// Log
