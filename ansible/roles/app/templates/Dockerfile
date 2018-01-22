@@ -34,7 +34,6 @@ RUN set -x \
   
 # Copy binary into place.
 COPY app.options.cafe /work/app
-COPY cmd.options.cafe /work/cmd
 
 # Copy frontend into place.
 COPY frontend /frontend

@@ -4,7 +4,7 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-package main
+package cmd
 
 import (
 	"flag"
@@ -16,7 +16,7 @@ import (
 //
 // Run this and see if we have any commands to run.
 //
-func main() {
+func Run() bool {
 
 	// Grab flags
 	action := flag.String("cmd", "none", "bulk-eod-options-import")
@@ -27,22 +27,24 @@ func main() {
 	// Bulk EOD options import
 	case "bulk-eod-options-import":
 		options.DoBulkEodImportToPerSymbolDay()
-		return
+		return true
 		break
 
 	// EOD options import
 	case "eod-options-import":
 		options.DoEodOptionsImport()
-		return
+		return true
 		break
 
 	// Just a test
 	case "test":
 		fmt.Println("CMD Works....")
-		return
+		return true
 		break
 
 	}
+
+	return false
 }
 
 /* End File */

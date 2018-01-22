@@ -16,10 +16,6 @@ echo "Building cron.options.cafe"
 cd cron
 env GOOS=linux GOARCH=amd64 go build -o ../builds/cron.options.cafe
 
-echo "Building cmd.options.cafe"
-cd ../cmd
-env GOOS=linux GOARCH=amd64 go build -o ../builds/cmd.options.cafe
-
 # Build frontend
 cd ../../frontend/docker
 
