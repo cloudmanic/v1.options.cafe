@@ -4,7 +4,7 @@ type Position struct {
 	Id           int
 	AccountId    string
 	Symbol       string
-	DateAcquired string `json:date_acquired`
+	DateAcquired string
 	CostBasis    float64
 	Quantity     float64
 }
@@ -124,4 +124,50 @@ type Position struct {
 		}]
 	}
 }
+
+
+OR
+
+
+{
+	"accounts": {
+		"account": {
+			"account_number": "6YA05782",
+			"positions": {
+				"position": [{
+					"cost_basis": 519.5,
+					"date_acquired": "2018-01-09T11:15:51.981Z",
+					"id": 266353,
+					"quantity": 10.0,
+					"symbol": "CONE"
+				}, {
+					"cost_basis": 387.2796,
+					"date_acquired": "2018-01-09T11:15:51.999Z",
+					"id": 266354,
+					"quantity": 4.0,
+					"symbol": "DIS"
+				}, {
+					"cost_basis": 395.7996,
+					"date_acquired": "2018-01-09T11:15:52.016Z",
+					"id": 266355,
+					"quantity": 4.0,
+					"symbol": "NFLX"
+				}, {
+					"cost_basis": 169.598,
+					"date_acquired": "2018-01-09T11:15:52.034Z",
+					"id": 266356,
+					"quantity": 20.0,
+					"symbol": "USO"
+				}, {
+					"cost_basis": 484.8396,
+					"date_acquired": "2018-01-09T11:15:52.052Z",
+					"id": 266357,
+					"quantity": 4.0,
+					"symbol": "VTI"
+				}]
+			}
+		}
+	}
+}
+
 */

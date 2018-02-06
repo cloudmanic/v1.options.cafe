@@ -14,9 +14,9 @@ import (
 )
 
 //
-// Test - GetPositions
+// Test - GetPositions - More than one account.
 //
-func TestGetPositions(t *testing.T) {
+func TestGetPositions01(t *testing.T) {
 
 	// Flush pending mocks after test execution
 	defer gock.Off()
@@ -54,7 +54,41 @@ func TestGetPositions(t *testing.T) {
 
 	// Verify that we don't have pending mocks
 	st.Expect(t, gock.IsDone(), true)
+}
 
+//
+// Test - GetPositions - Just one account
+//
+func TestGetPositions02(t *testing.T) {
+
+	// Flush pending mocks after test execution
+	defer gock.Off()
+
+	// Setup mock request.
+	gock.New(apiBaseUrl).
+		Get("/user/positions").
+		Reply(200).
+		BodyString(`{"accounts":{"account":{"account_number":"6YA05782","positions":{"position":[{"cost_basis":519.5,"date_acquired":"2018-01-09T11:15:51.981Z","id":266353,"quantity":10,"symbol":"CONE"},{"cost_basis":387.2796,"date_acquired":"2018-01-09T11:15:51.999Z","id":266354,"quantity":4,"symbol":"DIS"},{"cost_basis":395.7996,"date_acquired":"2018-01-09T11:15:52.016Z","id":266355,"quantity":4,"symbol":"NFLX"},{"cost_basis":169.598,"date_acquired":"2018-01-09T11:15:52.034Z","id":266356,"quantity":20,"symbol":"USO"},{"cost_basis":484.8396,"date_acquired":"2018-01-09T11:15:52.052Z","id":266357,"quantity":4,"symbol":"VTI"}]}}}}`)
+	// Create new tradier instance
+	tradier := &Api{}
+
+	// Make API call
+	positions, err := tradier.GetPositions()
+
+	if err != nil {
+		panic(err)
+	}
+
+	// // Verify the data was return as expected
+	st.Expect(t, positions[0].Id, 266353)
+	st.Expect(t, positions[0].AccountId, "6YA05782")
+	st.Expect(t, positions[0].Symbol, "CONE")
+	st.Expect(t, positions[0].DateAcquired, "2018-01-09T11:15:51.981Z")
+	st.Expect(t, positions[0].CostBasis, 519.5)
+	st.Expect(t, positions[0].Quantity, float64(10))
+
+	// Verify that we don't have pending mocks
+	st.Expect(t, gock.IsDone(), true)
 }
 
 /* End File */
