@@ -27,7 +27,7 @@ func TestGetMarketStatus(t *testing.T) {
 		Reply(200).
 		BodyString(`{"clock":{"state":"closed","date":"2017-09-04","timestamp":1504505290,"next_state":"premarket","next_change":"08:00","description":"Market is closed."}}`)
 
-	// Create new tradier isntance
+	// Create new tradier instance
 	tradier := &Api{}
 
 	// Make API call

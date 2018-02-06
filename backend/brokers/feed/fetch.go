@@ -183,6 +183,37 @@ func (t *Base) GetUserProfile() error {
 
 }
 
+// ----------------- Positions ------------------- //
+
+//
+// Do get positions
+//
+func (t *Base) GetPositions() error {
+
+	// Make API call
+	positions, err := t.Api.GetPositions()
+
+	if err != nil {
+		return err
+	}
+
+	// Save the positions in the fetch object
+	t.muPositions.Lock()
+	t.Positions = positions
+	t.muPositions.Unlock()
+
+	// // Send up websocket.
+	// err = t.WriteDataChannel("orders", orders)
+
+	// if err != nil {
+	// 	return fmt.Errorf("Fetch.GetOrders() : ", err)
+	// }
+
+	// Return Happy
+	return nil
+
+}
+
 // ----------------- Orders ------------------- //
 
 //

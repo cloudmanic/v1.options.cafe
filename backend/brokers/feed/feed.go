@@ -22,6 +22,9 @@ type Base struct {
 	muOrders sync.Mutex
 	Orders   []types.Order
 
+	muPositions sync.Mutex
+	Positions   []types.Position
+
 	muBalances sync.Mutex
 	Balances   []types.Balance
 
@@ -49,6 +52,7 @@ func (t *Base) Start() {
 
 	// Setup tickers for broker polling.
 	go t.DoOrdersTicker()
+	go t.DoPositionsTicker()
 	go t.DoUserProfileTicker()
 	go t.DoGetDetailedQuotes()
 	go t.DoGetMarketStatusTicker()
@@ -122,6 +126,29 @@ func (t *Base) DoOrdersArchive() {
 
 	   }
 	*/
+
+}
+
+//
+// Ticker - Positions : 3 seconds
+//
+func (t *Base) DoPositionsTicker() {
+
+	var err error
+
+	for {
+
+		// Load up positions
+		err = t.GetPositions()
+
+		if err != nil {
+			services.Warning(err)
+		}
+
+		// Sleep for 3 second.
+		time.Sleep(time.Second * 3)
+
+	}
 
 }
 
