@@ -16,9 +16,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/app.options.cafe/backend/library/helpers"
-	"github.com/app.options.cafe/backend/library/services"
-	"github.com/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
 )
 

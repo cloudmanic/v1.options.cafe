@@ -13,8 +13,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/app.options.cafe/backend/library/checkmail"
-	"github.com/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/library/checkmail"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"golang.org/x/crypto/bcrypt"
 )
 

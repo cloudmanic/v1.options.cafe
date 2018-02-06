@@ -16,10 +16,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/app.options.cafe/backend/library/files"
-	"github.com/app.options.cafe/backend/library/services"
-	"github.com/app.options.cafe/backend/library/store/object"
 	"github.com/araddon/dateparse"
+	"github.com/cloudmanic/app.options.cafe/backend/library/files"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/library/store/object"
 	"github.com/jlaffaye/ftp"
 	minio "github.com/minio/minio-go"
 	dropbox "github.com/tj/go-dropbox"

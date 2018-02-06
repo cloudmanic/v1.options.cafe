@@ -3,7 +3,7 @@ package controllers
 import (
 	"fmt"
 
-	"github.com/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/tidwall/gjson"
 )
 

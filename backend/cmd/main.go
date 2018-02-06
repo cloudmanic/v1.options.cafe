@@ -10,7 +10,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/app.options.cafe/backend/library/import/options"
+	"github.com/cloudmanic/app.options.cafe/backend/library/import/options"
 )
 
 //

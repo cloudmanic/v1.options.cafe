@@ -9,9 +9,9 @@ package users
 import (
 	"encoding/json"
 
-	"github.com/app.options.cafe/backend/controllers"
-	"github.com/app.options.cafe/backend/library/services"
-	"github.com/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/controllers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
 
 //

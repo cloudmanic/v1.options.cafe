@@ -7,7 +7,7 @@
 package controllers
 
 import (
-	"github.com/app.options.cafe/backend/brokers/tradier"
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 )

@@ -12,7 +12,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/gin-gonic/gin"
 )
 

@@ -9,13 +9,13 @@ package users
 import (
 	"encoding/json"
 
-	"github.com/app.options.cafe/backend/brokers"
-	"github.com/app.options.cafe/backend/brokers/feed"
-	"github.com/app.options.cafe/backend/brokers/tradier"
-	"github.com/app.options.cafe/backend/controllers"
-	"github.com/app.options.cafe/backend/library/helpers"
-	"github.com/app.options.cafe/backend/library/services"
-	"github.com/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/brokers"
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/feed"
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
+	"github.com/cloudmanic/app.options.cafe/backend/controllers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
 
 type UserFeed struct {

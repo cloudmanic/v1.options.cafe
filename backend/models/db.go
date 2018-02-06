@@ -10,7 +10,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 )

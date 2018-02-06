@@ -8,7 +8,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
 
 const (

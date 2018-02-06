@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/app.options.cafe/backend/library/realip"
-	"github.com/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/library/realip"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/gin-gonic/gin"
 )
 

@@ -4,11 +4,11 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/app.options.cafe/backend/cmd"
-	"github.com/app.options.cafe/backend/controllers"
-	"github.com/app.options.cafe/backend/library/services"
-	"github.com/app.options.cafe/backend/models"
-	"github.com/app.options.cafe/backend/users"
+	"github.com/cloudmanic/app.options.cafe/backend/cmd"
+	"github.com/cloudmanic/app.options.cafe/backend/controllers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/users"
 	"github.com/gorilla/websocket"
 	_ "github.com/jpfuentes2/go-env/autoload"
 )

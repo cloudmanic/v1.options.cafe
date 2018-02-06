@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/app.options.cafe/backend/brokers/types"
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/tidwall/gjson"
 )
 

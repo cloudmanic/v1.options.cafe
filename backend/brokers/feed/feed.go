@@ -4,11 +4,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/app.options.cafe/backend/brokers"
-	"github.com/app.options.cafe/backend/brokers/types"
-	"github.com/app.options.cafe/backend/controllers"
-	"github.com/app.options.cafe/backend/library/services"
-	"github.com/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/brokers"
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
+	"github.com/cloudmanic/app.options.cafe/backend/controllers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
 
 type Base struct {

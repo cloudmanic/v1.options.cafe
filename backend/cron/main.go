@@ -10,10 +10,10 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/app.options.cafe/backend/cron/data_import"
-	"github.com/app.options.cafe/backend/library/import/options"
-	"github.com/app.options.cafe/backend/library/services"
-	"github.com/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/cron/data_import"
+	"github.com/cloudmanic/app.options.cafe/backend/library/import/options"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/jasonlvhit/gocron"
 	env "github.com/jpfuentes2/go-env"
 )

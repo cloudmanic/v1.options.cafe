@@ -7,7 +7,7 @@
 package users
 
 import (
-	"github.com/app.options.cafe/backend/controllers"
+	"github.com/cloudmanic/app.options.cafe/backend/controllers"
 	"github.com/tidwall/gjson"
 )
 
