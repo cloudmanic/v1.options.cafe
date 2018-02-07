@@ -53,4 +53,48 @@ type OrderLeg struct {
 	TransactionDate   time.Time
 }
 
+//
+// Store a new order.
+//
+func (t *DB) CreateOrder(order *Order) error {
+
+	// Create order
+	t.Create(order)
+
+	// Return happy
+	return nil
+}
+
+//
+// Store a order.
+//
+func (t *DB) UpdateOrder(order *Order) error {
+
+	// Update entry.
+	t.Save(&order)
+
+	// Return happy
+	return nil
+}
+
+//
+// See if we have an order by user and broker id.
+//
+func (t *DB) HasOrderByBrokerIdUserId(brokerId uint, userId uint) bool {
+
+	// See if we already have this record in our database
+	var count int
+	order := &Order{}
+
+	// Run query
+	t.Where("broker_id = ? AND user_id = ?", brokerId, userId).First(order).Count(&count)
+
+	if count > 0 {
+		return true
+	}
+
+	// Return not found.
+	return false
+}
+
 /* End File */

@@ -2,18 +2,21 @@ package archive
 
 import (
 	"fmt"
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/jinzhu/gorm"
-	"github.com/stvp/rollbar"
 	"time"
+
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/stvp/rollbar"
 )
 
 //
 // Pass in all orders and archive them by putting them into our database.
-// We only archive orders that are filled. TODO: Review partially_filled orders.
+// We only archive orders that are filled.
 //
-func StoreOrders(db *gorm.DB, orders []types.Order, userId uint) error {
+// TODO: Review partially_filled orders.
+//
+func StoreOrders(db models.Datastore, orders []types.Order, userId uint) error {
 
 	// Loop through the orders and process
 	for _, row := range orders {
@@ -24,12 +27,7 @@ func StoreOrders(db *gorm.DB, orders []types.Order, userId uint) error {
 		}
 
 		// See if we already have this record in our database
-		var count int
-		order := &models.Order{}
-
-		db.Where("broker_id = ? AND user_id = ?", row.Id, userId).First(order).Count(&count)
-
-		if count > 0 {
+		if db.HasOrderByBrokerIdUserId(uint(row.Id), userId) {
 			continue
 		}
 
@@ -49,13 +47,12 @@ func StoreOrders(db *gorm.DB, orders []types.Order, userId uint) error {
 		transactionDate, err := time.Parse(layout, row.TransactionDate)
 
 		if err != nil {
-			fmt.Println(err)
-			rollbar.Error(rollbar.ERR, err)
+			services.Fatal(err)
 			continue
 		}
 
-		// Create object we insert into the DB
-		order = &models.Order{
+		// Insert into DB
+		order := &models.Order{
 			UserId:            userId,
 			CreatedAt:         time.Now(),
 			UpdatedAt:         time.Now(),
@@ -80,36 +77,20 @@ func StoreOrders(db *gorm.DB, orders []types.Order, userId uint) error {
 			NumLegs:           row.NumLegs,
 		}
 
-		// Insert into DB
-		db.Create(&order)
+		err = db.CreateOrder(order)
 
-		// Loop through the order legs and add them
+		if err != nil {
+			services.Fatal(err)
+			continue
+		}
+
+		// Build the legs
+		legs := []models.OrderLeg{}
+
 		for _, row2 := range row.Legs {
-
-			// Convert Create Date
-			createDate, err := time.Parse(layout, row2.CreateDate)
-
-			if err != nil {
-				fmt.Println(err)
-				rollbar.Error(rollbar.ERR, err)
-				continue
-			}
-
-			// Convert TransactionDate
-			transactionDate, err := time.Parse(layout, row2.TransactionDate)
-
-			if err != nil {
-				fmt.Println(err)
-				rollbar.Error(rollbar.ERR, err)
-				continue
-			}
-
-			// Create object we insert into the DB
-			leg := &models.OrderLeg{
+			legs = append(legs, models.OrderLeg{
 				UserId:            userId,
 				OrderId:           order.Id,
-				CreatedAt:         time.Now(),
-				UpdatedAt:         time.Now(),
 				Type:              row2.Type,
 				Symbol:            row2.Symbol,
 				OptionSymbol:      row2.OptionSymbol,
@@ -124,17 +105,20 @@ func StoreOrders(db *gorm.DB, orders []types.Order, userId uint) error {
 				RemainingQuantity: row2.RemainingQuantity,
 				CreateDate:        createDate,
 				TransactionDate:   transactionDate,
-			}
+			})
+		}
 
-			// Insert into DB
-			db.Create(&leg)
+		// Add the legs to the order and update.
+		order.Legs = legs
 
+		err = db.UpdateOrder(order)
+
+		if err != nil {
+			services.Fatal(err)
+			continue
 		}
 
 	}
-
-	// Now build out our positions database table based on past orders.
-	StorePositions(db, userId)
 
 	// Return Happy
 	return nil

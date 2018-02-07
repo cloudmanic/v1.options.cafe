@@ -8,6 +8,7 @@ import (
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/controllers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/archive"
 )
 
 //
@@ -202,12 +203,12 @@ func (t *Base) GetPositions() error {
 	t.Positions = positions
 	t.muPositions.Unlock()
 
-	// // Send up websocket.
-	// err = t.WriteDataChannel("orders", orders)
+	// Send up websocket.
+	err = t.WriteDataChannel("positions", positions)
 
-	// if err != nil {
-	// 	return fmt.Errorf("Fetch.GetOrders() : ", err)
-	// }
+	if err != nil {
+		return fmt.Errorf("Fetch.GetPositions() : ", err)
+	}
 
 	// Return Happy
 	return nil
@@ -235,6 +236,15 @@ func (t *Base) GetOrders() error {
 	t.Orders = orders
 	t.muOrders.Unlock()
 
+	//spew.Dump(orders)
+
+	// Store the orders in our database
+	err = archive.StoreOrders(t.DB, orders, t.User.Id)
+
+	if err != nil {
+		return fmt.Errorf("Fetch.GetOrders() - StoreOrders() : ", err)
+	}
+
 	// Send up websocket.
 	err = t.WriteDataChannel("orders", orders)
 
@@ -259,6 +269,13 @@ func (t *Base) GetAllOrders() ([]types.Order, error) {
 
 	if err != nil {
 		return orders, fmt.Errorf("Fetch.GetAllOrders() : ", err)
+	}
+
+	// Store the orders in our database
+	err = archive.StoreOrders(t.DB, orders, t.User.Id)
+
+	if err != nil {
+		return orders, fmt.Errorf("Fetch.GetAllOrders() - StoreOrders() : ", err)
 	}
 
 	// Return Happy

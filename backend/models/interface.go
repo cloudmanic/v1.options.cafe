@@ -57,6 +57,11 @@ type Datastore interface {
 	LoginUserByEmailPass(email string, password string, userAgent string, ipAddress string) (User, error)
 	CreateUser(first string, last string, email string, password string, userAgent string, ipAddress string) (User, error)
 
+	// Orders
+	CreateOrder(order *Order) error
+	UpdateOrder(order *Order) error
+	HasOrderByBrokerIdUserId(brokerId uint, userId uint) bool
+
 	// Watchlists
 	GetWatchlistsById(id uint) (Watchlist, error)
 	GetWatchlistsByUserId(userId uint) ([]Watchlist, error)
