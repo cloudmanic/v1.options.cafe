@@ -236,18 +236,20 @@ func (t *Base) GetOrders() error {
 	t.Orders = orders
 	t.muOrders.Unlock()
 
+	// Store the orders in our database
+	go func() {
+		err = archive.StoreOrders(t.DB, orders, t.User.Id)
+
+		if err != nil {
+			fmt.Errorf("Fetch.GetOrders() - StoreOrders() : ", err)
+		}
+	}()
+
 	// Send up websocket.
 	err = t.WriteDataChannel("orders", orders)
 
 	if err != nil {
 		return fmt.Errorf("Fetch.GetOrders() : ", err)
-	}
-
-	// Store the orders in our database
-	err = archive.StoreOrders(t.DB, orders, t.User.Id)
-
-	if err != nil {
-		return fmt.Errorf("Fetch.GetOrders() - StoreOrders() : ", err)
 	}
 
 	// Return Happy
