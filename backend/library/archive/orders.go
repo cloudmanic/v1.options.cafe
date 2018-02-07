@@ -1,13 +1,11 @@
 package archive
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/stvp/rollbar"
 )
 
 //
@@ -38,8 +36,7 @@ func StoreOrders(db models.Datastore, orders []types.Order, userId uint) error {
 		createDate, err := time.Parse(layout, row.CreateDate)
 
 		if err != nil {
-			fmt.Println(err)
-			rollbar.Error(rollbar.ERR, err)
+			services.Fatal(err)
 			continue
 		}
 
@@ -118,6 +115,8 @@ func StoreOrders(db models.Datastore, orders []types.Order, userId uint) error {
 			continue
 		}
 
+		// Now build out our positions database table based on past orders.
+		StorePositions(db, userId)
 	}
 
 	// Return Happy

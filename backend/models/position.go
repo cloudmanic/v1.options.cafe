@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 )
 
@@ -22,6 +23,34 @@ type Position struct {
 	Note          string `sql:"type:text"`
 	OpenDate      time.Time
 	ClosedDate    time.Time
+}
+
+//
+// Store a new position.
+//
+func (t *DB) CreatePosition(position *Position) error {
+
+	// Create position
+	t.Create(position)
+
+	// Return happy
+	return nil
+}
+
+//
+// Get positions by User and class and status and reviewed
+//
+func (t *DB) GetPositionByUserSymbolStatusAccount(userId uint, symbol string, status string, accountId string) (Position, error) {
+
+	var position = Position{}
+
+	// First we find out if we already have a position on for this.
+	if t.Where("symbol = ? AND user_id = ? AND status = ? AND account_id = ?", symbol, userId, "Open", accountId).First(&position).RecordNotFound() {
+		return position, errors.New("Record not found")
+	}
+
+	// Return happy
+	return position, nil
 }
 
 /* End File */

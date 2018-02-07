@@ -238,6 +238,10 @@ func (t *Base) GetOrders() error {
 
 	// Store the orders in our database
 	go func() {
+
+		// Now build out our positions database table based on past orders. (this is just test code)
+		archive.StorePositions(t.DB, t.User.Id)
+
 		err = archive.StoreOrders(t.DB, orders, t.User.Id)
 
 		if err != nil {

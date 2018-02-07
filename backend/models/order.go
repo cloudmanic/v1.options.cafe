@@ -78,6 +78,20 @@ func (t *DB) UpdateOrder(order *Order) error {
 }
 
 //
+// Get orders by User and class and status and reviewed
+//
+func (t *DB) GetOrdersByUserClassStatusReviewed(userId uint, class string, status string, reviewed string) ([]Order, error) {
+
+	orders := []Order{}
+
+	// Query and get all orders we have not reviewed before.
+	t.Preload("Legs").Where("user_id = ? AND class = ? AND status = ? AND position_reviewed = ?", userId, class, status, reviewed).Order("transaction_date asc").Find(&orders)
+
+	// Return happy
+	return orders, nil
+}
+
+//
 // See if we have an order by user and broker id.
 //
 func (t *DB) HasOrderByBrokerIdUserId(brokerId uint, userId uint) bool {
