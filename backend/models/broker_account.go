@@ -7,7 +7,10 @@
 package models
 
 import (
+	"strconv"
 	"time"
+
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 )
 
 type BrokerAccount struct {
@@ -50,6 +53,9 @@ func (t *DB) FirstOrCreateBrokerAccount(brokerAccount *BrokerAccount) (bool, err
 	// Ok we did not find the record lets create it.
 	if brokerAccount.Id == 0 {
 		t.Create(brokerAccount)
+
+		// Log user creation.
+		services.Info("FirstOrCreateBrokerAccount - Created a new broker account - " + strconv.Itoa(int(brokerAccount.Id)))
 	} else {
 		return false, nil
 	}
