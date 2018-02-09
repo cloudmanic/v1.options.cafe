@@ -6,6 +6,7 @@ import (
 )
 
 type Api interface {
+	GetBrokerConfig() *types.BrokerConfig
 	SetActiveSymbols([]string)
 	SendGetRequest(string) (string, error)
 	GetBalances() ([]types.Balance, error)

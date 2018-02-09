@@ -16,7 +16,9 @@ const (
 )
 
 type Api struct {
-	DB              models.Datastore
+	DB       models.Datastore
+	BrokerId uint
+
 	muActiveSymbols sync.Mutex
 	activeSymbols   string
 

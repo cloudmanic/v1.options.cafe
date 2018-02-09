@@ -153,37 +153,6 @@ func (t *Base) GetMarketStatus() error {
 
 }
 
-// ----------------- User Profile ------------------- //
-
-//
-// Do get user profile
-//
-func (t *Base) GetUserProfile() error {
-
-	// Make API call
-	userProfile, err := t.Api.GetUserProfile()
-
-	if err != nil {
-		return err
-	}
-
-	// Save the orders in the fetch object
-	t.muUserProfile.Lock()
-	t.UserProfile = userProfile
-	t.muUserProfile.Unlock()
-
-	// Send up websocket.
-	err = t.WriteDataChannel("user/profile", userProfile)
-
-	if err != nil {
-		return fmt.Errorf("GetUserProfile() WriteDataChannel : ", err)
-	}
-
-	// Return Happy
-	return nil
-
-}
-
 // ----------------- Positions ------------------- //
 
 //

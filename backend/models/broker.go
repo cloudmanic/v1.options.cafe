@@ -17,17 +17,8 @@ type Broker struct {
 	AccessToken         string    `sql:"not null" json:"-"`
 	RefreshToken        string    `sql:"not null" json:"-"`
 	TokenExpirationDate time.Time `json:"-"`
+	BrokerAccounts      []BrokerAccount
 }
-
-// func (t *DB) Test() {
-
-// 	var u []User
-// 	t.Preload("Brokers").Find(&u)
-
-// 	res2B, _ := json.Marshal(u)
-// 	fmt.Println(string(res2B))
-
-// }
 
 //
 // Get a broker by Id.

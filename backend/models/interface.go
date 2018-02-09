@@ -26,6 +26,10 @@ type Datastore interface {
 	GetBrokerTypeAndUserId(userId uint, brokerType string) ([]Broker, error)
 	CreateNewBroker(name string, user User, accessToken string, refreshToken string, tokenExpirationDate time.Time) (Broker, error)
 
+	// Broker Accounts
+	UpdateBrokerAccount(brokerAccount *BrokerAccount) error
+	FirstOrCreateBrokerAccount(brokerAccount *BrokerAccount) (bool, error)
+
 	// Forgot Password
 	GetUserFromToken(token string) (User, error)
 	DeleteForgotPasswordByToken(token string) error

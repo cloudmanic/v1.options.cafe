@@ -41,7 +41,7 @@ type tokenResponse struct {
 }
 
 //
-// Obtain an Authorization Code - http://localhost:7652/tradier/authorize?user=1
+// Obtain an Authorization Code - http://localhost:7080/tradier/authorize?user=1
 //
 func (t *TradierAuth) DoAuthCode(c *gin.Context) {
 
@@ -79,7 +79,7 @@ func (t *TradierAuth) DoAuthCode(c *gin.Context) {
 }
 
 //
-// Do Obtain an Authorization Code Callback - http://localhost:7652/tradier/callback
+// Do Obtain an Authorization Code Callback - http://localhost:7080/tradier/callback
 //
 func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 

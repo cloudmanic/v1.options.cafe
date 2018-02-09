@@ -12,9 +12,10 @@ import (
 )
 
 type Base struct {
-	User models.User
-	Api  brokers.Api
-	DB   models.Datastore
+	User     models.User
+	Api      brokers.Api
+	DB       models.Datastore
+	BrokerId uint
 
 	DataChan  chan controllers.SendStruct
 	QuoteChan chan controllers.SendStruct
@@ -65,28 +66,6 @@ func (t *Base) Start() {
 }
 
 // ---------------------- Tickers (polling) ---------------------------- //
-
-//
-// Ticker - User Profile : 60 seconds
-//
-func (t *Base) DoUserProfileTicker() {
-
-	var err error
-
-	for {
-
-		err = t.GetUserProfile()
-
-		if err != nil {
-			services.Warning(err)
-		}
-
-		// Sleep for 60 second.
-		time.Sleep(time.Second * 60)
-
-	}
-
-}
 
 //
 // Ticker - Orders Archive : 24 hours
