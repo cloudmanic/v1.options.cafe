@@ -65,7 +65,13 @@ type Datastore interface {
 
 	// Positions
 	CreatePosition(position *Position) error
+	UpdatePosition(position *Position) error
 	GetPositionByUserSymbolStatusAccount(userId uint, symbol string, status string, accountId string) (Position, error)
+
+	// TradeGroup
+	GetTradeGroupById(id uint) (TradeGroup, error)
+	CreateTradeGroup(tg *TradeGroup) error
+	UpdateTradeGroup(tg *TradeGroup) error
 
 	// Watchlists
 	GetWatchlistsById(id uint) (Watchlist, error)

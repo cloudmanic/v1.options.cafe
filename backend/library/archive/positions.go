@@ -6,7 +6,6 @@ import (
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/davecgh/go-spew/spew"
 )
 
 //
@@ -95,8 +94,7 @@ func doMultiLegOrders(db models.Datastore, userId uint) error {
 			// 	pos, err := doCloseOneLegMultiLegOrder(row, row2, db, userId)
 
 			// 	if err != nil {
-			// 		fmt.Println(err)
-			// 		rollbar.Error(rollbar.ERR, err)
+			// 		services.Fatal(err)
 			// 		continue
 			// 	}
 
@@ -108,8 +106,7 @@ func doMultiLegOrders(db models.Datastore, userId uint) error {
 			// 	pos, err := doCloseOneLegMultiLegOrder(row, row2, db, userId)
 
 			// 	if err != nil {
-			// 		fmt.Println(err)
-			// 		rollbar.Error(rollbar.ERR, err)
+			// 		services.Fatal(err)
 			// 		continue
 			// 	}
 
@@ -122,7 +119,12 @@ func doMultiLegOrders(db models.Datastore, userId uint) error {
 		}
 
 		// Build Trade Group
-		//doTradeGroupBuildFromPositions(row, positions, db, userId)
+		err = doTradeGroupBuildFromPositions(row, positions, db, userId)
+
+		if err != nil {
+			services.Fatal(err)
+			continue
+		}
 
 		// Mark the order as reviewed
 		row.PositionReviewed = "Yes"
@@ -139,83 +141,87 @@ func doMultiLegOrders(db models.Datastore, userId uint) error {
 	return nil
 }
 
-// //
-// // Build / Update a Tradegoup based on an array of positions
-// //
-// func doTradeGroupBuildFromPositions(order models.Order, positions []*models.Position, db models.Datastore, userId uint) error {
+//
+// Build / Update a Tradegoup based on an array of positions
+//
+func doTradeGroupBuildFromPositions(order models.Order, positions []*models.Position, db models.Datastore, userId uint) error {
 
-// 	var tradeGroupId uint
-// 	var tradeGroupStatus = "Closed"
+	var tradeGroupId uint
+	var tradeGroupStatus = "Closed"
 
-// 	// If we do not have at least 1 position we give up
-// 	if len(positions) == 0 {
-// 		return nil
-// 	}
+	// If we do not have at least 1 position we give up
+	if len(positions) == 0 {
+		return nil
+	}
 
-// 	// See if we have a trade group of any of the positions
-// 	tradeGroupId = 0
+	// See if we have a trade group of any of the positions
+	tradeGroupId = 0
 
-// 	for _, row := range positions {
+	for _, row := range positions {
 
-// 		// Mark if this trade group is open or closed.
-// 		if row.Qty != 0 {
-// 			tradeGroupStatus = "Open"
-// 		}
+		// Mark if this trade group is open or closed.
+		if row.Qty != 0 {
+			tradeGroupStatus = "Open"
+		}
 
-// 		if row.TradeGroupId > 0 {
-// 			tradeGroupId = row.TradeGroupId
-// 		}
+		if row.TradeGroupId > 0 {
+			tradeGroupId = row.TradeGroupId
+		}
 
-// 	}
+	}
 
-// 	// TODO: Figure out Risked, Commission, Gain, and Profit
+	// TODO: Figure out Risked, Commission, Gain, and Profit
 
-// 	// Create or Update Trade Group
-// 	if tradeGroupId == 0 {
+	// Create or Update Trade Group
+	if tradeGroupId == 0 {
 
-// 		// Build a new Trade Group
-// 		var tradeGroup = &models.TradeGroup{
-// 			UserId:     userId,
-// 			CreatedAt:  time.Now(),
-// 			UpdatedAt:  time.Now(),
-// 			AccountId:  order.AccountId,
-// 			Status:     tradeGroupStatus,
-// 			OrderIds:   strconv.Itoa(int(order.Id)),
-// 			Note:       "",
-// 			OpenDate:   order.CreateDate,
-// 			ClosedDate: order.TransactionDate,
-// 		}
+		// Build a new Trade Group
+		var tradeGroup = &models.TradeGroup{
+			UserId:     userId,
+			CreatedAt:  time.Now(),
+			UpdatedAt:  time.Now(),
+			AccountId:  order.AccountId,
+			Status:     tradeGroupStatus,
+			OrderIds:   strconv.Itoa(int(order.Id)),
+			Note:       "",
+			OpenDate:   order.CreateDate,
+			ClosedDate: order.TransactionDate,
+		}
 
-// 		// Insert into DB
-// 		db.Create(&tradeGroup)
+		// Insert into DB
+		db.CreateTradeGroup(tradeGroup)
 
-// 		// Store tradegroup id
-// 		tradeGroupId = tradeGroup.Id
+		// Store tradegroup id
+		tradeGroupId = tradeGroup.Id
 
-// 	} else {
+	} else {
 
-// 		// Update tradegroup with additional OrderIds
-// 		tradeGroup := &models.TradeGroup{}
-// 		db.Where("id = ? AND user_id = ?", tradeGroupId, userId).First(tradeGroup)
-// 		tradeGroup.Status = tradeGroupStatus
-// 		tradeGroup.ClosedDate = order.TransactionDate
-// 		tradeGroup.OrderIds = tradeGroup.OrderIds + "," + strconv.Itoa(int(order.Id))
-// 		db.Save(&tradeGroup)
+		// Update tradegroup with additional OrderIds
+		tradeGroup, err := db.GetTradeGroupById(tradeGroupId)
 
-// 	}
+		if err != nil {
+			return err
+		}
 
-// 	// Loop through the positions and add the trade group id
-// 	for _, row := range positions {
+		tradeGroup.Status = tradeGroupStatus
+		tradeGroup.ClosedDate = order.TransactionDate
+		tradeGroup.OrderIds = tradeGroup.OrderIds + "," + strconv.Itoa(int(order.Id))
+		db.UpdateTradeGroup(&tradeGroup)
 
-// 		row.TradeGroupId = tradeGroupId
-// 		db.Save(&row)
+	}
 
-// 	}
+	// Loop through the positions and add the trade group id
+	for _, row := range positions {
+		row.TradeGroupId = tradeGroupId
+		db.UpdatePosition(row)
+	}
 
-// 	// Return happy.
-// 	return nil
+	// Log success
+	services.Info("New TradeGroup created for user " + strconv.Itoa(int(userId)) + " TradeGroup Id: " + strconv.Itoa(int(tradeGroupId)))
 
-// }
+	// Return happy.
+	return nil
+}
 
 //
 // Do one leg of a multi leg order - Open Order
@@ -235,7 +241,7 @@ func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db model
 		position.OrgQty = leg.Qty + position.OrgQty
 		position.AvgOpenPrice = ((leg.AvgFillPrice + position.AvgOpenPrice) / 2)
 		position.Note = position.Note + "Updated - " + leg.TransactionDate.Format(time.RFC1123) + " :: "
-		//db.Save(&position)
+		db.UpdatePosition(&position)
 
 	} else {
 
@@ -260,15 +266,12 @@ func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db model
 		}
 
 		// Insert into DB
-		//db.Create(&position)
+		db.CreatePosition(&position)
 
 	}
 
-	spew.Dump(position)
-
 	// Return a list of position that we reviewed
 	return &position, nil
-
 }
 
 // //

@@ -38,6 +38,18 @@ func (t *DB) CreatePosition(position *Position) error {
 }
 
 //
+// Update a position.
+//
+func (t *DB) UpdatePosition(position *Position) error {
+
+	// Update entry.
+	t.Save(&position)
+
+	// Return happy
+	return nil
+}
+
+//
 // Get positions by User and class and status and reviewed
 //
 func (t *DB) GetPositionByUserSymbolStatusAccount(userId uint, symbol string, status string, accountId string) (Position, error) {
