@@ -1,7 +1,7 @@
 package types
 
 type Order struct {
-	Id                int
+	Id                string
 	AccountId         string
 	Type              string
 	Symbol            string

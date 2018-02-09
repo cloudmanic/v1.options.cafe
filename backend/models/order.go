@@ -9,7 +9,8 @@ type Order struct {
 	UserId            uint `sql:"not null;index:UserId"`
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
-	BrokerId          int    `sql:"not null;index:BrokerId"`
+	BrokerId          int    `sql:"not null;index:OurBrokerId"`
+	BrokerRef         string `sql:"not null;index:BrokerRef"`
 	AccountId         string `sql:"not null;index:AccountId"`
 	Type              string
 	Symbol            string
@@ -92,16 +93,16 @@ func (t *DB) GetOrdersByUserClassStatusReviewed(userId uint, class string, statu
 }
 
 //
-// See if we have an order by user and broker id.
+// See if we have an order by user and broker ref.
 //
-func (t *DB) HasOrderByBrokerIdUserId(brokerId uint, userId uint) bool {
+func (t *DB) HasOrderByBrokerRefUserId(brokerId string, userId uint) bool {
 
 	// See if we already have this record in our database
 	var count int
 	order := &Order{}
 
 	// Run query
-	t.Where("broker_id = ? AND user_id = ?", brokerId, userId).First(order).Count(&count)
+	t.Where("broker_ref = ? AND user_id = ?", brokerId, userId).First(order).Count(&count)
 
 	if count > 0 {
 		return true

@@ -25,7 +25,7 @@ func StoreOrders(db models.Datastore, orders []types.Order, userId uint) error {
 		}
 
 		// See if we already have this record in our database
-		if db.HasOrderByBrokerIdUserId(uint(row.Id), userId) {
+		if db.HasOrderByBrokerRefUserId(row.Id, userId) {
 			continue
 		}
 
@@ -53,7 +53,8 @@ func StoreOrders(db models.Datastore, orders []types.Order, userId uint) error {
 			UserId:            userId,
 			CreatedAt:         time.Now(),
 			UpdatedAt:         time.Now(),
-			BrokerId:          row.Id,
+			BrokerId:          0, // TODO: Add this.
+			BrokerRef:         row.Id,
 			AccountId:         row.AccountId,
 			Type:              row.Type,
 			Symbol:            row.Symbol,

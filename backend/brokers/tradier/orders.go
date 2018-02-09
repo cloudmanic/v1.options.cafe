@@ -3,6 +3,7 @@ package tradier
 import (
 	"encoding/json"
 	"errors"
+	"strconv"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/tidwall/gjson"
@@ -327,7 +328,7 @@ func (t *Api) tempOrderArray2OrderArray(t_orders *[]types.TradierOrder, orders *
 
 		// Append the orders
 		*orders = append(*orders, types.Order{
-			Id:                row.Id,
+			Id:                strconv.Itoa(row.Id),
 			AccountId:         row.AccountId,
 			Type:              row.Type,
 			Symbol:            row.Symbol,

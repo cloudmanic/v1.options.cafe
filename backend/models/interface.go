@@ -64,7 +64,7 @@ type Datastore interface {
 	// Orders
 	CreateOrder(order *Order) error
 	UpdateOrder(order *Order) error
-	HasOrderByBrokerIdUserId(brokerId uint, userId uint) bool
+	HasOrderByBrokerRefUserId(brokerRef string, userId uint) bool
 	GetOrdersByUserClassStatusReviewed(userId uint, class string, status string, reviewed string) ([]Order, error)
 
 	// Positions
