@@ -6,9 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/controllers"
-	"github.com/cloudmanic/app.options.cafe/backend/library/archive"
 )
 
 //
@@ -181,72 +179,6 @@ func (t *Base) GetPositions() error {
 
 	// Return Happy
 	return nil
-
-}
-
-// ----------------- Orders ------------------- //
-
-//
-// Do get orders
-//
-func (t *Base) GetOrders() error {
-
-	orders := []types.Order{}
-
-	// Make API call
-	orders, err := t.Api.GetOrders()
-
-	if err != nil {
-		return err
-	}
-
-	// Save the orders in the fetch object
-	t.muOrders.Lock()
-	t.Orders = orders
-	t.muOrders.Unlock()
-
-	// Store the orders in our database
-	err = archive.StoreOrders(t.DB, orders, t.User.Id)
-
-	if err != nil {
-		fmt.Errorf("Fetch.GetOrders() - StoreOrders() : ", err)
-	}
-
-	// Send up websocket.
-	err = t.WriteDataChannel("orders", orders)
-
-	if err != nil {
-		return fmt.Errorf("Fetch.GetOrders() : ", err)
-	}
-
-	// Return Happy
-	return nil
-
-}
-
-//
-// Do get all orders. We return the orders instead of sending it up the websocket
-//
-func (t *Base) GetAllOrders() ([]types.Order, error) {
-
-	var orders []types.Order
-
-	// Make API call
-	orders, err := t.Api.GetAllOrders()
-
-	if err != nil {
-		return orders, fmt.Errorf("Fetch.GetAllOrders() : ", err)
-	}
-
-	// Store the orders in our database
-	err = archive.StoreOrders(t.DB, orders, t.User.Id)
-
-	if err != nil {
-		return orders, fmt.Errorf("Fetch.GetAllOrders() - StoreOrders() : ", err)
-	}
-
-	// Return Happy
-	return orders, nil
 
 }
 

@@ -1,6 +1,7 @@
 package archive
 
 import (
+	"math"
 	"strconv"
 	"time"
 
@@ -12,10 +13,10 @@ import (
 // Here we loop through all the order data and create positions. We do this because
 // brokers do not offer an api of past positions.
 //
-func StorePositions(db models.Datastore, userId uint) error {
+func StorePositions(db models.Datastore, userId uint, brokerId uint) error {
 
 	// Process different orders types.
-	doMultiLegOrders(db, userId)
+	doMultiLegOrders(db, userId, brokerId)
 
 	// Return happy
 	return nil
@@ -48,7 +49,7 @@ func StorePositions(db models.Datastore, userId uint) error {
 //
 // Do multi leg orders - Just when you open a position.
 //
-func doMultiLegOrders(db models.Datastore, userId uint) error {
+func doMultiLegOrders(db models.Datastore, userId uint, brokerId uint) error {
 
 	// Query and get all orders we have not reviewed before.
 	orders, err := db.GetOrdersByUserClassStatusReviewed(userId, "multileg", "filled", "No")
@@ -119,7 +120,7 @@ func doMultiLegOrders(db models.Datastore, userId uint) error {
 		}
 
 		// Build Trade Group
-		err = doTradeGroupBuildFromPositions(row, positions, db, userId)
+		err = doTradeGroupBuildFromPositions(row, positions, db, userId, brokerId)
 
 		if err != nil {
 			services.Fatal(err)
@@ -144,8 +145,9 @@ func doMultiLegOrders(db models.Datastore, userId uint) error {
 //
 // Build / Update a Tradegoup based on an array of positions
 //
-func doTradeGroupBuildFromPositions(order models.Order, positions []*models.Position, db models.Datastore, userId uint) error {
+func doTradeGroupBuildFromPositions(order models.Order, positions []*models.Position, db models.Datastore, userId uint, brokerId uint) error {
 
+	var totalQty float64
 	var tradeGroupId uint
 	var tradeGroupStatus = "Closed"
 
@@ -154,7 +156,15 @@ func doTradeGroupBuildFromPositions(order models.Order, positions []*models.Posi
 		return nil
 	}
 
+	// Get broker account id
+	brokerAccount, err := db.GetBrokerAccountByBrokerAccountNumber(brokerId, order.AccountId)
+
+	if err != nil {
+		return err
+	}
+
 	// See if we have a trade group of any of the positions
+	totalQty = 0
 	tradeGroupId = 0
 
 	for _, row := range positions {
@@ -168,24 +178,37 @@ func doTradeGroupBuildFromPositions(order models.Order, positions []*models.Posi
 			tradeGroupId = row.TradeGroupId
 		}
 
+		// Get the total qty
+		totalQty = totalQty + math.Abs(float64(row.OrgQty))
+
 	}
 
-	// TODO: Figure out Risked, Commission, Gain, and Profit
+	// Figure out Commission
+	commission := (totalQty * .35)
+
+	// See if we hit the min for multileg?
+	if (order.Class == "multileg") && (brokerAccount.OptionMultiLegMin > commission) {
+		commission = brokerAccount.OptionMultiLegMin
+	}
+
+	// TODO: Figure out Risked, Gain, and Profit (if this is closed)
 
 	// Create or Update Trade Group
 	if tradeGroupId == 0 {
 
 		// Build a new Trade Group
 		var tradeGroup = &models.TradeGroup{
-			UserId:     userId,
-			CreatedAt:  time.Now(),
-			UpdatedAt:  time.Now(),
-			AccountId:  order.AccountId,
-			Status:     tradeGroupStatus,
-			OrderIds:   strconv.Itoa(int(order.Id)),
-			Note:       "",
-			OpenDate:   order.CreateDate,
-			ClosedDate: order.TransactionDate,
+			UserId:          userId,
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+			AccountId:       order.AccountId,
+			BrokerAccountId: brokerAccount.Id,
+			Status:          tradeGroupStatus,
+			OrderIds:        strconv.Itoa(int(order.Id)),
+			Commission:      commission,
+			Note:            "",
+			OpenDate:        order.CreateDate,
+			ClosedDate:      order.TransactionDate,
 		}
 
 		// Insert into DB
@@ -203,6 +226,7 @@ func doTradeGroupBuildFromPositions(order models.Order, positions []*models.Posi
 			return err
 		}
 
+		tradeGroup.Commission = commission
 		tradeGroup.Status = tradeGroupStatus
 		tradeGroup.ClosedDate = order.TransactionDate
 		tradeGroup.OrderIds = tradeGroup.OrderIds + "," + strconv.Itoa(int(order.Id))

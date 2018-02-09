@@ -68,50 +68,6 @@ func (t *Base) Start() {
 // ---------------------- Tickers (polling) ---------------------------- //
 
 //
-// Ticker - Orders Archive : 24 hours
-//
-func (t *Base) DoOrdersArchive() {
-
-	/*
-		   //var positions = &[]models.Position{}
-		   //db.Where("user_id = ? AND trade_group_id = ?", t.userId, 132).Find(positions)
-
-		   //archive.ClassifyTradeGroup(positions)
-
-
-
-
-
-		   var err error
-		   var orders []types.Order
-
-		   for {
-
-		     // Load up all orders
-		     orders, err = t.GetAllOrders()
-
-		     if err != nil {
-		       fmt.Println(err)
-		     }
-
-		     // Store the orders in our database
-		     archive.StoreOrders(db, orders, t.userId)
-
-				// Now build out our positions database table based on past orders.
-				archive.StorePositions(db, userId)
-
-		     // Clear memory
-		     orders = nil
-
-		     // Sleep for 24 hours
-		     time.Sleep(time.Hour * 24)
-
-		   }
-	*/
-
-}
-
-//
 // Ticker - Positions : 3 seconds
 //
 func (t *Base) DoPositionsTicker() {
@@ -122,29 +78,6 @@ func (t *Base) DoPositionsTicker() {
 
 		// Load up positions
 		err = t.GetPositions()
-
-		if err != nil {
-			services.Warning(err)
-		}
-
-		// Sleep for 3 second.
-		time.Sleep(time.Second * 3)
-
-	}
-
-}
-
-//
-// Ticker - Orders : 3 seconds
-//
-func (t *Base) DoOrdersTicker() {
-
-	var err error
-
-	for {
-
-		// Load up orders
-		err = t.GetOrders()
 
 		if err != nil {
 			services.Warning(err)

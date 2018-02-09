@@ -42,6 +42,20 @@ func (t *DB) UpdateBrokerAccount(brokerAccount *BrokerAccount) error {
 }
 
 //
+// Get the broker account by broker and account number
+//
+func (t *DB) GetBrokerAccountByBrokerAccountNumber(brokerId uint, accountNumber string) (BrokerAccount, error) {
+
+	ba := BrokerAccount{}
+
+	// Query and get all orders we have not reviewed before.
+	t.Where("broker_id = ? AND account_number = ?", brokerId, accountNumber).First(&ba)
+
+	// Return happy
+	return ba, nil
+}
+
+//
 // Look for a broker account. If we can't find it create it.
 // The bool return will be true if this was a new record created.
 //

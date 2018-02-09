@@ -29,6 +29,7 @@ type Datastore interface {
 	// Broker Accounts
 	UpdateBrokerAccount(brokerAccount *BrokerAccount) error
 	FirstOrCreateBrokerAccount(brokerAccount *BrokerAccount) (bool, error)
+	GetBrokerAccountByBrokerAccountNumber(brokerId uint, accountNumber string) (BrokerAccount, error)
 
 	// Forgot Password
 	GetUserFromToken(token string) (User, error)

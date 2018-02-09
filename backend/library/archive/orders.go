@@ -14,7 +14,7 @@ import (
 //
 // TODO: Review partially_filled orders.
 //
-func StoreOrders(db models.Datastore, orders []types.Order, userId uint) error {
+func StoreOrders(db models.Datastore, orders []types.Order, userId uint, brokerId uint) error {
 
 	// Loop through the orders and process
 	for _, row := range orders {
@@ -117,7 +117,7 @@ func StoreOrders(db models.Datastore, orders []types.Order, userId uint) error {
 		}
 
 		// Now build out our positions database table based on past orders.
-		StorePositions(db, userId)
+		StorePositions(db, userId, brokerId)
 	}
 
 	// Return Happy
