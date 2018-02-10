@@ -78,7 +78,7 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 	tgType := ClassifyTradeGroup(positions)
 
 	// Figure out Commission
-	commission := calcCommissionForOrder(&order, brokerId, db, &brokerAccount)
+	commission := calcCommissionForOrder(&order, brokerId, &brokerAccount)
 
 	// TODO: Figure out Risked, Gain, and Profit (if this is closed)
 
@@ -142,7 +142,7 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 //
 // Review the order and calculate the commission for this order.
 //
-func calcCommissionForOrder(order *models.Order, brokerId uint, db models.Datastore, brokerAccount *models.BrokerAccount) float64 {
+func calcCommissionForOrder(order *models.Order, brokerId uint, brokerAccount *models.BrokerAccount) float64 {
 
 	var qty = 0.00
 	var commission = 0.00
