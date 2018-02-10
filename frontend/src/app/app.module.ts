@@ -19,6 +19,7 @@ import { QuoteService } from './providers/websocket/quote.service';
 
 // Providers - http
 import { SymbolService } from './providers/http/symbol.service';
+import { TradeGroupService } from './providers/http/trade-group.service';
 
 // Layout
 import { SidebarComponent } from './layouts/sidebar/sidebar.component';
@@ -102,6 +103,7 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     QuoteService, 
     AuthGuard, 
     SymbolService,
+    TradeGroupService,
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }    
   ],
   

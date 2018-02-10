@@ -1169,7 +1169,7 @@ select::-ms-expand { display: none; }
 .table table { margin: 0; }
 .table th { font-weight: 400; }
 .table td span { color: #5cb85c; }
-.table ins { display: block; font-style: italic; font-weight: 400; text-decoration: none; color: #3e4145; position: relative; }
+.table ins, .table .note-text { display: block; font-style: italic; font-weight: 400; text-decoration: none; color: #3e4145; position: relative; }
 .table ins:after { content: ''; background: #3e4145; width: 61px; width: 100%; height: 1px; position: absolute; bottom: -2px; left: 0; }
 .table ins,
 .table ins:after { opacity: .6; }

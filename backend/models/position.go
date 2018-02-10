@@ -12,23 +12,23 @@ import (
 )
 
 type Position struct {
-	Id            uint `gorm:"primary_key"`
-	UserId        uint `sql:"not null;index:UserId"`
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	TradeGroupId  uint   `sql:"not null;index:TradeGroupId"`
-	AccountId     string `sql:"not null;index:AccountId"`
-	Status        string `sql:"not null;type:ENUM('Open', 'Closed');default:'Open'"`
-	Symbol        string
-	Qty           int
-	OrgQty        int
-	CostBasis     float64 `sql:"type:DECIMAL(12,2)"`
-	AvgOpenPrice  float64 `sql:"type:DECIMAL(12,2)"`
-	AvgClosePrice float64 `sql:"type:DECIMAL(12,2)"`
-	OrderIds      string
-	Note          string `sql:"type:text"`
-	OpenDate      time.Time
-	ClosedDate    time.Time
+	Id            uint      `gorm:"primary_key" json:"id"`
+	UserId        uint      `sql:"not null;index:UserId" json:"_"`
+	CreatedAt     time.Time `json:"_"`
+	UpdatedAt     time.Time `json:"_"`
+	TradeGroupId  uint      `sql:"not null;index:TradeGroupId" json:"trade_group_id"`
+	AccountId     string    `sql:"not null;index:AccountId" json:"account_id"`
+	Status        string    `sql:"not null;type:ENUM('Open', 'Closed');default:'Open'" json:"status"`
+	Symbol        string    `json:"symbol"`
+	Qty           int       `json:"qty"`
+	OrgQty        int       `json:"org_qty"`
+	CostBasis     float64   `sql:"type:DECIMAL(12,2)" json:"cost_basis"`
+	AvgOpenPrice  float64   `sql:"type:DECIMAL(12,2)" json:"avg_open_price"`
+	AvgClosePrice float64   `sql:"type:DECIMAL(12,2)" json:"avg_close_price"`
+	OrderIds      string    `json:"_"`
+	Note          string    `sql:"type:text" json:"note"`
+	OpenDate      time.Time `json:"open_date"`
+	ClosedDate    time.Time `json:"close_date"`
 }
 
 //

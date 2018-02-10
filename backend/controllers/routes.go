@@ -26,10 +26,14 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		// Symbols
 		apiV1.GET("/symbols", t.GetSymbols)
 
-		// // Watchlists
+		// Watchlists
 		apiV1.GET("/watchlists", t.GetWatchlists)
 		apiV1.POST("/watchlists", t.CreateWatchlist)
 		apiV1.GET("/watchlists/:id", t.GetWatchlist)
+
+		// Trade Groups
+		apiV1.GET("/tradegroups", t.GetTradeGroups)
+
 	}
 
 	// ---------- Websockets -------------- //

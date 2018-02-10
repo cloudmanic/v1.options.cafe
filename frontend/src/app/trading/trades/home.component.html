@@ -30,10 +30,13 @@
     		</div><!-- /.search__body -->
     	</div><!-- /.search-small -->
   
+
+
     	<ul class="boxes boxes--rows">
-    		<li class="box--bordered">
+
+    		<li class="box--bordered" *ngFor="let row of tradesList;">
     			<header class="box__head box__head--relative">
-    				<h5 class="box__title">Put Credit Spread Trade #220 @ $0.23</h5><!-- /.box__title -->
+    				<h5 class="box__title">{{ row.Type }} Trade (#{{ row.Id }})</h5><!-- /.box__title -->
   
     				<div class="dropdown select">
     					<div class="dropdown__head dropdown--trigger"></div><!-- /.dropdown__head dropdown-trigger -->
@@ -45,7 +48,7 @@
     							</li>
   
     							<li>
-    								<a href="#">Edit Commisions</a>
+    								<a href="#">Edit Commission</a>
     							</li>
   
     							<li>
@@ -91,19 +94,19 @@
   
     						<tr>
     							<td>
-    								<strong>3/6/2017</strong>
+    								<strong>{{ row.OpenDate | date:'shortDate' }}</strong>
     							</td>
   
     							<td>
-    								<strong>4/17/17</strong>
+    								<strong>{{ row.ClosedDate | date:'shortDate' }}</strong>
     							</td>
   
     							<td>
-    								<strong class="title-red">Closed</strong>
+    								<strong [ngClass]="{'title-red': (row.Status == 'Closed'), 'title-green': (row.Status == 'Open')}">{{ row.Status }}</strong>
     							</td>
   
     							<td>
-    								<strong>$14.00</strong>
+    								<strong>{{ row.Commission | currency }}</strong>
     							</td>
   
     							<td>
@@ -149,7 +152,7 @@
     							</td>
     						</tr>
   
-    						<tr>
+    						<tr *ngFor="let row2 of row.Positions;">
     							<td>
     								<strong>SPY</strong>
   
@@ -161,55 +164,19 @@
     							</td>
   
     							<td>
-    								<strong>3/6/2017</strong>
+    								<strong>{{ row2.OpenDate | date:'shortDate' }}</strong>
     							</td>
   
     							<td>
-    								<strong>4/17/2017</strong>
+    								<strong>{{ row2.ClosedDate | date:'shortDate' }}</strong>
     							</td>
   
     							<td>
-    								<strong>7</strong>
+    								<strong>{{ row2.OrgQty }}</strong>
     							</td>
   
     							<td>
-    								<strong>$567.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$28.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong class="title-red">$25.00</strong>
-    							</td>
-    						</tr>
-  
-    						<tr>
-    							<td>
-    								<strong>SPY</strong>
-  
-    								<strong>Jan 18 2017</strong>
-  
-    								<strong>$216.00</strong>
-  
-    								<strong>Put</strong>
-    							</td>
-  
-    							<td>
-    								<strong>3/6/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>4/17/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>7</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$567.00</strong>
+    								<strong>{{ row2.CostBasis | currency }}</strong>
     							</td>
   
     							<td>
@@ -220,666 +187,23 @@
     								<strong class="title-red">$25.00</strong>
     							</td>
     						</tr>
+
+                            <tr>
+                                <td colspan="7">
+                                    <p class="note-text">{{ row.Note }}</p>
+                                </td>
+                            </tr>
     					</table>
+
     				</div><!-- /.table table-small table-clear -->
     			</div><!-- /.box__body box__body-xsmall -->
     		</li><!-- /.box-bordered -->
   
-    		<li class="box--bordered">
-    			<header class="box__head box__head--relative">
-    				<h5 class="box__title">Put Credit Spread Trade #220 @ $0.23</h5><!-- /.box__title -->
-  
-    				<div class="dropdown select">
-    					<div class="dropdown__head dropdown--trigger"></div><!-- /.dropdown__head dropdown-trigger -->
-  
-    					<div class="dropdown__body">
-    						<ul class="list-actions">
-    							<li>
-    								<a href="#">Edit Name</a>
-    							</li>
-  
-    							<li>
-    								<a href="#">Edit Commisions</a>
-    							</li>
-  
-    							<li>
-    								<a href="#">Assign Position</a>
-    							</li>
-  
-    							<li>
-    								<a href="#">Add Note</a>
-    							</li>
-    						</ul><!-- /.list-actions -->
-    					</div><!-- /.dropdown__body -->
-    				</div><!-- /.dropdown select -->
-    			</header><!-- /.box__head box__head-relative -->
-  
-    			<div class="box__body box__body--xsmall">
-    				<div class="table table--small table--grey">
-    					<table>
-    						<tr>
-    							<td>
-    								<ins>Open</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Close</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Status</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Commissions</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Risked</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Profit</ins>
-    							</td>
-    						</tr>
-  
-    						<tr>
-    							<td>
-    								<strong>3/6/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>4/17/17</strong>
-    							</td>
-  
-    							<td>
-    								<strong class="title-red">Closed</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$14.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$1,263.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong class="title-green">$123.00 (9.74%)</strong>
-    							</td>
-    						</tr>
-    					</table>
-    				</div><!-- /.table table-small table-grey -->
-  
-    				<div class="table table--small table--clear">
-    					<table>
-    						<tr>
-    							<td>
-    								<ins class="table__title-full">Positions</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Open</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Close</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Quantity</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Open Value</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Close Value</ins>
-    							</td>
-  
-    							<td>
-    								<ins>P&amp;L</ins>
-    							</td>
-    						</tr>
-  
-    						<tr>
-    							<td>
-    								<strong>SPY</strong>
-  
-    								<strong>Jan 18 2017</strong>
-  
-    								<strong>$216.00</strong>
-  
-    								<strong>Put</strong>
-    							</td>
-  
-    							<td>
-    								<strong>3/6/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>4/17/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>7</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$567.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$28.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong class="title-red">$25.00</strong>
-    							</td>
-    						</tr>
-    					</table>
-    				</div><!-- /.table table-small table-clear -->
-    			</div><!-- /.box__body box__body-xsmall -->
-    		</li><!-- /.box-bordered -->
-  
-    		<li class="box--bordered">
-    			<header class="box__head box__head--relative">
-    				<h5 class="box__title">Put Credit Spread Trade #220 @ $0.23</h5><!-- /.box__title -->
-  
-    				<div class="dropdown select">
-    					<div class="dropdown__head dropdown--trigger"></div><!-- /.dropdown__head dropdown-trigger -->
-  
-    					<div class="dropdown__body">
-    						<ul class="list-actions">
-    							<li>
-    								<a href="#">Edit Name</a>
-    							</li>
-  
-    							<li>
-    								<a href="#">Edit Commisions</a>
-    							</li>
-  
-    							<li>
-    								<a href="#">Assign Position</a>
-    							</li>
-  
-    							<li>
-    								<a href="#">Add Note</a>
-    							</li>
-    						</ul><!-- /.list-actions -->
-    					</div><!-- /.dropdown__body -->
-    				</div><!-- /.dropdown select -->
-    			</header><!-- /.box__head box__head-relative -->
-  
-    			<div class="box__body box__body--xsmall">
-    				<div class="table table--small table--grey">
-    					<table>
-    						<tr>
-    							<td>
-    								<ins>Open</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Close</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Status</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Commissions</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Risked</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Profit</ins>
-    							</td>
-    						</tr>
-  
-    						<tr>
-    							<td>
-    								<strong>3/6/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>4/17/17</strong>
-    							</td>
-  
-    							<td>
-    								<strong class="title-red">Closed</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$14.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$1,263.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong class="title-green">$123.00 (9.74%)</strong>
-    							</td>
-    						</tr>
-    					</table>
-    				</div><!-- /.table table-small table-grey -->
-  
-    				<div class="table table--small table--clear">
-    					<table>
-    						<tr>
-    							<td>
-    								<ins class="table__title-full">Positions</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Open</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Close</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Quantity</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Open Value</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Close Value</ins>
-    							</td>
-  
-    							<td>
-    								<ins>P&amp;L</ins>
-    							</td>
-    						</tr>
-  
-    						<tr>
-    							<td>
-    								<strong>SPY</strong>
-  
-    								<strong>Jan 18 2017</strong>
-  
-    								<strong>$216.00</strong>
-  
-    								<strong>Put</strong>
-    							</td>
-  
-    							<td>
-    								<strong>3/6/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>4/17/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>7</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$567.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$28.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong class="title-red">$25.00</strong>
-    							</td>
-    						</tr>
-  
-    						<tr>
-    							<td>
-    								<strong>SPY</strong>
-  
-    								<strong>Jan 18 2017</strong>
-  
-    								<strong>$216.00</strong>
-  
-    								<strong>Put</strong>
-    							</td>
-  
-    							<td>
-    								<strong>3/6/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>4/17/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>7</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$567.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$28.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong class="title-red">$25.00</strong>
-    							</td>
-    						</tr>
-  
-    						<tr>
-    							<td>
-    								<strong>SPY</strong>
-  
-    								<strong>Jan 18 2017</strong>
-  
-    								<strong>$216.00</strong>
-  
-    								<strong>Put</strong>
-    							</td>
-  
-    							<td>
-    								<strong>3/6/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>4/17/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>7</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$567.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$28.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong class="title-red">$25.00</strong>
-    							</td>
-    						</tr>
-    					</table>
-    				</div><!-- /.table table-small table-clear -->
-    			</div><!-- /.box__body box__body-xsmall -->
-    		</li><!-- /.box-bordered -->
-  
-    		<li class="box--bordered">
-    			<header class="box__head box__head--relative">
-    				<h5 class="box__title">Put Credit Spread Trade #220 @ $0.23</h5><!-- /.box__title -->
-  
-    				<div class="dropdown select">
-    					<div class="dropdown__head dropdown--trigger"></div><!-- /.dropdown__head dropdown-trigger -->
-  
-    					<div class="dropdown__body">
-    						<ul class="list-actions">
-    							<li>
-    								<a href="#">Edit Name</a>
-    							</li>
-  
-    							<li>
-    								<a href="#">Edit Commisions</a>
-    							</li>
-  
-    							<li>
-    								<a href="#">Assign Position</a>
-    							</li>
-  
-    							<li>
-    								<a href="#">Add Note</a>
-    							</li>
-    						</ul><!-- /.list-actions -->
-    					</div><!-- /.dropdown__body -->
-    				</div><!-- /.dropdown select -->
-    			</header><!-- /.box__head box__head-relative -->
-  
-    			<div class="box__body box__body--xsmall">
-    				<div class="table table--small table--grey">
-    					<table>
-    						<tr>
-    							<td>
-    								<ins>Open</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Close</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Status</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Commissions</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Risked</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Profit</ins>
-    							</td>
-    						</tr>
-  
-    						<tr>
-    							<td>
-    								<strong>3/6/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>4/17/17</strong>
-    							</td>
-  
-    							<td>
-    								<strong class="title-red">Closed</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$14.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$1,263.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong class="title-green">$123.00 (9.74%)</strong>
-    							</td>
-    						</tr>
-    					</table>
-    				</div><!-- /.table table-small table-grey -->
-  
-    				<div class="table table--small table--clear">
-    					<table>
-    						<tr>
-    							<td>
-    								<ins class="table__title-full">Positions</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Open</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Close</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Quantity</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Open Value</ins>
-    							</td>
-  
-    							<td>
-    								<ins>Close Value</ins>
-    							</td>
-  
-    							<td>
-    								<ins>P&amp;L</ins>
-    							</td>
-    						</tr>
-  
-    						<tr>
-    							<td>
-    								<strong>SPY</strong>
-  
-    								<strong>Jan 18 2017</strong>
-  
-    								<strong>$216.00</strong>
-  
-    								<strong>Put</strong>
-    							</td>
-  
-    							<td>
-    								<strong>3/6/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>4/17/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>7</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$567.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$28.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong class="title-red">$25.00</strong>
-    							</td>
-    						</tr>
-  
-    						<tr>
-    							<td>
-    								<strong>SPY</strong>
-  
-    								<strong>Jan 18 2017</strong>
-  
-    								<strong>$216.00</strong>
-  
-    								<strong>Put</strong>
-    							</td>
-  
-    							<td>
-    								<strong>3/6/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>4/17/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>7</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$567.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$28.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong class="title-red">$25.00</strong>
-    							</td>
-    						</tr>
-  
-    						<tr>
-    							<td>
-    								<strong>SPY</strong>
-  
-    								<strong>Jan 18 2017</strong>
-  
-    								<strong>$216.00</strong>
-  
-    								<strong>Put</strong>
-    							</td>
-  
-    							<td>
-    								<strong>3/6/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>4/17/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>7</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$567.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$28.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong class="title-red">$25.00</strong>
-    							</td>
-    						</tr>
-  
-    						<tr>
-    							<td>
-    								<strong>SPY</strong>
-  
-    								<strong>Jan 18 2017</strong>
-  
-    								<strong>$216.00</strong>
-  
-    								<strong>Put</strong>
-    							</td>
-  
-    							<td>
-    								<strong>3/6/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>4/17/2017</strong>
-    							</td>
-  
-    							<td>
-    								<strong>7</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$567.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong>$28.00</strong>
-    							</td>
-  
-    							<td>
-    								<strong class="title-red">$25.00</strong>
-    							</td>
-    						</tr>
-    					</table>
-    				</div><!-- /.table table-small table-clear -->
-    			</div><!-- /.box__body box__body-xsmall -->
-    		</li><!-- /.box-bordered -->
     	</ul><!-- /.boxes boxes-rows -->
   
+
+
+
     	<div class="content__actions">
     		<a href="#" class="btn btn--small btn--opacity">Prev</a>
   

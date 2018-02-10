@@ -77,6 +77,7 @@ type Datastore interface {
 	GetTradeGroupById(id uint) (TradeGroup, error)
 	CreateTradeGroup(tg *TradeGroup) error
 	UpdateTradeGroup(tg *TradeGroup) error
+	GetTradeGroupsByUserId(userId uint, orderBy string) ([]TradeGroup, error)
 
 	// Watchlists
 	GetWatchlistsById(id uint) (Watchlist, error)
