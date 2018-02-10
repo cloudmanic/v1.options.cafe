@@ -14,6 +14,52 @@ import (
 )
 
 //
+// Test trade classification - Single stock trade
+//
+func TestClassifyTradeGroupSingleStock01(t *testing.T) {
+
+	// Test put credit spread
+	positions := &[]models.Position{
+		{
+			Symbol:       "SPY",
+			OrgQty:       9,
+			CostBasis:    2034.00,
+			AvgOpenPrice: 226.12,
+		},
+	}
+
+	// Get the classification of this trade group
+	class := ClassifyTradeGroup(positions)
+
+	// Verify the data was return as expected
+	st.Expect(t, class, "Stock")
+
+}
+
+//
+// Test trade classification - Single option trade
+//
+func TestClassifyTradeGroupSingleOption01(t *testing.T) {
+
+	// Test put credit spread
+	positions := &[]models.Position{
+		{
+			Symbol:       "SPY180221P00241000",
+			OrgQty:       9,
+			CostBasis:    2034.00,
+			AvgOpenPrice: 2.26,
+		},
+	}
+
+	// Get the classification of this trade group
+	class := ClassifyTradeGroup(positions)
+
+	// Verify the data was return as expected
+	st.Expect(t, class, "Option")
+
+}
+
+//
 // Test trade classification - Put Credit Spread
 //
 func TestClassifyTradeGroupPutCreditSpread01(t *testing.T) {

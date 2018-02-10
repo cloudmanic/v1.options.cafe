@@ -7,6 +7,7 @@
 package helpers
 
 import (
+	"errors"
 	"regexp"
 	"strconv"
 	"time"
@@ -27,7 +28,12 @@ type OptionParts struct {
 // Parse the an options symbol string.
 // https://www.investopedia.com/articles/optioninvestor/10/options-symbol-rules.asp
 //
-func OptionParse(optionSymb string) OptionParts {
+func OptionParse(optionSymb string) (OptionParts, error) {
+
+	// Length must be 18 chars
+	if len(optionSymb) != 18 {
+		return OptionParts{}, errors.New("Options symbol string must be 18 chars.")
+	}
 
 	// Parse the options string
 	// https://regex101.com/r/jEGDzO/1
@@ -66,7 +72,7 @@ func OptionParse(optionSymb string) OptionParts {
 		Expire: date,
 		Type:   typeStr,
 		Strike: strike,
-	}
+	}, nil
 }
 
 /* End File */
