@@ -19,44 +19,30 @@ import (
 // Ticker - Orders Archive : 24 hours
 //
 func (t *Base) DoOrdersArchive() {
+	var err error
+	var orders []types.Order
 
-	/*
-	   //var positions = &[]models.Position{}
-	   //db.Where("user_id = ? AND trade_group_id = ?", t.userId, 132).Find(positions)
+	for {
+		// Load up all orders
+		orders, err = t.GetAllOrders()
 
-	   //archive.ClassifyTradeGroup(positions)
+		if err != nil {
+			services.Warning(err)
+		}
 
+		// Store the orders in our database
+		err = archive.StoreOrders(t.DB, orders, t.User.Id, t.BrokerId)
 
+		if err != nil {
+			services.Warning(fmt.Errorf("Fetch.DoOrdersArchive() - StoreOrders() : ", err))
+		}
 
+		// Clear memory
+		orders = nil
 
-
-	   var err error
-	   var orders []types.Order
-
-	   for {
-
-	     // Load up all orders
-	     orders, err = t.GetAllOrders()
-
-	     if err != nil {
-	       fmt.Println(err)
-	     }
-
-	     // Store the orders in our database
-	     archive.StoreOrders(db, orders, t.userId)
-
-	    // Now build out our positions database table based on past orders.
-	    archive.StorePositions(db, userId)
-
-	     // Clear memory
-	     orders = nil
-
-	     // Sleep for 24 hours
-	     time.Sleep(time.Hour * 24)
-
-	   }
-	*/
-
+		// Sleep for 24 hours
+		time.Sleep(time.Hour * 24)
+	}
 }
 
 //

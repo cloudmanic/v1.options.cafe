@@ -59,10 +59,7 @@ func (t *Base) Start() {
 	go t.DoGetMarketStatusTicker()
 	go t.DoGetBalancesTicker()
 	go t.DoAccessTokenRefresh()
-
-	// Do Archive Calls
-	//go t.DoOrdersArchive()
-
+	go t.DoOrdersArchive()
 }
 
 // ---------------------- Tickers (polling) ---------------------------- //
