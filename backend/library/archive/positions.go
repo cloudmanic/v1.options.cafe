@@ -1,3 +1,9 @@
+//
+// Date: 2/9/2018
+// Author(s): Spicer Matthews (spicer@options.cafe)
+// Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
+//
+
 package archive
 
 import (
@@ -22,9 +28,15 @@ func StorePositions(db models.Datastore, userId uint, brokerId uint) error {
 		return err
 	}
 
+	// Process single option order
+	err = doSingleOptionOrder(db, userId, brokerId)
+
+	if err != nil {
+		return err
+	}
+
 	// Return happy
 	return nil
-
 }
 
 //
@@ -67,7 +79,6 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 		// TODO: There is a bug here. If you start the position with more than one order where your paying the
 		// min commission more than once this number will not be correct.
 		totalQty = totalQty + math.Abs(float64(row.OrgQty))
-
 	}
 
 	// Figure out what type of trade group this is.
@@ -79,6 +90,16 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 	// See if we hit the min for multileg?
 	if (order.Class == "multileg") && (brokerAccount.OptionMultiLegMin > commission) {
 		commission = brokerAccount.OptionMultiLegMin
+	}
+
+	// See if we hit the min for options?
+	if (order.Class == "option") && (brokerAccount.OptionSingleMin > commission) {
+		commission = brokerAccount.OptionSingleMin
+	}
+
+	// Closing order?
+	if tradeGroupStatus == "Closed" {
+		commission = commission * 2
 	}
 
 	// TODO: Figure out Risked, Gain, and Profit (if this is closed)

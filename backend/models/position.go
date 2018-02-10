@@ -1,3 +1,9 @@
+//
+// Date: 2/9/2018
+// Author(s): Spicer Matthews (spicer@options.cafe)
+// Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
+//
+
 package models
 
 import (
@@ -8,9 +14,9 @@ import (
 type Position struct {
 	Id            uint `gorm:"primary_key"`
 	UserId        uint `sql:"not null;index:UserId"`
-	TradeGroupId  uint `sql:"not null;index:TradeGroupId"`
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
+	TradeGroupId  uint   `sql:"not null;index:TradeGroupId"`
 	AccountId     string `sql:"not null;index:AccountId"`
 	Status        string `sql:"not null;type:ENUM('Open', 'Closed');default:'Open'"`
 	Symbol        string
@@ -57,7 +63,7 @@ func (t *DB) GetPositionByUserSymbolStatusAccount(userId uint, symbol string, st
 	var position = Position{}
 
 	// First we find out if we already have a position on for this.
-	if t.Where("symbol = ? AND user_id = ? AND status = ? AND account_id = ?", symbol, userId, "Open", accountId).First(&position).RecordNotFound() {
+	if t.Where("symbol = ? AND user_id = ? AND status = ? AND account_id = ?", symbol, userId, status, accountId).First(&position).RecordNotFound() {
 		return position, errors.New("Record not found")
 	}
 

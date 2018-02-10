@@ -8,9 +8,9 @@ import (
 type TradeGroup struct {
 	Id              uint `gorm:"primary_key"`
 	UserId          uint `sql:"not null;index:UserId"`
-	BrokerAccountId uint `sql:"not null;index:BrokerAccountId"`
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
+	BrokerAccountId uint   `sql:"not null;index:BrokerAccountId"`
 	AccountId       string `sql:"not null;index:AccountId"`
 	Status          string `sql:"not null;type:ENUM('Open', 'Closed');default:'Open'"`
 	Type            string `sql:"not null;type:ENUM('Option', 'Stock', 'Put Credit Spread', 'Call Credit Spread', 'Put Debit Spread', 'Call Debit Spread', 'Iron Condor', 'Other'); default:'Other'"`

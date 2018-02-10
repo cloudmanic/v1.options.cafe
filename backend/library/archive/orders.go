@@ -29,6 +29,9 @@ func StoreOrders(db models.Datastore, orders []types.Order, userId uint, brokerI
 			continue
 		}
 
+		// Get broker account id
+		brokerAccount, err := db.GetBrokerAccountByBrokerAccountNumber(brokerId, row.AccountId)
+
 		// Timestamp Layout
 		layout := "2006-01-02T15:04:05.000Z"
 
@@ -48,16 +51,24 @@ func StoreOrders(db models.Datastore, orders []types.Order, userId uint, brokerI
 			continue
 		}
 
+		//
+		// -------- DEBUGGING>>>>>>>>>>>>>>>
+		//
+		if transactionDate.Year() != 2018 {
+			continue
+		}
+
 		// Insert into DB
 		order := &models.Order{
 			UserId:            userId,
 			CreatedAt:         time.Now(),
 			UpdatedAt:         time.Now(),
-			BrokerId:          0, // TODO: Add this.
+			BrokerId:          int(brokerAccount.Id),
 			BrokerRef:         row.Id,
 			AccountId:         row.AccountId,
 			Type:              row.Type,
 			Symbol:            row.Symbol,
+			OptionSymbol:      row.OptionSymbol,
 			Side:              row.Side,
 			Qty:               int(row.Quantity),
 			Status:            row.Status,
@@ -115,10 +126,10 @@ func StoreOrders(db models.Datastore, orders []types.Order, userId uint, brokerI
 			services.Fatal(err)
 			continue
 		}
-
-		// Now build out our positions database table based on past orders.
-		StorePositions(db, userId, brokerId)
 	}
+
+	// Now build out our positions database table based on past orders.
+	StorePositions(db, userId, brokerId)
 
 	// Return Happy
 	return nil

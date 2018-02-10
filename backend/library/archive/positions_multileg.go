@@ -1,3 +1,9 @@
+//
+// Date: 2/9/2018
+// Author(s): Spicer Matthews (spicer@options.cafe)
+// Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
+//
+
 package archive
 
 import (
@@ -18,12 +24,13 @@ func doMultiLegOrders(db models.Datastore, userId uint, brokerId uint) error {
 	orders, err := db.GetOrdersByUserClassStatusReviewed(userId, "multileg", "filled", "No")
 
 	if err != nil {
-		return err
+		return nil
 	}
 
 	// Loop through the different orders and process.
 	for _, row := range orders {
 
+		var loopErr error
 		var positions []models.Position
 
 		// Loop through the legs and store
@@ -34,52 +41,46 @@ func doMultiLegOrders(db models.Datastore, userId uint, brokerId uint) error {
 
 			case "sell_to_open":
 				row2.Qty = (row2.Qty * -1)
-
 				pos, err := doOpenOneLegMultiLegOrder(row, row2, db, userId)
-
-				if err != nil {
-					services.BetterError(err)
-					continue
-				}
-
 				positions = append(positions, pos)
+				loopErr = err
 
 			case "buy_to_open":
 				pos, err := doOpenOneLegMultiLegOrder(row, row2, db, userId)
-
-				if err != nil {
-					services.BetterError(err)
-					continue
-				}
-
 				positions = append(positions, pos)
+				loopErr = err
 
 			case "buy_to_close":
 				pos, err := doCloseOneLegMultiLegOrder(row, row2, db, userId)
-
-				if err != nil {
-					services.BetterError(err)
-					continue
-				}
-
 				positions = append(positions, pos)
+				loopErr = err
 
 			case "sell_to_close":
 				row2.Qty = (row2.Qty * -1)
-
 				pos, err := doCloseOneLegMultiLegOrder(row, row2, db, userId)
-
-				if err != nil {
-					services.BetterError(err)
-					continue
-				}
-
 				positions = append(positions, pos)
+				loopErr = err
 
 			default:
 				services.Critical("doMultiLegOrders() : Unknown Side")
+				loopErr = errors.New("doMultiLegOrders() : Unknown Side")
 			}
 
+		}
+
+		// Did we have an err
+		if loopErr != nil {
+			services.BetterError(loopErr)
+
+			// Mark the order as reviewed
+			row.PositionReviewed = "Error"
+			err := db.UpdateOrder(&row)
+
+			if err != nil {
+				services.Fatal(err)
+			}
+
+			continue
 		}
 
 		// Build Trade Group
@@ -148,7 +149,6 @@ func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db model
 
 		// Insert into DB
 		db.CreatePosition(&position)
-
 	}
 
 	// Return a list of position that we reviewed

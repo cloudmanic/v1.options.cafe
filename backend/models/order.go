@@ -14,6 +14,7 @@ type Order struct {
 	AccountId         string `sql:"not null;index:AccountId"`
 	Type              string
 	Symbol            string
+	OptionSymbol      string
 	Side              string
 	Qty               int
 	Status            string
@@ -28,16 +29,16 @@ type Order struct {
 	TransactionDate   time.Time
 	Class             string
 	NumLegs           int
-	PositionReviewed  string `sql:"not null;type:ENUM('No', 'Yes');default:'No'"`
+	PositionReviewed  string `sql:"not null;type:ENUM('No', 'Yes', 'Error');default:'No'"`
 	Legs              []OrderLeg
 }
 
 type OrderLeg struct {
 	Id                uint `gorm:"primary_key"`
 	UserId            uint `sql:"not null;index:UserId"`
-	OrderId           uint `sql:"not null;index:OrderId"`
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
+	OrderId           uint `sql:"not null;index:OrderId"`
 	Type              string
 	Symbol            string
 	OptionSymbol      string
