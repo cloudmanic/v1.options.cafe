@@ -13,6 +13,7 @@ type TradeGroup struct {
 	UpdatedAt       time.Time
 	AccountId       string `sql:"not null;index:AccountId"`
 	Status          string `sql:"not null;type:ENUM('Open', 'Closed');default:'Open'"`
+	Type            string `sql:"not null;type:ENUM('Option', 'Stock', 'Put Credit Spread', 'Call Credit Spread', 'Put Debit Spread', 'Call Debit Spread', 'Iron Condor', 'Other'); default:'Other'"`
 	OrderIds        string
 	Risked          float64 `sql:"type:DECIMAL(12,2)"`
 	Gain            float64 `sql:"type:DECIMAL(12,2)"` // Before Commission

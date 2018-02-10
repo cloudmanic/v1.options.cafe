@@ -23,29 +23,6 @@ func StorePositions(db models.Datastore, userId uint, brokerId uint) error {
 
 }
 
-// //
-// //
-// //
-// func ClassifyTradeGroup(positions *[]models.Position) {
-
-// 	for _, row := range *positions {
-
-// 		fmt.Println(row.Symbol)
-
-// 		/*
-// 		   s := []string{row.Symbol}
-
-// 		   var q tradier.Quote.Api
-
-// 		   quotes := q.GetQuotes(s)
-
-// 		   fmt.Println(quotes)
-// 		*/
-
-// 	}
-
-// }
-
 //
 // Do multi leg orders - Just when you open a position.
 //
@@ -179,6 +156,8 @@ func doTradeGroupBuildFromPositions(order models.Order, positions []*models.Posi
 		}
 
 		// Get the total qty
+		// TODO: There is a bug here. If you start the position with more than one order where your paying the
+		// min commission more than once this number will not be correct.
 		totalQty = totalQty + math.Abs(float64(row.OrgQty))
 
 	}
@@ -217,6 +196,8 @@ func doTradeGroupBuildFromPositions(order models.Order, positions []*models.Posi
 		// Store tradegroup id
 		tradeGroupId = tradeGroup.Id
 
+		// Log success
+		services.Info("New TradeGroup created for user " + strconv.Itoa(int(userId)) + " TradeGroup Id: " + strconv.Itoa(int(tradeGroupId)))
 	} else {
 
 		// Update tradegroup with additional OrderIds
@@ -232,6 +213,8 @@ func doTradeGroupBuildFromPositions(order models.Order, positions []*models.Posi
 		tradeGroup.OrderIds = tradeGroup.OrderIds + "," + strconv.Itoa(int(order.Id))
 		db.UpdateTradeGroup(&tradeGroup)
 
+		// Log success
+		services.Info("New TradeGroup updated for user " + strconv.Itoa(int(userId)) + " TradeGroup Id: " + strconv.Itoa(int(tradeGroupId)))
 	}
 
 	// Loop through the positions and add the trade group id
@@ -239,9 +222,6 @@ func doTradeGroupBuildFromPositions(order models.Order, positions []*models.Posi
 		row.TradeGroupId = tradeGroupId
 		db.UpdatePosition(row)
 	}
-
-	// Log success
-	services.Info("New TradeGroup created for user " + strconv.Itoa(int(userId)) + " TradeGroup Id: " + strconv.Itoa(int(tradeGroupId)))
 
 	// Return happy.
 	return nil
