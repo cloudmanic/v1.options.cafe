@@ -44,7 +44,6 @@ func StorePositions(db models.Datastore, userId uint, brokerId uint) error {
 //
 func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Position, db models.Datastore, userId uint, brokerId uint) error {
 
-	var totalQty float64
 	var tradeGroupId uint
 	var tradeGroupStatus = "Closed"
 
@@ -57,11 +56,10 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 	brokerAccount, err := db.GetBrokerAccountByBrokerAccountNumber(brokerId, order.AccountId)
 
 	if err != nil {
-		return err
+		return nil
 	}
 
 	// See if we have a trade group of any of the positions
-	totalQty = 0
 	tradeGroupId = 0
 
 	for _, row := range *positions {
@@ -74,33 +72,13 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 		if row.TradeGroupId > 0 {
 			tradeGroupId = row.TradeGroupId
 		}
-
-		// Get the total qty
-		// TODO: There is a bug here. If you start the position with more than one order where your paying the
-		// min commission more than once this number will not be correct.
-		totalQty = totalQty + math.Abs(float64(row.OrgQty))
 	}
 
 	// Figure out what type of trade group this is.
 	tgType := ClassifyTradeGroup(positions)
 
 	// Figure out Commission
-	commission := (totalQty * .35)
-
-	// See if we hit the min for multileg?
-	if (order.Class == "multileg") && (brokerAccount.OptionMultiLegMin > commission) {
-		commission = brokerAccount.OptionMultiLegMin
-	}
-
-	// See if we hit the min for options?
-	if (order.Class == "option") && (brokerAccount.OptionSingleMin > commission) {
-		commission = brokerAccount.OptionSingleMin
-	}
-
-	// Closing order?
-	if tradeGroupStatus == "Closed" {
-		commission = commission * 2
-	}
+	commission := calcCommissionForOrder(&order, brokerId, db, &brokerAccount)
 
 	// TODO: Figure out Risked, Gain, and Profit (if this is closed)
 
@@ -141,7 +119,7 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 		}
 
 		tradeGroup.Type = tgType
-		tradeGroup.Commission = commission
+		tradeGroup.Commission += commission
 		tradeGroup.Status = tradeGroupStatus
 		tradeGroup.ClosedDate = order.TransactionDate
 		tradeGroup.OrderIds = tradeGroup.OrderIds + "," + strconv.Itoa(int(order.Id))
@@ -159,6 +137,43 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 
 	// Return happy.
 	return nil
+}
+
+//
+// Review the order and calculate the commission for this order.
+//
+func calcCommissionForOrder(order *models.Order, brokerId uint, db models.Datastore, brokerAccount *models.BrokerAccount) float64 {
+
+	var qty = 0.00
+	var commission = 0.00
+
+	// TODO: Deal with combo orders
+
+	// Go through the legs
+	if order.Class == "multileg" {
+		for _, row := range order.Legs {
+			qty = qty + math.Abs(float64(row.Qty))
+		}
+
+		commission = qty * brokerAccount.OptionCommission
+	} else if order.Class == "option" {
+		commission = qty * brokerAccount.OptionCommission
+	} else {
+		commission = brokerAccount.StockCommission
+	}
+
+	// See if we hit the min for multileg?
+	if (order.Class == "multileg") && (brokerAccount.OptionMultiLegMin > commission) {
+		commission = brokerAccount.OptionMultiLegMin
+	}
+
+	// See if we hit the min for options?
+	if (order.Class == "option") && (brokerAccount.OptionSingleMin > commission) {
+		commission = brokerAccount.OptionSingleMin
+	}
+
+	// Return commission value
+	return commission
 }
 
 /* End File */
