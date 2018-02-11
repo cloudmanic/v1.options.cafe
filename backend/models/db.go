@@ -7,6 +7,7 @@
 package models
 
 import (
+	"flag"
 	"log"
 	"os"
 
@@ -22,8 +23,15 @@ func NewDB() (*DB, error) {
 
 	var err error
 
+	dbName := os.Getenv("DB_DATABASE")
+
+	// Is this a testing run?
+	if flag.Lookup("test.v") != nil {
+		dbName = os.Getenv("DB_DATABASE_TESTING")
+	}
+
 	// Connect to Mysql
-	db, err := gorm.Open("mysql", os.Getenv("DB_USERNAME")+":"+os.Getenv("DB_PASSWORD")+"@"+os.Getenv("DB_HOST")+"/"+os.Getenv("DB_DATABASE")+"?charset=utf8&parseTime=True&loc=Local")
+	db, err := gorm.Open("mysql", os.Getenv("DB_USERNAME")+":"+os.Getenv("DB_PASSWORD")+"@"+os.Getenv("DB_HOST")+"/"+dbName+"?charset=utf8&parseTime=True&loc=Local")
 
 	if err != nil {
 		services.Error(err, "Failed to connect database")
@@ -48,8 +56,29 @@ func NewDB() (*DB, error) {
 	db.AutoMigrate(&BrokerAccount{})
 	db.AutoMigrate(&ForgotPassword{})
 
+	// Is this a testing run? If so load testing data.
+	if flag.Lookup("test.v") != nil {
+		LoadTestingData(db)
+	}
+
 	// Return db connection.
 	return &DB{db}, nil
+}
+
+//
+// Load testing data.
+//
+func LoadTestingData(db *gorm.DB) {
+
+	// Shared time we use.
+	// ts := time.Date(2017, 10, 29, 17, 20, 01, 507451, time.UTC)
+	// totalUnits := 14678.33 + 85345.33 + 5000.00 + 4501.02
+
+	// Users
+	db.Exec("TRUNCATE TABLE users;")
+	db.Create(&User{FirstName: "Rob", LastName: "Tester", Email: "spicer+robtester@options.cafe", Status: "Active"})
+	db.Create(&User{FirstName: "Jane", LastName: "Wells", Email: "spicer+janewells@options.cafe", Status: "Active"})
+	db.Create(&User{FirstName: "Bob", LastName: "Rosso", Email: "spicer+bobrosso@options.cafe", Status: "Active"})
 }
 
 /* End File */
