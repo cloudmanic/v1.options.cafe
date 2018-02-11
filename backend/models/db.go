@@ -94,6 +94,19 @@ func LoadTestingData(db *gorm.DB) {
 	db.Create(&Symbol{Name: "SPY Mar 16, 2018 $253.00 Put", ShortName: "SPY180316P00253000", Type: "Option"})
 	db.Create(&Symbol{Name: "VXX Feb 23, 2018 $55.00 Call", ShortName: "VXX180223C00055000", Type: "Option"})
 	db.Create(&Symbol{Name: "SPY Mar 16, 2018 $266.00 Put", ShortName: "SPY180316P00266000", Type: "Option"})
+
+	// Orders TODO: make this more complete
+	db.Exec("TRUNCATE TABLE orders;")
+	db.Create(&Order{UserId: 1, BrokerId: 1, BrokerRef: "734801", AccountId: "123abc", Type: "limit"})
+
+	// TradeGroups TODO: make this more complete
+	db.Exec("TRUNCATE TABLE trade_groups;")
+	db.Create(&TradeGroup{UserId: 1, BrokerAccountId: 1, AccountId: "abc123", Status: "Open", Type: "Put Credit Spread", OrderIds: "1", Risked: 0.00, Gain: 0.00, Profit: 0.00, Commission: 23.45, Note: "Test note #1", OpenDate: ts})
+
+	// Positions TODO: Put better values in here.
+	db.Exec("TRUNCATE TABLE positions;")
+	db.Create(&Position{UserId: 1, TradeGroupId: 1, AccountId: "123abc", Status: "Open", SymbolId: 4, Qty: 10, OrgQty: 10, CostBasis: 1000.00, AvgOpenPrice: 1.00, AvgClosePrice: 0.00, OrderIds: "1", OpenDate: ts, Note: "Test note #1"})
+	db.Create(&Position{UserId: 1, TradeGroupId: 1, AccountId: "123abc", Status: "Open", SymbolId: 6, Qty: 10, OrgQty: 10, CostBasis: 1000.00, AvgOpenPrice: 1.00, AvgClosePrice: 0.00, OrderIds: "1", OpenDate: ts, Note: "Test note #2"})
 }
 
 /* End File */

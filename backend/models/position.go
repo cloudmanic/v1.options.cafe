@@ -19,7 +19,7 @@ type Position struct {
 	TradeGroupId  uint      `sql:"not null;index:TradeGroupId" json:"trade_group_id"`
 	AccountId     string    `sql:"not null;index:AccountId" json:"account_id"`
 	Status        string    `sql:"not null;type:ENUM('Open', 'Closed');default:'Open'" json:"status"`
-	Symbol        string    `json:"symbol"`
+	SymbolId      uint      `json:"_"`
 	Qty           int       `json:"qty"`
 	OrgQty        int       `json:"org_qty"`
 	CostBasis     float64   `sql:"type:DECIMAL(12,2)" json:"cost_basis"`
@@ -29,6 +29,7 @@ type Position struct {
 	Note          string    `sql:"type:text" json:"note"`
 	OpenDate      time.Time `json:"open_date"`
 	ClosedDate    time.Time `json:"close_date"`
+	Symbol        Symbol    `json:"symbol"`
 }
 
 //

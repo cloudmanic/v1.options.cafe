@@ -64,7 +64,7 @@ func IsSingleStock(positions *[]models.Position) bool {
 
 	// Parse the option symbol
 	for _, row := range *positions {
-		_, err := helpers.OptionParse(row.Symbol)
+		_, err := helpers.OptionParse(row.Symbol.ShortName)
 
 		// If we can't parse the option we assume it is a stock
 		if err != nil {
@@ -88,7 +88,7 @@ func IsSingleOption(positions *[]models.Position) bool {
 
 	// Parse the option symbol
 	for _, row := range *positions {
-		_, err := helpers.OptionParse(row.Symbol)
+		_, err := helpers.OptionParse(row.Symbol.ShortName)
 
 		// If we can't parse the option we assume it is not an option
 		if err != nil {
@@ -121,7 +121,7 @@ func IsPutCreditSpread(positions *[]models.Position) bool {
 		tradeCost = tradeCost + row.CostBasis
 
 		// Parse the option symbol
-		option, _ := helpers.OptionParse(row.Symbol)
+		option, _ := helpers.OptionParse(row.Symbol.ShortName)
 
 		// Store the first leg
 		if key == 0 {
@@ -169,7 +169,7 @@ func IsPutDebitSpread(positions *[]models.Position) bool {
 		tradeCost = tradeCost + row.CostBasis
 
 		// Parse the option symbol
-		option, _ := helpers.OptionParse(row.Symbol)
+		option, _ := helpers.OptionParse(row.Symbol.ShortName)
 
 		// Store the first leg
 		if key == 0 {
@@ -217,7 +217,7 @@ func IsCallCreditSpread(positions *[]models.Position) bool {
 		tradeCost = tradeCost + row.CostBasis
 
 		// Parse the option symbol
-		option, _ := helpers.OptionParse(row.Symbol)
+		option, _ := helpers.OptionParse(row.Symbol.ShortName)
 
 		// Store the first leg
 		if key == 0 {
@@ -265,7 +265,7 @@ func IsCallDebitSpread(positions *[]models.Position) bool {
 		tradeCost = tradeCost + row.CostBasis
 
 		// Parse the option symbol
-		option, _ := helpers.OptionParse(row.Symbol)
+		option, _ := helpers.OptionParse(row.Symbol.ShortName)
 
 		// Store the first leg
 		if key == 0 {

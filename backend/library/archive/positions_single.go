@@ -118,6 +118,13 @@ func doOpenSingleOptionOrder(order models.Order, db models.Datastore, userId uin
 
 	} else {
 
+		// Get the symbol id.
+		sym, err := db.CreateNewOptionSymbol(order.OptionSymbol)
+
+		if err != nil {
+			services.BetterError(err)
+		}
+
 		// Insert Position
 		position = models.Position{
 			UserId:        userId,
@@ -125,7 +132,7 @@ func doOpenSingleOptionOrder(order models.Order, db models.Datastore, userId uin
 			CreatedAt:     time.Now(),
 			UpdatedAt:     time.Now(),
 			AccountId:     order.AccountId,
-			Symbol:        order.OptionSymbol,
+			SymbolId:      sym.Id,
 			Qty:           order.Qty,
 			OrgQty:        order.Qty,
 			CostBasis:     (float64(order.Qty) * order.AvgFillPrice * 100),

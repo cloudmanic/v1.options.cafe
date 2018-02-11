@@ -128,6 +128,13 @@ func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db model
 
 	} else {
 
+		// Get the symbol id.
+		sym, err := db.CreateNewOptionSymbol(leg.OptionSymbol)
+
+		if err != nil {
+			services.BetterError(err)
+		}
+
 		// Insert Position
 		position = models.Position{
 			UserId:        userId,
@@ -135,7 +142,7 @@ func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db model
 			CreatedAt:     time.Now(),
 			UpdatedAt:     time.Now(),
 			AccountId:     order.AccountId,
-			Symbol:        leg.OptionSymbol,
+			SymbolId:      sym.Id,
 			Qty:           leg.Qty,
 			OrgQty:        leg.Qty,
 			CostBasis:     (float64(leg.Qty) * leg.AvgFillPrice * 100),

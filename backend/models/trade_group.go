@@ -32,8 +32,13 @@ func (t *DB) GetTradeGroupById(id uint) (TradeGroup, error) {
 
 	tg := TradeGroup{}
 
-	if t.Where("Id = ?", id).First(&tg).RecordNotFound() {
+	if t.Preload("Positions").Where("Id = ?", id).First(&tg).RecordNotFound() {
 		return tg, errors.New("Record not found")
+	}
+
+	// Loop through and add the symbol to the positions object
+	for key, row := range tg.Positions {
+		t.Model(row).Related(&tg.Positions[key].Symbol)
 	}
 
 	// Return happy
