@@ -8,6 +8,7 @@ package models
 
 import (
 	"errors"
+	"strconv"
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -19,6 +20,7 @@ type QueryParam struct {
 	AccountId        uint
 	Limit            uint
 	Offset           uint
+	Page             string // string because it comes in from the url most likely
 	Order            string
 	Sort             string
 	SearchCols       []string
@@ -74,6 +76,19 @@ func (t *DB) Query(model interface{}, params QueryParam) error {
 	// Are we debugging this?
 	if params.Debug {
 		query = query.Debug()
+	}
+
+	// If we passed in a page we figure out the offset from the page.
+	if len(params.Page) > 0 {
+		page, err := strconv.Atoi(params.Page)
+
+		if err != nil {
+			return err
+		}
+
+		if (page > 0) && (params.Limit > 0) {
+			params.Offset = (uint(page) * params.Limit) - params.Limit
+		}
 	}
 
 	// Offset
