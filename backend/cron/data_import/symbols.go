@@ -80,7 +80,7 @@ func (t *Base) ProcessLetter(letter string, knownSymbols map[string]models.Symbo
 
 			// TODO: See if the company name updated.....
 			if row.Description != knownSymbols[row.Name].Name {
-				t.DB.UpdateSymbol(knownSymbols[row.Name].Id, row.Name, row.Description)
+				t.DB.UpdateSymbol(knownSymbols[row.Name].Id, row.Name, row.Description, "Equity")
 			}
 
 			// Continue nothing to do.
@@ -88,7 +88,7 @@ func (t *Base) ProcessLetter(letter string, knownSymbols map[string]models.Symbo
 		}
 
 		// Add Symbol to our database.
-		t.DB.CreateNewSymbol(row.Name, row.Description)
+		t.DB.CreateNewSymbol(row.Name, row.Description, "Equity")
 	}
 }
 

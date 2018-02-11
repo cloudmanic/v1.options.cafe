@@ -47,9 +47,10 @@ type Datastore interface {
 
 	// Symbols
 	GetAllSymbols() []Symbol
-	SearchSymbols(query string) ([]Symbol, error)
-	CreateNewSymbol(short string, name string) (Symbol, error)
-	UpdateSymbol(id uint, short string, name string) (Symbol, error)
+	SearchSymbols(query string, sType string) ([]Symbol, error)
+	CreateNewOptionSymbol(short string) (Symbol, error)
+	CreateNewSymbol(short string, name string, sType string) (Symbol, error)
+	UpdateSymbol(id uint, short string, name string, sType string) (Symbol, error)
 
 	// Users
 	GetAllUsers() []User

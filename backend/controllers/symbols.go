@@ -33,7 +33,7 @@ func (t *Controller) DoSymbolSearch(c *gin.Context) {
 	search := c.Query("search")
 
 	// Run DB query
-	symbols, err := t.DB.SearchSymbols(search)
+	symbols, err := t.DB.SearchSymbols(search, "Equity")
 
 	if err != nil {
 		services.BetterError(err)

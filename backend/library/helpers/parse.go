@@ -8,12 +8,14 @@ package helpers
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 	"time"
 )
 
 type OptionParts struct {
+	Name   string
 	Option string
 	Symbol string
 	Year   uint
@@ -46,6 +48,7 @@ func OptionParse(optionSymb string) (OptionParts, error) {
 	year, _ := strconv.Atoi(matches[0][2])
 	month, _ := strconv.Atoi(matches[0][3])
 	day, _ := strconv.Atoi(matches[0][4])
+	year = year + 2000 // TODO: in year 3000 this will be a bug :)
 
 	// Build date
 	date := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
@@ -62,8 +65,12 @@ func OptionParse(optionSymb string) (OptionParts, error) {
 	decimalNum, _ := strconv.Atoi(matches[0][7])
 	strike := float64(baseNum) + (float64(decimalNum) * .001)
 
+	// Build the name string of the option (ie. "SPY Mar 16 2018 $250.00 Put")
+	name := matches[0][1] + " " + date.Format("Jan 2, 2006") + " $" + fmt.Sprintf("%.2f", strike) + " " + typeStr
+
 	// Returned parsed object
 	return OptionParts{
+		Name:   name,
 		Option: optionSymb,
 		Symbol: matches[0][1],
 		Year:   uint(year),

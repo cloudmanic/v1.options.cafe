@@ -96,7 +96,7 @@ func (t *Base) VerifyDefaultWatchList(user models.User) {
 		for key, row := range m {
 
 			// Add some default symbols - SPY
-			symb, err := t.DB.CreateNewSymbol(row.SymShort, row.SymLong)
+			symb, err := t.DB.CreateNewSymbol(row.SymShort, row.SymLong, "Equity")
 
 			if err != nil {
 				services.Error(err, "(VerifyDefaultWatchList) Unable to create symbol "+row.SymShort)
