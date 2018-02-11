@@ -4,15 +4,21 @@
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import { Symbol } from './symbol';
+
 export class Position {
+
+  //
+  // Construct.
+  //
   constructor(
     public Id: number,
-    public Symbol: string,
     public OpenDate: string, 
     public ClosedDate: string,
     public Qty: number,
     public OrgQty: number,
-    public CostBasis: number
+    public CostBasis: number,
+    public Symbol: Symbol    
   ){}
 }
 

@@ -4,6 +4,7 @@
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import { Symbol } from './symbol';
 import { Position } from './position';
 
 //
@@ -63,12 +64,12 @@ export class TradeGroup {
       {
         positions.push(new Position(
           data[i].positions[k].id,
-          data[i].positions[k].symbol,
           data[i].positions[k].open_date, 
           data[i].positions[k].close_date, 
           data[i].positions[k].qty,
           data[i].positions[k].org_qty,
-          data[i].positions[k].cost_basis                 
+          data[i].positions[k].cost_basis,
+          new Symbol(data[i].positions[k].symbol.id, data[i].positions[k].symbol.name, data[i].positions[k].symbol.short_name)                           
         ));
       }
 

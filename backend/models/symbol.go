@@ -20,7 +20,7 @@ type Symbol struct {
 	UpdatedAt time.Time `json:"-"`
 	ShortName string    `sql:"not null" json:"short_name"`
 	Name      string    `sql:"not null" json:"name"`
-	Type      string    `sql:"not null;type:ENUM('Equity', 'Option', 'Other');default:'Equity'"`
+	Type      string    `sql:"not null;type:ENUM('Equity', 'Option', 'Other');default:'Equity'" json:"type"`
 }
 
 //
