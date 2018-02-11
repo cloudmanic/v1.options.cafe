@@ -82,9 +82,7 @@ export class TradeGroup {
         data[i].note,
         positions
        ));
-    }   
-
-    console.log(tg)
+    }
 
     return tg; 
   }

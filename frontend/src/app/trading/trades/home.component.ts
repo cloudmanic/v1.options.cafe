@@ -25,12 +25,18 @@ export class TradesComponent implements OnInit {
   // On Init
   //
   ngOnInit() {
-    // Get tradegroup data
-    this.tradeGroupService.get(1, 'open_date', 'desc', '').subscribe((data) => {
-      this.tradesList = data
-    });
+    this.getTradeGroups()
   }
 
+  //
+  // Get trade groups
+  //
+  getTradeGroups() {
+    // Get tradegroup data
+    this.tradeGroupService.get(2, 1, 'open_date', 'desc', '').subscribe((data) => {
+      this.tradesList = data
+    });    
+  }
 }
 
 /* End File */

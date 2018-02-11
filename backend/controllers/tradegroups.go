@@ -30,7 +30,7 @@ func (t *Controller) GetTradeGroups(c *gin.Context) {
 		Sort:             c.Query("sort"),
 		Limit:            defaultMysqlLimit,
 		Page:             c.Query("page"),
-		Debug:            true,
+		Debug:            false,
 		PreLoads:         []string{"Positions"},
 		SearchTerm:       c.Query("search"),
 		SearchCols:       []string{"id", "open_date", "closed_date", "status", "profit", "commission", "type", "note"},
