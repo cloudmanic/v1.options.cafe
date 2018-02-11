@@ -111,8 +111,16 @@ func doMultiLegOrders(db models.Datastore, userId uint, brokerId uint) error {
 //
 func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db models.Datastore, userId uint) (models.Position, error) {
 
+	// Get the symbol id.
+	sym, err := db.CreateNewOptionSymbol(leg.OptionSymbol)
+
+	if err != nil {
+		services.BetterError(err)
+		return models.Position{}, err
+	}
+
 	// First we find out if we already have a position on for this.
-	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, leg.OptionSymbol, "Open", order.AccountId)
+	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, sym.Id, "Open", order.AccountId)
 
 	// We found so we are just adding to a current position.
 	if position.Id > 0 {
@@ -127,13 +135,6 @@ func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db model
 		db.UpdatePosition(&position)
 
 	} else {
-
-		// Get the symbol id.
-		sym, err := db.CreateNewOptionSymbol(leg.OptionSymbol)
-
-		if err != nil {
-			services.BetterError(err)
-		}
 
 		// Insert Position
 		position = models.Position{
@@ -167,8 +168,16 @@ func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db model
 //
 func doCloseOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db models.Datastore, userId uint) (models.Position, error) {
 
+	// Get the symbol id.
+	sym, err := db.CreateNewOptionSymbol(leg.OptionSymbol)
+
+	if err != nil {
+		services.BetterError(err)
+		return models.Position{}, err
+	}
+
 	// First we find out if we already have a position on for this.
-	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, leg.OptionSymbol, "Open", order.AccountId)
+	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, sym.Id, "Open", order.AccountId)
 
 	// We found so we are just removing to a current position.
 	if position.Id > 0 {

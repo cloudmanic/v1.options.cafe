@@ -101,8 +101,15 @@ func doSingleOptionOrder(db models.Datastore, userId uint, brokerId uint) error 
 //
 func doOpenSingleOptionOrder(order models.Order, db models.Datastore, userId uint) (models.Position, error) {
 
+	// Get the symbol id.
+	sym, err := db.CreateNewOptionSymbol(order.OptionSymbol)
+
+	if err != nil {
+		services.BetterError(err)
+	}
+
 	// First we find out if we already have a position on for this.
-	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, order.OptionSymbol, "Open", order.AccountId)
+	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, sym.Id, "Open", order.AccountId)
 
 	// We found so we are just adding to a current position.
 	if position.Id > 0 {
@@ -117,13 +124,6 @@ func doOpenSingleOptionOrder(order models.Order, db models.Datastore, userId uin
 		db.UpdatePosition(&position)
 
 	} else {
-
-		// Get the symbol id.
-		sym, err := db.CreateNewOptionSymbol(order.OptionSymbol)
-
-		if err != nil {
-			services.BetterError(err)
-		}
 
 		// Insert Position
 		position = models.Position{
@@ -157,8 +157,15 @@ func doOpenSingleOptionOrder(order models.Order, db models.Datastore, userId uin
 //
 func doCloseSingleOptionOrder(order models.Order, db models.Datastore, userId uint) (models.Position, error) {
 
+	// Get the symbol id.
+	sym, err := db.CreateNewOptionSymbol(order.OptionSymbol)
+
+	if err != nil {
+		services.BetterError(err)
+	}
+
 	// First we find out if we already have a position on for this.
-	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, order.OptionSymbol, "Open", order.AccountId)
+	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, sym.Id, "Open", order.AccountId)
 
 	// We found so we are just removing to a current position.
 	if position.Id > 0 {

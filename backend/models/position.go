@@ -59,12 +59,12 @@ func (t *DB) UpdatePosition(position *Position) error {
 //
 // Get positions by User and class and status and reviewed
 //
-func (t *DB) GetPositionByUserSymbolStatusAccount(userId uint, symbol string, status string, accountId string) (Position, error) {
+func (t *DB) GetPositionByUserSymbolStatusAccount(userId uint, symbolId uint, status string, accountId string) (Position, error) {
 
 	var position = Position{}
 
 	// First we find out if we already have a position on for this.
-	if t.Where("symbol = ? AND user_id = ? AND status = ? AND account_id = ?", symbol, userId, status, accountId).First(&position).RecordNotFound() {
+	if t.Where("symbol_id = ? AND user_id = ? AND status = ? AND account_id = ?", symbolId, userId, status, accountId).First(&position).RecordNotFound() {
 		return position, errors.New("Record not found")
 	}
 
