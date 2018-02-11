@@ -16,6 +16,7 @@ import (
 
 type QueryParam struct {
 	UserId           uint
+	AccountId        uint
 	Limit            uint
 	Offset           uint
 	Order            string
@@ -23,8 +24,14 @@ type QueryParam struct {
 	SearchCols       []string
 	SearchTerm       string
 	Debug            bool
+	Wheres           []KeyValue
 	PreLoads         []string
 	AllowedOrderCols []string
+}
+
+type KeyValue struct {
+	Key   string
+	Value string
 }
 
 //
@@ -89,6 +96,15 @@ func (t *DB) Query(model interface{}, params QueryParam) error {
 		query = query.Preload(row)
 	}
 
+	// Add in Where clauses
+	for _, row := range params.Wheres {
+
+		if (len(row.Value) > 0) && (len(row.Key) > 0) {
+			query = query.Where(row.Key+" = ?", row.Value)
+		}
+
+	}
+
 	// Search a particular column
 	if (len(params.SearchTerm) > 0) && (len(params.SearchCols) > 0) {
 		var likes []string
@@ -103,13 +119,6 @@ func (t *DB) Query(model interface{}, params QueryParam) error {
 		// Built where query.
 		query = query.Where(strings.Join(likes, " OR "), terms...)
 	}
-
-	// if (len(params.SearchCols) > 0) && (len(params.SearchTerm) > 0) {
-
-	//    for _,
-
-	// 	query = query.Where(params.SearchCol+" LIKE ?", "%"+params.SearchTerm+"%")
-	// }
 
 	// Run query.
 	if err := query.Find(model).Error; err != nil {
