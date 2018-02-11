@@ -7,7 +7,12 @@
 package controllers
 
 import (
+	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
+)
+
+var (
+	AllowedOrderCols = []string{"id", "open_date", "closed_date", "profit"}
 )
 
 //
@@ -15,21 +20,27 @@ import (
 //
 func (t *Controller) GetTradeGroups(c *gin.Context) {
 
-	// Get the user id.
-	userId := c.MustGet("userId").(uint)
+	// Place to store the results.
+	var results = []models.TradeGroup{}
 
-	// Get basic query parms
-	parms := t.GetBasicQueryValues(c)
+	// Run the query
+	err := t.DB.Query(&results, models.QueryParam{
+		UserId:           c.MustGet("userId").(uint),
+		Order:            c.Query("order"),
+		Sort:             c.Query("sort"),
+		Limit:            defaultMysqlLimit,
+		Offset:           0,
+		Debug:            true,
+		AllowedOrderCols: AllowedOrderCols,
+	})
 
-	// Get the watchlists
-	groups, err := t.DB.GetTradeGroupsByUserId(userId, parms.FullOrder)
-
+	// Throw error if we have one
 	if t.RespondError(c, err, httpGenericErrMsg) {
 		return
 	}
 
 	// Return happy JSON
-	c.JSON(200, groups)
+	c.JSON(200, results)
 }
 
 /* End File */

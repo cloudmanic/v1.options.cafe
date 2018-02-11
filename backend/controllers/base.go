@@ -17,6 +17,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+const defaultMysqlLimit = 100
 const httpNoRecordFound = "No Record Found."
 const httpGenericErrMsg = "Please contact support at help@options.cafe."
 
@@ -49,13 +50,6 @@ type ReceivedStruct struct {
 	Body       string
 	UserId     uint
 	Connection *WebsocketConnection
-}
-
-type BasicQueryValues struct {
-	Order     string
-	Sort      string
-	Page      uint
-	FullOrder string
 }
 
 //
@@ -116,34 +110,6 @@ func (t *Controller) WsSendJsonBuild(uri string, data_json string) (string, erro
 	}
 
 	return string(send_json), nil
-}
-
-//
-// Build basic query parms
-//
-func (t *Controller) GetBasicQueryValues(c *gin.Context) BasicQueryValues {
-
-	rt := BasicQueryValues{
-		Order:     "id",
-		Sort:      "asc",
-		Page:      1,
-		FullOrder: "id asc",
-	}
-
-	// Figure out order
-	if c.Query("order") != "" {
-		rt.Order = c.Query("order")
-		rt.FullOrder = rt.Order + " " + rt.Sort
-	}
-
-	// Figure out sort
-	if c.Query("sort") != "" {
-		rt.Sort = c.Query("sort")
-		rt.FullOrder = rt.Order + " " + rt.Sort
-	}
-
-	// Return happy
-	return rt
 }
 
 /* End File */

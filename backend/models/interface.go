@@ -17,8 +17,23 @@ type DB struct {
 	*gorm.DB
 }
 
+type QueryParam struct {
+	UserId           uint
+	Limit            uint
+	Offset           uint
+	Order            string
+	Sort             string
+	SearchCol        string
+	SearchTerm       string
+	Debug            bool
+	AllowedOrderCols []string
+}
+
 // Database interface
 type Datastore interface {
+
+	// Generic database functions
+	Query(model interface{}, params QueryParam) error
 
 	// Broker
 	UpdateBroker(broker Broker) error
