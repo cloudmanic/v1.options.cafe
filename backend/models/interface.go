@@ -17,18 +17,6 @@ type DB struct {
 	*gorm.DB
 }
 
-type QueryParam struct {
-	UserId           uint
-	Limit            uint
-	Offset           uint
-	Order            string
-	Sort             string
-	SearchCol        string
-	SearchTerm       string
-	Debug            bool
-	AllowedOrderCols []string
-}
-
 // Database interface
 type Datastore interface {
 
@@ -92,7 +80,6 @@ type Datastore interface {
 	GetTradeGroupById(id uint) (TradeGroup, error)
 	CreateTradeGroup(tg *TradeGroup) error
 	UpdateTradeGroup(tg *TradeGroup) error
-	GetTradeGroupsByUserId(userId uint, orderBy string) ([]TradeGroup, error)
 
 	// Watchlists
 	GetWatchlistsById(id uint) (Watchlist, error)

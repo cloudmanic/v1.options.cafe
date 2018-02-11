@@ -23,8 +23,8 @@ export class TradeGroupService
   //
   // Get trade groups
   //
-  get(order: string, sort: string) : Observable<TradeGroup[]> {
-    return this.http.get<TradeGroup[]>(environment.app_server + '/api/v1/tradegroups?order=' + order + '&sort=' + sort).map(
+  get(page: number, order: string, sort: string, search: string) : Observable<TradeGroup[]> {
+    return this.http.get<TradeGroup[]>(environment.app_server + '/api/v1/tradegroups?page=' + page + '&order=' + order + '&sort=' + sort + '&search=' + search).map(
       (data) => { return TradeGroup.buildForEmit(data); 
     });
   }

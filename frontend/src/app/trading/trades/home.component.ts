@@ -26,7 +26,7 @@ export class TradesComponent implements OnInit {
   //
   ngOnInit() {
     // Get tradegroup data
-    this.tradeGroupService.get('open_date', 'desc').subscribe((data) => {
+    this.tradeGroupService.get(1, 'open_date', 'desc', '').subscribe((data) => {
       this.tradesList = data
     });
   }

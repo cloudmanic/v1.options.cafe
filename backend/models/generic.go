@@ -14,6 +14,19 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type QueryParam struct {
+	UserId           uint
+	Limit            uint
+	Offset           uint
+	Order            string
+	Sort             string
+	SearchCols       []string
+	SearchTerm       string
+	Debug            bool
+	PreLoads         []string
+	AllowedOrderCols []string
+}
+
 //
 // A generic way to query any model we want.
 //
@@ -71,10 +84,32 @@ func (t *DB) Query(model interface{}, params QueryParam) error {
 		query = query.Where("user_id = ?", params.UserId)
 	}
 
-	// Search a particular column
-	if (len(params.SearchCol) > 0) && (len(params.SearchTerm) > 0) {
-		query = query.Where(params.SearchCol+" LIKE ?", "%"+params.SearchTerm+"%")
+	// Add preloads
+	for _, row := range params.PreLoads {
+		query = query.Preload(row)
 	}
+
+	// Search a particular column
+	if (len(params.SearchTerm) > 0) && (len(params.SearchCols) > 0) {
+		var likes []string
+		var terms []interface{}
+
+		for _, row := range params.SearchCols {
+			str := row + " LIKE ?"
+			likes = append(likes, str)
+			terms = append(terms, "%"+params.SearchTerm+"%")
+		}
+
+		// Built where query.
+		query = query.Where(strings.Join(likes, " OR "), terms...)
+	}
+
+	// if (len(params.SearchCols) > 0) && (len(params.SearchTerm) > 0) {
+
+	//    for _,
+
+	// 	query = query.Where(params.SearchCol+" LIKE ?", "%"+params.SearchTerm+"%")
+	// }
 
 	// Run query.
 	if err := query.Find(model).Error; err != nil {

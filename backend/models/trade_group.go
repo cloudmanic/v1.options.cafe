@@ -41,25 +41,6 @@ func (t *DB) GetTradeGroupById(id uint) (TradeGroup, error) {
 }
 
 //
-// Get a TradeGroup by user id.
-//
-func (t *DB) GetTradeGroupsByUserId(userId uint, orderBy string) ([]TradeGroup, error) {
-
-	var u []TradeGroup
-
-	if t.Preload("Positions").Where("user_id = ?", userId).Order(orderBy).Find(&u).RecordNotFound() {
-		return u, errors.New("[Models:GetTradeGroupByUserId] Records not found (#001).")
-	}
-
-	if len(u) <= 0 {
-		return u, errors.New("[Models:GetTradeGroupByUserId] Records not found (#002).")
-	}
-
-	// Return the TradeGroups.
-	return u, nil
-}
-
-//
 // Store a new TradeGroup.
 //
 func (t *DB) CreateTradeGroup(tg *TradeGroup) error {

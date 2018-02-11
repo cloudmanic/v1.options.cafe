@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	AllowedOrderCols = []string{"id", "open_date", "closed_date", "profit"}
+	TradeGroupAllowedOrderCols = []string{"id", "open_date", "closed_date", "profit"}
 )
 
 //
@@ -31,7 +31,10 @@ func (t *Controller) GetTradeGroups(c *gin.Context) {
 		Limit:            defaultMysqlLimit,
 		Offset:           0,
 		Debug:            true,
-		AllowedOrderCols: AllowedOrderCols,
+		PreLoads:         []string{"Positions"},
+		SearchTerm:       c.Query("search"),
+		SearchCols:       []string{"id", "open_date", "closed_date", "status", "profit", "commission", "type", "note"},
+		AllowedOrderCols: TradeGroupAllowedOrderCols,
 	})
 
 	// Throw error if we have one
