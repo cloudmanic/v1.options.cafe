@@ -10,6 +10,7 @@ import (
 	"flag"
 	"log"
 	"os"
+	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	_ "github.com/go-sql-driver/mysql"
@@ -70,15 +71,21 @@ func NewDB() (*DB, error) {
 //
 func LoadTestingData(db *gorm.DB) {
 
-	// Shared time we use.
-	// ts := time.Date(2017, 10, 29, 17, 20, 01, 507451, time.UTC)
-	// totalUnits := 14678.33 + 85345.33 + 5000.00 + 4501.02
+	// Shared vars we use.
+	ts := time.Date(2017, 10, 29, 17, 20, 01, 507451, time.UTC)
 
 	// Users
 	db.Exec("TRUNCATE TABLE users;")
 	db.Create(&User{FirstName: "Rob", LastName: "Tester", Email: "spicer+robtester@options.cafe", Status: "Active"})
 	db.Create(&User{FirstName: "Jane", LastName: "Wells", Email: "spicer+janewells@options.cafe", Status: "Active"})
 	db.Create(&User{FirstName: "Bob", LastName: "Rosso", Email: "spicer+bobrosso@options.cafe", Status: "Active"})
+
+	// Brokers
+	db.Exec("TRUNCATE TABLE brokers;")
+	db.Create(&Broker{Name: "Tradier", UserId: 1, AccessToken: "123", RefreshToken: "abc", TokenExpirationDate: ts})
+	db.Create(&Broker{Name: "Tradeking", UserId: 1, AccessToken: "456", RefreshToken: "xyz", TokenExpirationDate: ts})
+	db.Create(&Broker{Name: "Etrade", UserId: 1, AccessToken: "789", RefreshToken: "mno", TokenExpirationDate: ts})
+
 }
 
 /* End File */
