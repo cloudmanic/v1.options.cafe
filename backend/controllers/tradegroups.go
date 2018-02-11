@@ -20,11 +20,8 @@ var (
 //
 func (t *Controller) GetTradeGroups(c *gin.Context) {
 
-	// Place to store the results.
-	var results = []models.TradeGroup{}
-
 	// Run the query
-	err := t.DB.Query(&results, models.QueryParam{
+	results, err := t.DB.GetTradeGroups(models.QueryParam{
 		UserId:           c.MustGet("userId").(uint),
 		Order:            c.Query("order"),
 		Sort:             c.Query("sort"),

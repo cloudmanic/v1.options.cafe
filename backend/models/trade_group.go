@@ -3,6 +3,8 @@ package models
 import (
 	"errors"
 	"time"
+
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 )
 
 type TradeGroup struct {
@@ -23,6 +25,28 @@ type TradeGroup struct {
 	Positions       []Position `json:"positions"`
 	OpenDate        time.Time  `json:"open_date"`
 	ClosedDate      time.Time  `json:"closed_date"`
+}
+
+//
+// List different trade groups.
+//
+func (t *DB) GetTradeGroups(params QueryParam) ([]TradeGroup, error) {
+
+	var results = []TradeGroup{}
+
+	// Run the query
+	err := t.Query(&results, params)
+
+	// Throw error if we have one
+	if err != nil {
+		return results, err
+	}
+
+	// Add the symbol data to the positions.
+	t.tradeGroupAddSymbolsToPositions(results)
+
+	// Return happy
+	return results, nil
 }
 
 //
@@ -66,6 +90,26 @@ func (t *DB) UpdateTradeGroup(tg *TradeGroup) error {
 	t.Save(&tg)
 
 	// Return happy
+	return nil
+}
+
+//
+// Helpful function for adding symbols to positions
+//
+func (t *DB) tradeGroupAddSymbolsToPositions(tgs []TradeGroup) error {
+
+	// Loop through and add the symbol to the positions object
+	for key, row := range tgs {
+		for key2, row2 := range tgs[key].Positions {
+			t.Model(row2).Related(&tgs[key].Positions[key2].Symbol)
+		}
+
+		// Stupid code to make it so GoFMT does not delete in range statement
+		if row.Id < 0 {
+			services.Info("This should never happen.")
+		}
+	}
+
 	return nil
 }
 

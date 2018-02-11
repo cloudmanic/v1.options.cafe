@@ -78,6 +78,7 @@ type Datastore interface {
 	GetPositionByUserSymbolStatusAccount(userId uint, symbolId uint, status string, accountId string) (Position, error)
 
 	// TradeGroup
+	GetTradeGroups(params QueryParam) ([]TradeGroup, error)
 	GetTradeGroupById(id uint) (TradeGroup, error)
 	CreateTradeGroup(tg *TradeGroup) error
 	UpdateTradeGroup(tg *TradeGroup) error
