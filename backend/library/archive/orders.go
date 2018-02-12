@@ -58,6 +58,29 @@ func StoreOrders(db models.Datastore, orders []types.Order, userId uint, brokerI
 			continue
 		}
 
+		// Get the symbol id.
+		// TODO: notice the symbol name is blank. We should always have this symbol in the DB. But maybe we should prepare for it not being there just in case
+		sym, err := db.CreateNewSymbol(row.Symbol, "", "Equity")
+
+		if err != nil {
+			services.Fatal(err)
+			continue
+		}
+
+		// Do we have an option symbol?
+		var oSym uint = 0
+
+		if len(row.OptionSymbol) > 0 {
+			sO, err := db.CreateNewOptionSymbol(row.OptionSymbol)
+
+			if err != nil {
+				services.Fatal(err)
+				continue
+			}
+
+			oSym = sO.Id
+		}
+
 		// Insert into DB
 		order := &models.Order{
 			UserId:            userId,
@@ -67,8 +90,8 @@ func StoreOrders(db models.Datastore, orders []types.Order, userId uint, brokerI
 			BrokerRef:         row.Id,
 			AccountId:         row.AccountId,
 			Type:              row.Type,
-			Symbol:            row.Symbol,
-			OptionSymbol:      row.OptionSymbol,
+			SymbolId:          sym.Id,
+			OptionSymbolId:    oSym,
 			Side:              row.Side,
 			Qty:               int(row.Quantity),
 			Status:            row.Status,
@@ -97,12 +120,20 @@ func StoreOrders(db models.Datastore, orders []types.Order, userId uint, brokerI
 		legs := []models.OrderLeg{}
 
 		for _, row2 := range row.Legs {
+
+			// Get the symbol id.
+			sym, err := db.CreateNewOptionSymbol(row2.OptionSymbol)
+
+			if err != nil {
+				services.Fatal(err)
+				continue
+			}
+
 			legs = append(legs, models.OrderLeg{
 				UserId:            userId,
 				OrderId:           order.Id,
 				Type:              row2.Type,
-				Symbol:            row2.Symbol,
-				OptionSymbol:      row2.OptionSymbol,
+				SymbolId:          sym.Id,
 				Side:              row2.Side,
 				Qty:               int(row2.Quantity),
 				Status:            row2.Status,

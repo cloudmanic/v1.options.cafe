@@ -12,6 +12,7 @@ type TradeGroup struct {
 	UserId          uint       `sql:"not null;index:UserId" json:"_"`
 	CreatedAt       time.Time  `json:"_"`
 	UpdatedAt       time.Time  `json:"_"`
+	Name            string     `json:"name"`
 	BrokerAccountId uint       `sql:"not null;index:BrokerAccountId" json:"_"`
 	AccountId       string     `sql:"not null;index:AccountId" json:"account_id"`
 	Status          string     `sql:"not null;type:ENUM('Open', 'Closed');default:'Open'" json:"status"`

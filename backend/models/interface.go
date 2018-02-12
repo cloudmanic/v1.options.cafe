@@ -22,6 +22,7 @@ type Datastore interface {
 
 	// Generic database functions
 	Query(model interface{}, params QueryParam) error
+	Count(model interface{}, params QueryParam) (uint, error)
 
 	// Broker
 	UpdateBroker(broker Broker) error

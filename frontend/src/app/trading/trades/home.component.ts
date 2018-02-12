@@ -15,6 +15,7 @@ import { TradeGroupService } from '../../providers/http/trade-group.service';
 export class TradesComponent implements OnInit {
 
   tradesList: TradeGroup[];
+  searchTerm: string = ""
   
   //
   // Construct
@@ -33,10 +34,17 @@ export class TradesComponent implements OnInit {
   //
   getTradeGroups() {
     // Get tradegroup data
-    this.tradeGroupService.get(2, 1, 'open_date', 'desc', '').subscribe((data) => {
+    this.tradeGroupService.get(2, 1, 'open_date', 'desc', this.searchTerm).subscribe((data) => {
       this.tradesList = data
     });    
   }
+
+  //
+  // On search...
+  //
+  onSearchKeyUp(event) {
+    this.getTradeGroups()
+  }  
 }
 
 /* End File */

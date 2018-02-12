@@ -85,11 +85,21 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 	// Create or Update Trade Group
 	if tradeGroupId == 0 {
 
+		// Figure out how many trade groups we have had thus far.
+		count, err := db.Count(&models.TradeGroup{}, models.QueryParam{Wheres: []models.KeyValue{{Key: "user_id", Value: strconv.Itoa(int(userId))}}})
+
+		if err != nil {
+			services.BetterError(err)
+		}
+
+		countPlus := strconv.Itoa(int(count) + 1)
+
 		// Build a new Trade Group
 		var tradeGroup = &models.TradeGroup{
 			UserId:          userId,
 			CreatedAt:       time.Now(),
 			UpdatedAt:       time.Now(),
+			Name:            "Trade #" + countPlus + " - " + tgType + " Trade",
 			AccountId:       order.AccountId,
 			BrokerAccountId: brokerAccount.Id,
 			Status:          tradeGroupStatus,

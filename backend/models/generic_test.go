@@ -213,4 +213,35 @@ func TestQuery01(t *testing.T) {
 	st.Expect(t, results[0].Email, "spicer+robtester@options.cafe")
 }
 
+//
+// Test - Count
+//
+func TestCount01(t *testing.T) {
+
+	// Load config file.
+	env.ReadEnv("../.env")
+
+	// Start the db connection.
+	db, _ := NewDB()
+	defer db.Close()
+
+	// ---------  Test 1 -------- //
+
+	// Run the query
+	count, err := db.Count(&Symbol{}, QueryParam{})
+
+	// Test results
+	st.Expect(t, err, nil)
+	st.Expect(t, count, uint(6))
+
+	// ---------  Test 2 -------- //
+
+	// Run the query
+	count, err2 := db.Count(&Symbol{}, QueryParam{Wheres: []KeyValue{{Key: "type", Value: "Equity"}}})
+
+	// Test results
+	st.Expect(t, err2, nil)
+	st.Expect(t, count, uint(3))
+}
+
 /* End File */

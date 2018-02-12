@@ -40,6 +40,9 @@ func (t *DB) CreatePosition(position *Position) error {
 	// Create position
 	t.Create(position)
 
+	// Add in symbol
+	t.Model(position).Related(&position.Symbol)
+
 	// Return happy
 	return nil
 }
@@ -51,6 +54,9 @@ func (t *DB) UpdatePosition(position *Position) error {
 
 	// Update entry.
 	t.Save(&position)
+
+	// Add in symbol
+	t.Model(position).Related(&position.Symbol)
 
 	// Return happy
 	return nil

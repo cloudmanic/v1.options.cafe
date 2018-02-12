@@ -111,16 +111,8 @@ func doMultiLegOrders(db models.Datastore, userId uint, brokerId uint) error {
 //
 func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db models.Datastore, userId uint) (models.Position, error) {
 
-	// Get the symbol id.
-	sym, err := db.CreateNewOptionSymbol(leg.OptionSymbol)
-
-	if err != nil {
-		services.BetterError(err)
-		return models.Position{}, err
-	}
-
 	// First we find out if we already have a position on for this.
-	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, sym.Id, "Open", order.AccountId)
+	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, leg.SymbolId, "Open", order.AccountId)
 
 	// We found so we are just adding to a current position.
 	if position.Id > 0 {
@@ -143,7 +135,7 @@ func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db model
 			CreatedAt:     time.Now(),
 			UpdatedAt:     time.Now(),
 			AccountId:     order.AccountId,
-			SymbolId:      sym.Id,
+			SymbolId:      leg.SymbolId,
 			Qty:           leg.Qty,
 			OrgQty:        leg.Qty,
 			CostBasis:     (float64(leg.Qty) * leg.AvgFillPrice * 100),
@@ -168,16 +160,8 @@ func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db model
 //
 func doCloseOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db models.Datastore, userId uint) (models.Position, error) {
 
-	// Get the symbol id.
-	sym, err := db.CreateNewOptionSymbol(leg.OptionSymbol)
-
-	if err != nil {
-		services.BetterError(err)
-		return models.Position{}, err
-	}
-
 	// First we find out if we already have a position on for this.
-	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, sym.Id, "Open", order.AccountId)
+	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, leg.SymbolId, "Open", order.AccountId)
 
 	// We found so we are just removing to a current position.
 	if position.Id > 0 {
@@ -204,7 +188,7 @@ func doCloseOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db mode
 		db.UpdatePosition(&position)
 
 	} else {
-		return models.Position{}, errors.New("Unable to find close position in our database. - " + strconv.Itoa(int(userId)) + " : " + leg.OptionSymbol + " : " + order.AccountId)
+		return models.Position{}, errors.New("Unable to find close position in our database. - " + strconv.Itoa(int(userId)) + " : " + strconv.Itoa(int(leg.SymbolId)) + " : " + order.AccountId)
 	}
 
 	// Return a list of position that we reviewed

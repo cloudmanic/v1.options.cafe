@@ -144,4 +144,34 @@ func (t *DB) Query(model interface{}, params QueryParam) error {
 	return nil
 }
 
+//
+// A generic way find out how many rows are in a table
+//
+func (t *DB) Count(model interface{}, params QueryParam) (uint, error) {
+
+	var count uint = 0
+	var query *gorm.DB
+
+	// Useful just to kick this off
+	query = t.Order("id ASC")
+
+	// Are we debugging this?
+	if params.Debug {
+		query = query.Debug()
+	}
+
+	// Add in Where clauses
+	for _, row := range params.Wheres {
+		if (len(row.Value) > 0) && (len(row.Key) > 0) {
+			query = query.Where(row.Key+" = ?", row.Value)
+		}
+	}
+
+	// Run the query
+	query.Model(model).Count(&count)
+
+	// If we made it this far no errors.
+	return count, nil
+}
+
 /* End File */

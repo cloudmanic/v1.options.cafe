@@ -12,6 +12,7 @@ import { Position } from './position';
 //
 export class TradeGroup {
   public Id: number;
+  public Name: string;
   public Status: string;
   public Type: string;
   public OpenDate: string;
@@ -25,6 +26,7 @@ export class TradeGroup {
   //
   constructor(
     Id: number, 
+    Name: string,
     Status: string, 
     Type: string,
     OpenDate: string,
@@ -34,6 +36,7 @@ export class TradeGroup {
     Positions: []Position        
   ) {
     this.Id = Id;
+    this.Name = Name;
     this.Status = Status;
     this.Type = Type;
     this.OpenDate = OpenDate;
@@ -75,6 +78,7 @@ export class TradeGroup {
 
       tg.push(new TradeGroup(
         data[i].id, 
+        data[i].name,         
         data[i].status, 
         data[i].type, 
         data[i].open_date, 

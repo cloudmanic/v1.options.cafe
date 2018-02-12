@@ -13,8 +13,8 @@ type Order struct {
 	BrokerRef         string `sql:"not null;index:BrokerRef"`
 	AccountId         string `sql:"not null;index:AccountId"`
 	Type              string
-	Symbol            string
-	OptionSymbol      string
+	SymbolId          uint
+	OptionSymbolId    uint
 	Side              string
 	Qty               int
 	Status            string
@@ -30,6 +30,8 @@ type Order struct {
 	Class             string
 	NumLegs           int
 	PositionReviewed  string `sql:"not null;type:ENUM('No', 'Yes', 'Error');default:'No'"`
+	Symbol            Symbol `json:"symbol"`
+	OptionSymbol      Symbol `gorm:"foreignkey:OptionSymbolId" json:"option_symbol"`
 	Legs              []OrderLeg
 }
 
@@ -40,8 +42,7 @@ type OrderLeg struct {
 	UpdatedAt         time.Time
 	OrderId           uint `sql:"not null;index:OrderId"`
 	Type              string
-	Symbol            string
-	OptionSymbol      string
+	SymbolId          uint
 	Side              string
 	Qty               int
 	Status            string
@@ -53,6 +54,7 @@ type OrderLeg struct {
 	RemainingQuantity float64 `sql:"type:DECIMAL(12,2)"`
 	CreateDate        time.Time
 	TransactionDate   time.Time
+	Symbol            Symbol `json:"symbol"`
 }
 
 //

@@ -21,7 +21,7 @@ func TestClassifyTradeGroupSingleStock01(t *testing.T) {
 	// Test put credit spread
 	positions := &[]models.Position{
 		{
-			Symbol:       "SPY",
+			Symbol:       models.Symbol{ShortName: "SPY"},
 			OrgQty:       9,
 			CostBasis:    2034.00,
 			AvgOpenPrice: 226.12,
@@ -44,7 +44,7 @@ func TestClassifyTradeGroupSingleOption01(t *testing.T) {
 	// Test put credit spread
 	positions := &[]models.Position{
 		{
-			Symbol:       "SPY180221P00241000",
+			Symbol:       models.Symbol{ShortName: "SPY180221P00241000"},
 			OrgQty:       9,
 			CostBasis:    2034.00,
 			AvgOpenPrice: 2.26,
@@ -67,14 +67,14 @@ func TestClassifyTradeGroupPutCreditSpread01(t *testing.T) {
 	// Test put credit spread
 	positions := &[]models.Position{
 		{
-			Symbol:       "SPY180221P00241000",
+			Symbol:       models.Symbol{ShortName: "SPY180221P00241000"},
 			OrgQty:       9,
 			CostBasis:    2034.00,
 			AvgOpenPrice: 2.26,
 		},
 
 		{
-			Symbol:       "SPY180221P00243000",
+			Symbol:       models.Symbol{ShortName: "SPY180221P00243000"},
 			OrgQty:       -9,
 			CostBasis:    -2286.00,
 			AvgOpenPrice: 2.54,
@@ -97,14 +97,14 @@ func TestClassifyTradeGroupPutDebitSpread01(t *testing.T) {
 	// Test put credit spread
 	positions := &[]models.Position{
 		{
-			Symbol:       "SPY180221P00241000",
+			Symbol:       models.Symbol{ShortName: "SPY180221P00241000"},
 			OrgQty:       -9,
 			CostBasis:    -2034.00,
 			AvgOpenPrice: 2.26,
 		},
 
 		{
-			Symbol:       "SPY180221P00243000",
+			Symbol:       models.Symbol{ShortName: "SPY180221P00243000"},
 			OrgQty:       9,
 			CostBasis:    2286.00,
 			AvgOpenPrice: 2.54,
@@ -127,14 +127,14 @@ func TestClassifyTradeGroupCallCreditSpread01(t *testing.T) {
 	// Test put credit spread
 	positions := &[]models.Position{
 		{
-			Symbol:       "SPY180221C00241000",
+			Symbol:       models.Symbol{ShortName: "SPY180221C00241000"},
 			OrgQty:       9,
 			CostBasis:    2034.00,
 			AvgOpenPrice: 2.26,
 		},
 
 		{
-			Symbol:       "SPY180221C00243000",
+			Symbol:       models.Symbol{ShortName: "SPY180221C00243000"},
 			OrgQty:       -9,
 			CostBasis:    -2286.00,
 			AvgOpenPrice: 2.54,
@@ -157,14 +157,14 @@ func TestClassifyTradeGroupCallDebitSpread01(t *testing.T) {
 	// Test put credit spread
 	positions := &[]models.Position{
 		{
-			Symbol:       "SPY180221C00241000",
+			Symbol:       models.Symbol{ShortName: "SPY180221C00241000"},
 			OrgQty:       -9,
 			CostBasis:    -2034.00,
 			AvgOpenPrice: 2.26,
 		},
 
 		{
-			Symbol:       "SPY180221C00243000",
+			Symbol:       models.Symbol{ShortName: "SPY180221C00243000"},
 			OrgQty:       9,
 			CostBasis:    2286.00,
 			AvgOpenPrice: 2.54,
