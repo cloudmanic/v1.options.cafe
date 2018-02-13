@@ -19,7 +19,7 @@ export class TradeGroup {
   public ClosedDate: string;
   public Commission: number;
   public Note: string;
-  public Positions: []Position: 
+  public Positions: Position[];
 
   //
   // Constructor
@@ -33,7 +33,7 @@ export class TradeGroup {
     ClosedDate: string,
     Commission: number,
     Note: string,
-    Positions: []Position        
+    Positions: Position[]        
   ) {
     this.Id = Id;
     this.Name = Name;
