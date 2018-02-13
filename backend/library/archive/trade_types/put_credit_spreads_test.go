@@ -14,6 +14,35 @@ import (
 )
 
 //
+// Test get mass loss for put credit spread
+//
+func TestPutCreditSpreadGetMaxRisked01(t *testing.T) {
+
+	// Test put credit spread
+	positions := &[]models.Position{
+		{
+			Symbol:       models.Symbol{ShortName: "SPY180221P00241000"},
+			OrgQty:       9,
+			CostBasis:    2034.00,
+			AvgOpenPrice: 2.26,
+		},
+
+		{
+			Symbol:       models.Symbol{ShortName: "SPY180221P00243000"},
+			OrgQty:       -9,
+			CostBasis:    -2286.00,
+			AvgOpenPrice: 2.54,
+		},
+	}
+
+	// Get max loss
+	loss := PutCreditSpreadGetMaxRisked(positions)
+
+	// Verify the data was return as expected
+	st.Expect(t, loss, 1548.00)
+}
+
+//
 // Test trade classification - Put Credit Spread
 //
 func TestIsPutCreditSpread01(t *testing.T) {

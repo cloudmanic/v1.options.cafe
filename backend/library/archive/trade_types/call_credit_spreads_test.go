@@ -14,6 +14,35 @@ import (
 )
 
 //
+// Test get mass loss for call credit spread
+//
+func TestCallCreditSpreadGetMaxRisked01(t *testing.T) {
+
+	// Test put credit spread
+	positions := &[]models.Position{
+		{
+			Symbol:       models.Symbol{ShortName: "VXX180223C00055000"},
+			OrgQty:       2,
+			CostBasis:    982.00,
+			AvgOpenPrice: 4.91,
+		},
+
+		{
+			Symbol:       models.Symbol{ShortName: "VXX180223C00050000"},
+			OrgQty:       -2,
+			CostBasis:    -1270.00,
+			AvgOpenPrice: 6.35,
+		},
+	}
+
+	// Get max loss
+	loss := CallCreditSpreadGetMaxRisked(positions)
+
+	// Verify the data was return as expected
+	st.Expect(t, loss, 712.00)
+}
+
+//
 // Test trade classification - Call Credit Spread
 //
 func TestIsCallCreditSpread01(t *testing.T) {

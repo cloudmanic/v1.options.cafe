@@ -12,6 +12,42 @@ import (
 )
 
 //
+// Calculate max loss of the trade.
+//
+func PutCreditSpreadGetMaxRisked(positions *[]models.Position) float64 {
+
+	var qty int = 0
+	var cost float64 = 0.00
+	var strikes []float64
+
+	// Loop through the different positions and get some summary data
+	for _, row := range *positions {
+
+		// Parse the option
+		option, _ := helpers.OptionParse(row.Symbol.ShortName)
+		cost += row.CostBasis
+		strikes = append(strikes, option.Strike)
+
+		// Get the qty
+		if row.OrgQty > 0 {
+			qty = row.OrgQty
+		}
+
+	}
+
+	// Get max, min. and diff
+	max := FindMaxStike(strikes)
+	min := FindMinStike(strikes)
+	dif := max - min
+
+	// Get max risk before credit
+	maxRisk := float64(qty) * dif * 100.00
+
+	// Return happy.
+	return maxRisk + cost
+}
+
+//
 // Detect if this trade is an put credit spread
 //
 func IsPutCreditSpread(positions *[]models.Position) bool {

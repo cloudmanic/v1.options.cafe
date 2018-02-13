@@ -14,6 +14,50 @@ import (
 )
 
 //
+// Test get mass loss for Single Stock - Long
+//
+func TestSingleStockGetMaxRisked01(t *testing.T) {
+
+	// Test one stock
+	positions := &[]models.Position{
+		{
+			Symbol:       models.Symbol{ShortName: "SPY"},
+			OrgQty:       9,
+			CostBasis:    2034.12,
+			AvgOpenPrice: 226.12,
+		},
+	}
+
+	// Get max loss
+	loss := SingleStockGetMaxRisked(positions)
+
+	// Verify the data was return as expected
+	st.Expect(t, loss, 2034.12)
+}
+
+//
+// Test get mass loss for Single Stock - Short
+//
+func TestSingleStockGetMaxRisked02(t *testing.T) {
+
+	// Test one stock
+	positions := &[]models.Position{
+		{
+			Symbol:       models.Symbol{ShortName: "SPY"},
+			OrgQty:       -9,
+			CostBasis:    -2034.00,
+			AvgOpenPrice: 226.12,
+		},
+	}
+
+	// Get max loss
+	loss := SingleStockGetMaxRisked(positions)
+
+	// Verify the data was return as expected
+	st.Expect(t, loss, -1.00)
+}
+
+//
 // Test trade classification - Single stock trade
 //
 func TestIsSingleStock01(t *testing.T) {
