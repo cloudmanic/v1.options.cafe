@@ -23,6 +23,9 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 
 	apiV1.Use(t.AuthMiddleware())
 	{
+		// Brokers
+		apiV1.GET("/brokers", t.GetBrokers)
+
 		// Symbols
 		apiV1.GET("/symbols", t.GetSymbols)
 

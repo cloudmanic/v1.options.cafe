@@ -14,19 +14,19 @@ import (
 )
 
 type BrokerAccount struct {
-	Id                uint      `gorm:"primary_key"`
+	Id                uint      `gorm:"primary_key" json:"id"`
 	CreatedAt         time.Time `json:"-"`
 	UpdatedAt         time.Time `json:"-"`
 	UserId            uint      `gorm:"index" sql:"not null;index:UserId" json:"-"`
-	BrokerId          uint      `gorm:"index" sql:"not null;index:BrokerId"`
-	Name              string    `sql:"not null"`
-	AccountNumber     string    `sql:"not null"`
-	StockCommission   float64   `sql:"type:DECIMAL(12,2)"`
-	StockMin          float64   `sql:"type:DECIMAL(12,2)"`
-	OptionCommission  float64   `sql:"type:DECIMAL(12,2)"`
-	OptionSingleMin   float64   `sql:"type:DECIMAL(12,2)"`
-	OptionMultiLegMin float64   `sql:"type:DECIMAL(12,2)"`
-	OptionBase        float64   `sql:"type:DECIMAL(12,2)"`
+	BrokerId          uint      `gorm:"index" sql:"not null;index:BrokerId" json:"-"`
+	Name              string    `sql:"not null" json:"name"`
+	AccountNumber     string    `sql:"not null" json:"account_number"`
+	StockCommission   float64   `sql:"type:DECIMAL(12,2)" json:"stock_commission"`
+	StockMin          float64   `sql:"type:DECIMAL(12,2)" json:"stock_min"`
+	OptionCommission  float64   `sql:"type:DECIMAL(12,2)" json:"option_commission"`
+	OptionSingleMin   float64   `sql:"type:DECIMAL(12,2)" json:"option_single_min"`
+	OptionMultiLegMin float64   `sql:"type:DECIMAL(12,2)" json:"option_multi_leg_min"`
+	OptionBase        float64   `sql:"type:DECIMAL(12,2)" json:"option_base"`
 }
 
 //

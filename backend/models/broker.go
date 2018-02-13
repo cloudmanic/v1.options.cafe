@@ -9,15 +9,15 @@ import (
 )
 
 type Broker struct {
-	Id                  uint      `gorm:"primary_key"`
-	CreatedAt           time.Time `json:"-"`
-	UpdatedAt           time.Time `json:"-"`
-	UserId              uint      `gorm:"index" sql:"not null;index:UserId" json:"-"`
-	Name                string    `sql:"not null;type:ENUM('Tradier', 'Tradeking', 'Etrade', 'Interactive Brokers'); default:'Tradier'"`
-	AccessToken         string    `sql:"not null" json:"-"`
-	RefreshToken        string    `sql:"not null" json:"-"`
-	TokenExpirationDate time.Time `json:"-"`
-	BrokerAccounts      []BrokerAccount
+	Id                  uint            `gorm:"primary_key" json:"id"`
+	CreatedAt           time.Time       `json:"-"`
+	UpdatedAt           time.Time       `json:"-"`
+	UserId              uint            `gorm:"index" sql:"not null;index:UserId" json:"-"`
+	Name                string          `sql:"not null;type:ENUM('Tradier', 'Tradeking', 'Etrade', 'Interactive Brokers'); default:'Tradier'" json:"name"`
+	AccessToken         string          `sql:"not null" json:"-"`
+	RefreshToken        string          `sql:"not null" json:"-"`
+	TokenExpirationDate time.Time       `json:"-"`
+	BrokerAccounts      []BrokerAccount `json:"broker_accounts"`
 }
 
 //

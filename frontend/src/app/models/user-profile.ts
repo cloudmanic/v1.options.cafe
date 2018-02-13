@@ -4,8 +4,6 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-import { BrokerAccount } from './broker-account';
-
 export class UserProfile 
 {
   
@@ -14,8 +12,7 @@ export class UserProfile
   //
   constructor(
     public Id: string,
-    public Name: string,
-    public Accounts: BrokerAccount[] 
+    public Name: string
   ){}
   
   //
@@ -23,21 +20,8 @@ export class UserProfile
   //
   public static buildForEmit(data) : UserProfile  {
     
-    let user = new UserProfile(data.Id, data.Name, []); 
-       
-    // Setup the array of accounts.
-    for(let i in data.Accounts)
-    {
-      user.Accounts.push(new BrokerAccount(
-        data.Accounts[i].AccountNumber,
-        data.Accounts[i].Classification,
-        data.Accounts[i].DayTrader,
-        data.Accounts[i].OptionLevel,
-        data.Accounts[i].Status,
-        data.Accounts[i].Type       
-      ));
-    }
-     
+    let user = new UserProfile(data.Id, data.Name); 
+            
     return user;
   }
   

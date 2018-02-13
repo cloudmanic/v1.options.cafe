@@ -17,7 +17,11 @@ import { AuthGuard } from './auth/guards/auth.service';
 import { AppService } from './providers/websocket/app.service';
 import { QuoteService } from './providers/websocket/quote.service';
 
+// Providers - state
+import { BrokerStateService } from './providers/state/broker.state.service';
+
 // Providers - http
+import { BrokerService } from './providers/http/broker.service';
 import { SymbolService } from './providers/http/symbol.service';
 import { TradeGroupService } from './providers/http/trade-group.service';
 
@@ -103,7 +107,9 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     QuoteService, 
     AuthGuard, 
     SymbolService,
+    BrokerService
     TradeGroupService,
+    BrokerStateService,
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }    
   ],
   

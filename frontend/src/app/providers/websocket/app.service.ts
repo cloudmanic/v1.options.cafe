@@ -15,7 +15,6 @@ import { Balance } from '../../models/balance';
 import { OrderLeg } from '../../models/order-leg';
 import { Watchlist } from '../../models/watchlist';
 import { MarketStatus } from '../../models/market-status';
-import { UserProfile } from '../../models/user-profile';
 import { BrokerAccount } from '../../models/broker-account';
 
 declare var ClientJS: any;
@@ -39,7 +38,6 @@ export class AppService
   wsReconnecting = new EventEmitter<boolean>();
   ordersPush = new EventEmitter<Order[]>();
   balancesPush = new EventEmitter<Balance[]>();
-  userProfilePush = new EventEmitter<UserProfile>();
   marketStatusPush = new EventEmitter<MarketStatus>();
   watchlistPush = new EventEmitter<Watchlist>();
   activeAccountPush = new EventEmitter<BrokerAccount>();
@@ -91,14 +89,7 @@ export class AppService
         
     // Send quote to angular component
     switch(msg.uri)
-    {
-      // User Profile refresh
-      case 'user/profile':
-        var obj = UserProfile.buildForEmit(msg_data);
-        this.calcActiveAccount(obj);
-        this.userProfilePush.emit(obj);  
-      break;
-      
+    {      
       // Balances refresh
       case 'balances':
         this.balancesPush.emit(Balance.buildForEmit(msg_data));

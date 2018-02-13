@@ -20,7 +20,7 @@
 
 						<div class="select select--dark">
               <select name="field-account" id="field-account" [(ngModel)]="selectedAccount" (ngModelChange)="onAccountChange()">
-                <option [ngValue]="row" *ngFor="let row of userProfile?.Accounts">{{ row.AccountNumber }}</option>
+                <option [ngValue]="row" *ngFor="let row of brokerAccountList">{{ row.Name }}</option>
               </select>  						
 						</div>
 						
