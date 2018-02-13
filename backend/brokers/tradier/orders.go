@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/tidwall/gjson"
 )
 
@@ -29,7 +30,7 @@ func (t *Api) GetAllOrders() ([]types.Order, error) {
 		err := t.processOrderDataForGetAllOrders(row.AccountNumber, &orders)
 
 		if err != nil {
-			return orders, err
+			services.BetterError(err)
 		}
 
 	}

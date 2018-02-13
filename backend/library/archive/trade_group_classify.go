@@ -12,6 +12,35 @@ import (
 )
 
 //
+// Pass in some positions and return the amount risked in this trade.
+//
+func GetAmountRiskedInTrade(positions *[]models.Position) float64 {
+
+	// Get the trade type
+	tradeType := ClassifyTradeGroup(positions)
+
+	// Based on the trade type we call different functions
+	switch tradeType {
+
+	case "Stock":
+		return trade_types.SingleStockGetMaxRisked(positions)
+
+	case "Option":
+		return trade_types.SingleOptionGetMaxRisked(positions)
+
+	case "Put Credit Spread":
+		return trade_types.PutCreditSpreadGetMaxRisked(positions)
+
+	case "Call Credit Spread":
+		return trade_types.CallCreditSpreadGetMaxRisked(positions)
+
+	}
+
+	// Should never make it here
+	return 0.00
+}
+
+//
 // Loop through the positions and try to figure out what type of trade this is.
 //
 // Note: The order we check positions in matters.
