@@ -52,7 +52,6 @@ func (t *Base) Start() {
 
 	// Setup tickers for broker polling.
 	go t.DoOrdersTicker()
-	//go t.DoPositionsTicker()
 	go t.DoUserProfileTicker()
 	go t.DoGetDetailedQuotes()
 	go t.DoGetMarketStatusTicker()
@@ -60,30 +59,5 @@ func (t *Base) Start() {
 	go t.DoAccessTokenRefresh()
 	go t.DoOrdersArchive()
 }
-
-// ---------------------- Tickers (polling) ---------------------------- //
-
-// //
-// // Ticker - Positions : 3 seconds
-// //
-// func (t *Base) DoPositionsTicker() {
-
-// 	var err error
-
-// 	for {
-
-// 		// Load up positions
-// 		err = t.GetPositions()
-
-// 		if err != nil {
-// 			services.Warning(err)
-// 		}
-
-// 		// Sleep for 3 second.
-// 		time.Sleep(time.Second * 3)
-
-// 	}
-
-// }
 
 /* End File */

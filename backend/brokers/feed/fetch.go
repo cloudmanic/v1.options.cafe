@@ -47,37 +47,6 @@ func (t *Base) RefreshFromCached() error {
 	return nil
 }
 
-// // ----------------- Positions ------------------- //
-
-// //
-// // Do get positions
-// //
-// func (t *Base) GetPositions() error {
-
-// 	// Make API call
-// 	positions, err := t.Api.GetPositions()
-
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	// Save the positions in the fetch object
-// 	t.muPositions.Lock()
-// 	t.Positions = positions
-// 	t.muPositions.Unlock()
-
-// 	// Send up websocket.
-// 	err = t.WriteDataChannel("positions", positions)
-
-// 	if err != nil {
-// 		return fmt.Errorf("Fetch.GetPositions() : ", err)
-// 	}
-
-// 	// Return Happy
-// 	return nil
-
-// }
-
 // ----------------- Helper Functions ---------------- //
 
 //
