@@ -28,7 +28,7 @@ export class SidebarComponent implements OnInit {
   //
   // Construct.
   //
-  constructor(private app: AppService, private brokerService: BrokerService, private siteService: StateService) { }
+  constructor(private app: AppService, private brokerService: BrokerService, private stateService: StateService) { }
 
   //
   // Oninit...
@@ -49,14 +49,14 @@ export class SidebarComponent implements OnInit {
     this.app.balancesPush.subscribe(data => {
 
       // We have not gotten our brokers yet.
-      if(! this.siteService.GetActiveBrokerAccount())
+      if(! this.stateService.GetActiveBrokerAccount())
       {
         return false;
       }
 
       for(var i = 0; i < data.length; i++)
       {
-        if(data[i].AccountNumber == this.siteService.GetActiveBrokerAccount().AccountNumber)
+        if(data[i].AccountNumber == this.stateService.GetActiveBrokerAccount().AccountNumber)
         {
           this.balance = data[i];
         }
@@ -75,7 +75,7 @@ export class SidebarComponent implements OnInit {
     this.brokerService.get().subscribe((data) => {
       this.brokerList = data;
 
-      let activeAccountId = this.siteService.GetStoredActiveAccountId();
+      let activeAccountId = this.stateService.GetStoredActiveAccountId();
 
       // Default to first one.
       if(! activeAccountId)
@@ -88,7 +88,7 @@ export class SidebarComponent implements OnInit {
 
         // Do we have a stored broker
         this.siteState.SetActiveBrokerAccount(this.brokerList[0].BrokerAccounts[0]);
-        activeAccountId = this.siteService.GetStoredActiveAccountId();
+        activeAccountId = this.stateService.GetStoredActiveAccountId();
       }
 
       // Loop through all the brokers and set our active broker. And make a list.
@@ -104,7 +104,7 @@ export class SidebarComponent implements OnInit {
             this.selectedAccount = this.brokerList[k].BrokerAccounts[i];
 
             // Force refresh of balances
-            this.siteService.SetActiveBrokerAccount(this.selectedAccount);           
+            this.stateService.SetActiveBrokerAccount(this.selectedAccount);           
           }
         }  
       }
@@ -115,7 +115,7 @@ export class SidebarComponent implements OnInit {
   // On account change.
   //
   onAccountChange() {
-    this.siteService.SetActiveBrokerAccount(this.selectedAccount);
+    this.stateService.SetActiveBrokerAccount(this.selectedAccount);
   }  
 }
 

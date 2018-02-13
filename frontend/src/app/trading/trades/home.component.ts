@@ -9,6 +9,7 @@ import { TradeGroup } from '../../models/trade-group';
 import { BrokerAccount } from '../../models/broker-account';
 import { AppService } from '../../providers/websocket/app.service';
 import { TradeGroupService } from '../../providers/http/trade-group.service';
+import { StateService } from '../../providers/state/state.service';
 
 @Component({
   selector: 'app-trades',
@@ -23,34 +24,32 @@ export class TradesComponent implements OnInit {
   //
   // Construct
   //
-  constructor(private appService: AppService, private tradeGroupService: TradeGroupService) {}
+  constructor(private appService: AppService, private tradeGroupService: TradeGroupService, private siteService: StateService) {}
 
   //
   // On Init
   //
-  ngOnInit() {
-    this.getTradeGroups()
+  ngOnInit() 
+  {
+    // Set the search term from cache
+    this.searchTerm = this.siteService.GetTradeGroupSearchTerm();
+
+    // Load trade groups from cache.
+    this.tradesList = this.siteService.GetActiveTradeGroups(); 
+
+    // Load tradegroups from server
+    this.getTradeGroups();
   }
 
   //
   // Get trade groups
   //
-  getTradeGroups() {
-
-    // // Set the active account.
-    // this.activeAccount = this.appService.getActiveAccount();
-
-    // console.log(this.activeAccount)
-    
-    // // This data has not come in yet.
-    // if(! this.activeAccount)
-    // {
-    //   return;
-    // }   
-
+  getTradeGroups() 
+  {
     // Get tradegroup data
-    this.tradeGroupService.get(2, 1, 'open_date', 'desc', this.searchTerm).subscribe((data) => {
-      this.tradesList = data
+    this.tradeGroupService.get(this.siteService.GetStoredActiveAccountId(), 1, 'open_date', 'desc', this.searchTerm).subscribe((data) => {
+      this.tradesList = data;
+      this.siteService.SetActiveTradeGroups(data);
     });    
   }
 
@@ -58,7 +57,8 @@ export class TradesComponent implements OnInit {
   // On search...
   //
   onSearchKeyUp(event) {
-    this.getTradeGroups()
+    this.getTradeGroups();
+    this.siteService.SetTradeGroupSearchTerm(this.searchTerm);
   }  
 }
 

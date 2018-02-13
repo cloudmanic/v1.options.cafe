@@ -7,6 +7,7 @@
 import { Injectable } from '@angular/core';
 import { Broker } from '../../models/broker';
 import { Watchlist } from '../../models/watchlist';
+import { TradeGroup } from '../../models/trade-group';
 import { BrokerAccount } from '../../models/broker-account';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { environment } from '../../../environments/environment';
@@ -15,9 +16,13 @@ import { AppService } from '../../providers/websocket/app.service';
 @Injectable()
 export class StateService  
 { 
-  private quotes = {}
-  private activeBrokerAccount: BrokerAccount
-  private activeWatchlist: Watchlist
+  private quotes = {};
+  private activeWatchlist: Watchlist;
+  private activeBrokerAccount: BrokerAccount;
+  
+  // Trade Group stuff
+  private tradeGroupSearchTerm : string;
+  private activeTradeGroupList: TradeGroup[];
 
   //
   // Construct.
@@ -38,6 +43,34 @@ export class StateService
   //
   GetQuotes() {
     return this.quotes;
+  }
+
+  //
+  // Set a trade group search term
+  //
+  SetTradeGroupSearchTerm(term: string) {
+    this.tradeGroupSearchTerm = term;
+  }
+
+  //
+  // Get trade group search term
+  //
+  GetTradeGroupSearchTerm() {
+    return this.tradeGroupSearchTerm;
+  }
+
+  //
+  // Get active tradegroup
+  //
+  GetActiveTradeGroups() : TradeGroup[] {
+    return this.activeTradeGroupList;
+  }
+
+  //
+  // Set active tradegroup
+  //
+  SetActiveTradeGroups(tg: TradeGroup[]) {
+    this.activeTradeGroupList = tg;
   }
 
   //
@@ -76,6 +109,10 @@ export class StateService
     this.activeBrokerAccount = brokerAccount
     localStorage.setItem('active_account', brokerAccount.Id);
     this.appService.RequestAllData();
+
+    // Clear cached data.
+    this.activeTradeGroupList = []
+    this.tradeGroupSearchTerm = ""  
   }
 
   //
