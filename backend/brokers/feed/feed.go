@@ -22,9 +22,6 @@ type Base struct {
 	muOrders sync.Mutex
 	Orders   []types.Order
 
-	muPositions sync.Mutex
-	Positions   []types.Position
-
 	muBalances sync.Mutex
 	Balances   []types.Balance
 

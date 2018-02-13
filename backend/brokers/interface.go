@@ -14,7 +14,6 @@ type Api interface {
 	GetMarketStatus() (types.MarketStatus, error)
 	GetOrders() ([]types.Order, error)
 	GetAllOrders() ([]types.Order, error)
-	GetPositions() ([]types.Position, error)
 	GetQuotes([]string) ([]types.Quote, error)
 	GetUserProfile() (types.UserProfile, error)
 	DoRefreshAccessTokenIfNeeded(models.User) error
