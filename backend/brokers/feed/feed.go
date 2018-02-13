@@ -2,7 +2,6 @@ package feed
 
 import (
 	"sync"
-	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
@@ -53,7 +52,7 @@ func (t *Base) Start() {
 
 	// Setup tickers for broker polling.
 	go t.DoOrdersTicker()
-	go t.DoPositionsTicker()
+	//go t.DoPositionsTicker()
 	go t.DoUserProfileTicker()
 	go t.DoGetDetailedQuotes()
 	go t.DoGetMarketStatusTicker()
@@ -64,115 +63,27 @@ func (t *Base) Start() {
 
 // ---------------------- Tickers (polling) ---------------------------- //
 
-//
-// Ticker - Positions : 3 seconds
-//
-func (t *Base) DoPositionsTicker() {
+// //
+// // Ticker - Positions : 3 seconds
+// //
+// func (t *Base) DoPositionsTicker() {
 
-	var err error
+// 	var err error
 
-	for {
+// 	for {
 
-		// Load up positions
-		err = t.GetPositions()
+// 		// Load up positions
+// 		err = t.GetPositions()
 
-		if err != nil {
-			services.Warning(err)
-		}
+// 		if err != nil {
+// 			services.Warning(err)
+// 		}
 
-		// Sleep for 3 second.
-		time.Sleep(time.Second * 3)
+// 		// Sleep for 3 second.
+// 		time.Sleep(time.Second * 3)
 
-	}
+// 	}
 
-}
-
-//
-// Ticker - Get DetailedQuotes : 1 second
-//
-func (t *Base) DoGetDetailedQuotes() {
-
-	for {
-
-		// Load up our DetailedQuotes
-		err := t.GetActiveSymbolsDetailedQuotes()
-
-		if err != nil {
-			services.Warning(err)
-		}
-
-		// Sleep for 1 second
-		time.Sleep(time.Second * 1)
-
-	}
-
-}
-
-//
-// Ticker - Get GetMarketStatus : 5 seconds
-//
-func (t *Base) DoGetMarketStatusTicker() {
-
-	var err error
-
-	for {
-
-		// Load up market status.
-		err = t.GetMarketStatus()
-
-		if err != nil {
-			services.Warning(err)
-		}
-
-		// Sleep for 10 second.
-		time.Sleep(time.Second * 5)
-
-	}
-
-}
-
-// Ticker - Get GetBalances : 5 seconds
-//
-func (t *Base) DoGetBalancesTicker() {
-
-	var err error
-
-	for {
-
-		// Load up market status.
-		err = t.GetBalances()
-
-		if err != nil {
-			services.Warning(err)
-		}
-
-		// Sleep for 5 second.
-		time.Sleep(time.Second * 5)
-
-	}
-
-}
-
-//
-// Ticker - See if we need to refresh an access token : 60 seconds
-//
-func (t *Base) DoAccessTokenRefresh() {
-
-	var err error
-
-	for {
-
-		err = t.AccessTokenRefresh()
-
-		if err != nil {
-			services.Warning(err)
-		}
-
-		// Sleep for 60 second.
-		time.Sleep(time.Second * 60)
-
-	}
-
-}
+// }
 
 /* End File */

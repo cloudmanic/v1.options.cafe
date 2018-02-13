@@ -3,7 +3,6 @@ package feed
 import (
 	"encoding/json"
 	"fmt"
-	"sort"
 	"strings"
 
 	"github.com/cloudmanic/app.options.cafe/backend/controllers"
@@ -48,232 +47,36 @@ func (t *Base) RefreshFromCached() error {
 	return nil
 }
 
-//
-// Return active symbols. This is handy because we
-// sort and filter before returning.
-//
-func (t *Base) GetActiveSymbols() []string {
+// // ----------------- Positions ------------------- //
 
-	var activeSymbols []string
+// //
+// // Do get positions
+// //
+// func (t *Base) GetPositions() error {
 
-	// Symbols we always want
-	activeSymbols = append(activeSymbols, "$DJI")
-	activeSymbols = append(activeSymbols, "SPX")
-	activeSymbols = append(activeSymbols, "COMP")
-	activeSymbols = append(activeSymbols, "VIX")
+// 	// Make API call
+// 	positions, err := t.Api.GetPositions()
 
-	// Get the watch lists for this user.
-	watchList, err := t.DB.GetWatchlistsByUserId(t.User.Id)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	// Loop through the watchlists and add the symbols
-	if err == nil {
+// 	// Save the positions in the fetch object
+// 	t.muPositions.Lock()
+// 	t.Positions = positions
+// 	t.muPositions.Unlock()
 
-		for _, row := range watchList {
+// 	// Send up websocket.
+// 	err = t.WriteDataChannel("positions", positions)
 
-			for _, row2 := range row.Symbols {
+// 	if err != nil {
+// 		return fmt.Errorf("Fetch.GetPositions() : ", err)
+// 	}
 
-				activeSymbols = append(activeSymbols, row2.Symbol.ShortName)
+// 	// Return Happy
+// 	return nil
 
-			}
-
-		}
-
-	}
-
-	// Add in the orders we want.
-	t.muOrders.Lock()
-
-	for _, row := range t.Orders {
-
-		// Stock symbol
-		activeSymbols = append(activeSymbols, row.Symbol)
-
-		// Multi leg trade
-		if row.NumLegs > 0 {
-
-			for _, row2 := range row.Legs {
-
-				activeSymbols = append(activeSymbols, row2.OptionSymbol)
-
-			}
-
-		}
-
-		// Single option order
-		if len(row.OptionSymbol) > 0 {
-			activeSymbols = append(activeSymbols, row.OptionSymbol)
-		}
-
-	}
-
-	t.muOrders.Unlock()
-
-	// Clean up the list.
-	activeSymbols = t.ToUpperStrings(activeSymbols)
-	activeSymbols = t.RemoveDupsStrings(activeSymbols)
-
-	// Sort the list.
-	sort.Strings(activeSymbols)
-
-	// Return the cleaned up list.
-	return activeSymbols
-
-}
-
-// ----------------- Market Status ------------------- //
-
-//
-// Do get market status
-//
-func (t *Base) GetMarketStatus() error {
-
-	// Make API call
-	marketStatus, err := t.Api.GetMarketStatus()
-
-	if err != nil {
-		return err
-	}
-
-	// Save the market status in the fetch object
-	t.muMarketStatus.Lock()
-	t.MarketStatus = marketStatus
-	t.muMarketStatus.Unlock()
-
-	// Send up websocket.
-	err = t.WriteDataChannel("market/status", marketStatus)
-
-	if err != nil {
-		return fmt.Errorf("GetMarketStatus() WriteDataChannel : ", err)
-	}
-
-	// Return Happy
-	return nil
-
-}
-
-// ----------------- Positions ------------------- //
-
-//
-// Do get positions
-//
-func (t *Base) GetPositions() error {
-
-	// Make API call
-	positions, err := t.Api.GetPositions()
-
-	if err != nil {
-		return err
-	}
-
-	// Save the positions in the fetch object
-	t.muPositions.Lock()
-	t.Positions = positions
-	t.muPositions.Unlock()
-
-	// Send up websocket.
-	err = t.WriteDataChannel("positions", positions)
-
-	if err != nil {
-		return fmt.Errorf("Fetch.GetPositions() : ", err)
-	}
-
-	// Return Happy
-	return nil
-
-}
-
-// ----------------- Quotes ------------------- //
-
-//
-// Do get quotes - more details from the streaming - activeSymbols
-//
-func (t *Base) GetActiveSymbolsDetailedQuotes() error {
-
-	symbols := t.GetActiveSymbols()
-	detailedQuotes, err := t.Api.GetQuotes(symbols)
-
-	if err != nil {
-		return err
-	}
-
-	// Loop through the quotes sending them up the websocket channel
-	for _, row := range detailedQuotes {
-
-		// Convert to a json string.
-		data_json, err := json.Marshal(row)
-
-		if err != nil {
-			return err
-		}
-
-		// Send data up websocket.
-		send_json, err := t.GetSendJson("quote", string(data_json))
-
-		if err != nil {
-			return err
-		}
-
-		// Send up websocket.
-		err = t.WriteQuoteChannel(send_json)
-
-		if err != nil {
-			return fmt.Errorf("GetActiveSymbolsDetailedQuotes() WriteDataChannel : ", err)
-		}
-
-	}
-
-	// Return happy
-	return nil
-
-}
-
-// ----------------- Balances ------------------- //
-
-//
-// Do get Balances
-//
-func (t *Base) GetBalances() error {
-
-	balances, err := t.Api.GetBalances()
-
-	if err != nil {
-		return err
-	}
-
-	// Save the balances in the fetch object
-	t.muBalances.Lock()
-	t.Balances = balances
-	t.muBalances.Unlock()
-
-	// Send up websocket.
-	err = t.WriteDataChannel("balances", balances)
-
-	if err != nil {
-		return fmt.Errorf("GetBalances() WriteDataChannel : ", err)
-	}
-
-	// Return Happy
-	return nil
-
-}
-
-// ----------------- Access Tokens ------------------- //
-
-//
-// Do update access token from refresh
-//
-func (t *Base) AccessTokenRefresh() error {
-
-	err := t.Api.DoRefreshAccessTokenIfNeeded(t.User)
-
-	if err != nil {
-		return err
-	}
-
-	// Return Happy
-	return nil
-
-}
+// }
 
 // ----------------- Helper Functions ---------------- //
 
