@@ -8,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 import { AppService } from '../../../providers/websocket/app.service';
 import { QuoteService } from '../../../providers/websocket/quote.service';
 import { Order } from '../../../models/order';
-import { BrokerAccount } from '../../../models/broker-account';
+import { BrokerStateService } from '../../../providers/state/broker.state.service';
 
 @Component({
   selector: 'app-trading-orders',
@@ -19,18 +19,16 @@ export class OrdersComponent implements OnInit {
   
   quotes = {}
   orders: Order[]  
-  activeAccount: BrokerAccount
 
   //
   // Constructor....
   //
-  constructor(private appService: AppService, private quoteService: QuoteService) { }
+  constructor(private appService: AppService, private quoteService: QuoteService, private brokerState: BrokerStateService) { }
 
   //
   // OnInit....
   //
   ngOnInit() {
-    
     // Get Data from cache
     this.setOrders(this.appService.orders);
     this.quotes = this.quoteService.quotes;
@@ -44,21 +42,16 @@ export class OrdersComponent implements OnInit {
     this.quoteService.marketQuotePushData.subscribe(data => {
       this.quotes[data.symbol] = data;
     });     
-       
   }
 
   //
   // Set the orders.
   //
   private setOrders(orders: Order[]) {
-    
     var rt = []
     
-    // Set the active account.
-    this.activeAccount = this.appService.getActiveAccount();
-    
     // This data has not come in yet.
-    if(! this.activeAccount)
+    if(! this.brokerState.GetActiveBrokerAccount())
     {
       return;
     }      
@@ -66,7 +59,7 @@ export class OrdersComponent implements OnInit {
     // Filter - We only one the accounts that are active.
     for(var i = 0; i < orders.length; i++)
     {                
-      if(orders[i].AccountId == this.activeAccount.AccountNumber)
+      if(orders[i].AccountId == this.brokerState.GetActiveBrokerAccount().AccountNumber)
       {
         rt.push(orders[i]);
       }
@@ -74,9 +67,7 @@ export class OrdersComponent implements OnInit {
     
     // Set order data
     this.orders = rt;
-    
   }
-
 }
 
 /* End File */

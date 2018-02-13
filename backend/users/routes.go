@@ -37,7 +37,10 @@ func (t *Base) DoFeedRequestListen() {
 
 		send := <-t.FeedRequestChan
 
-		//fmt.Println(send.Body)
+		// Nothing to do if we do not have a user yet
+		if send.UserId <= 0 {
+			continue
+		}
 
 		// Get message type
 		msgType := gjson.Get(send.Body, "uri").String()

@@ -61,6 +61,8 @@ export class WatchlistComponent implements OnInit {
     // Subscribe to data updates from the backend - Watchlist
     this.appService.watchlistPush.subscribe(data => {
       this.watchlist = data;
+
+      console.log(data)
     });    
     
     // Subscribe to data updates from the quotes - Market Quotes

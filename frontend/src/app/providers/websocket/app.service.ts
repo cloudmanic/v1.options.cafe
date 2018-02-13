@@ -15,7 +15,7 @@ import { Balance } from '../../models/balance';
 import { OrderLeg } from '../../models/order-leg';
 import { Watchlist } from '../../models/watchlist';
 import { MarketStatus } from '../../models/market-status';
-import { BrokerAccount } from '../../models/broker-account';
+//import { BrokerAccount } from '../../models/broker-account';
 
 declare var ClientJS: any;
 
@@ -23,7 +23,7 @@ declare var ClientJS: any;
 export class AppService  
 {  
   public deviceId = ""
-  public activeAccount: BrokerAccount;    
+  //public activeAccount: BrokerAccount;    
    
   // Cache some of the data.
   public orders: Order[];
@@ -40,7 +40,7 @@ export class AppService
   balancesPush = new EventEmitter<Balance[]>();
   marketStatusPush = new EventEmitter<MarketStatus>();
   watchlistPush = new EventEmitter<Watchlist>();
-  activeAccountPush = new EventEmitter<BrokerAccount>();
+  //activeAccountPush = new EventEmitter<BrokerAccount>();
   
   //
   // Construct!!
@@ -57,24 +57,24 @@ export class AppService
   
   // ---------------------- Geters / Setters ----------------------- //
   
-  //
-  // Set active account.
-  //
-  public setActiveAccount(account: BrokerAccount) {
+  // //
+  // // Set active account.
+  // //
+  // public setActiveAccount(account: BrokerAccount) {
     
-    this.activeAccount = account;
-    localStorage.setItem('active_account', account.AccountNumber);
-    this.activeAccountPush.emit(account);
-    this.RequestAllData();
+  //   this.activeAccount = account;
+  //   localStorage.setItem('active_account', account.AccountNumber);
+  //   this.activeAccountPush.emit(account);
+  //   this.RequestAllData();
     
-  }
+  // }
 
-  //
-  // Get active account.
-  //
-  public getActiveAccount() : BrokerAccount {
-    return this.activeAccount;
-  }
+  // //
+  // // Get active account.
+  // //
+  // public getActiveAccount() : BrokerAccount {
+  //   return this.activeAccount;
+  // }
 
   // ---------------------- Incoming Data  ------------------------- //
 
@@ -133,39 +133,39 @@ export class AppService
  
   // ------------------------ Helper Functions ------------------------------ //
 
-  //
-  // Figure out what our active account is based on data we passed in.
-  //
-  private calcActiveAccount(user: UserProfile) {
+  // //
+  // // Figure out what our active account is based on data we passed in.
+  // //
+  // private calcActiveAccount(user: UserProfile) {
 
-    // If we already have an active account do nothing.
-    if(this.getActiveAccount())
-    {
-      return;
-    }
+  //   // If we already have an active account do nothing.
+  //   if(this.getActiveAccount())
+  //   {
+  //     return;
+  //   }
 
-    if(! user.Accounts.length)
-    {     
-      return;
-    }
+  //   if(! user.Accounts.length)
+  //   {     
+  //     return;
+  //   }
 
-    if((! localStorage.getItem('active_account')) && user.Accounts.length)
-    {      
-      this.setActiveAccount(user.Accounts[0]);
-      return;
-    }
+  //   if((! localStorage.getItem('active_account')) && user.Accounts.length)
+  //   {      
+  //     this.setActiveAccount(user.Accounts[0]);
+  //     return;
+  //   }
     
-    var acn = localStorage.getItem('active_account');
+  //   var acn = localStorage.getItem('active_account');
       
-    for(var i = 0; i < user.Accounts.length; i++)
-    {
-      if(user.Accounts[i].AccountNumber == acn)
-      {
-        this.setActiveAccount(user.Accounts[i]);            
-      }
-    }
+  //   for(var i = 0; i < user.Accounts.length; i++)
+  //   {
+  //     if(user.Accounts[i].AccountNumber == acn)
+  //     {
+  //       this.setActiveAccount(user.Accounts[i]);            
+  //     }
+  //   }
          
-  }
+  // }
 
   // ---------------------- Websocket Stuff ----------------------- //
 
@@ -200,10 +200,16 @@ export class AppService
     {      
       // Send Access Token (Give a few moments to get started)
       setTimeout(() => { 
+
+        // Send auth
         this.ws.send(JSON.stringify({ 
           uri: 'set-access-token', 
           body: { access_token: localStorage.getItem('access_token'), device_id: this.deviceId }
         }));
+
+        // Request all data.
+        this.RequestAllData()
+        
       }, 1000);
       
       // Tell the UI we are connected

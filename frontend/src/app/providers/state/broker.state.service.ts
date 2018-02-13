@@ -9,6 +9,7 @@ import { Broker } from '../../models/broker';
 import { BrokerAccount } from '../../models/broker-account';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { AppService } from '../../providers/websocket/app.service';
 
 @Injectable()
 export class BrokerStateService  
@@ -18,8 +19,15 @@ export class BrokerStateService
   //
   // Construct.
   //
-  constructor() { 
+  constructor(private appService: AppService) { 
     this.activeBrokerAccount = null;
+  }
+
+  //
+  // Get stored active account id
+  //
+  GetStoredActiveAccountId() : number {
+    return localStorage.getItem('active_account')
   }
 
   //
@@ -27,6 +35,8 @@ export class BrokerStateService
   //
   SetActiveBrokerAccount(brokerAccount: BrokerAccount) {
     this.activeBrokerAccount = brokerAccount
+    localStorage.setItem('active_account', brokerAccount.Id);
+    this.appService.RequestAllData();
   }
 
   //

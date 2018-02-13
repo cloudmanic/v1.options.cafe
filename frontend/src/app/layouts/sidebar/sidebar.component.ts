@@ -7,7 +7,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AppService } from '../../providers/websocket/app.service';
 import { Balance } from '../../models/balance';
-import { UserProfile } from '../../models/user-profile';
 import { MarketStatus } from '../../models/market-status';
 import { Broker } from '../../models/broker';
 import { BrokerAccount } from '../../models/broker-account';
@@ -22,7 +21,6 @@ export class SidebarComponent implements OnInit {
 
   brokerList: Broker[];
   balance: Balance;
-  userProfile: UserProfile;
   marketStatus: MarketStatus;
   selectedAccount: BrokerAccount;
   brokerAccountList: BrokerAccount[];
@@ -39,38 +37,13 @@ export class SidebarComponent implements OnInit {
 
     this.brokerAccountList = [];
 
+    // API call to get brokers
     this.getBrokers()
           
     // Subscribe to data updates from the broker - Market Status
     this.app.marketStatusPush.subscribe(data => {
       this.marketStatus = data;      
-    });    
-            
-    // // Subscribe to data updates from the broker - Market Status
-    // this.app.userProfilePush.subscribe(data => {
-      
-    //   this.userProfile = data;
-
-    //   if(! this.userProfile.Accounts.length)
-    //   {
-    //     return;
-    //   }
-
-    //   if(! this.app.getActiveAccount())
-    //   {
-    //     this.selectedAccount = data.Accounts[0];
-    //     return;
-    //   }
-      
-    //   for(var i = 0; i < this.userProfile.Accounts.length; i++)
-    //   {
-    //     if(this.userProfile.Accounts[i].AccountNumber == this.app.getActiveAccount().AccountNumber)
-    //     {
-    //       this.selectedAccount = this.userProfile.Accounts[i];           
-    //     }
-    //   }
-      
-    // }); 
+    });
     
     // Subscribe to data updates from the broker - Balances
     this.app.balancesPush.subscribe(data => {
@@ -102,8 +75,10 @@ export class SidebarComponent implements OnInit {
     this.brokerService.get().subscribe((data) => {
       this.brokerList = data;
 
+      let activeAccountId = this.brokerState.GetStoredActiveAccountId();
+
       // Default to first one.
-      if(! this.brokerState.GetActiveBrokerAccount())
+      if(! activeAccountId)
       {
         // Make sure we have at least one broker.
         if(! this.brokerList[0])
@@ -111,7 +86,9 @@ export class SidebarComponent implements OnInit {
           return false;
         }
 
+        // Do we have a stored broker
         this.brokerState.SetActiveBrokerAccount(this.brokerList[0].BrokerAccounts[0]);
+        activeAccountId = this.brokerState.GetStoredActiveAccountId();
       }
 
       // Loop through all the brokers and set our active broker. And make a list.
@@ -122,9 +99,12 @@ export class SidebarComponent implements OnInit {
           this.brokerAccountList.push(this.brokerList[k].BrokerAccounts[i]);
 
           // Set the selected account.
-          if(this.brokerList[k].BrokerAccounts[i].Id == this.brokerState.GetActiveBrokerAccount().Id)
+          if(this.brokerList[k].BrokerAccounts[i].Id == activeAccountId)
           {
-            this.selectedAccount = this.brokerList[k].BrokerAccounts[i];           
+            this.selectedAccount = this.brokerList[k].BrokerAccounts[i];
+
+            // Force refresh of balances
+            this.brokerState.SetActiveBrokerAccount(this.selectedAccount);           
           }
         }  
       }
