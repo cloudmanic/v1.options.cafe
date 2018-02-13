@@ -74,6 +74,9 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 		if row.TradeGroupId > 0 {
 			tradeGroupId = row.TradeGroupId
 		}
+
+		// Figure out group profit
+		profit = profit + row.Profit
 	}
 
 	// Figure out what type of trade group this is.
@@ -82,16 +85,14 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 	// Figure out Commission
 	commission := calcCommissionForOrder(&order, brokerId, &brokerAccount)
 
-	// TODO: Figure out Gain (if closed), and Profit (if this is closed)
+	// Update profit to have commissions.
+	profit = profit - commission
 
 	// Figure out max risked before commissions in this trade.
 	risked := GetAmountRiskedInTrade(positions)
 
-	// Figure out if we have profit
-	if tradeGroupStatus == "Closed" {
-		gain = 12.34
-		profit = 66.44
-	}
+	// Figure out gain
+	gain = (((risked + profit) - risked) / risked) * 100
 
 	// Create or Update Trade Group
 	if tradeGroupId == 0 {
