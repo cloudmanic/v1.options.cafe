@@ -20,25 +20,14 @@ import (
 //
 func (t *Base) DoOrdersArchive() {
 	var err error
-	var orders []types.Order
 
 	for {
 		// Load up all orders
-		orders, err = t.GetAllOrders()
+		_, err = t.GetAllOrders()
 
 		if err != nil {
 			services.Warning(err)
 		}
-
-		// Store the orders in our database
-		err = archive.StoreOrders(t.DB, orders, t.User.Id, t.BrokerId)
-
-		if err != nil {
-			services.Warning(fmt.Errorf("Fetch.DoOrdersArchive() - StoreOrders() : ", err))
-		}
-
-		// Clear memory
-		orders = nil
 
 		// Sleep for 24 hours
 		time.Sleep(time.Hour * 24)
@@ -49,11 +38,9 @@ func (t *Base) DoOrdersArchive() {
 // Ticker - Orders : 3 seconds
 //
 func (t *Base) DoOrdersTicker() {
-
 	var err error
 
 	for {
-
 		// Load up orders
 		err = t.GetOrders()
 
@@ -63,7 +50,6 @@ func (t *Base) DoOrdersTicker() {
 
 		// Sleep for 3 second.
 		time.Sleep(time.Second * 3)
-
 	}
 }
 

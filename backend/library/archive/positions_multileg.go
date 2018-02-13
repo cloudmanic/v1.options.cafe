@@ -111,8 +111,23 @@ func doMultiLegOrders(db models.Datastore, userId uint, brokerId uint) error {
 //
 func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db models.Datastore, userId uint) (models.Position, error) {
 
+	var qty int = 0
+	var cost_basis float64 = 0.00
+
 	// First we find out if we already have a position on for this.
 	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, leg.SymbolId, "Open", order.AccountId)
+
+	// Is this a long trade closing?
+	if leg.Side == "buy_to_open" {
+		qty = int(leg.ExecQuantity)
+		cost_basis = (float64(leg.ExecQuantity) * leg.AvgFillPrice * 100)
+	}
+
+	// Is this a short trade closing?
+	if leg.Side == "sell_to_open" {
+		qty = (int(leg.ExecQuantity) * -1)
+		cost_basis = ((float64(leg.ExecQuantity) * leg.AvgFillPrice * 100) * -1)
+	}
 
 	// We found so we are just adding to a current position.
 	if position.Id > 0 {
@@ -120,9 +135,10 @@ func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db model
 		// Update pos
 		position.OrderIds = position.OrderIds + "," + strconv.Itoa(int(order.Id))
 		position.UpdatedAt = time.Now()
-		position.Qty = leg.Qty + position.Qty
-		position.OrgQty = leg.Qty + position.OrgQty
-		position.AvgOpenPrice = ((leg.AvgFillPrice + position.AvgOpenPrice) / 2)
+		position.CostBasis = position.CostBasis + cost_basis
+		position.Qty = qty + position.Qty
+		position.OrgQty = qty + position.OrgQty
+		position.AvgOpenPrice = (((leg.AvgFillPrice + position.AvgOpenPrice) / 2) * 100)
 		position.Note = position.Note + "Updated - " + leg.TransactionDate.Format(time.RFC1123) + " :: "
 		db.UpdatePosition(&position)
 
@@ -136,9 +152,10 @@ func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db model
 			UpdatedAt:     time.Now(),
 			AccountId:     order.AccountId,
 			SymbolId:      leg.SymbolId,
-			Qty:           leg.Qty,
-			OrgQty:        leg.Qty,
-			CostBasis:     (float64(leg.Qty) * leg.AvgFillPrice * 100),
+			Qty:           qty,
+			OrgQty:        qty,
+			CostBasis:     cost_basis,
+			Proceeds:      0.00,
 			AvgOpenPrice:  leg.AvgFillPrice,
 			AvgClosePrice: 0.00,
 			Note:          "",
@@ -169,8 +186,22 @@ func doCloseOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db mode
 		// Update pos
 		position.OrderIds = position.OrderIds + "," + strconv.Itoa(int(order.Id))
 		position.UpdatedAt = time.Now()
-		position.Qty = leg.Qty + position.Qty
 
+		// Is this a long trade closing?
+		if leg.Side == "buy_to_close" {
+			position.Qty = position.Qty + int(leg.ExecQuantity)
+			position.Proceeds = position.Proceeds - (leg.ExecQuantity * leg.AvgFillPrice * 100)
+			position.Profit = position.Profit + (position.Proceeds - position.CostBasis)
+		}
+
+		// Is this a short trade closing?
+		if leg.Side == "sell_to_close" {
+			position.Qty = position.Qty - int(leg.ExecQuantity)
+			position.Proceeds = position.Proceeds + (leg.ExecQuantity * leg.AvgFillPrice * 100)
+			position.Profit = position.Profit + (position.Proceeds - position.CostBasis)
+		}
+
+		// Average Close Price
 		if position.AvgClosePrice != 0 {
 			position.AvgClosePrice = ((leg.AvgFillPrice + position.AvgClosePrice) / 2)
 		} else {

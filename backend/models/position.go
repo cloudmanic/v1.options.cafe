@@ -23,6 +23,8 @@ type Position struct {
 	Qty           int       `json:"qty"`
 	OrgQty        int       `json:"org_qty"`
 	CostBasis     float64   `sql:"type:DECIMAL(12,2)" json:"cost_basis"`
+	Proceeds      float64   `sql:"type:DECIMAL(12,2)" json:"proceeds"`
+	Profit        float64   `sql:"type:DECIMAL(12,2)" json:"profit"`
 	AvgOpenPrice  float64   `sql:"type:DECIMAL(12,2)" json:"avg_open_price"`
 	AvgClosePrice float64   `sql:"type:DECIMAL(12,2)" json:"avg_close_price"`
 	OrderIds      string    `json:"_"`

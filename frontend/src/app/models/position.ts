@@ -18,6 +18,8 @@ export class Position {
     public Qty: number,
     public OrgQty: number,
     public CostBasis: number,
+    public Proceeds: number, 
+    public Profit: number,        
     public Symbol: Symbol    
   ){}
 }

@@ -177,11 +177,11 @@
     							</td>
   
     							<td>
-    								<strong>$28.00</strong>
+    								<strong>{{ row2.Proceeds | currency }}</strong>
     							</td>
   
     							<td>
-    								<strong class="title-red">$25.00</strong>
+    								<strong [ngClass]="{'title-red': (row2.Profit < 0), 'title-green': (row2.Profit > 0)}">{{ row2.Profit | currency }}</strong>
     							</td>
     						</tr>
 

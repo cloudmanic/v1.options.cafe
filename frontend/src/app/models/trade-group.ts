@@ -80,6 +80,8 @@ export class TradeGroup {
           data[i].positions[k].qty,
           data[i].positions[k].org_qty,
           data[i].positions[k].cost_basis,
+          data[i].positions[k].proceeds,
+          data[i].positions[k].profit,
           new Symbol(data[i].positions[k].symbol.id, data[i].positions[k].symbol.name, data[i].positions[k].symbol.short_name)                           
         ));
       }

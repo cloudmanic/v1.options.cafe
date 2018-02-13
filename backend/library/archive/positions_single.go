@@ -101,17 +101,33 @@ func doSingleOptionOrder(db models.Datastore, userId uint, brokerId uint) error 
 //
 func doOpenSingleOptionOrder(order models.Order, db models.Datastore, userId uint) (models.Position, error) {
 
+	var qty int = 0
+	var cost_basis float64 = 0.00
+
 	// First we find out if we already have a position on for this.
 	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, order.OptionSymbolId, "Open", order.AccountId)
+
+	// Is this a long trade closing?
+	if order.Side == "buy_to_open" {
+		qty = int(order.ExecQuantity)
+		cost_basis = (float64(order.ExecQuantity) * order.AvgFillPrice * 100)
+	}
+
+	// Is this a short trade closing?
+	if order.Side == "sell_to_open" {
+		qty = (int(order.ExecQuantity) * -1)
+		cost_basis = ((float64(order.ExecQuantity) * order.AvgFillPrice * 100) * -1)
+	}
 
 	// We found so we are just adding to a current position.
 	if position.Id > 0 {
 
 		// Update pos
+		position.CostBasis = position.CostBasis + cost_basis
 		position.OrderIds = position.OrderIds + "," + strconv.Itoa(int(order.Id))
 		position.UpdatedAt = time.Now()
-		position.Qty = order.Qty + position.Qty
-		position.OrgQty = order.Qty + position.OrgQty
+		position.Qty = qty + position.Qty
+		position.OrgQty = qty + position.OrgQty
 		position.AvgOpenPrice = ((order.AvgFillPrice + position.AvgOpenPrice) / 2)
 		position.Note = position.Note + "Updated - " + order.TransactionDate.Format(time.RFC1123) + " :: "
 		db.UpdatePosition(&position)
@@ -126,9 +142,9 @@ func doOpenSingleOptionOrder(order models.Order, db models.Datastore, userId uin
 			UpdatedAt:     time.Now(),
 			AccountId:     order.AccountId,
 			SymbolId:      order.OptionSymbolId,
-			Qty:           order.Qty,
-			OrgQty:        order.Qty,
-			CostBasis:     (float64(order.Qty) * order.AvgFillPrice * 100),
+			Qty:           qty,
+			OrgQty:        qty,
+			CostBasis:     cost_basis,
 			AvgOpenPrice:  order.AvgFillPrice,
 			AvgClosePrice: 0.00,
 			Note:          "",
@@ -159,8 +175,22 @@ func doCloseSingleOptionOrder(order models.Order, db models.Datastore, userId ui
 		// Update pos
 		position.OrderIds = position.OrderIds + "," + strconv.Itoa(int(order.Id))
 		position.UpdatedAt = time.Now()
-		position.Qty = order.Qty + position.Qty
 
+		// Is this a long trade closing?
+		if order.Side == "buy_to_close" {
+			position.Qty = position.Qty + int(order.ExecQuantity)
+			position.Proceeds = position.Proceeds - (order.ExecQuantity * order.AvgFillPrice * 100)
+			position.Profit = position.Profit + (position.Proceeds - position.CostBasis)
+		}
+
+		// Is this a short trade closing?
+		if order.Side == "sell_to_close" {
+			position.Qty = position.Qty - int(order.ExecQuantity)
+			position.Proceeds = position.Proceeds + (order.ExecQuantity * order.AvgFillPrice * 100)
+			position.Profit = position.Profit + (position.Proceeds - position.CostBasis)
+		}
+
+		// Average Close Price
 		if position.AvgClosePrice != 0 {
 			position.AvgClosePrice = ((order.AvgFillPrice + position.AvgClosePrice) / 2)
 		} else {
