@@ -7,10 +7,11 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { SortablejsOptions } from 'angular-sortablejs';
-import { AppService } from '../../../providers/websocket/app.service';
 import { QuoteService } from '../../../providers/websocket/quote.service';
 import { Symbol } from '../../../models/symbol';
 import { Watchlist } from '../../../models/watchlist';
+import { WatchlistService } from '../../../providers/http/watchlist.service';
+import { StateService } from '../../../providers/state/state.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -26,7 +27,9 @@ export class WatchlistComponent implements OnInit {
   showRenameWatchlist = false;
   showDeleteWatchlist = false;
 
-  watchlist: Watchlist;
+  watchlist: Watchlist = null;
+  watchlists: Watchlist[];
+  activeWatchlistId: number = 0;  
   watchlistEditState = false;
   watchlistSettingsActive = false;
   sortOptions: SortablejsOptions = { animation: 150, handle: ".drag-handle" };
@@ -34,15 +37,24 @@ export class WatchlistComponent implements OnInit {
   //
   // Construct...
   //
-  constructor(private http: HttpClient, private _eref: ElementRef, private appService: AppService, private quoteService: QuoteService) { }
+  constructor(private http: HttpClient, private _eref: ElementRef, private quoteService: QuoteService, private watchlistService: WatchlistService, private stateService: StateService) { }
 
   //
   // On Init...
   //
   ngOnInit() {
       
+    // Set the active watchlist id
+    this.activeWatchlistId = this.stateService.GetActiveWatchlistId();
+
+    // Load up cached quotes
+    this.quotes = this.stateService.GetQuotes();
+
     // Load watchlist from cache
-    this.watchlist = this.appService.watchlist;
+    this.watchlist = this.stateService.GetActiveWatchlist();
+
+    // Load up all watchlists
+    this.getAllWatchlists();
 
     // Watch for changes on the watchlist order.
     this.sortOptions.onUpdate = (event: any) => {
@@ -57,18 +69,47 @@ export class WatchlistComponent implements OnInit {
       // This is the new list. (watchlist_symbols)
       console.log(ids);
     };
-    
-    // Subscribe to data updates from the backend - Watchlist
-    this.appService.watchlistPush.subscribe(data => {
-      this.watchlist = data;
-
-      console.log(data)
-    });    
-    
+        
     // Subscribe to data updates from the quotes - Market Quotes
     this.quoteService.marketQuotePushData.subscribe(data => {
       this.quotes[data.symbol] = data;
+      this.stateService.SetQuote(data)
     }); 
+  }
+
+  //
+  // Get all watchlists from server
+  //
+  getAllWatchlists() 
+  {
+    // Get all watch lists
+    this.watchlistService.get().subscribe((data) => {
+      this.watchlists = data;
+
+      if(! this.activeWatchlistId)
+      {
+        this.activeWatchlistId = data[0].Id;
+      }
+
+      this.setActiveWatchlist();
+    });
+  }
+
+  //
+  // Get active watchlist
+  //
+  setActiveWatchlist() 
+  {
+    // Loop through and find the watchlist by id.
+    for(let i = 0; i < this.watchlists.length; i++)
+    {
+      if(this.watchlists[i].Id == this.activeWatchlistId)
+      {
+        this.watchlist = this.watchlists[i];
+        this.stateService.SetActiveWatchlist(this.watchlist);
+        break; 
+      }
+    }
   }
 
   //

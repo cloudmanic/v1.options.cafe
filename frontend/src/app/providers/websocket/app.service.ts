@@ -13,9 +13,7 @@ import { environment } from '../../../environments/environment';
 import { Order } from '../../models/order';
 import { Balance } from '../../models/balance';
 import { OrderLeg } from '../../models/order-leg';
-import { Watchlist } from '../../models/watchlist';
 import { MarketStatus } from '../../models/market-status';
-//import { BrokerAccount } from '../../models/broker-account';
 
 declare var ClientJS: any;
 
@@ -27,7 +25,6 @@ export class AppService
    
   // Cache some of the data.
   public orders: Order[];
-  public watchlist = new Watchlist("", "", []);
    
   // Websocket Stuff
   ws = null;
@@ -39,8 +36,6 @@ export class AppService
   ordersPush = new EventEmitter<Order[]>();
   balancesPush = new EventEmitter<Balance[]>();
   marketStatusPush = new EventEmitter<MarketStatus>();
-  watchlistPush = new EventEmitter<Watchlist>();
-  //activeAccountPush = new EventEmitter<BrokerAccount>();
   
   //
   // Construct!!
@@ -55,27 +50,6 @@ export class AppService
     this.setupWebSocket();
   }
   
-  // ---------------------- Geters / Setters ----------------------- //
-  
-  // //
-  // // Set active account.
-  // //
-  // public setActiveAccount(account: BrokerAccount) {
-    
-  //   this.activeAccount = account;
-  //   localStorage.setItem('active_account', account.AccountNumber);
-  //   this.activeAccountPush.emit(account);
-  //   this.RequestAllData();
-    
-  // }
-
-  // //
-  // // Get active account.
-  // //
-  // public getActiveAccount() : BrokerAccount {
-  //   return this.activeAccount;
-  // }
-
   // ---------------------- Incoming Data  ------------------------- //
 
   //
@@ -104,13 +78,7 @@ export class AppService
       case 'orders':
         this.orders = Order.buildForEmit(msg_data);       
         this.ordersPush.emit(this.orders);              
-      break;
-
-      // Watchlist refresh
-      case 'watchlists':
-        this.watchlist = Watchlist.buildForEmit(msg_data);
-        this.watchlistPush.emit(this.watchlist); 
-      break;    
+      break;  
     }
     
   }
@@ -131,42 +99,6 @@ export class AppService
     this.ws.send(JSON.stringify({ uri: 'watchlists', body: {} }));   
   }
  
-  // ------------------------ Helper Functions ------------------------------ //
-
-  // //
-  // // Figure out what our active account is based on data we passed in.
-  // //
-  // private calcActiveAccount(user: UserProfile) {
-
-  //   // If we already have an active account do nothing.
-  //   if(this.getActiveAccount())
-  //   {
-  //     return;
-  //   }
-
-  //   if(! user.Accounts.length)
-  //   {     
-  //     return;
-  //   }
-
-  //   if((! localStorage.getItem('active_account')) && user.Accounts.length)
-  //   {      
-  //     this.setActiveAccount(user.Accounts[0]);
-  //     return;
-  //   }
-    
-  //   var acn = localStorage.getItem('active_account');
-      
-  //   for(var i = 0; i < user.Accounts.length; i++)
-  //   {
-  //     if(user.Accounts[i].AccountNumber == acn)
-  //     {
-  //       this.setActiveAccount(user.Accounts[i]);            
-  //     }
-  //   }
-         
-  // }
-
   // ---------------------- Websocket Stuff ----------------------- //
 
 
@@ -209,7 +141,7 @@ export class AppService
 
         // Request all data.
         this.RequestAllData()
-        
+
       }, 1000);
       
       // Tell the UI we are connected

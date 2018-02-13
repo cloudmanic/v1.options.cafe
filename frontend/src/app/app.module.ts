@@ -16,13 +16,12 @@ import { DialogComponent } from './shared/dialog/dialog.component';
 import { AuthGuard } from './auth/guards/auth.service';
 import { AppService } from './providers/websocket/app.service';
 import { QuoteService } from './providers/websocket/quote.service';
-
-// Providers - state
-import { BrokerStateService } from './providers/state/broker.state.service';
+import { StateService } from './providers/state/state.service';
 
 // Providers - http
 import { BrokerService } from './providers/http/broker.service';
 import { SymbolService } from './providers/http/symbol.service';
+import { WatchlistService } from './providers/http/watchlist.service';
 import { TradeGroupService } from './providers/http/trade-group.service';
 
 // Layout
@@ -109,7 +108,8 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     SymbolService,
     BrokerService
     TradeGroupService,
-    BrokerStateService,
+    StateService,
+    WatchlistService,
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }    
   ],
   

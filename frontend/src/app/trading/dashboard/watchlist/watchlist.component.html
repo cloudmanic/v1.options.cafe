@@ -18,31 +18,19 @@
             </p>
           </li>
 
-          <li class="list--checked">
-            <a href="#">
+          <li [ngClass]="{'list--checked': (row.Id == watchlist?.Id)}" *ngFor="let row of watchlists">
+            <a href="">
               <i class="ico-check"></i>
-              Hot List
+              {{ row.Name }}
             </a>
-          </li><!-- /.list-checked -->
+          </li>
           
-          <li>
+<!--           <li>
             <a href="#">
               <i class="ico-check"></i>
               Watchlist Watchlist 24ch
             </a>
-          </li>
-          <li>
-            <a href="#">
-              <i class="ico-check"></i>
-              New Watchlist 3
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <i class="ico-check"></i>
-              Tech Stocks
-            </a>
-          </li>
+          </li> -->
         </ul>
 
 
@@ -80,7 +68,7 @@
   
   <ul class="stocks">
     
-  	<li class="stock" *ngFor="let row of watchlist.Symbols">
+  	<li class="stock" *ngFor="let row of watchlist?.Symbols">
   		<h6 class="stock__title">{{ row.Symbol.ShortName | uppercase }}</h6>
   
   		<ul class="list-prices">
@@ -123,8 +111,8 @@
     </div>
   </div>
 
-  <ul class="list-results" [sortablejs]="watchlist.Symbols" [sortablejsOptions]="sortOptions">
-    <li *ngFor="let row of watchlist.Symbols" class="item" data-id="{{ row.Id }}">
+  <ul class="list-results" [sortablejs]="watchlist?.Symbols" [sortablejsOptions]="sortOptions">
+    <li *ngFor="let row of watchlist?.Symbols" class="item" data-id="{{ row.Id }}">
       <h6>{{ row.Symbol.ShortName | uppercase }}</h6>
       
       <p>

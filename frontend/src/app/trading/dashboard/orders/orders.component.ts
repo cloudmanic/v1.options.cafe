@@ -8,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 import { AppService } from '../../../providers/websocket/app.service';
 import { QuoteService } from '../../../providers/websocket/quote.service';
 import { Order } from '../../../models/order';
-import { BrokerStateService } from '../../../providers/state/broker.state.service';
+import { StateService } from '../../../providers/state/state.service';
 
 @Component({
   selector: 'app-trading-orders',
@@ -23,7 +23,7 @@ export class OrdersComponent implements OnInit {
   //
   // Constructor....
   //
-  constructor(private appService: AppService, private quoteService: QuoteService, private brokerState: BrokerStateService) { }
+  constructor(private appService: AppService, private quoteService: QuoteService, private siteState: StateService) { }
 
   //
   // OnInit....
@@ -51,7 +51,7 @@ export class OrdersComponent implements OnInit {
     var rt = []
     
     // This data has not come in yet.
-    if(! this.brokerState.GetActiveBrokerAccount())
+    if(! this.siteState.GetActiveBrokerAccount())
     {
       return;
     }      
@@ -59,7 +59,7 @@ export class OrdersComponent implements OnInit {
     // Filter - We only one the accounts that are active.
     for(var i = 0; i < orders.length; i++)
     {                
-      if(orders[i].AccountId == this.brokerState.GetActiveBrokerAccount().AccountNumber)
+      if(orders[i].AccountId == this.siteState.GetActiveBrokerAccount().AccountNumber)
       {
         rt.push(orders[i]);
       }

@@ -11,7 +11,7 @@ import { MarketStatus } from '../../models/market-status';
 import { Broker } from '../../models/broker';
 import { BrokerAccount } from '../../models/broker-account';
 import { BrokerService } from '../../providers/http/broker.service';
-import { BrokerStateService } from '../../providers/state/broker.state.service';
+import { StateService } from '../../providers/state/state.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -28,7 +28,7 @@ export class SidebarComponent implements OnInit {
   //
   // Construct.
   //
-  constructor(private app: AppService, private brokerService: BrokerService, private brokerState: BrokerStateService) { }
+  constructor(private app: AppService, private brokerService: BrokerService, private siteService: StateService) { }
 
   //
   // Oninit...
@@ -49,14 +49,14 @@ export class SidebarComponent implements OnInit {
     this.app.balancesPush.subscribe(data => {
 
       // We have not gotten our brokers yet.
-      if(! this.brokerState.GetActiveBrokerAccount())
+      if(! this.siteService.GetActiveBrokerAccount())
       {
         return false;
       }
 
       for(var i = 0; i < data.length; i++)
       {
-        if(data[i].AccountNumber == this.brokerState.GetActiveBrokerAccount().AccountNumber)
+        if(data[i].AccountNumber == this.siteService.GetActiveBrokerAccount().AccountNumber)
         {
           this.balance = data[i];
         }
@@ -75,7 +75,7 @@ export class SidebarComponent implements OnInit {
     this.brokerService.get().subscribe((data) => {
       this.brokerList = data;
 
-      let activeAccountId = this.brokerState.GetStoredActiveAccountId();
+      let activeAccountId = this.siteService.GetStoredActiveAccountId();
 
       // Default to first one.
       if(! activeAccountId)
@@ -87,8 +87,8 @@ export class SidebarComponent implements OnInit {
         }
 
         // Do we have a stored broker
-        this.brokerState.SetActiveBrokerAccount(this.brokerList[0].BrokerAccounts[0]);
-        activeAccountId = this.brokerState.GetStoredActiveAccountId();
+        this.siteState.SetActiveBrokerAccount(this.brokerList[0].BrokerAccounts[0]);
+        activeAccountId = this.siteService.GetStoredActiveAccountId();
       }
 
       // Loop through all the brokers and set our active broker. And make a list.
@@ -104,7 +104,7 @@ export class SidebarComponent implements OnInit {
             this.selectedAccount = this.brokerList[k].BrokerAccounts[i];
 
             // Force refresh of balances
-            this.brokerState.SetActiveBrokerAccount(this.selectedAccount);           
+            this.siteService.SetActiveBrokerAccount(this.selectedAccount);           
           }
         }  
       }
@@ -115,7 +115,7 @@ export class SidebarComponent implements OnInit {
   // On account change.
   //
   onAccountChange() {
-    this.brokerState.SetActiveBrokerAccount(this.selectedAccount);
+    this.siteService.SetActiveBrokerAccount(this.selectedAccount);
   }  
 }
 
