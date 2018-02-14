@@ -75,7 +75,7 @@ export class SidebarComponent implements OnInit {
     this.brokerService.get().subscribe((data) => {
       this.brokerList = data;
 
-      let activeAccountId = this.stateService.GetStoredActiveAccountId();
+      let activeAccountId: string = this.stateService.GetStoredActiveAccountId();
 
       // Default to first one.
       if(! activeAccountId)
@@ -87,7 +87,7 @@ export class SidebarComponent implements OnInit {
         }
 
         // Do we have a stored broker
-        this.siteState.SetActiveBrokerAccount(this.brokerList[0].BrokerAccounts[0]);
+        this.stateService.SetActiveBrokerAccount(this.brokerList[0].BrokerAccounts[0]);
         activeAccountId = this.stateService.GetStoredActiveAccountId();
       }
 
@@ -99,7 +99,7 @@ export class SidebarComponent implements OnInit {
           this.brokerAccountList.push(this.brokerList[k].BrokerAccounts[i]);
 
           // Set the selected account.
-          if(this.brokerList[k].BrokerAccounts[i].Id == activeAccountId)
+          if(String(this.brokerList[k].BrokerAccounts[i].Id) == activeAccountId)
           {
             this.selectedAccount = this.brokerList[k].BrokerAccounts[i];
 

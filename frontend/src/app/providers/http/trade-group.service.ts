@@ -23,8 +23,34 @@ export class TradeGroupService
   //
   // Get trade groups
   //
-  get(broker_account_id: number, page: number, order: string, sort: string, search: string) : Observable<TradeGroup[]> {
-    return this.http.get<TradeGroup[]>(environment.app_server + '/api/v1/tradegroups?broker_account_id=' + broker_account_id + 'page=' + page + '&order=' + order + '&sort=' + sort + '&search=' + search).map(
+  get(broker_account_id: number, page: number, order: string, sort: string, search: string, tradeSelect: string) : Observable<TradeGroup[]> {
+
+    let ts = "";
+
+    console.log(tradeSelect);
+
+    // Figure out the trade select url parms
+    switch(tradeSelect)
+    {
+      case "All":
+        ts = "";
+      break; 
+
+      case "Open":
+        ts = "&status=Open";
+      break; 
+        
+      case "Closed":
+        ts = "&status=Closed";
+      break; 
+
+      default:
+        ts = "&type=" + tradeSelect;
+      break; 
+    }
+
+    // Make API call.
+    return this.http.get<TradeGroup[]>(environment.app_server + '/api/v1/tradegroups?broker_account_id=' + broker_account_id + 'page=' + page + '&order=' + order + '&sort=' + sort + '&search=' + search + ts).map(
       (data) => { return TradeGroup.buildForEmit(data); 
     });
   }

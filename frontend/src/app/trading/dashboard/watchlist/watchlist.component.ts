@@ -29,7 +29,7 @@ export class WatchlistComponent implements OnInit {
 
   watchlist: Watchlist = null;
   watchlists: Watchlist[];
-  activeWatchlistId: number = 0;  
+  activeWatchlistId: string = "";  
   watchlistEditState = false;
   watchlistSettingsActive = false;
   sortOptions: SortablejsOptions = { animation: 150, handle: ".drag-handle" };

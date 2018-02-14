@@ -21,7 +21,8 @@ export class StateService
   private activeBrokerAccount: BrokerAccount;
   
   // Trade Group stuff
-  private tradeGroupSearchTerm : string;
+  private tradeGroupSearchTerm: string = "";
+  private tradeGroupTradeSelect: string = "All";
   private activeTradeGroupList: TradeGroup[];
 
   //
@@ -60,6 +61,20 @@ export class StateService
   }
 
   //
+  // Set a trade group trade select
+  //
+  SetTradeGroupTradeSelect(option: string) {
+    this.tradeGroupTradeSelect = option;
+  }
+
+  //
+  // Get trade group trade select
+  //
+  GetTradeGroupTradeSelect() {
+    return this.tradeGroupTradeSelect;
+  }
+
+  //
   // Get active tradegroup
   //
   GetActiveTradeGroups() : TradeGroup[] {
@@ -92,14 +107,14 @@ export class StateService
   //
   SetActiveWatchlist(watchlist: Watchlist) {
     this.activeWatchlist = watchlist;
-    localStorage.setItem('active_watchlist', watchlist.Id);
+    localStorage.setItem('active_watchlist', String(watchlist.Id));
   }
 
   //
   // Get stored active account id
   //
-  GetStoredActiveAccountId() : number {
-    return localStorage.getItem('active_account')
+  GetStoredActiveAccountId() : string {
+    return localStorage.getItem('active_account');
   }
 
   //
@@ -107,12 +122,13 @@ export class StateService
   //
   SetActiveBrokerAccount(brokerAccount: BrokerAccount) {
     this.activeBrokerAccount = brokerAccount
-    localStorage.setItem('active_account', brokerAccount.Id);
+    localStorage.setItem('active_account', String(brokerAccount.Id));
     this.appService.RequestAllData();
 
     // Clear cached data.
-    this.activeTradeGroupList = []
-    this.tradeGroupSearchTerm = ""  
+    this.activeTradeGroupList = [];
+    this.tradeGroupSearchTerm = "";
+    this.tradeGroupTradeSelect = "All";  
   }
 
   //

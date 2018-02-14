@@ -17,6 +17,7 @@ export class TradeGroup {
   public Type: string;
   public OpenDate: string;
   public ClosedDate: string;
+  public Profit: number;
   public Gain: number;
   public Risked: number;
   public Commission: number;

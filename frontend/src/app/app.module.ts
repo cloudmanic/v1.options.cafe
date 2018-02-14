@@ -106,7 +106,7 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     QuoteService, 
     AuthGuard, 
     SymbolService,
-    BrokerService
+    BrokerService,
     TradeGroupService,
     StateService,
     WatchlistService,

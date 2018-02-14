@@ -19,12 +19,13 @@ export class TradesComponent implements OnInit {
 
   tradesList: TradeGroup[];
   searchTerm: string = ""
+  tradeSelect: string = "All"
   activeAccount: BrokerAccount
   
   //
   // Construct
   //
-  constructor(private appService: AppService, private tradeGroupService: TradeGroupService, private siteService: StateService) {}
+  constructor(private appService: AppService, private tradeGroupService: TradeGroupService, private stateService: StateService) {}
 
   //
   // On Init
@@ -32,10 +33,13 @@ export class TradesComponent implements OnInit {
   ngOnInit() 
   {
     // Set the search term from cache
-    this.searchTerm = this.siteService.GetTradeGroupSearchTerm();
+    this.searchTerm = this.stateService.GetTradeGroupSearchTerm();
+
+    // Set the cached trade select
+    this.tradeSelect = this.stateService.GetTradeGroupTradeSelect();
 
     // Load trade groups from cache.
-    this.tradesList = this.siteService.GetActiveTradeGroups(); 
+    this.tradesList = this.stateService.GetActiveTradeGroups(); 
 
     // Load tradegroups from server
     this.getTradeGroups();
@@ -47,10 +51,18 @@ export class TradesComponent implements OnInit {
   getTradeGroups() 
   {
     // Get tradegroup data
-    this.tradeGroupService.get(this.siteService.GetStoredActiveAccountId(), 1, 'open_date', 'desc', this.searchTerm).subscribe((data) => {
+    this.tradeGroupService.get(Number(this.stateService.GetStoredActiveAccountId()), 1, 'open_date', 'desc', this.searchTerm, this.tradeSelect).subscribe((data) => {
       this.tradesList = data;
-      this.siteService.SetActiveTradeGroups(data);
+      this.stateService.SetActiveTradeGroups(data);
     });    
+  }
+
+  //
+  // On Trade select...
+  //
+  onTradeSelect(event) {
+    this.getTradeGroups();
+    this.stateService.SetTradeGroupTradeSelect(this.tradeSelect);    
   }
 
   //
@@ -58,7 +70,7 @@ export class TradesComponent implements OnInit {
   //
   onSearchKeyUp(event) {
     this.getTradeGroups();
-    this.siteService.SetTradeGroupSearchTerm(this.searchTerm);
+    this.stateService.SetTradeGroupSearchTerm(this.searchTerm);
   }  
 }
 

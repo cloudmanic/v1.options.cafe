@@ -17,12 +17,18 @@
   
     				<div class="form__controls">
     					<div class="select field--medium">
-    						<select name="field-select-trades" id="field-select-trades">
-    							<option value="option-all">All Trades</option>
-  
-    							<option value="option-1">Option 1</option>
-  
-    							<option value="option-2">Option 2</option>
+    						<select name="field-select-trades" id="field-select-trades" [(ngModel)]="tradeSelect" (change)="onTradeSelect($event)" >
+    							<option value="All">All Trades</option>
+                                <option value="Closed">Closed Trades</option>
+                                <option value="Open">Open Trades</option>
+                                <option value="Option">Option Trades</option>
+                                <option value="Stock">Stock Trades</option>
+                                <option value="Put Credit Spread">Put Credit Spread Trades</option>
+                                <option value="Call Credit Spread">Call Credit Spread Trades</option>
+                                <option value="Put Debit Spread">Put Debit Spread Trades</option>
+                                <option value="Call Debit Spread">Call Debit Spread Trades</option>
+                                <option value="Iron Condor">Iron Condor Trades</option>
+    							<option value="Other">Other Trades</option>
     						</select>
     					</div><!-- /.select field-medium -->
     				</div><!-- /.form__controls -->

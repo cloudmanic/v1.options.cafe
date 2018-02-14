@@ -32,7 +32,11 @@ func (t *Controller) GetTradeGroups(c *gin.Context) {
 		SearchTerm:       c.Query("search"),
 		SearchCols:       []string{"id", "name", "open_date", "status", "type", "note"},
 		AllowedOrderCols: TradeGroupAllowedOrderCols,
-		Wheres:           []models.KeyValue{{Key: "broker_account_id", Value: c.Query("broker_account_id")}},
+		Wheres: []models.KeyValue{
+			{Key: "type", Value: c.Query("type")},
+			{Key: "status", Value: c.Query("status")},
+			{Key: "broker_account_id", Value: c.Query("broker_account_id")},
+		},
 	})
 
 	// Throw error if we have one
