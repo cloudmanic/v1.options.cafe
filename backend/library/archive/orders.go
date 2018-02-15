@@ -51,12 +51,19 @@ func StoreOrders(db models.Datastore, orders []types.Order, userId uint, brokerI
 			continue
 		}
 
-		// //
-		// // -------- DEBUGGING>>>>>>>>>>>>>>>
-		// //
-		// if transactionDate.Year() != 2018 {
-		// 	continue
-		// }
+		//
+		// Because Tradier data is bad we only import from 2017 forward.
+		//
+		if transactionDate.Year() < 2017 {
+			continue
+		}
+
+		//
+		// Because Tradier data is bad we only import from 2017 forward.
+		//
+		if createDate.Year() < 2017 {
+			continue
+		}
 
 		// Get the symbol id.
 		// TODO: notice the symbol name is blank. We should always have this symbol in the DB. But maybe we should prepare for it not being there just in case
