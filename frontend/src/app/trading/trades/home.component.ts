@@ -10,6 +10,7 @@ import { BrokerAccount } from '../../models/broker-account';
 import { AppService } from '../../providers/websocket/app.service';
 import { TradeGroupService } from '../../providers/http/trade-group.service';
 import { StateService } from '../../providers/state/state.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-trades',
@@ -17,6 +18,8 @@ import { StateService } from '../../providers/state/state.service';
 })
 export class TradesComponent implements OnInit {
 
+  page: number = 1;
+  count: number = 0;
   tradesList: TradeGroup[];
   searchTerm: string = ""
   tradeSelect: string = "All"
@@ -32,6 +35,9 @@ export class TradesComponent implements OnInit {
   //
   ngOnInit() 
   {
+    // Set the page
+    this.page = this.stateService.GetTradeGroupPage();
+
     // Set the search term from cache
     this.searchTerm = this.stateService.GetTradeGroupSearchTerm();
 
@@ -51,9 +57,11 @@ export class TradesComponent implements OnInit {
   getTradeGroups() 
   {
     // Get tradegroup data
-    this.tradeGroupService.get(Number(this.stateService.GetStoredActiveAccountId()), 1, 'open_date', 'desc', this.searchTerm, this.tradeSelect).subscribe((data) => {
+    this.tradeGroupService.get(Number(this.stateService.GetStoredActiveAccountId()), this.page, 'open_date', 'desc', this.searchTerm, this.tradeSelect).subscribe((data) => {
       this.tradesList = data;
+      this.count = data.length;      
       this.stateService.SetActiveTradeGroups(data);
+      this.stateService.SetTradeGroupPage(this.page);
     });    
   }
 
@@ -61,6 +69,7 @@ export class TradesComponent implements OnInit {
   // On Trade select...
   //
   onTradeSelect(event) {
+    this.page = 1;
     this.getTradeGroups();
     this.stateService.SetTradeGroupTradeSelect(this.tradeSelect);    
   }
@@ -69,9 +78,19 @@ export class TradesComponent implements OnInit {
   // On search...
   //
   onSearchKeyUp(event) {
+    this.page = 1;    
     this.getTradeGroups();
     this.stateService.SetTradeGroupSearchTerm(this.searchTerm);
-  }  
+  }
+
+  //
+  // On paging click.
+  //
+  onPagingClick(page: number) 
+  {
+    this.page = page;
+    this.getTradeGroups();
+  }   
 }
 
 /* End File */

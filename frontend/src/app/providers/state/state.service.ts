@@ -21,6 +21,7 @@ export class StateService
   private activeBrokerAccount: BrokerAccount;
   
   // Trade Group stuff
+  private tradeGroupPage: number = 1;
   private tradeGroupSearchTerm: string = "";
   private tradeGroupTradeSelect: string = "All";
   private activeTradeGroupList: TradeGroup[];
@@ -51,6 +52,20 @@ export class StateService
   //
   SetTradeGroupSearchTerm(term: string) {
     this.tradeGroupSearchTerm = term;
+  }
+
+  //
+  // Get trade group page
+  //
+  GetTradeGroupPage() {
+    return this.tradeGroupPage;
+  }
+
+  //
+  // Set a trade group page
+  //
+  SetTradeGroupPage(page: number) {
+    this.tradeGroupPage = page;
   }
 
   //

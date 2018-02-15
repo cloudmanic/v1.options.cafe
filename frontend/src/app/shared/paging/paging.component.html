@@ -1,0 +1,5 @@
+<div class="content__actions" *ngIf="((page > 1) || (count >= pageSize))">
+  <a class="btn btn--small" (click)="onPrev()" [ngClass]="{ 'btn--opacity': (page <= 1) }">Prev</a>
+  
+  <a class="btn btn--small" (click)="onNext()" [ngClass]="{ 'btn--opacity': (count < pageSize) }">Next</a>
+</div>

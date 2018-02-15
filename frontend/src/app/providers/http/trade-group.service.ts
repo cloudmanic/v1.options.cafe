@@ -27,8 +27,6 @@ export class TradeGroupService
 
     let ts = "";
 
-    console.log(tradeSelect);
-
     // Figure out the trade select url parms
     switch(tradeSelect)
     {
@@ -50,7 +48,7 @@ export class TradeGroupService
     }
 
     // Make API call.
-    return this.http.get<TradeGroup[]>(environment.app_server + '/api/v1/tradegroups?broker_account_id=' + broker_account_id + 'page=' + page + '&order=' + order + '&sort=' + sort + '&search=' + search + ts).map(
+    return this.http.get<TradeGroup[]>(environment.app_server + '/api/v1/tradegroups?broker_account_id=' + broker_account_id + '&page=' + page + '&order=' + order + '&sort=' + sort + '&search=' + search + ts).map(
       (data) => { return TradeGroup.buildForEmit(data); 
     });
   }

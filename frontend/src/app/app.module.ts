@@ -10,6 +10,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './providers/http/token.interceptor';
 
 // Shared
+import { PagingComponent } from './shared/paging/paging.component';
 import { DialogComponent } from './shared/dialog/dialog.component';
 
 // Providers
@@ -65,6 +66,7 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     LayoutCoreComponent,    
     
     // Shared
+    PagingComponent,
     DialogComponent,    
 
     // Auth

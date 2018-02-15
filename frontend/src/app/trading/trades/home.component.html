@@ -205,12 +205,8 @@
     	</ul><!-- /.boxes boxes-rows -->
   
 
+        <app-paging [count]="count" [page]="page" (pageClick)="onPagingClick($event)"></app-paging>
 
 
-    	<div class="content__actions">
-    		<a href="#" class="btn btn--small btn--opacity">Prev</a>
-  
-    		<a href="#" class="btn btn--small">Next</a>
-    	</div><!-- /contentn__actions -->
     </div><!-- /.shell shell-fluid -->
   </div><!-- /.content__inner -->
