@@ -7,6 +7,8 @@
 package controllers
 
 import (
+	"strconv"
+
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
 )
@@ -20,13 +22,16 @@ var (
 //
 func (t *Controller) GetTradeGroups(c *gin.Context) {
 
+	// Convert page to int.
+	page, _ := strconv.Atoi(c.Query("page"))
+
 	// Run the query
-	results, err := t.DB.GetTradeGroups(models.QueryParam{
+	results, meta, err := t.DB.GetTradeGroups(models.QueryParam{
 		UserId:           c.MustGet("userId").(uint),
 		Order:            c.Query("order"),
 		Sort:             c.Query("sort"),
 		Limit:            defaultMysqlLimit,
-		Page:             c.Query("page"),
+		Page:             page,
 		Debug:            false,
 		PreLoads:         []string{"Positions"},
 		SearchTerm:       c.Query("search"),
@@ -43,6 +48,9 @@ func (t *Controller) GetTradeGroups(c *gin.Context) {
 	if t.RespondError(c, err, httpGenericErrMsg) {
 		return
 	}
+
+	// Set some headers for paging.
+	t.AddPagingInfoToHeaders(c, meta)
 
 	// Return happy JSON
 	c.JSON(200, results)

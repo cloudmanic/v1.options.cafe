@@ -9,6 +9,7 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"sync"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
@@ -50,6 +51,14 @@ type ReceivedStruct struct {
 	Body       string
 	UserId     uint
 	Connection *WebsocketConnection
+}
+
+//
+// Add paging info to the response.
+//
+func (t *Controller) AddPagingInfoToHeaders(c *gin.Context, meta models.QueryMetaData) {
+	c.Writer.Header().Set("X-Offset", strconv.Itoa(meta.Offset))
+	c.Writer.Header().Set("X-No-Limit-Count", strconv.Itoa(meta.NoLimitCount))
 }
 
 //

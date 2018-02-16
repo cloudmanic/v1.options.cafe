@@ -200,7 +200,7 @@ func TestQuery01(t *testing.T) {
 		Order: "last_name",
 		Sort:  "desc",
 		Limit: 1,
-		Page:  "2",
+		Page:  2,
 	})
 
 	// Test results
@@ -211,6 +211,118 @@ func TestQuery01(t *testing.T) {
 	st.Expect(t, results[0].FirstName, "Rob")
 	st.Expect(t, results[0].LastName, "Tester")
 	st.Expect(t, results[0].Email, "spicer+robtester@options.cafe")
+}
+
+//
+// Test 02 - Paging
+//
+func TestQuery02(t *testing.T) {
+
+	// Load config file.
+	env.ReadEnv("../.env")
+
+	// Start the db connection.
+	db, _ := NewDB()
+	defer db.Close()
+
+	// ---------  Test 1 -------- //
+
+	// Place to store the results.
+	results := []Symbol{}
+
+	// Another test to see if paging works
+	q1 := QueryParam{Limit: 2, Page: 1, Debug: false}
+	noFilterCount, err := db.QueryWithNoFilterCount(&results, q1)
+
+	// Get the meta data related to this query.
+	meta := db.GetQueryMetaData(len(results), noFilterCount, q1)
+
+	// Test results
+	st.Expect(t, err, nil)
+	st.Expect(t, noFilterCount, 9)
+	st.Expect(t, len(results), 2)
+	st.Expect(t, results[0].Id, uint(1))
+	st.Expect(t, results[1].Id, uint(2))
+	st.Expect(t, meta.Page, 1)
+	st.Expect(t, meta.Limit, 2)
+	st.Expect(t, meta.Offset, 0)
+	st.Expect(t, meta.PageCount, 5)
+	st.Expect(t, meta.LimitCount, 2)
+	st.Expect(t, meta.NoLimitCount, 9)
+
+	// ---------  Test 2 -------- //
+
+	// Another test to see if paging works
+	err = db.Query(&results, QueryParam{
+		Limit: 2,
+		Page:  3,
+		Debug: false,
+	})
+
+	// Test results
+	st.Expect(t, err, nil)
+	st.Expect(t, len(results), 2)
+	st.Expect(t, results[0].Id, uint(5))
+	st.Expect(t, results[1].Id, uint(6))
+
+	// ---------  Test 3 -------- //
+
+	// Setup query parm
+	q3 := QueryParam{
+		Limit:      2,
+		Page:       1,
+		Debug:      false,
+		SearchCols: []string{"short_name"},
+		SearchTerm: "SPY",
+	}
+
+	// Another test to see if paging works
+	noFilterCount, err = db.QueryWithNoFilterCount(&results, q3)
+
+	// Get the meta data related to this query.
+	meta = db.GetQueryMetaData(len(results), noFilterCount, q3)
+
+	// Test results
+	st.Expect(t, err, nil)
+	st.Expect(t, len(results), 2)
+	st.Expect(t, noFilterCount, 3)
+	st.Expect(t, results[0].Id, uint(1))
+	st.Expect(t, results[1].Id, uint(4))
+	st.Expect(t, meta.Page, 1)
+	st.Expect(t, meta.Limit, 2)
+	st.Expect(t, meta.Offset, 0)
+	st.Expect(t, meta.PageCount, 2)
+	st.Expect(t, meta.LimitCount, 2)
+	st.Expect(t, meta.NoLimitCount, 3)
+
+	// ---------  Test 4 -------- //
+
+	// Setup query parm
+	q4 := QueryParam{
+		Limit:      2,
+		Page:       2,
+		Debug:      false,
+		SearchCols: []string{"short_name"},
+		SearchTerm: "SPY",
+	}
+
+	// Another test to see if paging works
+	noFilterCount, err = db.QueryWithNoFilterCount(&results, q4)
+
+	// Get the meta data related to this query.
+	meta = db.GetQueryMetaData(len(results), noFilterCount, q4)
+
+	// Test results
+	st.Expect(t, err, nil)
+	st.Expect(t, len(results), 1)
+	st.Expect(t, noFilterCount, 3)
+	st.Expect(t, results[0].Id, uint(6))
+	st.Expect(t, meta.Page, 2)
+	st.Expect(t, meta.Limit, 2)
+	st.Expect(t, meta.Offset, 2)
+	st.Expect(t, meta.PageCount, 2)
+	st.Expect(t, meta.LimitCount, 1)
+	st.Expect(t, meta.NoLimitCount, 3)
 }
 
 //
@@ -232,7 +344,7 @@ func TestCount01(t *testing.T) {
 
 	// Test results
 	st.Expect(t, err, nil)
-	st.Expect(t, count, uint(6))
+	st.Expect(t, count, uint(9))
 
 	// ---------  Test 2 -------- //
 
@@ -241,7 +353,7 @@ func TestCount01(t *testing.T) {
 
 	// Test results
 	st.Expect(t, err2, nil)
-	st.Expect(t, count, uint(3))
+	st.Expect(t, count, uint(6))
 }
 
 /* End File */

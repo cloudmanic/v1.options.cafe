@@ -31,23 +31,26 @@ type TradeGroup struct {
 //
 // List different trade groups.
 //
-func (t *DB) GetTradeGroups(params QueryParam) ([]TradeGroup, error) {
+func (t *DB) GetTradeGroups(params QueryParam) ([]TradeGroup, QueryMetaData, error) {
 
 	var results = []TradeGroup{}
 
 	// Run the query
-	err := t.Query(&results, params)
+	noFilterCount, err := t.QueryWithNoFilterCount(&results, params)
 
 	// Throw error if we have one
 	if err != nil {
-		return results, err
+		return results, QueryMetaData{}, err
 	}
+
+	// Get the meta data related to this query.
+	meta := t.GetQueryMetaData(len(results), noFilterCount, params)
 
 	// Add the symbol data to the positions.
 	t.tradeGroupAddSymbolsToPositions(results)
 
 	// Return happy
-	return results, nil
+	return results, meta, nil
 }
 
 //

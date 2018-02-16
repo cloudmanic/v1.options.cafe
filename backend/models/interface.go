@@ -21,8 +21,10 @@ type DB struct {
 type Datastore interface {
 
 	// Generic database functions
-	Query(model interface{}, params QueryParam) error
 	Count(model interface{}, params QueryParam) (uint, error)
+	Query(model interface{}, params QueryParam) error
+	QueryWithNoFilterCount(model interface{}, params QueryParam) (int, error)
+	GetQueryMetaData(limitCount int, noLimitCount int, params QueryParam) QueryMetaData
 
 	// Broker
 	UpdateBroker(broker Broker) error
@@ -79,7 +81,7 @@ type Datastore interface {
 	GetPositionByUserSymbolStatusAccount(userId uint, symbolId uint, status string, accountId string) (Position, error)
 
 	// TradeGroup
-	GetTradeGroups(params QueryParam) ([]TradeGroup, error)
+	GetTradeGroups(params QueryParam) ([]TradeGroup, QueryMetaData, error)
 	GetTradeGroupById(id uint) (TradeGroup, error)
 	CreateTradeGroup(tg *TradeGroup) error
 	UpdateTradeGroup(tg *TradeGroup) error

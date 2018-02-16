@@ -8,7 +8,7 @@ package models
 
 import (
 	"errors"
-	"strconv"
+	"math"
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -20,7 +20,7 @@ type QueryParam struct {
 	AccountId        uint
 	Limit            uint
 	Offset           uint
-	Page             string // string because it comes in from the url most likely
+	Page             int
 	Order            string
 	Sort             string
 	SearchCols       []string
@@ -36,11 +36,126 @@ type KeyValue struct {
 	Value string
 }
 
+type QueryMetaData struct {
+	Page         int
+	Limit        int
+	Offset       int
+	PageCount    int
+	LimitCount   int
+	NoLimitCount int
+}
+
 //
 // A generic way to query any model we want.
 //
 func (t *DB) Query(model interface{}, params QueryParam) error {
 
+	// Build the query.
+	query, err := t.buildGenericQuery(params)
+
+	if err != nil {
+		return err
+	}
+
+	// Run the query.
+	if err := query.Find(model).Error; err != nil {
+		return err
+	}
+
+	// If we made it this far no errors.
+	return nil
+}
+
+//
+// A generic way to query any model we want with meta data.
+//
+func (t *DB) QueryWithNoFilterCount(model interface{}, params QueryParam) (int, error) {
+
+	var noFilterCount int = 0
+
+	// Build the query.
+	query, err := t.buildGenericQuery(params)
+
+	if err != nil {
+		return noFilterCount, err
+	}
+
+	// Run the query.
+	if err := query.Find(model).Offset(-1).Limit(-1).Count(&noFilterCount).Error; err != nil {
+		return noFilterCount, err
+	}
+
+	// If we made it this far no errors.
+	return noFilterCount, nil
+
+}
+
+//
+// Return all the meta data we need about a query.
+//
+func (t *DB) GetQueryMetaData(limitCount int, noLimitCount int, params QueryParam) QueryMetaData {
+
+	// Start meta data object
+	meta := QueryMetaData{
+		Limit:        int(params.Limit),
+		LimitCount:   limitCount,
+		NoLimitCount: noLimitCount,
+	}
+
+	// Need a limit value.
+	if meta.Limit <= 0 {
+		return meta
+	}
+
+	// Add the page.
+	if params.Page > 0 {
+		meta.Page = params.Page
+	}
+
+	// Set offset
+	meta.Offset = (meta.Page * meta.Limit) - meta.Limit
+
+	// Get page count
+	meta.PageCount = int(math.Ceil(float64(noLimitCount) / float64(params.Limit)))
+
+	// Return meta data object.
+	return meta
+}
+
+//
+// A generic way find out how many rows are in a table
+//
+func (t *DB) Count(model interface{}, params QueryParam) (uint, error) {
+
+	var count uint = 0
+	var query *gorm.DB
+
+	// Useful just to kick this off
+	query = t.Order("id ASC")
+
+	// Are we debugging this?
+	if params.Debug {
+		query = query.Debug()
+	}
+
+	// Add in Where clauses
+	for _, row := range params.Wheres {
+		if (len(row.Value) > 0) && (len(row.Key) > 0) {
+			query = query.Where(row.Key+" = ?", row.Value)
+		}
+	}
+
+	// Run the query
+	query.Model(model).Count(&count)
+
+	// If we made it this far no errors.
+	return count, nil
+}
+
+//
+// Build generic query.
+//
+func (t *DB) buildGenericQuery(params QueryParam) (*gorm.DB, error) {
 	var query *gorm.DB
 
 	// Validate order column
@@ -54,14 +169,14 @@ func (t *DB) Query(model interface{}, params QueryParam) error {
 		}
 
 		if !found {
-			return errors.New("Invalid order parameter. - " + params.Order)
+			return query, errors.New("Invalid order parameter. - " + params.Order)
 		}
 	}
 
 	// Do some quick filtering - Think injections
 	var sortText = strings.ToUpper(params.Sort)
 	if len(sortText) > 0 && ((sortText != "ASC") && (sortText != "DESC")) {
-		return errors.New("Invalid sort parameter. - " + params.Sort)
+		return query, errors.New("Invalid sort parameter. - " + params.Sort)
 	}
 
 	// Set order and get query object
@@ -79,15 +194,9 @@ func (t *DB) Query(model interface{}, params QueryParam) error {
 	}
 
 	// If we passed in a page we figure out the offset from the page.
-	if len(params.Page) > 0 {
-		page, err := strconv.Atoi(params.Page)
-
-		if err != nil {
-			return err
-		}
-
-		if (page > 0) && (params.Limit > 0) {
-			params.Offset = (uint(page) * params.Limit) - params.Limit
+	if params.Page > 0 {
+		if (params.Page > 0) && (params.Limit > 0) {
+			params.Offset = (uint(params.Page) * params.Limit) - params.Limit
 		}
 	}
 
@@ -135,43 +244,8 @@ func (t *DB) Query(model interface{}, params QueryParam) error {
 		query = query.Where(strings.Join(likes, " OR "), terms...)
 	}
 
-	// Run query.
-	if err := query.Find(model).Error; err != nil {
-		return err
-	}
-
-	// If we made it this far no errors.
-	return nil
-}
-
-//
-// A generic way find out how many rows are in a table
-//
-func (t *DB) Count(model interface{}, params QueryParam) (uint, error) {
-
-	var count uint = 0
-	var query *gorm.DB
-
-	// Useful just to kick this off
-	query = t.Order("id ASC")
-
-	// Are we debugging this?
-	if params.Debug {
-		query = query.Debug()
-	}
-
-	// Add in Where clauses
-	for _, row := range params.Wheres {
-		if (len(row.Value) > 0) && (len(row.Key) > 0) {
-			query = query.Where(row.Key+" = ?", row.Value)
-		}
-	}
-
-	// Run the query
-	query.Model(model).Count(&count)
-
-	// If we made it this far no errors.
-	return count, nil
+	// Return query.
+	return query, nil
 }
 
 /* End File */
