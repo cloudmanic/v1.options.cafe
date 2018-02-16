@@ -6,7 +6,7 @@
   <div class="alignright">
     <div class="content__actions" *ngIf="((page > 1) || (count >= limit))">
       <a class="btn btn--small" (click)="onPrev()" [ngClass]="{ 'btn--opacity': (page <= 1) }">Prev</a>
-      <a class="btn btn--small" (click)="onNext()" [ngClass]="{ 'btn--opacity': (count < pageSize) }">Next</a>
+      <a class="btn btn--small" (click)="onNext()" [ngClass]="{ 'btn--opacity': (count < limit) }">Next</a>
     </div>
   </div>
 </div>

@@ -25,12 +25,12 @@ func (t *Controller) GetTradeGroups(c *gin.Context) {
 	// Convert page to int.
 	page, _ := strconv.Atoi(c.Query("page"))
 
-	// Run the query
+	// Run the query - We limit to 25 as it is a pretty structured dataset.
 	results, meta, err := t.DB.GetTradeGroups(models.QueryParam{
 		UserId:           c.MustGet("userId").(uint),
 		Order:            c.Query("order"),
 		Sort:             c.Query("sort"),
-		Limit:            defaultMysqlLimit,
+		Limit:            25,
 		Page:             page,
 		Debug:            false,
 		PreLoads:         []string{"Positions"},

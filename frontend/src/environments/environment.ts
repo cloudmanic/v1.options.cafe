@@ -6,6 +6,5 @@
 export const environment = {
   production: false,
   app_server: "http://127.0.0.1:7080",
-  ws_server: "ws://127.0.0.1:7080",
-  default_page_size: 25     
+  ws_server: "ws://127.0.0.1:7080"    
 };

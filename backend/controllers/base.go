@@ -18,7 +18,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-const defaultMysqlLimit = 25
+const defaultMysqlLimit = 100
 const httpNoRecordFound = "No Record Found."
 const httpGenericErrMsg = "Please contact support at help@options.cafe."
 
