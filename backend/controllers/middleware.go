@@ -33,6 +33,9 @@ func (t *Controller) CorsMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		// Set useful headers
+		c.Writer.Header().Set("Access-Control-Expose-Headers", "X-Last-Page, X-Offset, X-Limit, X-No-Limit-Count")
+
 		// On to next request in the Middleware chain.
 		c.Next()
 	}

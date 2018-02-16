@@ -57,7 +57,9 @@ type ReceivedStruct struct {
 // Add paging info to the response.
 //
 func (t *Controller) AddPagingInfoToHeaders(c *gin.Context, meta models.QueryMetaData) {
+	c.Writer.Header().Set("X-Last-Page", strconv.FormatBool(meta.LastPage))
 	c.Writer.Header().Set("X-Offset", strconv.Itoa(meta.Offset))
+	c.Writer.Header().Set("X-Limit", strconv.Itoa(meta.Limit))
 	c.Writer.Header().Set("X-No-Limit-Count", strconv.Itoa(meta.NoLimitCount))
 }
 

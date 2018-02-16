@@ -294,6 +294,7 @@ func TestQuery02(t *testing.T) {
 	st.Expect(t, meta.PageCount, 2)
 	st.Expect(t, meta.LimitCount, 2)
 	st.Expect(t, meta.NoLimitCount, 3)
+	st.Expect(t, meta.LastPage, false)
 
 	// ---------  Test 4 -------- //
 
@@ -323,6 +324,7 @@ func TestQuery02(t *testing.T) {
 	st.Expect(t, meta.PageCount, 2)
 	st.Expect(t, meta.LimitCount, 1)
 	st.Expect(t, meta.NoLimitCount, 3)
+	st.Expect(t, meta.LastPage, true)
 }
 
 //

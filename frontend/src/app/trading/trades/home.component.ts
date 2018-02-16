@@ -57,10 +57,13 @@ export class TradesComponent implements OnInit {
   getTradeGroups() 
   {
     // Get tradegroup data
-    this.tradeGroupService.get(Number(this.stateService.GetStoredActiveAccountId()), this.page, 'open_date', 'desc', this.searchTerm, this.tradeSelect).subscribe((data) => {
-      this.tradesList = data;
-      this.count = data.length;      
-      this.stateService.SetActiveTradeGroups(data);
+    this.tradeGroupService.get(Number(this.stateService.GetStoredActiveAccountId()), this.page, 'open_date', 'desc', this.searchTerm, this.tradeSelect).subscribe((res) => {
+        
+      console.log(res);
+
+      this.tradesList = res.Data;
+      this.count = res.Data.length;      
+      this.stateService.SetActiveTradeGroups(res.Data);
       this.stateService.SetTradeGroupPage(this.page);
     });    
   }

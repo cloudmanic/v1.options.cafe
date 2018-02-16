@@ -41,6 +41,7 @@ type QueryMetaData struct {
 	Limit        int
 	Offset       int
 	PageCount    int
+	LastPage     bool
 	LimitCount   int
 	NoLimitCount int
 }
@@ -97,6 +98,7 @@ func (t *DB) GetQueryMetaData(limitCount int, noLimitCount int, params QueryPara
 
 	// Start meta data object
 	meta := QueryMetaData{
+		LastPage:     false,
 		Limit:        int(params.Limit),
 		LimitCount:   limitCount,
 		NoLimitCount: noLimitCount,
@@ -117,6 +119,11 @@ func (t *DB) GetQueryMetaData(limitCount int, noLimitCount int, params QueryPara
 
 	// Get page count
 	meta.PageCount = int(math.Ceil(float64(noLimitCount) / float64(params.Limit)))
+
+	// Figure out if we are on the last page.
+	if meta.Page == meta.PageCount {
+		meta.LastPage = true
+	}
 
 	// Return meta data object.
 	return meta

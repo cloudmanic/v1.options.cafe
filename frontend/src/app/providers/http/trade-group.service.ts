@@ -23,7 +23,7 @@ export class TradeGroupService
   //
   // Get trade groups
   //
-  get(broker_account_id: number, page: number, order: string, sort: string, search: string, tradeSelect: string) : Observable<TradeGroup[]> {
+  get(broker_account_id: number, page: number, order: string, sort: string, search: string, tradeSelect: string) : Observable<TradeGroupsResponse> {
 
     let ts = "";
 
@@ -48,10 +48,33 @@ export class TradeGroupService
     }
 
     // Make API call.
-    return this.http.get<TradeGroup[]>(environment.app_server + '/api/v1/tradegroups?broker_account_id=' + broker_account_id + '&page=' + page + '&order=' + order + '&sort=' + sort + '&search=' + search + ts).map(
-      (data) => { return TradeGroup.buildForEmit(data); 
+    return this.http.get(environment.app_server + '/api/v1/tradegroups?broker_account_id=' + broker_account_id + '&page=' + page + '&order=' + order + '&sort=' + sort + '&search=' + search + ts, { observe: 'response' }).map((res) => {
+      let lastPage = false;
+
+      // Build last page
+      if(res.headers.get('X-Last-Page') == "true")
+      {
+        lastPage = true;
+      }      
+
+      // Build and return data
+      return new TradeGroupsResponse(lastPage, Number(res.headers.get('X-Offset')), Number(res.headers.get('X-Limit')), Number(res.headers.get('X-No-Limit-Count')), TradeGroup.buildForEmit(res.body));
     });
   }
+}
+
+//
+// Trade Groups Response
+//
+export class TradeGroupsResponse 
+{
+  constructor(
+    public LastPage: boolean,
+    public Offset: number,
+    public Limit: number, 
+    public NoLimitCount: number, 
+    public Data: TradeGroup[] 
+  ){}  
 }
 
 /* End File */
