@@ -1420,6 +1420,11 @@ select::-ms-expand { display: none; }
 
 /* ------------- Htmlburger Please Put New CSS Above This Line (Cloudmanic Adds Below) ------------------ */
 
+.clear { content: ''; clear: both; }
+
+.mt-3 { margin-top: 3px; }
+.mt-5 { margin-top: 5px; }
+
 /* Hide GooveHq stuff */
 iframe.grv-widget-tag { display: none !important; }
 iframe.grv-widget-app { display: block !important; }

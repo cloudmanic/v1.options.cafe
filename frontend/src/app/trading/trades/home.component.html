@@ -205,7 +205,7 @@
     	</ul><!-- /.boxes boxes-rows -->
   
 
-        <app-paging [count]="count" [page]="page" (pageClick)="onPagingClick($event)"></app-paging>
+        <app-paging [limit]="limit" [count]="count" [page]="page" [noLimitCount]="noLimitCount" (pageClick)="onPagingClick($event)"></app-paging>
 
 
     </div><!-- /.shell shell-fluid -->

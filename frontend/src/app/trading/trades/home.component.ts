@@ -20,6 +20,8 @@ export class TradesComponent implements OnInit {
 
   page: number = 1;
   count: number = 0;
+  limit: number = 0;
+  noLimitCount: number = 0;  
   tradesList: TradeGroup[];
   searchTerm: string = ""
   tradeSelect: string = "All"
@@ -58,9 +60,8 @@ export class TradesComponent implements OnInit {
   {
     // Get tradegroup data
     this.tradeGroupService.get(Number(this.stateService.GetStoredActiveAccountId()), this.page, 'open_date', 'desc', this.searchTerm, this.tradeSelect).subscribe((res) => {
-        
-      console.log(res);
-
+      this.limit = res.Limit;
+      this.noLimitCount = res.NoLimitCount;
       this.tradesList = res.Data;
       this.count = res.Data.length;      
       this.stateService.SetActiveTradeGroups(res.Data);

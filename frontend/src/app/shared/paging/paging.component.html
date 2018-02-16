@@ -1,5 +1,12 @@
-<div class="content__actions" *ngIf="((page > 1) || (count >= pageSize))">
-  <a class="btn btn--small" (click)="onPrev()" [ngClass]="{ 'btn--opacity': (page <= 1) }">Prev</a>
-  
-  <a class="btn btn--small" (click)="onNext()" [ngClass]="{ 'btn--opacity': (count < pageSize) }">Next</a>
+<div class="clear">
+  <div class="alignleft mt-5">
+    <strong>{{ getRangeStart() }}-{{ getRangeEnd() }}</strong> of <strong>{{ noLimitCount }}</strong>
+  </div>  
+
+  <div class="alignright">
+    <div class="content__actions" *ngIf="((page > 1) || (count >= limit))">
+      <a class="btn btn--small" (click)="onPrev()" [ngClass]="{ 'btn--opacity': (page <= 1) }">Prev</a>
+      <a class="btn btn--small" (click)="onNext()" [ngClass]="{ 'btn--opacity': (count < pageSize) }">Next</a>
+    </div>
+  </div>
 </div>

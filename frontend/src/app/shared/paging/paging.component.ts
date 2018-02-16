@@ -14,9 +14,10 @@ import { Component, OnInit, Input, Output, OnChanges, EventEmitter } from '@angu
 })
 
 export class PagingComponent implements OnInit {
-  pageSize: number = environment.default_page_size;
   @Input() count: number;
-  @Input() page: number;  
+  @Input() page: number;
+  @Input() limit: number;
+  @Input() noLimitCount: number;  
   @Output('pageClick') pageClick: EventEmitter<number> = new EventEmitter<number>();
 
   //
@@ -53,12 +54,36 @@ export class PagingComponent implements OnInit {
     this.page++;    
 
     // Did we go too far with Next?
-    if(this.count < environment.default_page_size)
+    if(this.count < this.limit)
     {
       this.page--;
     }
 
     this.pageClick.emit(this.page);
+  }  
+
+  //
+  // Get range start
+  //
+  getRangeStart() : number {
+    if(this.count == 0)
+    {
+      return Number(this.count);
+    }
+
+    return (this.page * this.limit) - this.limit + 1;
+  }
+
+  //
+  // Get range end
+  //
+  getRangeEnd() : number {
+    if(this.count == 0)
+    {
+      return Number(this.count);
+    }
+    
+    return this.getRangeStart() + this.count - 1;
   }  
 }
 
