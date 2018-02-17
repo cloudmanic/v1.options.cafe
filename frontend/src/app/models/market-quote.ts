@@ -6,6 +6,8 @@ export class MarketQuote {
   constructor(
     public last: number,
     public open: number,
+    public ask: number,
+    public bid: number,    
     public prev_close: number,
     public symbol: string,
     public description: string

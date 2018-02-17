@@ -36,10 +36,11 @@ func TestPutCreditSpreadGetMaxRisked01(t *testing.T) {
 	}
 
 	// Get max loss
-	loss := PutCreditSpreadGetMaxRisked(positions)
+	loss, credit := PutCreditSpreadGetMaxRisked(positions)
 
 	// Verify the data was return as expected
 	st.Expect(t, loss, 1548.00)
+	st.Expect(t, credit, 252.00)
 }
 
 //

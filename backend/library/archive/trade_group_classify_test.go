@@ -29,7 +29,7 @@ func TestGetAmountRiskedInTrade01(t *testing.T) {
 	}
 
 	// Get the classification of this trade group
-	class := GetAmountRiskedInTrade(positions)
+	class, _ := GetAmountRiskedInTrade(positions)
 
 	// Verify the data was return as expected
 	st.Expect(t, class, 2034.00)
@@ -51,7 +51,7 @@ func TestGetAmountRiskedInTrade02(t *testing.T) {
 	}
 
 	// Get the classification of this trade group
-	class := GetAmountRiskedInTrade(positions)
+	class, _ := GetAmountRiskedInTrade(positions)
 
 	// Verify the data was return as expected
 	st.Expect(t, class, 982.00)
@@ -80,7 +80,7 @@ func TestGetAmountRiskedInTrade03(t *testing.T) {
 	}
 
 	// Get the classification of this trade group
-	class := GetAmountRiskedInTrade(positions)
+	class, _ := GetAmountRiskedInTrade(positions)
 
 	// Verify the data was return as expected
 	st.Expect(t, class, 1548.00)
@@ -109,7 +109,7 @@ func TestGetAmountRiskedInTrade04(t *testing.T) {
 	}
 
 	// Get the classification of this trade group
-	class := GetAmountRiskedInTrade(positions)
+	class, _ := GetAmountRiskedInTrade(positions)
 
 	// Verify the data was return as expected
 	st.Expect(t, class, 712.00)

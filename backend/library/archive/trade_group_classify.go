@@ -14,7 +14,7 @@ import (
 //
 // Pass in some positions and return the amount risked in this trade.
 //
-func GetAmountRiskedInTrade(positions *[]models.Position) float64 {
+func GetAmountRiskedInTrade(positions *[]models.Position) (float64, float64) {
 
 	// Get the trade type
 	tradeType := ClassifyTradeGroup(positions)
@@ -37,7 +37,7 @@ func GetAmountRiskedInTrade(positions *[]models.Position) float64 {
 	}
 
 	// Should never make it here
-	return 0.00
+	return 0.00, 0.00
 }
 
 //

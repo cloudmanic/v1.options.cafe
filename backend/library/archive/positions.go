@@ -89,7 +89,7 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 	profit = profit - commission
 
 	// Figure out max risked before commissions in this trade.
-	risked := GetAmountRiskedInTrade(positions)
+	risked, credit := GetAmountRiskedInTrade(positions)
 
 	// Figure out gain
 	gain = (((risked + profit) - risked) / risked) * 100
@@ -117,6 +117,7 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 			Status:          tradeGroupStatus,
 			OrderIds:        strconv.Itoa(int(order.Id)),
 			Commission:      commission,
+			Credit:          credit,
 			Gain:            gain,
 			Risked:          risked,
 			Profit:          profit,

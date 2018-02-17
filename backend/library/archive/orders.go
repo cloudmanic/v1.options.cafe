@@ -54,14 +54,14 @@ func StoreOrders(db models.Datastore, orders []types.Order, userId uint, brokerI
 		//
 		// Because Tradier data is bad we only import from 2017 forward.
 		//
-		if transactionDate.Year() < 2017 {
+		if transactionDate.Year() < 2018 {
 			continue
 		}
 
 		//
 		// Because Tradier data is bad we only import from 2017 forward.
 		//
-		if createDate.Year() < 2017 {
+		if createDate.Year() < 2018 {
 			continue
 		}
 

@@ -73,11 +73,13 @@ export class QuoteService {
             // Have we seen this quote before?
             if(typeof this.quotes[msg_data.Symbol] == "undefined")
             {
-              this.quotes[msg_data.Symbol] = new MarketQuote(msg_data.Last, msg_data.Open, msg_data.PrevClose, msg_data.Symbol, msg_data.Description);
+              this.quotes[msg_data.Symbol] = new MarketQuote(msg_data.Last, msg_data.Open, msg_data.Bid, msg_data.Ask, msg_data.PrevClose, msg_data.Symbol, msg_data.Description);
             } else
             {
               this.quotes[msg_data.Symbol].last = msg_data.Last;              
               this.quotes[msg_data.Symbol].open = msg_data.Open;
+              this.quotes[msg_data.Symbol].bid = msg_data.Bid;              
+              this.quotes[msg_data.Symbol].ask = msg_data.Ask;              
               this.quotes[msg_data.Symbol].prev_close = msg_data.PrevClose;              
               this.quotes[msg_data.Symbol].description = msg_data.Description;              
             }            

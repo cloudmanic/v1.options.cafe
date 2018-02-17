@@ -36,7 +36,7 @@ func TestCallCreditSpreadGetMaxRisked01(t *testing.T) {
 	}
 
 	// Get max loss
-	loss := CallCreditSpreadGetMaxRisked(positions)
+	loss, _ := CallCreditSpreadGetMaxRisked(positions)
 
 	// Verify the data was return as expected
 	st.Expect(t, loss, 712.00)

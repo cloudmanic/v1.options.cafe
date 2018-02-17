@@ -36,7 +36,7 @@ export class PositionComponent implements OnInit
   //
   // Get the total P&L for options
   //
-  getOptionWidgetProfitLoss(tradeGroups: TradeGroup) : number 
+  getOptionWidgetProfitLoss(tradeGroups: TradeGroup[]) : number 
   {
     let total: number = 0.00
 
@@ -65,6 +65,39 @@ export class PositionComponent implements OnInit
     return (this.quotes[position.Symbol.ShortName].last * position.Qty * 100) - position.CostBasis;
   }
 
+  //
+  // Get the total P&L for put credit spreads
+  //
+  getPutCreditSpreadProfitLoss(tradeGroup: TradeGroup) : number 
+  {
+    if(typeof this.quotes[tradeGroup.Positions[0].Symbol.ShortName] == "undefined")
+    {
+      return 0.00;
+    }
+
+    if(typeof this.quotes[tradeGroup.Positions[1].Symbol.ShortName] == "undefined")
+    {
+      return 0.00;
+    }
+
+    return tradeGroup.Credit - (((this.quotes[tradeGroup.Positions[1].Symbol.ShortName].ask - this.quotes[tradeGroup.Positions[0].Symbol.ShortName].bid) * 100) * Math.abs(tradeGroup.Positions[0].Qty));  
+  }
 }
+
+    // if(! $scope.quotes[spread.Positions[1].SymbolsShort])
+    // {
+    //   return 0;
+    // }
+    
+    // if(type == 'put')
+    // {
+      
+    //   //console.log((spread.TradeGroupsOpen * -1) - ((($scope.quotes[spread.Positions[1].SymbolsShort].ask - $scope.quotes[spread.Positions[0].SymbolsShort].bid) * 100) * spread.Positions[0].PositionsQty) );
+      
+    //   return (spread.TradeGroupsOpen * -1) - ((($scope.quotes[spread.Positions[1].SymbolsShort].ask - $scope.quotes[spread.Positions[0].SymbolsShort].bid) * 100) * spread.Positions[0].PositionsQty)       
+    // } else
+    // {
+    //   return (spread.TradeGroupsOpen * -1) - ((($scope.quotes[spread.Positions[0].SymbolsShort].ask - $scope.quotes[spread.Positions[1].SymbolsShort].bid) * 100) * spread.Positions[1].PositionsQty)      
+    // }
 
 /* End File */

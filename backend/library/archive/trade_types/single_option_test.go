@@ -29,7 +29,7 @@ func TestSingleOptionGetMaxRisked01(t *testing.T) {
 	}
 
 	// Get max loss
-	loss := SingleOptionGetMaxRisked(positions)
+	loss, _ := SingleOptionGetMaxRisked(positions)
 
 	// Verify the data was return as expected
 	st.Expect(t, loss, 982.00)
@@ -51,7 +51,7 @@ func TestSingleOptionGetMaxRisked02(t *testing.T) {
 	}
 
 	// Get max loss
-	loss := SingleOptionGetMaxRisked(positions)
+	loss, _ := SingleOptionGetMaxRisked(positions)
 
 	// Verify the data was return as expected
 	st.Expect(t, loss, -1.00)

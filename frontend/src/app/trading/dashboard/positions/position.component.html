@@ -27,26 +27,31 @@
 
           <tr *ngFor="let row2 of row.Positions; let key2 = index;">
             <td><strong class="table__surrounded">{{ row2.Symbol.Name }}</strong></td>
-            <td><strong>{{ row2.OpenDate | date:'shortDate' }}</strong></td>
-            <td><strong>{{ row2.Qty }}</strong></td>
+            
+            <td *ngIf="key2 == 0"><strong>{{ row2.OpenDate | date:'shortDate' }}</strong></td>
+            <td *ngIf="key2 != 0">&nbsp;</td>
+            
+            <td *ngIf="key2 == 0"><strong>{{ row2.Qty }}</strong></td>
+            <td *ngIf="key2 != 0">&nbsp;</td>
 
-            <td>
-              <strong>2.95%</strong>
-            </td>
+            <td *ngIf="key2 == 0"><strong>2.95%</strong></td>
+            <td *ngIf="key2 != 0">&nbsp;</td>
 
-            <td>
-              <strong>14</strong>
-            </td>
+            <td *ngIf="key2 == 0"><strong>14</strong></td>
+            <td *ngIf="key2 != 0">&nbsp;</td>
 
-            <td>
-              <strong>$105.00</strong>
-            </td>
+            <td *ngIf="key2 == 0"><strong>{{ row.Credit | currency }}</strong></td>
+            <td *ngIf="key2 != 0">&nbsp;</td>
 
             <td *ngIf="(key2 == 0) && (row.Type == 'Option')">
               <strong [ngClass]="{'title-red': (getOptionProfitLoss(row2) < 0), 'title-green': (getOptionProfitLoss(row2) > 0)}">{{ getOptionProfitLoss(row2) | currency }}</strong>
             </td>
 
+            <td *ngIf="(key2 == 0) && (row.Type == 'Put Credit Spread')">
+              <strong [ngClass]="{'title-red': (getPutCreditSpreadProfitLoss(row) < 0), 'title-green': (getPutCreditSpreadProfitLoss(row) > 0)}">{{ getPutCreditSpreadProfitLoss(row) | currency }}</strong>
+            </td>
             <td *ngIf="key2 != 0">&nbsp;</td>
+
           </tr>
         </table>
       </div>

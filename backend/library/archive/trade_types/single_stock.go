@@ -14,7 +14,7 @@ import (
 //
 // Calculate max loss of the trade. Return -1 for unlimited risk
 //
-func SingleStockGetMaxRisked(positions *[]models.Position) float64 {
+func SingleStockGetMaxRisked(positions *[]models.Position) (float64, float64) {
 	var qty int = 0
 	var cost float64 = 0.00
 
@@ -26,9 +26,9 @@ func SingleStockGetMaxRisked(positions *[]models.Position) float64 {
 
 	// Is this short or not.
 	if qty > 0 {
-		return cost
+		return cost, 0.00
 	} else {
-		return -1.00
+		return -1.00, 0.00
 	}
 }
 

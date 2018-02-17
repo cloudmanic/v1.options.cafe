@@ -14,7 +14,7 @@ import (
 //
 // Calculate max loss of the trade.
 //
-func CallCreditSpreadGetMaxRisked(positions *[]models.Position) float64 {
+func CallCreditSpreadGetMaxRisked(positions *[]models.Position) (float64, float64) {
 
 	var qty int = 0
 	var cost float64 = 0.00
@@ -44,7 +44,7 @@ func CallCreditSpreadGetMaxRisked(positions *[]models.Position) float64 {
 	maxRisk := float64(qty) * dif * 100.00
 
 	// Return happy.
-	return maxRisk + cost
+	return maxRisk + cost, 0.00
 }
 
 //
