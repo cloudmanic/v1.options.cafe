@@ -59,7 +59,7 @@ export class TradesComponent implements OnInit {
   getTradeGroups() 
   {
     // Get tradegroup data
-    this.tradeGroupService.get(Number(this.stateService.GetStoredActiveAccountId()), this.page, 'open_date', 'desc', this.searchTerm, this.tradeSelect).subscribe((res) => {
+    this.tradeGroupService.get(Number(this.stateService.GetStoredActiveAccountId()), 25, this.page, 'open_date', 'desc', this.searchTerm, this.tradeSelect).subscribe((res) => {
       this.limit = res.Limit;
       this.noLimitCount = res.NoLimitCount;
       this.tradesList = res.Data;

@@ -7,8 +7,6 @@
 package controllers
 
 import (
-	"strconv"
-
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
 )
@@ -22,15 +20,15 @@ var (
 //
 func (t *Controller) GetTradeGroups(c *gin.Context) {
 
-	// Convert page to int.
-	page, _ := strconv.Atoi(c.Query("page"))
+	// Get / Set typical query parms
+	page, limit, _ := GetSetPagingParms(c)
 
 	// Run the query - We limit to 25 as it is a pretty structured dataset.
 	results, meta, err := t.DB.GetTradeGroups(models.QueryParam{
 		UserId:           c.MustGet("userId").(uint),
 		Order:            c.Query("order"),
 		Sort:             c.Query("sort"),
-		Limit:            25,
+		Limit:            limit,
 		Page:             page,
 		Debug:            false,
 		PreLoads:         []string{"Positions"},

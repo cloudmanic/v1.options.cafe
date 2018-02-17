@@ -325,6 +325,24 @@ func TestQuery02(t *testing.T) {
 	st.Expect(t, meta.LimitCount, 1)
 	st.Expect(t, meta.NoLimitCount, 3)
 	st.Expect(t, meta.LastPage, true)
+
+	// ---------  Test 5 -------- //
+
+	// Place to store the results.
+	results = []Symbol{}
+
+	// Another test to see if paging works
+	q5 := QueryParam{}
+	noFilterCount, err = db.QueryWithNoFilterCount(&results, q5)
+
+	// Get the meta data related to this query.
+	meta = db.GetQueryMetaData(len(results), noFilterCount, q5)
+
+	// Test results - Testing Offset when no parms are sent in.
+	st.Expect(t, err, nil)
+	st.Expect(t, meta.Page, 0)
+	st.Expect(t, meta.Limit, 0)
+	st.Expect(t, meta.Offset, 0)
 }
 
 //

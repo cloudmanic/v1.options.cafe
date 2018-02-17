@@ -64,6 +64,38 @@ func (t *Controller) AddPagingInfoToHeaders(c *gin.Context, meta models.QueryMet
 }
 
 //
+// Get / Set standard query parms
+//
+func GetSetPagingParms(c *gin.Context) (int, int, int) {
+	// Convert page to int.
+	page, _ := strconv.Atoi(c.Query("page"))
+	limit, _ := strconv.Atoi(c.Query("limit"))
+	offset, _ := strconv.Atoi(c.Query("offset"))
+
+	// We do not allow limits over defaultMysqlLimit
+	if limit > defaultMysqlLimit {
+		limit = defaultMysqlLimit
+	}
+
+	if limit == 0 {
+		limit = defaultMysqlLimit
+	}
+
+	// Offset can't be less than 0
+	if offset < 0 {
+		offset = 0
+	}
+
+	// Page can't be less than 1
+	if page < 1 {
+		page = 1
+	}
+
+	// Return happy.
+	return page, limit, offset
+}
+
+//
 // RespondJSON makes the response with payload as json format.
 // This is used when we want the json back (used in websockets).
 // If you do not need the json back just use c.JSON()

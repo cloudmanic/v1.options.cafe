@@ -18,8 +18,8 @@ import (
 type QueryParam struct {
 	UserId           uint
 	AccountId        uint
-	Limit            uint
-	Offset           uint
+	Limit            int
+	Offset           int
 	Page             int
 	Order            string
 	Sort             string
@@ -115,7 +115,9 @@ func (t *DB) GetQueryMetaData(limitCount int, noLimitCount int, params QueryPara
 	}
 
 	// Set offset
-	meta.Offset = (meta.Page * meta.Limit) - meta.Limit
+	if meta.Page > 0 {
+		meta.Offset = (meta.Page * meta.Limit) - meta.Limit
+	}
 
 	// Get page count
 	meta.PageCount = int(math.Ceil(float64(noLimitCount) / float64(params.Limit)))
@@ -203,7 +205,7 @@ func (t *DB) buildGenericQuery(params QueryParam) (*gorm.DB, error) {
 	// If we passed in a page we figure out the offset from the page.
 	if params.Page > 0 {
 		if (params.Page > 0) && (params.Limit > 0) {
-			params.Offset = (uint(params.Page) * params.Limit) - params.Limit
+			params.Offset = (params.Page * params.Limit) - params.Limit
 		}
 	}
 

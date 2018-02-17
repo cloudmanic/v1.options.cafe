@@ -23,7 +23,7 @@ export class TradeGroupService
   //
   // Get trade groups
   //
-  get(broker_account_id: number, page: number, order: string, sort: string, search: string, tradeSelect: string) : Observable<TradeGroupsResponse> {
+  get(broker_account_id: number, limit: number, page: number, order: string, sort: string, search: string, tradeSelect: string) : Observable<TradeGroupsResponse> {
 
     let ts = "";
 
@@ -48,7 +48,7 @@ export class TradeGroupService
     }
 
     // Make API call.
-    return this.http.get(environment.app_server + '/api/v1/tradegroups?broker_account_id=' + broker_account_id + '&page=' + page + '&order=' + order + '&sort=' + sort + '&search=' + search + ts, { observe: 'response' }).map((res) => {
+    return this.http.get(environment.app_server + '/api/v1/tradegroups?broker_account_id=' + broker_account_id + '&limit=' + limit + '&page=' + page + '&order=' + order + '&sort=' + sort + '&search=' + search + ts, { observe: 'response' }).map((res) => {
       let lastPage = false;
 
       // Build last page
