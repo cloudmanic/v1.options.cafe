@@ -54,7 +54,7 @@ import { ScreenerComponent } from './trading/screener/home.component';
 import { DashboardComponent } from './trading/dashboard/home.component';
 import { OrdersComponent } from './trading/dashboard/orders/orders.component';
 import { PositionsComponent } from './trading/dashboard/positions/positions.component';
-import { CreditSpreadsComponent } from './trading/dashboard/positions/credit-spreads.component';
+import { PositionComponent } from './trading/dashboard/positions/position.component';
 import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-symbols.component';
 
 @NgModule({
@@ -95,7 +95,7 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     DashboardComponent,
     WatchlistComponent,
     PositionsComponent,
-    CreditSpreadsComponent,
+    PositionComponent,
     TypeaheadSymbolsComponent,
   ],
   

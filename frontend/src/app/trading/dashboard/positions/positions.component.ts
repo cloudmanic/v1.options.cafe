@@ -19,7 +19,7 @@ import { TradeGroupService } from '../../../providers/http/trade-group.service';
 export class PositionsComponent implements OnInit {
   
   private quotes = {}
-  private positions: PositionsCont = new PositionsCont([], [], [], [], [], [], []);
+  private tradeGroups: TradeGroupsCont;
 
   //
   // Constructor....
@@ -58,6 +58,9 @@ export class PositionsComponent implements OnInit {
     // Get tradegroup data
     this.tradeGroupService.get(Number(this.stateService.GetStoredActiveAccountId()), 100, 1, 'open_date', 'desc', '', 'Open').subscribe((res) => {
 
+      // Reset the trade groups
+      this.tradeGroups = new TradeGroupsCont([], [], [], [], [], [], []);
+
       // Loop through and classify positions
       for(let i = 0; i <= res.Data.length; i++)
       {
@@ -66,11 +69,12 @@ export class PositionsComponent implements OnInit {
         {
           continue;
         }
-        
-        this.positions[res.Data[i].Type.split(' ').join('')].push(res.Data[i]);
+
+        // Push onto the array.
+        this.tradeGroups[res.Data[i].Type.split(' ').join('')].push(res.Data[i]);
       }
 
-      console.log(this.positions);
+      console.log(this.tradeGroups);
 
       // this.limit = res.Limit;
       // this.noLimitCount = res.NoLimitCount;
@@ -85,7 +89,7 @@ export class PositionsComponent implements OnInit {
 //
 // Setup a class to hold all the different position types
 //
-export class PositionsCont 
+export class TradeGroupsCont 
 {
   constructor(
     public Option: TradeGroup[],

@@ -5,7 +5,6 @@
 //
 //
 
-import { environment } from '../../../environments/environment';
 import { Component, OnInit, Input, Output, OnChanges, EventEmitter } from '@angular/core';
 
 @Component({
