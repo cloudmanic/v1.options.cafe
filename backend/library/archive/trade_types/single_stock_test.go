@@ -16,7 +16,7 @@ import (
 //
 // Test get mass loss for Single Stock - Long
 //
-func TestSingleStockGetMaxRisked01(t *testing.T) {
+func TestGetSingleStockRiskProfile01(t *testing.T) {
 
 	// Test one stock
 	positions := &[]models.Position{
@@ -29,7 +29,7 @@ func TestSingleStockGetMaxRisked01(t *testing.T) {
 	}
 
 	// Get max loss
-	loss, _ := SingleStockGetMaxRisked(positions)
+	loss, _ := GetSingleStockRiskProfile(positions)
 
 	// Verify the data was return as expected
 	st.Expect(t, loss, 2034.12)
@@ -38,7 +38,7 @@ func TestSingleStockGetMaxRisked01(t *testing.T) {
 //
 // Test get mass loss for Single Stock - Short
 //
-func TestSingleStockGetMaxRisked02(t *testing.T) {
+func TestGetSingleStockRiskProfile02(t *testing.T) {
 
 	// Test one stock
 	positions := &[]models.Position{
@@ -51,7 +51,7 @@ func TestSingleStockGetMaxRisked02(t *testing.T) {
 	}
 
 	// Get max loss
-	loss, _ := SingleStockGetMaxRisked(positions)
+	loss, _ := GetSingleStockRiskProfile(positions)
 
 	// Verify the data was return as expected
 	st.Expect(t, loss, -1.00)

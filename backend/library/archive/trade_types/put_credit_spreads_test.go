@@ -16,7 +16,7 @@ import (
 //
 // Test get mass loss for put credit spread
 //
-func TestPutCreditSpreadGetMaxRisked01(t *testing.T) {
+func TestGetPutCreditSpreadRiskProfile01(t *testing.T) {
 
 	// Test put credit spread
 	positions := &[]models.Position{
@@ -36,7 +36,7 @@ func TestPutCreditSpreadGetMaxRisked01(t *testing.T) {
 	}
 
 	// Get max loss
-	loss, credit := PutCreditSpreadGetMaxRisked(positions)
+	loss, credit := GetPutCreditSpreadRiskProfile(positions)
 
 	// Verify the data was return as expected
 	st.Expect(t, loss, 1548.00)

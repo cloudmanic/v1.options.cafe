@@ -16,7 +16,7 @@ import (
 //
 // Test get mass loss for Single Option - Long
 //
-func TestSingleOptionGetMaxRisked01(t *testing.T) {
+func TestGetSingleOptionRiskProfile01(t *testing.T) {
 
 	// Test put credit spread
 	positions := &[]models.Position{
@@ -29,7 +29,7 @@ func TestSingleOptionGetMaxRisked01(t *testing.T) {
 	}
 
 	// Get max loss
-	loss, _ := SingleOptionGetMaxRisked(positions)
+	loss, _ := GetSingleOptionRiskProfile(positions)
 
 	// Verify the data was return as expected
 	st.Expect(t, loss, 982.00)
@@ -38,7 +38,7 @@ func TestSingleOptionGetMaxRisked01(t *testing.T) {
 //
 // Test get mass loss for Single Option - Short
 //
-func TestSingleOptionGetMaxRisked02(t *testing.T) {
+func TestGetSingleOptionRiskProfile02(t *testing.T) {
 
 	// Test put credit spread
 	positions := &[]models.Position{
@@ -51,7 +51,7 @@ func TestSingleOptionGetMaxRisked02(t *testing.T) {
 	}
 
 	// Get max loss
-	loss, _ := SingleOptionGetMaxRisked(positions)
+	loss, _ := GetSingleOptionRiskProfile(positions)
 
 	// Verify the data was return as expected
 	st.Expect(t, loss, -1.00)

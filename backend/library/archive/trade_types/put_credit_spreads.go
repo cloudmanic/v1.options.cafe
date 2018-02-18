@@ -12,9 +12,9 @@ import (
 )
 
 //
-// Calculate max loss of the trade.
+// Calculate max loss of the trade. Return max risked and credit received.
 //
-func PutCreditSpreadGetMaxRisked(positions *[]models.Position) (float64, float64) {
+func GetPutCreditSpreadRiskProfile(positions *[]models.Position) (float64, float64) {
 
 	var qty int = 0
 	var cost float64 = 0.00

@@ -23,16 +23,16 @@ func GetAmountRiskedInTrade(positions *[]models.Position) (float64, float64) {
 	switch tradeType {
 
 	case "Stock":
-		return trade_types.SingleStockGetMaxRisked(positions)
+		return trade_types.GetSingleStockRiskProfile(positions)
 
 	case "Option":
-		return trade_types.SingleOptionGetMaxRisked(positions)
+		return trade_types.GetSingleOptionRiskProfile(positions)
 
 	case "Put Credit Spread":
-		return trade_types.PutCreditSpreadGetMaxRisked(positions)
+		return trade_types.GetPutCreditSpreadRiskProfile(positions)
 
 	case "Call Credit Spread":
-		return trade_types.CallCreditSpreadGetMaxRisked(positions)
+		return trade_types.GetCallCreditSpreadRiskProfile(positions)
 
 	}
 

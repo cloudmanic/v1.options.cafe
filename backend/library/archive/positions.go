@@ -21,8 +21,11 @@ import (
 //
 func StorePositions(db models.Datastore, userId uint, brokerId uint) error {
 
+	// Just easier to do this since we often comment stuff out for testing
+	var err error
+
 	// Process multi leg orders
-	err := doMultiLegOrders(db, userId, brokerId)
+	err = doMultiLegOrders(db, userId, brokerId)
 
 	if err != nil {
 		return err
@@ -45,7 +48,7 @@ func StorePositions(db models.Datastore, userId uint, brokerId uint) error {
 func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Position, db models.Datastore, userId uint, brokerId uint) error {
 
 	var tradeGroupId uint
-	var gain float64 = 0.00
+	var proceeds float64 = 0.00
 	var profit float64 = 0.00
 	var tradeGroupStatus = "Closed"
 
@@ -77,6 +80,9 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 
 		// Figure out group profit
 		profit = profit + row.Profit
+
+		// Figure out proceeds
+		proceeds = proceeds + row.Proceeds
 	}
 
 	// Figure out what type of trade group this is.
@@ -85,17 +91,21 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 	// Figure out Commission
 	commission := calcCommissionForOrder(&order, brokerId, &brokerAccount)
 
-	// Update profit to have commissions.
-	profit = profit - commission
-
 	// Figure out max risked before commissions in this trade.
 	risked, credit := GetAmountRiskedInTrade(positions)
 
-	// Figure out gain
-	gain = (((risked + profit) - risked) / risked) * 100
+	// // Figure out gain
+	// if tradeGroupStatus == "Closed" {
+	// 	proceeds = (((risked + profit) - risked) / risked) * 100
+	// }
 
 	// Create or Update Trade Group
 	if tradeGroupId == 0 {
+
+		// Update profit to have commissions. -- this should almost never be hit
+		if tradeGroupStatus == "Closed" {
+			profit = profit - commission
+		}
 
 		// Figure out how many trade groups we have had thus far.
 		count, err := db.Count(&models.TradeGroup{}, models.QueryParam{Wheres: []models.KeyValue{{Key: "user_id", Value: strconv.Itoa(int(userId))}}})
@@ -118,7 +128,7 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 			OrderIds:        strconv.Itoa(int(order.Id)),
 			Commission:      commission,
 			Credit:          credit,
-			Gain:            gain,
+			Proceeds:        proceeds,
 			Risked:          risked,
 			Profit:          profit,
 			Type:            tgType,
@@ -144,8 +154,13 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 			return err
 		}
 
+		// Update profit to have commissions.
+		if tradeGroupStatus == "Closed" {
+			profit = profit - commission - tradeGroup.Commission
+		}
+
 		tradeGroup.Type = tgType
-		tradeGroup.Gain = gain
+		tradeGroup.Proceeds = proceeds
 		tradeGroup.Risked = risked
 		tradeGroup.Profit = profit
 		tradeGroup.Commission += commission
@@ -186,7 +201,7 @@ func calcCommissionForOrder(order *models.Order, brokerId uint, brokerAccount *m
 
 		commission = qty * brokerAccount.OptionCommission
 	} else if order.Class == "option" {
-		commission = qty * brokerAccount.OptionCommission
+		commission = order.ExecQuantity * brokerAccount.OptionCommission
 	} else {
 		commission = brokerAccount.StockCommission
 	}
