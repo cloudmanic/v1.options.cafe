@@ -54,7 +54,6 @@ func (t *Base) Start() {
 	go t.DoGetMarketStatusTicker()
 	go t.DoGetBalancesTicker()
 	go t.DoAccessTokenRefresh()
-	go t.DoOrdersArchive()
 }
 
 /* End File */

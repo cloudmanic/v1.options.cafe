@@ -18,8 +18,9 @@ import (
 //
 // Ticker - Orders Archive : 24 hours
 //
-func (t *Base) DoOrdersArchive() {
+func (t *Base) DoOrdersTicker() {
 	var err error
+	var firstDone bool = false
 
 	for {
 		// Load up all orders
@@ -27,6 +28,14 @@ func (t *Base) DoOrdersArchive() {
 
 		if err != nil {
 			services.Warning(err)
+		}
+
+		// Start the every 3 second ticker.
+		// We do this because we want the archive
+		// Action to run first to avoid race conditions.
+		if !firstDone {
+			go t.DoOrdersActiveTicker()
+			firstDone = true
 		}
 
 		// Sleep for 24 hours
@@ -37,7 +46,7 @@ func (t *Base) DoOrdersArchive() {
 //
 // Ticker - Orders : 3 seconds
 //
-func (t *Base) DoOrdersTicker() {
+func (t *Base) DoOrdersActiveTicker() {
 	var err error
 
 	for {
