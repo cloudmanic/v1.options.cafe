@@ -2,6 +2,8 @@ package models
 
 import (
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 type Order struct {
@@ -89,7 +91,9 @@ func (t *DB) GetOrdersByUserClassStatusReviewed(userId uint, class string, statu
 	orders := []Order{}
 
 	// Query and get all orders we have not reviewed before.
-	t.Preload("Legs").Where("user_id = ? AND class = ? AND status = ? AND position_reviewed = ?", userId, class, status, reviewed).Order("transaction_date asc").Find(&orders)
+	t.Debug().Preload("Legs", func(db *gorm.DB) *gorm.DB {
+		return db.Order("id asc")
+	}).Where("user_id = ? AND class = ? AND status = ? AND position_reviewed = ?", userId, class, status, reviewed).Order("transaction_date asc").Find(&orders)
 
 	// Return happy
 	return orders, nil
