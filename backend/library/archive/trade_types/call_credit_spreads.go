@@ -44,7 +44,7 @@ func GetCallCreditSpreadRiskProfile(positions *[]models.Position) (float64, floa
 	maxRisk := float64(qty) * dif * 100.00
 
 	// Return happy.
-	return maxRisk + cost, 0.00
+	return maxRisk + cost, (cost * -1.00)
 }
 
 //

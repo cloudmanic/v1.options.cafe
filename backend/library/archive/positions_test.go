@@ -31,10 +31,6 @@ func TestStorePositions01(t *testing.T) {
 	db.Exec("TRUNCATE TABLE trade_groups;")
 	db.Exec("TRUNCATE TABLE positions;")
 
-	// TODO: remove this...
-	// db.Exec("DELETE FROM order_legs WHERE order_id IN (SELECT id FROM orders WHERE id NOT IN (3, 5));")
-	// db.Exec("DELETE FROM orders WHERE id NOT IN (3, 5)")
-
 	// Set known values from testing data
 	var userId uint = 1
 	var brokerId uint = 2
@@ -45,31 +41,50 @@ func TestStorePositions01(t *testing.T) {
 	// Verify the data was return as expected
 	st.Expect(t, err, nil)
 
-	// // Query and get the trade groups
-	// var results = []models.TradeGroup{}
+	// Query and get the trade groups
+	var results = []models.TradeGroup{}
 
-	// // Run the query
-	// err = db.Query(&results, models.QueryParam{})
+	// Run the query
+	err = db.Query(&results, models.QueryParam{})
 
-	// // Verify the data was return as expected
-	// st.Expect(t, err, nil)
-	// st.Expect(t, len(results), 13)
+	// Verify the data was return as expected
+	st.Expect(t, err, nil)
+	st.Expect(t, len(results), 13)
 
-	// // Check some of the single options
-	// st.Expect(t, results[10].Status, "Closed")
-	// st.Expect(t, results[10].Type, "Option")
-	// st.Expect(t, results[10].OrderIds, "1,2")
-	// st.Expect(t, results[10].Risked, 239.00)
-	// st.Expect(t, results[10].Profit, 113.00)
-	// st.Expect(t, results[10].Commission, 10.00)
+	// Check some of the single options
+	st.Expect(t, results[10].Status, "Closed")
+	st.Expect(t, results[10].Type, "Option")
+	st.Expect(t, results[10].OrderIds, "1,2")
+	st.Expect(t, results[10].Risked, 239.00)
+	st.Expect(t, results[10].Profit, 113.00)
+	st.Expect(t, results[10].Commission, 10.00)
 
-	// st.Expect(t, results[11].Status, "Open")
-	// st.Expect(t, results[11].Type, "Option")
-	// st.Expect(t, results[11].OrderIds, "12")
-	// st.Expect(t, results[11].Risked, 1290.00)
-	// st.Expect(t, results[11].Profit, 0.00)
-	// st.Expect(t, results[11].Commission, 5.00)
+	st.Expect(t, results[11].Status, "Open")
+	st.Expect(t, results[11].Type, "Option")
+	st.Expect(t, results[11].OrderIds, "12")
+	st.Expect(t, results[11].Risked, 1290.00)
+	st.Expect(t, results[11].Profit, 0.00)
+	st.Expect(t, results[11].Commission, 5.00)
 
+	// Spot check some put credit spreads
+	st.Expect(t, results[1].Status, "Closed")
+	st.Expect(t, results[1].Type, "Put Credit Spread")
+	st.Expect(t, results[1].OrderIds, "4,6,7")
+	st.Expect(t, results[1].Risked, 3195.00)
+	st.Expect(t, results[1].Credit, 405.00)
+	st.Expect(t, results[1].Profit, -863.60)
+	st.Expect(t, results[1].Proceeds, -1242.00)
+	st.Expect(t, results[1].Commission, 26.60)
+
+	// Spot check some call credit spreads
+	st.Expect(t, results[6].Status, "Open")
+	st.Expect(t, results[6].Type, "Call Credit Spread")
+	st.Expect(t, results[6].OrderIds, "13")
+	st.Expect(t, results[6].Risked, 712.00)
+	st.Expect(t, results[6].Credit, 288.00)
+	st.Expect(t, results[6].Profit, 0.00)
+	st.Expect(t, results[6].Proceeds, 0.00)
+	st.Expect(t, results[6].Commission, 7.00)
 }
 
 //

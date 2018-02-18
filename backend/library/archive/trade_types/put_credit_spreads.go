@@ -44,7 +44,7 @@ func GetPutCreditSpreadRiskProfile(positions *[]models.Position) (float64, float
 	maxRisk := (float64(qty) * dif * 100.00) + cost
 
 	// Return happy.
-	return maxRisk, ((dif * 100 * float64(qty)) - maxRisk)
+	return maxRisk, (cost * -1.00)
 }
 
 //

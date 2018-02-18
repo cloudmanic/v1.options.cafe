@@ -163,6 +163,7 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 		tradeGroup.Proceeds = proceeds
 		tradeGroup.Risked = risked
 		tradeGroup.Profit = profit
+		tradeGroup.Credit = credit
 		tradeGroup.Commission += commission
 		tradeGroup.Status = tradeGroupStatus
 		tradeGroup.ClosedDate = order.TransactionDate
