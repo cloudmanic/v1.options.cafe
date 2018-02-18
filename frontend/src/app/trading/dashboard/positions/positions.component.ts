@@ -56,7 +56,7 @@ export class PositionsComponent implements OnInit {
   private getPositions() 
   {
     // Get tradegroup data
-    this.tradeGroupService.get(Number(this.stateService.GetStoredActiveAccountId()), 100, 1, 'open_date', 'desc', '', 'Open').subscribe((res) => {
+    this.tradeGroupService.get(Number(this.stateService.GetStoredActiveAccountId()), 100, 1, 'open_date', 'asc', '', 'Open').subscribe((res) => {
 
       // Reset the trade groups
       this.tradeGroups = new TradeGroupsCont([], [], [], [], [], [], []);
