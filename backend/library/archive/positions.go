@@ -50,6 +50,7 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 	var tradeGroupId uint
 	var proceeds float64 = 0.00
 	var profit float64 = 0.00
+	var percentGain float64 = 0.00
 	var tradeGroupStatus = "Closed"
 
 	// If we do not have at least 1 position we give up
@@ -94,11 +95,6 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 	// Figure out max risked before commissions in this trade.
 	risked, credit := GetAmountRiskedInTrade(positions)
 
-	// // Figure out gain
-	// if tradeGroupStatus == "Closed" {
-	// 	proceeds = (((risked + profit) - risked) / risked) * 100
-	// }
-
 	// Create or Update Trade Group
 	if tradeGroupId == 0 {
 
@@ -131,6 +127,7 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 			Proceeds:        proceeds,
 			Risked:          risked,
 			Profit:          profit,
+			PercentGain:     percentGain,
 			Type:            tgType,
 			Note:            "",
 			OpenDate:        order.CreateDate,
@@ -157,12 +154,14 @@ func doTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 		// Update profit to have commissions.
 		if tradeGroupStatus == "Closed" {
 			profit = profit - commission - tradeGroup.Commission
+			percentGain = (((risked + profit) - risked) / risked) * 100
 		}
 
 		tradeGroup.Type = tgType
 		tradeGroup.Proceeds = proceeds
 		tradeGroup.Risked = risked
 		tradeGroup.Profit = profit
+		tradeGroup.PercentGain = percentGain
 		tradeGroup.Credit = credit
 		tradeGroup.Commission += commission
 		tradeGroup.Status = tradeGroupStatus

@@ -19,7 +19,7 @@ export class TradeGroup {
   public ClosedDate: string;
   public Credit: number;
   public Profit: number;
-  public Gain: number;
+  public PercentGain: number;
   public Risked: number;
   public Commission: number;
   public Note: string;
@@ -37,7 +37,8 @@ export class TradeGroup {
     ClosedDate: string,
     Credit: number,
     Profit: number,
-    Gain: number,
+    Proceeds: number,    
+    PercentGain: number,
     Risked: number,
     Commission: number,
     Note: string,
@@ -51,7 +52,8 @@ export class TradeGroup {
     this.ClosedDate = ClosedDate;
     this.Credit = Credit;
     this.Profit = Profit;
-    this.Gain = Gain;
+    this.Proceeds = Proceeds;    
+    this.PercentGain = PercentGain;
     this.Risked = Risked;
     this.Commission = Commission;
     this.Note = Note;
@@ -99,7 +101,8 @@ export class TradeGroup {
         data[i].closed_date,
         data[i].credit,
         data[i].profit,
-        data[i].gain,
+        data[i].proceeds,
+        data[i].percent_gain,
         data[i].risked,
         data[i].commission,
         data[i].note,

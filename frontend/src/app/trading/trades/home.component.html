@@ -120,8 +120,8 @@
     							</td>
   
     							<td>
-    								<strong [ngClass]="{'title-red': (row.Gain < 0), 'title-green': (row.Gain > 0)}" *ngIf="row.Status === 'Closed'">
-                                        {{ row.Profit | currency }} ({{ row.Gain }}%)
+    								<strong [ngClass]="{'title-red': (row.Profit < 0), 'title-green': (row.Profit > 0)}" *ngIf="row.Status === 'Closed'">
+                                        {{ row.Profit | currency }} ({{ row.PercentGain }}%)
                                     </strong>
                                     <strong *ngIf="row.Status === 'Open'">---</strong>
     							</td>

@@ -19,9 +19,10 @@ type TradeGroup struct {
 	Type            string     `sql:"not null;type:ENUM('Option', 'Stock', 'Put Credit Spread', 'Call Credit Spread', 'Put Debit Spread', 'Call Debit Spread', 'Iron Condor', 'Other'); default:'Other'" json:"type"`
 	OrderIds        string     `json:"_"`
 	Risked          float64    `sql:"type:DECIMAL(12,2)" json:"risked"`
-	Credit          float64    `sql:"type:DECIMAL(12,2)" json:"credit"`   // Before Commission
-	Proceeds        float64    `sql:"type:DECIMAL(12,2)" json:"proceeds"` // Before Commission
-	Profit          float64    `sql:"type:DECIMAL(12,2)" json:"profit"`   // After Commission
+	Credit          float64    `sql:"type:DECIMAL(12,2)" json:"credit"`       // Before Commission
+	Proceeds        float64    `sql:"type:DECIMAL(12,2)" json:"proceeds"`     // Before Commission
+	Profit          float64    `sql:"type:DECIMAL(12,2)" json:"profit"`       // After Commission
+	PercentGain     float64    `sql:"type:DECIMAL(12,2)" json:"percent_gain"` // After Commission
 	Commission      float64    `sql:"type:DECIMAL(12,2)" json:"commission"`
 	Note            string     `sql:"type:text" json:"note"`
 	Positions       []Position `json:"positions"`

@@ -58,6 +58,7 @@ func TestStorePositions01(t *testing.T) {
 	st.Expect(t, results[10].Risked, 239.00)
 	st.Expect(t, results[10].Profit, 113.00)
 	st.Expect(t, results[10].Commission, 10.00)
+	st.Expect(t, results[10].PercentGain, 47.28)
 
 	st.Expect(t, results[11].Status, "Open")
 	st.Expect(t, results[11].Type, "Option")
@@ -65,6 +66,7 @@ func TestStorePositions01(t *testing.T) {
 	st.Expect(t, results[11].Risked, 1290.00)
 	st.Expect(t, results[11].Profit, 0.00)
 	st.Expect(t, results[11].Commission, 5.00)
+	st.Expect(t, results[11].PercentGain, 0.00)
 
 	// Spot check some put credit spreads
 	st.Expect(t, results[1].Status, "Closed")
@@ -75,6 +77,7 @@ func TestStorePositions01(t *testing.T) {
 	st.Expect(t, results[1].Profit, -863.60)
 	st.Expect(t, results[1].Proceeds, -1242.00)
 	st.Expect(t, results[1].Commission, 26.60)
+	st.Expect(t, results[1].PercentGain, -27.03)
 
 	// Spot check some call credit spreads
 	st.Expect(t, results[6].Status, "Open")
@@ -85,6 +88,7 @@ func TestStorePositions01(t *testing.T) {
 	st.Expect(t, results[6].Profit, 0.00)
 	st.Expect(t, results[6].Proceeds, 0.00)
 	st.Expect(t, results[6].Commission, 7.00)
+	st.Expect(t, results[6].PercentGain, 0.00)
 }
 
 //
