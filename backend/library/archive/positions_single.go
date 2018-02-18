@@ -79,7 +79,7 @@ func doSingleOptionOrder(db models.Datastore, userId uint, brokerId uint) error 
 		}
 
 		// Build Trade Group
-		err = doTradeGroupBuildFromPositions(row, &positions, db, userId, brokerId)
+		err = DoTradeGroupBuildFromPositions(row, &positions, db, userId, brokerId)
 
 		// Mark the order as reviewed
 		row.PositionReviewed = "Yes"
@@ -105,7 +105,7 @@ func doOpenSingleOptionOrder(order models.Order, db models.Datastore, userId uin
 	var cost_basis float64 = 0.00
 
 	// First we find out if we already have a position on for this.
-	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, order.OptionSymbolId, "Open", order.AccountId)
+	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, order.OptionSymbolId, "Open", order.BrokerAccountId)
 
 	// Is this a long trade closing?
 	if order.Side == "buy_to_open" {
@@ -136,21 +136,22 @@ func doOpenSingleOptionOrder(order models.Order, db models.Datastore, userId uin
 
 		// Insert Position
 		position = models.Position{
-			UserId:        userId,
-			TradeGroupId:  0,
-			CreatedAt:     time.Now(),
-			UpdatedAt:     time.Now(),
-			AccountId:     order.AccountId,
-			SymbolId:      order.OptionSymbolId,
-			Qty:           qty,
-			OrgQty:        qty,
-			CostBasis:     cost_basis,
-			AvgOpenPrice:  order.AvgFillPrice,
-			AvgClosePrice: 0.00,
-			Note:          "",
-			OpenDate:      order.CreateDate,
-			OrderIds:      strconv.Itoa(int(order.Id)),
-			Status:        "Open",
+			UserId:           userId,
+			TradeGroupId:     0,
+			CreatedAt:        time.Now(),
+			UpdatedAt:        time.Now(),
+			BrokerAccountId:  uint(order.BrokerAccountId),
+			BrokerAccountRef: order.BrokerAccountRef,
+			SymbolId:         order.OptionSymbolId,
+			Qty:              qty,
+			OrgQty:           qty,
+			CostBasis:        cost_basis,
+			AvgOpenPrice:     order.AvgFillPrice,
+			AvgClosePrice:    0.00,
+			Note:             "",
+			OpenDate:         order.CreateDate,
+			OrderIds:         strconv.Itoa(int(order.Id)),
+			Status:           "Open",
 		}
 
 		// Insert into DB
@@ -167,7 +168,7 @@ func doOpenSingleOptionOrder(order models.Order, db models.Datastore, userId uin
 func doCloseSingleOptionOrder(order models.Order, db models.Datastore, userId uint) (models.Position, error) {
 
 	// First we find out if we already have a position on for this.
-	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, order.OptionSymbolId, "Open", order.AccountId)
+	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, order.OptionSymbolId, "Open", order.BrokerAccountId)
 
 	// We found so we are just removing to a current position.
 	if position.Id > 0 {
@@ -208,7 +209,7 @@ func doCloseSingleOptionOrder(order models.Order, db models.Datastore, userId ui
 		db.UpdatePosition(&position)
 
 	} else {
-		return models.Position{}, errors.New("Unable to find close position in our database. - " + strconv.Itoa(int(userId)) + " : " + order.AccountId)
+		return models.Position{}, errors.New("Unable to find close position in our database. - " + strconv.Itoa(int(userId)) + " : " + order.BrokerAccountRef)
 	}
 
 	// Return a list of position that we reviewed

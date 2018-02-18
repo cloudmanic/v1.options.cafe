@@ -128,16 +128,16 @@ func LoadTestingData(db *gorm.DB) {
 
 	// TradeGroups TODO: make this more complete
 	db.Exec("TRUNCATE TABLE trade_groups;")
-	db.Create(&TradeGroup{UserId: 1, BrokerAccountId: 1, AccountId: "abc123", Status: "Open", Type: "Put Credit Spread", OrderIds: "1", Risked: 0.00, Proceeds: 0.00, Profit: 0.00, Commission: 23.45, Note: "Test note #1", OpenDate: ts})
+	db.Create(&TradeGroup{UserId: 1, BrokerAccountId: 1, BrokerAccountRef: "abc123", Status: "Open", Type: "Put Credit Spread", OrderIds: "1", Risked: 0.00, Proceeds: 0.00, Profit: 0.00, Commission: 23.45, Note: "Test note #1", OpenDate: ts})
 
 	// Positions TODO: Put better values in here.
 	db.Exec("TRUNCATE TABLE positions;")
-	db.Create(&Position{UserId: 1, TradeGroupId: 1, AccountId: "123abc", Status: "Open", SymbolId: 4, Qty: 10, OrgQty: 10, CostBasis: 1000.00, AvgOpenPrice: 1.00, AvgClosePrice: 0.00, OrderIds: "1", OpenDate: ts, Note: "Test note #1"})
-	db.Create(&Position{UserId: 1, TradeGroupId: 1, AccountId: "123abc", Status: "Open", SymbolId: 6, Qty: 10, OrgQty: 10, CostBasis: 1000.00, AvgOpenPrice: 1.00, AvgClosePrice: 0.00, OrderIds: "1", OpenDate: ts, Note: "Test note #2"})
+	db.Create(&Position{UserId: 1, TradeGroupId: 1, BrokerAccountRef: "123abc", Status: "Open", SymbolId: 4, Qty: 10, OrgQty: 10, CostBasis: 1000.00, AvgOpenPrice: 1.00, AvgClosePrice: 0.00, OrderIds: "1", OpenDate: ts, Note: "Test note #1"})
+	db.Create(&Position{UserId: 1, TradeGroupId: 1, BrokerAccountRef: "123abc", Status: "Open", SymbolId: 6, Qty: 10, OrgQty: 10, CostBasis: 1000.00, AvgOpenPrice: 1.00, AvgClosePrice: 0.00, OrderIds: "1", OpenDate: ts, Note: "Test note #2"})
 
 	// Orders
 	db.Exec("TRUNCATE TABLE orders;")
-	db.Exec(`INSERT INTO orders (id, user_id, created_at, updated_at, broker_id, broker_ref, account_id, type, symbol_id, option_symbol_id, side, qty, status, duration, price, avg_fill_price, exec_quantity, last_fill_price, last_fill_quantity, remaining_quantity, create_date, transaction_date, class, num_legs, position_reviewed) VALUES 
+	db.Exec(`INSERT INTO orders (id, user_id, created_at, updated_at, broker_account_id, broker_ref, broker_account_ref, type, symbol_id, option_symbol_id, side, qty, status, duration, price, avg_fill_price, exec_quantity, last_fill_price, last_fill_quantity, remaining_quantity, create_date, transaction_date, class, num_legs, position_reviewed) VALUES 
 	(1,1,'2018-02-17 00:13:53','2018-02-17 00:13:54',2,'734801','ABC123ZY','limit',1,11,'buy_to_open',1,'filled','day',2.40,2.39,1.00,2.39,1.00,0.00,'2018-01-16 11:54:50','2018-01-16 11:54:51','option',0,'No'),
 	(2,1,'2018-02-17 00:13:53','2018-02-17 00:13:54',2,'735196','ABC123ZY','limit',1,11,'sell_to_close',-1,'filled','gtc',3.39,3.62,1.00,3.62,1.00,0.00,'2018-01-16 15:29:51','2018-02-05 06:30:03','option',0,'No'),
 	(3,1,'2018-02-17 00:13:53','2018-02-17 00:13:53',2,'767256','ABC123ZY','credit',1,0,'buy',9,'filled','day',0.24,-0.24,9.00,0.00,1.00,0.00,'2018-01-30 09:20:25','2018-01-30 09:45:11','multileg',2,'No'),

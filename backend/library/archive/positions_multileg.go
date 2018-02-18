@@ -84,7 +84,7 @@ func doMultiLegOrders(db models.Datastore, userId uint, brokerId uint) error {
 		}
 
 		// Build Trade Group
-		err = doTradeGroupBuildFromPositions(row, &positions, db, userId, brokerId)
+		err = DoTradeGroupBuildFromPositions(row, &positions, db, userId, brokerId)
 
 		if err != nil {
 			services.Fatal(err)
@@ -115,7 +115,7 @@ func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db model
 	var cost_basis float64 = 0.00
 
 	// First we find out if we already have a position on for this.
-	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, leg.SymbolId, "Open", order.AccountId)
+	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, leg.SymbolId, "Open", order.BrokerAccountId)
 
 	// Is this a long trade closing?
 	if leg.Side == "buy_to_open" {
@@ -146,22 +146,23 @@ func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db model
 
 		// Insert Position
 		position = models.Position{
-			UserId:        userId,
-			TradeGroupId:  0,
-			CreatedAt:     time.Now(),
-			UpdatedAt:     time.Now(),
-			AccountId:     order.AccountId,
-			SymbolId:      leg.SymbolId,
-			Qty:           qty,
-			OrgQty:        qty,
-			CostBasis:     cost_basis,
-			Proceeds:      0.00,
-			AvgOpenPrice:  leg.AvgFillPrice,
-			AvgClosePrice: 0.00,
-			Note:          "",
-			OpenDate:      leg.CreateDate,
-			OrderIds:      strconv.Itoa(int(order.Id)),
-			Status:        "Open",
+			UserId:           userId,
+			TradeGroupId:     0,
+			CreatedAt:        time.Now(),
+			UpdatedAt:        time.Now(),
+			BrokerAccountId:  order.BrokerAccountId,
+			BrokerAccountRef: order.BrokerAccountRef,
+			SymbolId:         leg.SymbolId,
+			Qty:              qty,
+			OrgQty:           qty,
+			CostBasis:        cost_basis,
+			Proceeds:         0.00,
+			AvgOpenPrice:     leg.AvgFillPrice,
+			AvgClosePrice:    0.00,
+			Note:             "",
+			OpenDate:         leg.CreateDate,
+			OrderIds:         strconv.Itoa(int(order.Id)),
+			Status:           "Open",
 		}
 
 		// Insert into DB
@@ -178,7 +179,7 @@ func doOpenOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db model
 func doCloseOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db models.Datastore, userId uint) (models.Position, error) {
 
 	// First we find out if we already have a position on for this.
-	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, leg.SymbolId, "Open", order.AccountId)
+	position, _ := db.GetPositionByUserSymbolStatusAccount(userId, leg.SymbolId, "Open", order.BrokerAccountId)
 
 	// We found so we are just removing to a current position.
 	if position.Id > 0 {
@@ -219,7 +220,9 @@ func doCloseOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db mode
 		db.UpdatePosition(&position)
 
 	} else {
-		return models.Position{}, errors.New("Unable to find close position in our database. - OrderId: " + strconv.Itoa(int(order.Id)) + " - UserId: " + strconv.Itoa(int(userId)) + " - Symbol Id: " + strconv.Itoa(int(leg.SymbolId)) + " - Order AccountId: " + order.AccountId)
+		//fmt.Println("Unable to find close position in our database. - OrderId: " + strconv.Itoa(int(order.Id)) + " - UserId: " + strconv.Itoa(int(userId)) + " - Symbol Id: " + strconv.Itoa(int(leg.SymbolId)) + " - Order Broker Account Ref: " + order.BrokerAccountRef)
+		//os.Exit(1)
+		return models.Position{}, errors.New("Unable to find close position in our database. - OrderId: " + strconv.Itoa(int(order.Id)) + " - UserId: " + strconv.Itoa(int(userId)) + " - Symbol Id: " + strconv.Itoa(int(leg.SymbolId)) + " - Order Broker Account Ref: " + order.BrokerAccountRef)
 	}
 
 	// Return a list of position that we reviewed

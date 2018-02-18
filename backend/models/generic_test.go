@@ -239,16 +239,16 @@ func TestQuery02(t *testing.T) {
 
 	// Test results
 	st.Expect(t, err, nil)
-	st.Expect(t, noFilterCount, 9)
+	st.Expect(t, noFilterCount, 32)
 	st.Expect(t, len(results), 2)
 	st.Expect(t, results[0].Id, uint(1))
 	st.Expect(t, results[1].Id, uint(2))
 	st.Expect(t, meta.Page, 1)
 	st.Expect(t, meta.Limit, 2)
 	st.Expect(t, meta.Offset, 0)
-	st.Expect(t, meta.PageCount, 5)
+	st.Expect(t, meta.PageCount, 16)
 	st.Expect(t, meta.LimitCount, 2)
-	st.Expect(t, meta.NoLimitCount, 9)
+	st.Expect(t, meta.NoLimitCount, 32)
 
 	// ---------  Test 2 -------- //
 
@@ -285,15 +285,15 @@ func TestQuery02(t *testing.T) {
 	// Test results
 	st.Expect(t, err, nil)
 	st.Expect(t, len(results), 2)
-	st.Expect(t, noFilterCount, 3)
+	st.Expect(t, noFilterCount, 22)
 	st.Expect(t, results[0].Id, uint(1))
 	st.Expect(t, results[1].Id, uint(4))
 	st.Expect(t, meta.Page, 1)
 	st.Expect(t, meta.Limit, 2)
 	st.Expect(t, meta.Offset, 0)
-	st.Expect(t, meta.PageCount, 2)
+	st.Expect(t, meta.PageCount, 11)
 	st.Expect(t, meta.LimitCount, 2)
-	st.Expect(t, meta.NoLimitCount, 3)
+	st.Expect(t, meta.NoLimitCount, 22)
 	st.Expect(t, meta.LastPage, false)
 
 	// ---------  Test 4 -------- //
@@ -315,16 +315,16 @@ func TestQuery02(t *testing.T) {
 
 	// Test results
 	st.Expect(t, err, nil)
-	st.Expect(t, len(results), 1)
-	st.Expect(t, noFilterCount, 3)
+	st.Expect(t, len(results), 2)
+	st.Expect(t, noFilterCount, 22)
 	st.Expect(t, results[0].Id, uint(6))
 	st.Expect(t, meta.Page, 2)
 	st.Expect(t, meta.Limit, 2)
 	st.Expect(t, meta.Offset, 2)
-	st.Expect(t, meta.PageCount, 2)
-	st.Expect(t, meta.LimitCount, 1)
-	st.Expect(t, meta.NoLimitCount, 3)
-	st.Expect(t, meta.LastPage, true)
+	st.Expect(t, meta.PageCount, 11)
+	st.Expect(t, meta.LimitCount, 2)
+	st.Expect(t, meta.NoLimitCount, 22)
+	st.Expect(t, meta.LastPage, false)
 
 	// ---------  Test 5 -------- //
 
@@ -364,7 +364,7 @@ func TestCount01(t *testing.T) {
 
 	// Test results
 	st.Expect(t, err, nil)
-	st.Expect(t, count, uint(9))
+	st.Expect(t, count, uint(32))
 
 	// ---------  Test 2 -------- //
 
@@ -373,7 +373,7 @@ func TestCount01(t *testing.T) {
 
 	// Test results
 	st.Expect(t, err2, nil)
-	st.Expect(t, count, uint(6))
+	st.Expect(t, count, uint(7))
 }
 
 /* End File */

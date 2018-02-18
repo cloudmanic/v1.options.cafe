@@ -78,7 +78,7 @@ type Datastore interface {
 	// Positions
 	CreatePosition(position *Position) error
 	UpdatePosition(position *Position) error
-	GetPositionByUserSymbolStatusAccount(userId uint, symbolId uint, status string, accountId string) (Position, error)
+	GetPositionByUserSymbolStatusAccount(userId uint, symbolId uint, status string, brokerAccountId uint) (Position, error)
 
 	// TradeGroup
 	GetTradeGroups(params QueryParam) ([]TradeGroup, QueryMetaData, error)

@@ -8,26 +8,26 @@ import (
 )
 
 type TradeGroup struct {
-	Id              uint       `gorm:"primary_key" json:"id"`
-	UserId          uint       `sql:"not null;index:UserId" json:"_"`
-	CreatedAt       time.Time  `json:"_"`
-	UpdatedAt       time.Time  `json:"_"`
-	Name            string     `json:"name"`
-	BrokerAccountId uint       `sql:"not null;index:BrokerAccountId" json:"_"`
-	AccountId       string     `sql:"not null;index:AccountId" json:"account_id"`
-	Status          string     `sql:"not null;type:ENUM('Open', 'Closed');default:'Open'" json:"status"`
-	Type            string     `sql:"not null;type:ENUM('Option', 'Stock', 'Put Credit Spread', 'Call Credit Spread', 'Put Debit Spread', 'Call Debit Spread', 'Iron Condor', 'Other'); default:'Other'" json:"type"`
-	OrderIds        string     `json:"_"`
-	Risked          float64    `sql:"type:DECIMAL(12,2)" json:"risked"`
-	Credit          float64    `sql:"type:DECIMAL(12,2)" json:"credit"`       // Before Commission
-	Proceeds        float64    `sql:"type:DECIMAL(12,2)" json:"proceeds"`     // Before Commission
-	Profit          float64    `sql:"type:DECIMAL(12,2)" json:"profit"`       // After Commission
-	PercentGain     float64    `sql:"type:DECIMAL(12,2)" json:"percent_gain"` // After Commission
-	Commission      float64    `sql:"type:DECIMAL(12,2)" json:"commission"`
-	Note            string     `sql:"type:text" json:"note"`
-	Positions       []Position `json:"positions"`
-	OpenDate        time.Time  `json:"open_date"`
-	ClosedDate      time.Time  `json:"closed_date"`
+	Id               uint       `gorm:"primary_key" json:"id"`
+	UserId           uint       `sql:"not null;index:UserId" json:"_"`
+	CreatedAt        time.Time  `json:"_"`
+	UpdatedAt        time.Time  `json:"_"`
+	Name             string     `json:"name"`
+	BrokerAccountId  uint       `sql:"not null;index:BrokerAccountId" json:"_"`
+	BrokerAccountRef string     `sql:"not null;index:BrokerAccountRef" json:"broker_account_ref"`
+	Status           string     `sql:"not null;type:ENUM('Open', 'Closed');default:'Open'" json:"status"`
+	Type             string     `sql:"not null;type:ENUM('Option', 'Stock', 'Put Credit Spread', 'Call Credit Spread', 'Put Debit Spread', 'Call Debit Spread', 'Iron Condor', 'Other'); default:'Other'" json:"type"`
+	OrderIds         string     `json:"_"`
+	Risked           float64    `sql:"type:DECIMAL(12,2)" json:"risked"`
+	Credit           float64    `sql:"type:DECIMAL(12,2)" json:"credit"`       // Before Commission
+	Proceeds         float64    `sql:"type:DECIMAL(12,2)" json:"proceeds"`     // Before Commission
+	Profit           float64    `sql:"type:DECIMAL(12,2)" json:"profit"`       // After Commission
+	PercentGain      float64    `sql:"type:DECIMAL(12,2)" json:"percent_gain"` // After Commission
+	Commission       float64    `sql:"type:DECIMAL(12,2)" json:"commission"`
+	Note             string     `sql:"type:text" json:"note"`
+	Positions        []Position `json:"positions"`
+	OpenDate         time.Time  `json:"open_date"`
+	ClosedDate       time.Time  `json:"closed_date"`
 }
 
 //

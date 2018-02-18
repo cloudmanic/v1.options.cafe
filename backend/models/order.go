@@ -9,9 +9,9 @@ type Order struct {
 	UserId            uint `sql:"not null;index:UserId"`
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
-	BrokerId          int    `sql:"not null;index:OurBrokerId"`
+	BrokerAccountId   uint   `sql:"not null;index:BrokerAccountId"`
 	BrokerRef         string `sql:"not null;index:BrokerRef"`
-	AccountId         string `sql:"not null;index:AccountId"`
+	BrokerAccountRef  string `sql:"not null;index:BrokerAccountRef"`
 	Type              string
 	SymbolId          uint
 	OptionSymbolId    uint
