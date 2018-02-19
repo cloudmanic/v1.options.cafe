@@ -39,6 +39,13 @@ func StorePositions(db models.Datastore, userId uint, brokerId uint) error {
 		return err
 	}
 
+	// Just double check we do not have any expired positions.
+	err = ReviewCurrentPositionsForExpiredOptions(db, userId, brokerId)
+
+	if err != nil {
+		return err
+	}
+
 	// Return happy
 	return nil
 }

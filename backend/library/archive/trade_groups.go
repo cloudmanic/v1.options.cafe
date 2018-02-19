@@ -30,8 +30,13 @@ func DoTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 		return nil
 	}
 
-	// Get broker account id
-	brokerAccount, err := db.GetBrokerAccountByBrokerAccountNumber(brokerId, order.BrokerAccountRef)
+	// Get the broker account.
+	var brokerAccount = models.BrokerAccount{}
+
+	err := db.Query(&brokerAccount, models.QueryParam{Wheres: []models.KeyValue{
+		{Key: "id", Value: order.BrokerAccountId},
+		{Key: "user_id", Value: userId},
+	}})
 
 	if err != nil {
 		return nil

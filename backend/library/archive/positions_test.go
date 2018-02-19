@@ -110,11 +110,16 @@ func TestStorePositions01(t *testing.T) {
 	var results = []models.TradeGroup{}
 
 	// Run the query
-	err = db.Query(&results, models.QueryParam{})
+	err = db.Query(&results, models.QueryParam{
+		Order: "id",
+		Sort:  "asc",
+	})
 
 	// Verify the data was return as expected
 	st.Expect(t, err, nil)
 	st.Expect(t, len(results), 13)
+
+	//spew.Dump(results)
 
 	// Check some of the single options
 	st.Expect(t, results[10].Status, "Closed")

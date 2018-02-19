@@ -220,8 +220,6 @@ func doCloseOneLegMultiLegOrder(order models.Order, leg models.OrderLeg, db mode
 		db.UpdatePosition(&position)
 
 	} else {
-		//fmt.Println("Unable to find close position in our database. - OrderId: " + strconv.Itoa(int(order.Id)) + " - UserId: " + strconv.Itoa(int(userId)) + " - Symbol Id: " + strconv.Itoa(int(leg.SymbolId)) + " - Order Broker Account Ref: " + order.BrokerAccountRef)
-		//os.Exit(1)
 		return models.Position{}, errors.New("Unable to find close position in our database. - OrderId: " + strconv.Itoa(int(order.Id)) + " - UserId: " + strconv.Itoa(int(userId)) + " - Symbol Id: " + strconv.Itoa(int(leg.SymbolId)) + " - Order Broker Account Ref: " + order.BrokerAccountRef)
 	}
 
