@@ -62,7 +62,7 @@ func DoTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 	tgType := ClassifyTradeGroup(positions)
 
 	// Figure out Commission
-	commission := calcCommissionForOrder(&order, brokerId, &brokerAccount)
+	commission := CalcCommissionForOrder(&order, brokerId, &brokerAccount)
 
 	// Figure out max risked before commissions in this trade.
 	risked, credit := GetAmountRiskedInTrade(positions)

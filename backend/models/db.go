@@ -88,8 +88,8 @@ func LoadTestingData(db *gorm.DB) {
 
 	// BrokerAccounts
 	db.Exec("TRUNCATE TABLE broker_accounts;")
-	db.Create(&BrokerAccount{UserId: 1, BrokerId: 2, Name: "Test Account 1", AccountNumber: "YYY123ZY", StockCommission: 5.00, StockMin: 0.00, OptionCommission: 0.35, OptionSingleMin: 5.00, OptionMultiLegMin: 7.00, OptionBase: 0.00})
-	db.Create(&BrokerAccount{UserId: 1, BrokerId: 2, Name: "Test Account 2", AccountNumber: "ABC123ZY", StockCommission: 5.00, StockMin: 0.00, OptionCommission: 0.35, OptionSingleMin: 5.00, OptionMultiLegMin: 7.00, OptionBase: 0.00})
+	db.Create(&BrokerAccount{UserId: 1, Name: "Test Account 1", AccountNumber: "YYY123ZY", StockCommission: 5.00, StockMin: 0.00, OptionCommission: 0.35, OptionSingleMin: 5.00, OptionMultiLegMin: 7.00, OptionBase: 0.00})
+	db.Create(&BrokerAccount{UserId: 1, Name: "Test Account 2", AccountNumber: "ABC123ZY", StockCommission: 5.00, StockMin: 0.00, OptionCommission: 0.35, OptionSingleMin: 5.00, OptionMultiLegMin: 7.00, OptionBase: 0.00})
 
 	// Symbols
 	db.Exec("TRUNCATE TABLE symbols;")
@@ -125,6 +125,7 @@ func LoadTestingData(db *gorm.DB) {
 	db.Create(&Symbol{Name: "SPY Feb 21, 2018 $243.00 Put", ShortName: "SPY180221P00243000", Type: "Option"})
 	db.Create(&Symbol{Name: "SPY Mar 21, 2018 $254.00 Put", ShortName: "SPY180321P00254000", Type: "Option"})
 	db.Create(&Symbol{Name: "SPY Mar 21, 2018 $256.00 Put", ShortName: "SPY180321P00256000", Type: "Option"})
+	db.Create(&Symbol{Name: "SPY Jul 21, 2017 $234.00 Put", ShortName: "SPY170721P00234000", Type: "Option"})
 
 	// TradeGroups TODO: make this more complete
 	db.Exec("TRUNCATE TABLE trade_groups;")
@@ -132,8 +133,8 @@ func LoadTestingData(db *gorm.DB) {
 
 	// Positions TODO: Put better values in here.
 	db.Exec("TRUNCATE TABLE positions;")
-	db.Create(&Position{UserId: 1, TradeGroupId: 1, BrokerAccountRef: "123abc", Status: "Open", SymbolId: 4, Qty: 10, OrgQty: 10, CostBasis: 1000.00, AvgOpenPrice: 1.00, AvgClosePrice: 0.00, OrderIds: "1", OpenDate: ts, Note: "Test note #1"})
-	db.Create(&Position{UserId: 1, TradeGroupId: 1, BrokerAccountRef: "123abc", Status: "Open", SymbolId: 6, Qty: 10, OrgQty: 10, CostBasis: 1000.00, AvgOpenPrice: 1.00, AvgClosePrice: 0.00, OrderIds: "1", OpenDate: ts, Note: "Test note #2"})
+	db.Create(&Position{UserId: 1, TradeGroupId: 1, BrokerAccountId: 2, BrokerAccountRef: "123abc", Status: "Open", SymbolId: 4, Qty: 10, OrgQty: 10, CostBasis: 1000.00, AvgOpenPrice: 1.00, AvgClosePrice: 0.00, OrderIds: "1", OpenDate: ts, Note: "Test note #1"})
+	db.Create(&Position{UserId: 1, TradeGroupId: 1, BrokerAccountId: 2, BrokerAccountRef: "123abc", Status: "Open", SymbolId: 6, Qty: 10, OrgQty: 10, CostBasis: 1000.00, AvgOpenPrice: 1.00, AvgClosePrice: 0.00, OrderIds: "1", OpenDate: ts, Note: "Test note #2"})
 
 	// Orders
 	db.Exec("TRUNCATE TABLE orders;")
