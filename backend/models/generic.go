@@ -32,8 +32,9 @@ type QueryParam struct {
 }
 
 type KeyValue struct {
-	Key   string
-	Value interface{}
+	Key      string
+	Value    string
+	ValueInt int
 }
 
 type QueryMetaData struct {
@@ -149,7 +150,13 @@ func (t *DB) Count(model interface{}, params QueryParam) (uint, error) {
 
 	// Add in Where clauses
 	for _, row := range params.Wheres {
-		query = query.Where(row.Key+" = ?", row.Value)
+		if len(row.Value) > 0 {
+			query = query.Where(row.Key+" = ?", row.Value)
+		}
+
+		if row.ValueInt > 0 {
+			query = query.Where(row.Key+" = ?", row.ValueInt)
+		}
 	}
 
 	// Run the query
@@ -229,7 +236,13 @@ func (t *DB) buildGenericQuery(params QueryParam) (*gorm.DB, error) {
 
 	// Add in Where clauses
 	for _, row := range params.Wheres {
-		query = query.Where(row.Key+" = ?", row.Value)
+		if len(row.Value) > 0 {
+			query = query.Where(row.Key+" = ?", row.Value)
+		}
+
+		if row.ValueInt > 0 {
+			query = query.Where(row.Key+" = ?", row.ValueInt)
+		}
 	}
 
 	// Search a particular column

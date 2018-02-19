@@ -63,8 +63,8 @@ func ReviewCurrentPositionsForExpiredOptions(db models.Datastore, userId uint, b
 		PreLoads: []string{"Symbol"},
 		Wheres: []models.KeyValue{
 			{Key: "status", Value: "Open"},
-			{Key: "user_id", Value: userId},
-			{Key: "broker_account_id", Value: brokerId},
+			{Key: "user_id", ValueInt: int(userId)},
+			{Key: "broker_account_id", ValueInt: int(brokerId)},
 		}})
 
 	if err != nil {

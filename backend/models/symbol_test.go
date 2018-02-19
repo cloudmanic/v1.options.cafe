@@ -29,7 +29,7 @@ func TestGetAllSymbols01(t *testing.T) {
 	syms := db.GetAllSymbols()
 
 	// Verify data returned
-	st.Expect(t, len(syms), 32)
+	st.Expect(t, len(syms), 33)
 	st.Expect(t, syms[0].Id, uint(1))
 	st.Expect(t, syms[0].ShortName, "SPY")
 	st.Expect(t, syms[0].Name, "SPDR S&P 500 ETF Trust")
@@ -63,7 +63,7 @@ func TestCreateNewSymbol01(t *testing.T) {
 
 	// Test results
 	st.Expect(t, err, nil)
-	st.Expect(t, sym.Id, uint(33))
+	st.Expect(t, sym.Id, uint(34))
 	st.Expect(t, sym.ShortName, "HD") // verify it turns to caps
 	st.Expect(t, sym.Name, "Home Depot")
 	st.Expect(t, sym.Type, "Equity")
@@ -75,7 +75,7 @@ func TestCreateNewSymbol01(t *testing.T) {
 
 	// Test results
 	st.Expect(t, err2, nil)
-	st.Expect(t, sym.Id, uint(33))
+	st.Expect(t, sym.Id, uint(34))
 	st.Expect(t, sym.ShortName, "HD") // verify it turns to caps
 	st.Expect(t, sym.Name, "Home Depot")
 	st.Expect(t, sym.Type, "Equity")

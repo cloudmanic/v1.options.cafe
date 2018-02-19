@@ -239,16 +239,16 @@ func TestQuery02(t *testing.T) {
 
 	// Test results
 	st.Expect(t, err, nil)
-	st.Expect(t, noFilterCount, 32)
+	st.Expect(t, noFilterCount, 33)
 	st.Expect(t, len(results), 2)
 	st.Expect(t, results[0].Id, uint(1))
 	st.Expect(t, results[1].Id, uint(2))
 	st.Expect(t, meta.Page, 1)
 	st.Expect(t, meta.Limit, 2)
 	st.Expect(t, meta.Offset, 0)
-	st.Expect(t, meta.PageCount, 16)
+	st.Expect(t, meta.PageCount, 17)
 	st.Expect(t, meta.LimitCount, 2)
-	st.Expect(t, meta.NoLimitCount, 32)
+	st.Expect(t, meta.NoLimitCount, 33)
 
 	// ---------  Test 2 -------- //
 
@@ -285,15 +285,15 @@ func TestQuery02(t *testing.T) {
 	// Test results
 	st.Expect(t, err, nil)
 	st.Expect(t, len(results), 2)
-	st.Expect(t, noFilterCount, 22)
+	st.Expect(t, noFilterCount, 23)
 	st.Expect(t, results[0].Id, uint(1))
 	st.Expect(t, results[1].Id, uint(4))
 	st.Expect(t, meta.Page, 1)
 	st.Expect(t, meta.Limit, 2)
 	st.Expect(t, meta.Offset, 0)
-	st.Expect(t, meta.PageCount, 11)
+	st.Expect(t, meta.PageCount, 12)
 	st.Expect(t, meta.LimitCount, 2)
-	st.Expect(t, meta.NoLimitCount, 22)
+	st.Expect(t, meta.NoLimitCount, 23)
 	st.Expect(t, meta.LastPage, false)
 
 	// ---------  Test 4 -------- //
@@ -316,14 +316,14 @@ func TestQuery02(t *testing.T) {
 	// Test results
 	st.Expect(t, err, nil)
 	st.Expect(t, len(results), 2)
-	st.Expect(t, noFilterCount, 22)
+	st.Expect(t, noFilterCount, 23)
 	st.Expect(t, results[0].Id, uint(6))
 	st.Expect(t, meta.Page, 2)
 	st.Expect(t, meta.Limit, 2)
 	st.Expect(t, meta.Offset, 2)
-	st.Expect(t, meta.PageCount, 11)
+	st.Expect(t, meta.PageCount, 12)
 	st.Expect(t, meta.LimitCount, 2)
-	st.Expect(t, meta.NoLimitCount, 22)
+	st.Expect(t, meta.NoLimitCount, 23)
 	st.Expect(t, meta.LastPage, false)
 
 	// ---------  Test 5 -------- //
@@ -364,7 +364,7 @@ func TestCount01(t *testing.T) {
 
 	// Test results
 	st.Expect(t, err, nil)
-	st.Expect(t, count, uint(32))
+	st.Expect(t, count, uint(33))
 
 	// ---------  Test 2 -------- //
 

@@ -36,8 +36,8 @@ type TradeGroup struct {
 func (t *DB) GetTradeGroups(params QueryParam) ([]TradeGroup, QueryMetaData, error) {
 
 	var results = []TradeGroup{}
-
 	// Run the query
+	params.Debug = true
 	noFilterCount, err := t.QueryWithNoFilterCount(&results, params)
 
 	// Throw error if we have one

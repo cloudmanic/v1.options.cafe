@@ -52,8 +52,8 @@ func TestReviewCurrentPositionsForExpiredOptions01(t *testing.T) {
 
 	err = db.Query(&results, models.QueryParam{Wheres: []models.KeyValue{
 		{Key: "status", Value: "Closed"},
-		{Key: "user_id", Value: 1},
-		{Key: "broker_account_id", Value: 1},
+		{Key: "user_id", ValueInt: 1},
+		{Key: "broker_account_id", ValueInt: 1},
 	}})
 
 	// Verify the data was return as expected
@@ -67,8 +67,8 @@ func TestReviewCurrentPositionsForExpiredOptions01(t *testing.T) {
 	var result = models.TradeGroup{}
 
 	err = db.Query(&result, models.QueryParam{Wheres: []models.KeyValue{
-		{Key: "id", Value: results[1].TradeGroupId},
-		{Key: "user_id", Value: 1},
+		{Key: "id", ValueInt: int(results[1].TradeGroupId)},
+		{Key: "user_id", ValueInt: 1},
 	}})
 
 	// Verify the data was return as expected
