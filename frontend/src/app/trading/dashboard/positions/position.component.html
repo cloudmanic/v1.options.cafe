@@ -1,10 +1,10 @@
 <div class="box__head box__head--relative">
   <h5 class="box__title">{{ title }}</h5>
 
-  <div class="box__absolute" *ngIf="(title == 'Options')">
+  <div class="box__absolute">
     <p>
-      P&amp;L
-      <strong [ngClass]="{'title-red': (getOptionWidgetProfitLoss(tradeGroups) < 0), 'title-green': (getOptionWidgetProfitLoss(tradeGroups) > 0)}">{{ getOptionWidgetProfitLoss(tradeGroups) | currency }}</strong>
+      <span [innerHTML]="getTradeGroupTotalHeaderTitle(tradeGroups)"></span>
+      <strong [ngClass]="{'title-red': (getTradeGroupWidgetTotal(tradeGroups) < 0), 'title-green': (getTradeGroupWidgetTotal(tradeGroups) > 0)}">{{ getTradeGroupWidgetTotal(tradeGroups) | currency }}</strong>
     </p>
   </div>
 </div>
@@ -19,9 +19,15 @@
             <td><ins>Contracts</ins></td>
             <td><ins>Open</ins></td>
             <td><ins>Lots</ins></td>
-            <td><ins>Away</ins></td>
+
             <td><ins>Days</ins></td>
-            <td><ins>Credit</ins></td>
+
+            <td *ngIf="(row.Type == 'Option')"><ins>Cost Basis</ins></td>            
+            <td *ngIf="(row.Type == 'Put Credit Spread') || (row.Type == 'Call Credit Spread')"><ins>Away</ins></td>
+            
+            <td *ngIf="(row.Type == 'Option')"><ins>Value</ins></td>
+            <td *ngIf="(row.Type == 'Put Credit Spread') || (row.Type == 'Call Credit Spread')"><ins>Credit</ins></td>
+
             <td><ins>P&amp;L</ins></td>
           </tr>
 
@@ -31,24 +37,22 @@
             <td *ngIf="key2 == 0"><strong>{{ row2.OpenDate | date:'shortDate' }}</strong></td>
             <td *ngIf="key2 != 0">&nbsp;</td>
             
-            <td *ngIf="key2 == 0"><strong>{{ row2.Qty }}</strong></td>
+            <td *ngIf="key2 == 0"><strong>{{ getTradeGroupLotCount(row) }}</strong></td>
             <td *ngIf="key2 != 0">&nbsp;</td>
 
-            <td *ngIf="key2 == 0"><strong>2.95%</strong></td>
+            <td *ngIf="key2 == 0"><strong>{{ getTradeGroupDaysToExpire(row) }}</strong></td>
+            <td *ngIf="key2 != 0">&nbsp;</td>  
+
+            <td *ngIf="(key2 == 0) && (row.Type == 'Option')"><strong>{{ row.Risked | currency }}</strong></td>
+            <td *ngIf="(key2 == 0) && ((row.Type == 'Put Credit Spread') || (row.Type == 'Call Credit Spread'))"><strong>{{ getTradeGroupPercentAway(row) }}%</strong></td>
+            <td *ngIf="key2 != 0">&nbsp;</td>
+          
+            <td *ngIf="(key2 == 0) && (row.Type == 'Option')"><strong>{{ getSingleValue(row2) | currency }}</strong></td>
+            <td *ngIf="(key2 == 0) && ((row.Type == 'Put Credit Spread') || (row.Type == 'Call Credit Spread'))"><strong>{{ row.Credit | currency }}</strong></td>
             <td *ngIf="key2 != 0">&nbsp;</td>
 
-            <td *ngIf="key2 == 0"><strong>14</strong></td>
-            <td *ngIf="key2 != 0">&nbsp;</td>
-
-            <td *ngIf="key2 == 0"><strong>{{ row.Credit | currency }}</strong></td>
-            <td *ngIf="key2 != 0">&nbsp;</td>
-
-            <td *ngIf="(key2 == 0) && (row.Type == 'Option')">
-              <strong [ngClass]="{'title-red': (getOptionProfitLoss(row2) < 0), 'title-green': (getOptionProfitLoss(row2) > 0)}">{{ getOptionProfitLoss(row2) | currency }}</strong>
-            </td>
-
-            <td *ngIf="(key2 == 0) && (row.Type == 'Put Credit Spread')">
-              <strong [ngClass]="{'title-red': (getPutCreditSpreadProfitLoss(row) < 0), 'title-green': (getPutCreditSpreadProfitLoss(row) > 0)}">{{ getPutCreditSpreadProfitLoss(row) | currency }}</strong>
+            <td *ngIf="(key2 == 0)">
+              <strong [ngClass]="{'title-red': (getTradeProfitLoss(row) < 0), 'title-green': (getTradeProfitLoss(row) > 0)}">{{ getTradeProfitLoss(row) | currency }}</strong>
             </td>
             <td *ngIf="key2 != 0">&nbsp;</td>
 
@@ -81,7 +85,7 @@
       </div><!-- /.dropdown select -->
     </div><!-- /.table table-large -->
 
-    <div class="progress">
+    <div class="progress" *ngIf="getTradeProgress(row) != 0">
       <strong class="progress__number">{{ getTradeProgress(row) | number:'1.2-2' }}%</strong>
 
       <div class="progress__bar">

@@ -1,19 +1,19 @@
 <li class="box--bordered" *ngIf="tradeGroups?.Option.length">
-  <app-trading-position [quotes]="quotes" [title]="'Options'" [tradeGroups]="tradeGroups?.Option"></app-trading-position>
+  <app-trading-position [quotes]="quotes" [orders]="orders" [title]="'Options'" [tradeGroups]="tradeGroups?.Option"></app-trading-position>
 </li>
 
 <li class="box--bordered" *ngIf="tradeGroups?.PutCreditSpread.length">
-  <app-trading-position [quotes]="quotes" [title]="'Put Credit Spreads'" [tradeGroups]="tradeGroups?.PutCreditSpread"></app-trading-position>
+  <app-trading-position [quotes]="quotes" [orders]="orders" [title]="'Put Credit Spreads'" [tradeGroups]="tradeGroups?.PutCreditSpread"></app-trading-position>
 </li>
 
 <li class="box--bordered" *ngIf="tradeGroups?.CallCreditSpread.length">
-  <app-trading-position [quotes]="quotes" [title]="'Call Credit Spreads'" [tradeGroups]="tradeGroups?.CallCreditSpread"></app-trading-position>
+  <app-trading-position [quotes]="quotes" [orders]="orders" [title]="'Call Credit Spreads'" [tradeGroups]="tradeGroups?.CallCreditSpread"></app-trading-position>
 </li>
 
 <li class="box--bordered" *ngIf="tradeGroups?.CallDebitSpread.length">
-  <app-trading-position [quotes]="quotes" title]="'Call Debit Spreads'" [tradeGroups]="tradeGroups?.CallDebitSpread"></app-trading-position>
+  <app-trading-position [quotes]="quotes" [orders]="orders" title]="'Call Debit Spreads'" [tradeGroups]="tradeGroups?.CallDebitSpread"></app-trading-position>
 </li>
 
 <li class="box--bordered" *ngIf="tradeGroups?.PutDebitSpread.length">
-  <app-trading-position [quotes]="quotes" [title]="'Put Debit Spreads'" [tradeGroups]="tradeGroups?.PutDebitSpread"></app-trading-position>
+  <app-trading-position [quotes]="quotes" [orders]="orders" [title]="'Put Debit Spreads'" [tradeGroups]="tradeGroups?.PutDebitSpread"></app-trading-position>
 </li>

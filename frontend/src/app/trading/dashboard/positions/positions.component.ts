@@ -5,6 +5,7 @@
 //
 
 import { Component, OnInit } from '@angular/core';
+import { Order } from '../../../models/order';
 import { TradeGroup } from '../../../models/trade-group';
 import { AppService } from '../../../providers/websocket/app.service';
 import { QuoteService } from '../../../providers/websocket/quote.service';
@@ -19,6 +20,7 @@ import { TradeGroupService } from '../../../providers/http/trade-group.service';
 export class PositionsComponent implements OnInit {
   
   private quotes = {}
+  private orders: Order[];  
   private tradeGroups: TradeGroupsCont;
 
   //
@@ -31,7 +33,6 @@ export class PositionsComponent implements OnInit {
   //
   ngOnInit() 
   {
-
     // Get the Positions
     this.getPositions();
 
@@ -39,10 +40,10 @@ export class PositionsComponent implements OnInit {
     // this.setOrders(this.appService.orders);
     // this.quotes = this.quoteService.quotes;
         
-    // // Subscribe to data updates from the broker - Orders
-    // this.appService.ordersPush.subscribe(data => {
-    //   this.setOrders(data);
-    // });    
+    // Subscribe to data updates from the broker - Orders
+    this.appService.ordersPush.subscribe(data => {
+      this.orders = data;
+    });    
     
     // Subscribe to data updates from the quotes - Market Quotes
     this.quoteService.marketQuotePushData.subscribe(data => {
@@ -74,7 +75,7 @@ export class PositionsComponent implements OnInit {
         this.tradeGroups[res.Data[i].Type.split(' ').join('')].push(res.Data[i]);
       }
 
-      console.log(this.tradeGroups);
+      //console.log(this.tradeGroups);
 
       // this.limit = res.Limit;
       // this.noLimitCount = res.NoLimitCount;
