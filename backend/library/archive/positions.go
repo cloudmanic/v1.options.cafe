@@ -39,11 +39,25 @@ func StorePositions(db models.Datastore, userId uint, brokerId uint) error {
 		return err
 	}
 
-	// Just double check we do not have any expired positions.
-	err = ReviewCurrentPositionsForExpiredOptions(db, userId, brokerId)
+	// Get the different broker accounts for this user
+	var results = []models.BrokerAccount{}
+
+	err = db.Query(&results, models.QueryParam{
+		Wheres: []models.KeyValue{
+			{Key: "user_id", ValueInt: int(userId)},
+		}})
 
 	if err != nil {
 		return err
+	}
+
+	// Just double check we do not have any expired positions. (loop through the different broker accounts)
+	for _, row := range results {
+		err = ReviewCurrentPositionsForExpiredOptions(db, userId, row.Id)
+
+		if err != nil {
+			return err
+		}
 	}
 
 	// Return happy
@@ -109,13 +123,12 @@ func ReviewCurrentPositionsForExpiredOptions(db models.Datastore, userId uint, b
 			// See if this tradegroup is to close.
 			var profit = 0.00
 			var proceeds = 0.00
-			var percentGain = 0.00
 			var tradeGroupStatus = "Closed"
 
 			// Loop through the positions
 			for _, row2 := range tradeGroup.Positions {
 				// Figure out profit
-				profit = profit + row.Profit
+				profit = profit + row2.Profit
 
 				// Figure out proceeds
 				proceeds = proceeds + row.Proceeds
@@ -128,18 +141,16 @@ func ReviewCurrentPositionsForExpiredOptions(db models.Datastore, userId uint, b
 
 			// Update profit to have commissions.
 			if tradeGroupStatus == "Closed" {
-				profit = profit - tradeGroup.Commission
-				percentGain = (((tradeGroup.Risked + profit) - tradeGroup.Risked) / tradeGroup.Risked) * 100
+				tradeGroup.Note = tradeGroup.Note + " Trade Expired."
+				tradeGroup.Proceeds = proceeds
+				tradeGroup.Profit = profit - tradeGroup.Commission
+				tradeGroup.PercentGain = (((tradeGroup.Risked + profit) - tradeGroup.Risked) / tradeGroup.Risked) * 100
+				tradeGroup.Status = tradeGroupStatus
+				db.UpdateTradeGroup(&tradeGroup)
+
+				// Log success
+				services.Info("New TradeGroup updated (ReviewCurrentPositionsForExpiredOptions) for user " + strconv.Itoa(int(userId)) + " TradeGroup Id: " + strconv.Itoa(int(tradeGroup.Id)))
 			}
-
-			tradeGroup.Proceeds = proceeds
-			tradeGroup.Profit = profit
-			tradeGroup.PercentGain = percentGain
-			tradeGroup.Status = tradeGroupStatus
-			db.UpdateTradeGroup(&tradeGroup)
-
-			// Log success
-			services.Info("New TradeGroup updated (ReviewCurrentPositionsForExpiredOptions) for user " + strconv.Itoa(int(userId)) + " TradeGroup Id: " + strconv.Itoa(int(tradeGroup.Id)))
 		}
 
 	}

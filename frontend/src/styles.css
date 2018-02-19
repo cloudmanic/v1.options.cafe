@@ -1024,7 +1024,7 @@ select::-ms-expand { display: none; }
 .progress { font-size: 13px; position: relative; }
 .progress .progress__number { color: #fff; position: absolute; top: 6px; left: 12px; }
 .progress .progress__bar { background: #e7e8e8; }
-.progress .progress__amount { background: #5cb85c; width: 29.24%; height: 25px; transition: width .5s; }
+.progress .progress__amount { background: #5cb85c; height: 25px; transition: width .5s; }
 /* ------------------------------------------------------------ *\
   Search
 \* ------------------------------------------------------------ */

@@ -191,9 +191,9 @@
     							</td>
     						</tr>
 
-                            <tr>
+                            <tr *ngIf="row.Note.length > 0">
                                 <td colspan="7">
-                                    <p class="note-text">{{ row.Note }}</p>
+                                    <p class="note-text"><strong>Note: </strong>{{ row.Note }}</p>
                                 </td>
                             </tr>
     					</table>

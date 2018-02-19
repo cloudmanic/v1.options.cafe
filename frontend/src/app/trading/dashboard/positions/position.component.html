@@ -82,10 +82,10 @@
     </div><!-- /.table table-large -->
 
     <div class="progress">
-      <strong class="progress__number">21.8%</strong>
+      <strong class="progress__number">{{ getTradeProgress(row) | number:'1.2-2' }}%</strong>
 
       <div class="progress__bar">
-        <div class="progress__amount"></div><!-- /.progress__amount -->
+        <div class="progress__amount" [ngStyle]="{ 'width': getTradeProgressBar(row) + '%' }"></div>
       </div><!-- /.progress__bar -->
     </div><!-- /.progress -->
   </div><!-- /.box__inner -->

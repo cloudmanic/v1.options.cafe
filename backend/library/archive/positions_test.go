@@ -76,7 +76,7 @@ func TestReviewCurrentPositionsForExpiredOptions01(t *testing.T) {
 	st.Expect(t, result.Id, uint(3))
 	st.Expect(t, result.Status, "Closed")
 	st.Expect(t, result.Profit, 976.55)
-	st.Expect(t, result.PercentGain, 325.52)
+	st.Expect(t, result.PercentGain, 333.33)
 }
 
 //

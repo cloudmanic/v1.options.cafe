@@ -66,6 +66,40 @@ export class PositionComponent implements OnInit
   }
 
   //
+  // Get trade progress
+  //
+  getTradeProgress(tradeGroup: TradeGroup) : number
+  {    
+    switch(tradeGroup.Type)
+    {
+      case 'Put Credit Spread':
+        return (this.getPutCreditSpreadProfitLoss(tradeGroup) / tradeGroup.Credit) * 100;
+      break;     
+    }
+
+    return 0.00
+  } 
+
+  //
+  // Get trade progress for the bar
+  //
+  getTradeProgressBar(tradeGroup: TradeGroup) : number
+  {    
+    switch(tradeGroup.Type)
+    {
+      case 'Put Credit Spread':
+        let p = (this.getPutCreditSpreadProfitLoss(tradeGroup) / tradeGroup.Credit) * 100;
+        if(p > 0)
+        {
+          return p;
+        }
+      break;     
+    }
+
+    return 0.00
+  } 
+
+  //
   // Get the total P&L for put credit spreads
   //
   getPutCreditSpreadProfitLoss(tradeGroup: TradeGroup) : number 
