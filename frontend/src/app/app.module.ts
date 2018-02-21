@@ -47,6 +47,7 @@ import { ReportsSubnavComponent } from './reports/sub-nav/subnav.component';
 import { ReportsHomeComponent } from './reports/home/home.component';
 
 // Trading
+
 import { SubnavComponent } from './trading/sub-nav/subnav.component';
 import { TradesComponent } from './trading/trades/home.component';
 import { WatchlistComponent } from './trading/dashboard/watchlist/watchlist.component';
@@ -55,6 +56,7 @@ import { DashboardComponent } from './trading/dashboard/home.component';
 import { OrdersComponent } from './trading/dashboard/orders/orders.component';
 import { PositionsComponent } from './trading/dashboard/positions/positions.component';
 import { PositionComponent } from './trading/dashboard/positions/position.component';
+import { MarketQuotesComponent } from './trading/dashboard/market-quotes/market-quotes.component';
 import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-symbols.component';
 
 @NgModule({
@@ -96,6 +98,7 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     WatchlistComponent,
     PositionsComponent,
     PositionComponent,
+    MarketQuotesComponent,
     TypeaheadSymbolsComponent,
   ],
   
