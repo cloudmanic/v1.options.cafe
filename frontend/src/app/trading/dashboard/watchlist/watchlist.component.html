@@ -77,7 +77,7 @@
   			</li>
   
   			<li>
-  				<strong class="title-red">
+  				<strong [ngClass]="{'title-red': (quotes[row.Symbol.ShortName]?.dailyChange() < 0), 'title-green': (quotes[row.Symbol.ShortName]?.dailyChange() > 0)}">
   					{{ quotes[row.Symbol.ShortName]?.dailyChange() | currency:'USD':'symbol':'1.2-2' }} <span>({{ quotes[row.Symbol.ShortName]?.percentChange() | number:'1.2-2' }}%)</span>
   				</strong>
   			</li>
