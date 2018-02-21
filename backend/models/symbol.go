@@ -15,12 +15,19 @@ import (
 )
 
 type Symbol struct {
-	Id        uint      `gorm:"primary_key" json:"id"`
-	CreatedAt time.Time `json:"-"`
-	UpdatedAt time.Time `json:"-"`
-	ShortName string    `sql:"not null" json:"short_name"`
-	Name      string    `sql:"not null" json:"name"`
-	Type      string    `sql:"not null;type:ENUM('Equity', 'Option', 'Other');default:'Equity'" json:"type"`
+	Id            uint          `gorm:"primary_key" json:"id"`
+	CreatedAt     time.Time     `json:"-"`
+	UpdatedAt     time.Time     `json:"-"`
+	ShortName     string        `sql:"not null" json:"short_name"`
+	Name          string        `sql:"not null" json:"name"`
+	Type          string        `sql:"not null;type:ENUM('Equity', 'Option', 'Other');default:'Equity'" json:"type"`
+	OptionDetails OptionDetails `json:"option_details"`
+}
+
+type OptionDetails struct {
+	Expire time.Time `json:"expire"`
+	Type   string    `json:"type"`
+	Strike float64   `json:"strike"`
 }
 
 //
@@ -99,7 +106,18 @@ func (t *DB) GetAllSymbols() []Symbol {
 
 	var symbols []Symbol
 
+	// Make query.
 	t.Find(&symbols)
+
+	// Add in options parts
+	for key, row := range symbols {
+		if row.Type == "Option" {
+			parts, _ := helpers.OptionParse(row.ShortName)
+			symbols[key].OptionDetails.Type = parts.Type
+			symbols[key].OptionDetails.Strike = parts.Strike
+			symbols[key].OptionDetails.Expire = parts.Expire
+		}
+	}
 
 	return symbols
 }

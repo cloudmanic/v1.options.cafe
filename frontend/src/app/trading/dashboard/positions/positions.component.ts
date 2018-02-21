@@ -73,9 +73,8 @@ export class PositionsComponent implements OnInit {
 
         // Push onto the array.
         this.tradeGroups[res.Data[i].Type.split(' ').join('')].push(res.Data[i]);
-      }
 
-      //console.log(this.tradeGroups);
+      }
 
       // this.limit = res.Limit;
       // this.noLimitCount = res.NoLimitCount;

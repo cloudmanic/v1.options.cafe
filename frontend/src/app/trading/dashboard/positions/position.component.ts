@@ -60,10 +60,9 @@ export class PositionComponent implements OnInit
       return 0;
     }
 
-    return 12;
-    //return tradeGroup.Positions[0].Symbol.
-    //let expire_date = new Date(row.Positions[0].SymbolsExpire + ' 00:00:00');     
-    //return Math.round((expire_date - new Date()) / (1000 * 60 * 60 * 24));    
+    let expire_date = tradeGroup.Positions[0].Symbol.OptionDetails.Expire;     
+    
+    return Math.round((expire_date - new Date()) / (1000 * 60 * 60 * 24));   
   }
 
   //

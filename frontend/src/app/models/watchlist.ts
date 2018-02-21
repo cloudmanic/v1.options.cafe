@@ -32,7 +32,7 @@ export class Watchlist
     // Build Items
     for(let i = 0; i < data.symbols.length; i++)
     {
-      symbs.push(new WatchlistItems(data.symbols[i].id, new Symbol(data.symbols[i].symbol.id, data.symbols[i].symbol.name, data.symbols[i].symbol.short_name)));
+      symbs.push(new WatchlistItems(data.symbols[i].id, new Symbol(data.symbols[i].symbol.id, data.symbols[i].symbol.name, data.symbols[i].symbol.short_name, "Equity", null)));
     }
 
     // Return happy.

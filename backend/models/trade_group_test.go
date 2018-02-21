@@ -8,10 +8,37 @@ package models
 
 import (
 	"testing"
+	"time"
 
 	env "github.com/jpfuentes2/go-env"
 	"github.com/nbio/st"
 )
+
+//
+// Test - GetTradeGroups
+//
+func TestGetTradeGroups01(t *testing.T) {
+
+	// Load config file.
+	env.ReadEnv("../.env")
+
+	// Start the db connection.
+	db, _ := NewDB()
+	defer db.Close()
+
+	// Make query
+	tgs, _, err := db.GetTradeGroups(QueryParam{PreLoads: []string{"Positions"}})
+
+	// Test results
+	st.Expect(t, err, nil)
+	st.Expect(t, tgs[0].Positions[1].Symbol.Id, uint(6))
+	st.Expect(t, tgs[0].Positions[1].Symbol.ShortName, "SPY180316P00266000")
+	st.Expect(t, tgs[0].Positions[1].Symbol.Name, "SPY Mar 16, 2018 $266.00 Put")
+	st.Expect(t, tgs[0].Positions[1].Symbol.Type, "Option")
+	st.Expect(t, tgs[0].Positions[1].Symbol.OptionDetails.Type, "Put")
+	st.Expect(t, tgs[0].Positions[1].Symbol.OptionDetails.Strike, 266.00)
+	st.Expect(t, tgs[0].Positions[1].Symbol.OptionDetails.Expire, time.Date(2018, 03, 16, 0, 0, 0, 0000, time.UTC))
+}
 
 //
 // Test - GetTradeGroupById

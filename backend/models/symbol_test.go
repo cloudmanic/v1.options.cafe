@@ -8,6 +8,7 @@ package models
 
 import (
 	"testing"
+	"time"
 
 	env "github.com/jpfuentes2/go-env"
 	"github.com/nbio/st"
@@ -44,6 +45,14 @@ func TestGetAllSymbols01(t *testing.T) {
 	st.Expect(t, syms[2].ShortName, "SBUX")
 	st.Expect(t, syms[2].Name, "Starbucks Corp")
 	st.Expect(t, syms[2].Type, "Equity")
+
+	st.Expect(t, syms[3].Id, uint(4))
+	st.Expect(t, syms[3].ShortName, "SPY180316P00253000")
+	st.Expect(t, syms[3].Name, "SPY Mar 16, 2018 $253.00 Put")
+	st.Expect(t, syms[3].Type, "Option")
+	st.Expect(t, syms[3].OptionDetails.Type, "Put")
+	st.Expect(t, syms[3].OptionDetails.Strike, 253.00)
+	st.Expect(t, syms[3].OptionDetails.Expire, time.Date(2018, 03, 16, 0, 0, 0, 0000, time.UTC))
 }
 
 //
