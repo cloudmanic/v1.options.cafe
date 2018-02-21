@@ -7,7 +7,7 @@
 import { Injectable } from '@angular/core';
 import { Broker } from '../../models/broker';
 import { Watchlist } from '../../models/watchlist';
-import { TradeGroup } from '../../models/trade-group';
+import { TradeGroup, TradeGroupsCont } from '../../models/trade-group';
 import { BrokerAccount } from '../../models/broker-account';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { environment } from '../../../environments/environment';
@@ -19,6 +19,9 @@ export class StateService
   private quotes = {};
   private activeWatchlist: Watchlist;
   private activeBrokerAccount: BrokerAccount;
+
+  // Dashboard stuff
+  private dashboardTradeGroups: TradeGroupsCont;
   
   // Trade Group stuff
   private tradeGroupPage: number = 1;
@@ -45,6 +48,21 @@ export class StateService
   //
   GetQuotes() {
     return this.quotes;
+  }
+
+
+  //
+  // Set a trade group search term
+  //
+  SetDashboardTradeGroups(group: TradeGroupsCont) {
+    this.dashboardTradeGroups = group;
+  }
+
+  //
+  // Get trade group page
+  //
+  GetDashboardTradeGroups() {
+    return this.dashboardTradeGroups;
   }
 
   //

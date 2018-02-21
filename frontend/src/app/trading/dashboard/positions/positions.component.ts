@@ -6,7 +6,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { Order } from '../../../models/order';
-import { TradeGroup } from '../../../models/trade-group';
+import { TradeGroup, TradeGroupsCont } from '../../../models/trade-group';
 import { AppService } from '../../../providers/websocket/app.service';
 import { QuoteService } from '../../../providers/websocket/quote.service';
 import { StateService } from '../../../providers/state/state.service';
@@ -36,9 +36,9 @@ export class PositionsComponent implements OnInit {
     // Get the Positions
     this.getPositions();
 
-    // // Get Data from cache
-    // this.setOrders(this.appService.orders);
-    // this.quotes = this.quoteService.quotes;
+    // Get Data from cache
+    this.quotes = this.stateService.GetQuotes();    
+    this.tradeGroups = this.stateService.GetDashboardTradeGroups();
         
     // Subscribe to data updates from the broker - Orders
     this.appService.ordersPush.subscribe(data => {
@@ -73,33 +73,12 @@ export class PositionsComponent implements OnInit {
 
         // Push onto the array.
         this.tradeGroups[res.Data[i].Type.split(' ').join('')].push(res.Data[i]);
-
       }
 
-      // this.limit = res.Limit;
-      // this.noLimitCount = res.NoLimitCount;
-      // this.tradesList = res.Data;
-      // this.count = res.Data.length;      
-      // this.stateService.SetActiveTradeGroups(res.Data);
-      // this.stateService.SetTradeGroupPage(this.page);
+      // Store the tradegroups in the state manager
+      this.stateService.SetDashboardTradeGroups(this.tradeGroups);
     });    
   }
-}
-
-//
-// Setup a class to hold all the different position types
-//
-export class TradeGroupsCont 
-{
-  constructor(
-    public Option: TradeGroup[],
-    public PutCreditSpread: TradeGroup[],
-    public CallCreditSpread: TradeGroup[], 
-    public PutDebitSpread: TradeGroup[], 
-    public CallDebitSpread: TradeGroup[], 
-    public IronCondor: TradeGroup[], 
-    public Other: TradeGroup[],         
-  ){}  
 }
 
 /* End File */

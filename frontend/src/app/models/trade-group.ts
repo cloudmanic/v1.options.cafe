@@ -125,4 +125,20 @@ export class TradeGroup {
   }
 }
 
+//
+// Setup a class to hold all the different position types
+//
+export class TradeGroupsCont 
+{
+  constructor(
+    public Option: TradeGroup[],
+    public PutCreditSpread: TradeGroup[],
+    public CallCreditSpread: TradeGroup[], 
+    public PutDebitSpread: TradeGroup[], 
+    public CallDebitSpread: TradeGroup[], 
+    public IronCondor: TradeGroup[], 
+    public Other: TradeGroup[],         
+  ){}  
+}
+
 /* End Find */
