@@ -58,11 +58,9 @@ export class PositionComponent implements OnInit
     if(typeof this.quotes[tradeGroup.Positions[0].Symbol.ShortName] == "undefined")
     {
       return 0;
-    }
-
-    let expire_date = tradeGroup.Positions[0].Symbol.OptionDetails.Expire;     
+    }   
     
-    return Math.round((expire_date - new Date()) / (1000 * 60 * 60 * 24));   
+    return Math.round((tradeGroup.Positions[0].Symbol.OptionDetails.Expire.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));   
   }
 
   //
@@ -70,15 +68,76 @@ export class PositionComponent implements OnInit
   //
   getTradeGroupPercentAway(tradeGroup: TradeGroup) : number
   {
-    if(typeof this.quotes[tradeGroup.Positions[0].Symbol.ShortName] == "undefined")
-    {
-      return 0.00;
-    }
+    return 4.23;
 
-    return 2.67;
-    //return tradeGroup.Positions[0].Symbol.
-    //let expire_date = new Date(row.Positions[0].SymbolsExpire + ' 00:00:00');     
-    //return Math.round((expire_date - new Date()) / (1000 * 60 * 60 * 24));    
+    // // Find the short strike.
+    // var short_strike = null; 
+
+    // if(typeof this.quotes[tradeGroup.Positions[0].Symbol.ShortName] == "undefined")
+    // {
+    //   return 0.00;
+    // }    
+
+    // for(let i = 0; i < tradeGroup.Positions.length; i++)
+    // {
+    //   if(tradeGroup.Positions[i].Symbol.Type != "Option")
+    //   {
+    //     continue;
+    //   }
+
+    //   if(tradeGroup.Positions[i].Qty < 0)
+    //   {
+    //     short_strike = tradeGroup.Positions[i];
+    //   }
+    // }
+
+    // if(tradeGroup.Positions[0].Symbol.OptionDetails.Type == 'Put')
+    // {
+    //   return ((parseFloat(this.quotes[tradeGroup.Positions[0].Symbol.ShortName].last) - parseFloat(short_strike.SymbolsStrike)) / 
+    //             ((parseFloat($scope.quotes[short_strike.SymbolsUnderlying].last) + parseFloat(short_strike.SymbolsStrike)) / 2)) * 100;
+    // } else
+    // {
+    //   return ((parseFloat(short_strike.SymbolsStrike) - parseFloat($scope.quotes[short_strike.SymbolsUnderlying].last)) / 
+    //              parseFloat($scope.quotes[short_strike.SymbolsUnderlying].last)) * 100;      
+    // } 
+
+
+    // let expire_date = tradeGroup.Positions[0].Symbol.OptionDetails.Expire;   
+
+    // return Math.round((expire_date - new Date()) / (1000 * 60 * 60 * 24));
+    
+    // // Find the short strike.
+    // var short_strike = null; 
+    
+    // for(var i in row.Positions)
+    // {
+    //   if(row.Positions[i].PositionsType != 'Option')
+    //   {
+    //     continue;
+    //   }
+      
+    //   if(row.Positions[i].PositionsQty < 0)
+    //   {
+    //     short_strike = row.Positions[i];
+    //   }
+    // }
+
+    // if(! $scope.quotes[short_strike.SymbolsShort])
+    // {
+    //   return '';
+    // }
+    
+    
+    // if(type == 'put')
+    // {
+    //   return ((parseFloat($scope.quotes[short_strike.SymbolsUnderlying].last) - parseFloat(short_strike.SymbolsStrike)) / 
+    //             ((parseFloat($scope.quotes[short_strike.SymbolsUnderlying].last) + parseFloat(short_strike.SymbolsStrike)) / 2)) * 100;
+    // } else
+    // {
+    //   return ((parseFloat(short_strike.SymbolsStrike) - parseFloat($scope.quotes[short_strike.SymbolsUnderlying].last)) / 
+    //              parseFloat($scope.quotes[short_strike.SymbolsUnderlying].last)) * 100;      
+    // }  
+
   }
 
   //
