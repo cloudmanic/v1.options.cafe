@@ -14,6 +14,7 @@ import { Order } from '../../models/order';
 import { Balance } from '../../models/balance';
 import { OrderLeg } from '../../models/order-leg';
 import { MarketStatus } from '../../models/market-status';
+import { ChangeDetected } from '../../models/change-detected';
 
 declare var ClientJS: any;
 
@@ -36,7 +37,8 @@ export class AppService
   ordersPush = new EventEmitter<Order[]>();
   balancesPush = new EventEmitter<Balance[]>();
   marketStatusPush = new EventEmitter<MarketStatus>();
-  
+  changedDetectedPush = new EventEmitter<ChangeDetected>();  
+
   //
   // Construct!!
   //
@@ -78,7 +80,12 @@ export class AppService
       case 'orders':
         this.orders = Order.buildForEmit(msg_data);       
         this.ordersPush.emit(this.orders);              
-      break;  
+      break; 
+
+      // Change detected
+      case 'change-detected':      
+        this.changedDetectedPush.emit(new ChangeDetected(msg_data.type));              
+      break;        
     }
     
   }

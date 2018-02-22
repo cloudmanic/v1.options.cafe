@@ -39,12 +39,12 @@ export class PositionsComponent implements OnInit {
     // Get Data from cache
     this.quotes = this.stateService.GetQuotes();    
     this.tradeGroups = this.stateService.GetDashboardTradeGroups();
-        
-    // Subscribe to data updates from the broker - Orders
-    this.appService.ordersPush.subscribe(data => {
-      this.orders = data;
-    });    
-    
+
+    // Subscribe to when changes are detected at the server.
+    this.appService.changedDetectedPush.subscribe(data => {
+      this.getPositions();
+    }); 
+
     // Subscribe to data updates from the quotes - Market Quotes
     this.quoteService.marketQuotePushData.subscribe(data => {
       this.quotes[data.symbol] = data;

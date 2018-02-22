@@ -16,9 +16,11 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/users/db_feed"
 )
 
 type UserFeed struct {
+	DBFeed     db_feed.Feed
 	Profile    models.User
 	DataChan   chan controllers.SendStruct
 	BrokerFeed map[uint]*feed.Base
@@ -62,6 +64,7 @@ func (t *Base) DoUserFeed(user models.User) {
 
 	// Set the user to the object
 	t.Users[user.Id] = &UserFeed{
+		DBFeed:     db_feed.Feed{DB: t.DB, DataChan: t.DataChan, User: user},
 		Profile:    user,
 		DataChan:   t.DataChan,
 		BrokerFeed: make(map[uint]*feed.Base),
@@ -111,6 +114,9 @@ func (t *Base) DoUserFeed(user models.User) {
 
 		// Start fetching data for this user.
 		go t.Users[user.Id].BrokerFeed[row.Id].Start()
+
+		// Start the database feed
+		go t.Users[user.Id].DBFeed.Start()
 	}
 }
 
