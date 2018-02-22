@@ -6,6 +6,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { Order } from '../../../models/order';
+import { ChangeDetected } from '../../../models/change-detected';
 import { TradeGroup, TradeGroupsCont } from '../../../models/trade-group';
 import { AppService } from '../../../providers/websocket/app.service';
 import { QuoteService } from '../../../providers/websocket/quote.service';
@@ -42,13 +43,24 @@ export class PositionsComponent implements OnInit {
 
     // Subscribe to when changes are detected at the server.
     this.appService.changedDetectedPush.subscribe(data => {
-      this.getPositions();
+      this.manageChangeDetection(data);
     }); 
 
     // Subscribe to data updates from the quotes - Market Quotes
     this.quoteService.marketQuotePushData.subscribe(data => {
       this.quotes[data.symbol] = data;
     });     
+  }
+
+  //
+  // Manage change detection.
+  //
+  private manageChangeDetection(data: ChangeDetected)
+  {
+    if(data.Type == "orders") 
+    {
+      this.getPositions();
+    }
   }
 
   //

@@ -10,7 +10,7 @@ export class ChangeDetected {
   // Construct.
   //
   constructor(
-    public type: string
+    public Type: string
   ){}
   
 }
