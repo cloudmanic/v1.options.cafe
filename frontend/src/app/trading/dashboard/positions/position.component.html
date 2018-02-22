@@ -44,7 +44,9 @@
             <td *ngIf="key2 != 0">&nbsp;</td>  
 
             <td *ngIf="(key2 == 0) && (row.Type == 'Option')"><strong>{{ row.Risked | currency }}</strong></td>
-            <td *ngIf="(key2 == 0) && ((row.Type == 'Put Credit Spread') || (row.Type == 'Call Credit Spread'))"><strong>{{ getTradeGroupPercentAway(row) }}%</strong></td>
+            <td *ngIf="(key2 == 0) && ((row.Type == 'Put Credit Spread') || (row.Type == 'Call Credit Spread'))">
+              <strong [ngClass]="{ 'title-red': (getTradeGroupPercentAway(row) < 0) }">{{ getTradeGroupPercentAway(row) | number:'1.2-2' }}%</strong>
+            </td>
             <td *ngIf="key2 != 0">&nbsp;</td>
           
             <td *ngIf="(key2 == 0) && (row.Type == 'Option')"><strong>{{ getSingleValue(row2) | currency }}</strong></td>

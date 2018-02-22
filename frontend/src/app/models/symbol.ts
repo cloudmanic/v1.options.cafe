@@ -44,7 +44,7 @@ export class Symbol {
         data[i].name,         
         data[i].short_name,
         data[i].type,         
-        new OptionDetails(new Date(data[i].option_details.expire), data[i].option_details.strike, data[i].option_details.type)
+        new OptionDetails(data[i].option_details.symbol, new Date(data[i].option_details.expire), data[i].option_details.strike, data[i].option_details.type)
        ));
     }    
 
@@ -53,6 +53,7 @@ export class Symbol {
 }
 
 export class OptionDetails {
+  public Symbol: string;
   public Expire: Date;
   public Strike: number;
   public Type: string;
@@ -60,7 +61,8 @@ export class OptionDetails {
   //
   // Constructor
   //
-  constructor(Expire: Date, Strike: number, Type: string) {
+  constructor(Symbol: string, Expire: Date, Strike: number, Type: string) {
+    this.Symbol = Symbol;
     this.Expire = Expire;
     this.Strike = Strike;
     this.Type = Type;

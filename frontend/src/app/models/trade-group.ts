@@ -95,6 +95,7 @@ export class TradeGroup {
             data[i].positions[k].symbol.short_name, 
             data[i].positions[k].symbol.type, 
             new OptionDetails(
+              data[i].positions[k].symbol.option_details.symbol,
               new Date(data[i].positions[k].symbol.option_details.expire), 
               data[i].positions[k].symbol.option_details.strike, 
               data[i].positions[k].symbol.option_details.type

@@ -36,6 +36,7 @@ func TestGetTradeGroups01(t *testing.T) {
 	st.Expect(t, tgs[0].Positions[1].Symbol.Name, "SPY Mar 16, 2018 $266.00 Put")
 	st.Expect(t, tgs[0].Positions[1].Symbol.Type, "Option")
 	st.Expect(t, tgs[0].Positions[1].Symbol.OptionDetails.Type, "Put")
+	st.Expect(t, tgs[0].Positions[1].Symbol.OptionDetails.Symbol, "SPY")
 	st.Expect(t, tgs[0].Positions[1].Symbol.OptionDetails.Strike, 266.00)
 	st.Expect(t, tgs[0].Positions[1].Symbol.OptionDetails.Expire, time.Date(2018, 03, 16, 0, 0, 0, 0000, time.UTC))
 }

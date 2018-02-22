@@ -68,76 +68,37 @@ export class PositionComponent implements OnInit
   //
   getTradeGroupPercentAway(tradeGroup: TradeGroup) : number
   {
-    return 4.23;
+    // Find the short strike.
+    var short_strike = null; 
 
-    // // Find the short strike.
-    // var short_strike = null; 
+    if(typeof this.quotes[tradeGroup.Positions[0].Symbol.ShortName] == "undefined")
+    {
+      return 0.00;
+    }    
 
-    // if(typeof this.quotes[tradeGroup.Positions[0].Symbol.ShortName] == "undefined")
-    // {
-    //   return 0.00;
-    // }    
+    for(let i = 0; i < tradeGroup.Positions.length; i++)
+    {
+      if(tradeGroup.Positions[i].Symbol.Type != "Option")
+      {
+        continue;
+      }
 
-    // for(let i = 0; i < tradeGroup.Positions.length; i++)
-    // {
-    //   if(tradeGroup.Positions[i].Symbol.Type != "Option")
-    //   {
-    //     continue;
-    //   }
-
-    //   if(tradeGroup.Positions[i].Qty < 0)
-    //   {
-    //     short_strike = tradeGroup.Positions[i];
-    //   }
-    // }
-
-    // if(tradeGroup.Positions[0].Symbol.OptionDetails.Type == 'Put')
-    // {
-    //   return ((parseFloat(this.quotes[tradeGroup.Positions[0].Symbol.ShortName].last) - parseFloat(short_strike.SymbolsStrike)) / 
-    //             ((parseFloat($scope.quotes[short_strike.SymbolsUnderlying].last) + parseFloat(short_strike.SymbolsStrike)) / 2)) * 100;
-    // } else
-    // {
-    //   return ((parseFloat(short_strike.SymbolsStrike) - parseFloat($scope.quotes[short_strike.SymbolsUnderlying].last)) / 
-    //              parseFloat($scope.quotes[short_strike.SymbolsUnderlying].last)) * 100;      
-    // } 
+      if(tradeGroup.Positions[i].Qty < 0)
+      {
+        short_strike = tradeGroup.Positions[i];
+      }
+    }
 
 
-    // let expire_date = tradeGroup.Positions[0].Symbol.OptionDetails.Expire;   
-
-    // return Math.round((expire_date - new Date()) / (1000 * 60 * 60 * 24));
-    
-    // // Find the short strike.
-    // var short_strike = null; 
-    
-    // for(var i in row.Positions)
-    // {
-    //   if(row.Positions[i].PositionsType != 'Option')
-    //   {
-    //     continue;
-    //   }
-      
-    //   if(row.Positions[i].PositionsQty < 0)
-    //   {
-    //     short_strike = row.Positions[i];
-    //   }
-    // }
-
-    // if(! $scope.quotes[short_strike.SymbolsShort])
-    // {
-    //   return '';
-    // }
-    
-    
-    // if(type == 'put')
-    // {
-    //   return ((parseFloat($scope.quotes[short_strike.SymbolsUnderlying].last) - parseFloat(short_strike.SymbolsStrike)) / 
-    //             ((parseFloat($scope.quotes[short_strike.SymbolsUnderlying].last) + parseFloat(short_strike.SymbolsStrike)) / 2)) * 100;
-    // } else
-    // {
-    //   return ((parseFloat(short_strike.SymbolsStrike) - parseFloat($scope.quotes[short_strike.SymbolsUnderlying].last)) / 
-    //              parseFloat($scope.quotes[short_strike.SymbolsUnderlying].last)) * 100;      
-    // }  
-
+    if(tradeGroup.Positions[0].Symbol.OptionDetails.Type == 'Put')
+    {
+      return ((this.quotes[short_strike.Symbol.OptionDetails.Symbol].last - short_strike.Symbol.OptionDetails.Strike) / 
+              ((this.quotes[short_strike.Symbol.OptionDetails.Symbol].last + short_strike.Symbol.OptionDetails.Strike) / 2)) * 100;
+    } else
+    {
+      return ((short_strike.Symbol.OptionDetails.Strike - this.quotes[short_strike.Symbol.OptionDetails.Symbol].last) / 
+              ((short_strike.Symbol.OptionDetails.Strike + this.quotes[short_strike.Symbol.OptionDetails.Symbol].last) / 2)) * 100;    
+    }
   }
 
   //

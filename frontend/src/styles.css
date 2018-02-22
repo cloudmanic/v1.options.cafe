@@ -135,6 +135,11 @@ ol:last-child,
 dl:last-child,
 table:last-child,
 blockquote:last-child { margin-bottom: 0; }
+
+
+/*.content__body { width: 1300px; margin: auto; }*/
+
+
 /* Mobile */
 @media (max-width: 767px) {
   body { font-size: 13px; }

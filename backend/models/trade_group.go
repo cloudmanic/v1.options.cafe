@@ -112,6 +112,7 @@ func (t *DB) tradeGroupAddSymbolsToPositions(tgs []TradeGroup) error {
 			// Add in options parts
 			if tgs[key].Positions[key2].Symbol.Type == "Option" {
 				parts, _ := helpers.OptionParse(tgs[key].Positions[key2].Symbol.ShortName)
+				tgs[key].Positions[key2].Symbol.OptionDetails.Symbol = parts.Symbol
 				tgs[key].Positions[key2].Symbol.OptionDetails.Type = parts.Type
 				tgs[key].Positions[key2].Symbol.OptionDetails.Strike = parts.Strike
 				tgs[key].Positions[key2].Symbol.OptionDetails.Expire = parts.Expire

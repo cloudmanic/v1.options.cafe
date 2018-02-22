@@ -25,6 +25,7 @@ type Symbol struct {
 }
 
 type OptionDetails struct {
+	Symbol string    `sql:"not null" json:"symbol"`
 	Expire time.Time `json:"expire"`
 	Type   string    `json:"type"`
 	Strike float64   `json:"strike"`
