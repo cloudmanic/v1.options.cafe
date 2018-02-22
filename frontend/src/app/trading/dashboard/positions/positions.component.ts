@@ -19,9 +19,9 @@ import { TradeGroupService } from '../../../providers/http/trade-group.service';
 
 export class PositionsComponent implements OnInit {
   
-  private quotes = {}
-  private orders: Order[];  
-  private tradeGroups: TradeGroupsCont;
+  public quotes = {}
+  public orders: Order[];  
+  public tradeGroups: TradeGroupsCont;
 
   //
   // Constructor....

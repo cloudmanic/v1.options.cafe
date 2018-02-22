@@ -130,29 +130,4 @@ func (t *Controller) RespondError(c *gin.Context, err error, msg string) bool {
 	return false
 }
 
-//
-// Build json to send up websocket.
-//
-func (t *Controller) WsSendJsonBuild(uri string, data_json string) (string, error) {
-
-	type SendStruct struct {
-		Uri  string `json:"uri"`
-		Body string `json:"body"`
-	}
-
-	// Send Object
-	send := SendStruct{
-		Uri:  uri,
-		Body: string(data_json),
-	}
-	send_json, err := json.Marshal(send)
-
-	if err != nil {
-		services.BetterError(err)
-		return "", err
-	}
-
-	return string(send_json), nil
-}
-
 /* End File */

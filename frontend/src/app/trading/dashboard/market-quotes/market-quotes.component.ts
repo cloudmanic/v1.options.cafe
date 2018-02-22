@@ -16,7 +16,7 @@ import { StateService } from '../../../providers/state/state.service';
 
 export class MarketQuotesComponent implements OnInit {
   
-  private quotes = {}
+  public quotes = {}
 
   //
   // Constructor....

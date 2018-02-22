@@ -12,7 +12,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/acme/autocert"
 )
@@ -71,64 +70,6 @@ func (t *Controller) StartWebServer() {
 		// Start a secure server:
 		StartSecureServer(router, m.GetCertificate)
 	}
-}
-
-//
-// Listen for data from our broker feeds.
-// Take the data and then pass it up the websockets.
-//
-func (t *Controller) DoWsDispatch() {
-
-	for {
-
-		select {
-
-		// Core channel
-		case send := <-t.WsWriteChan:
-
-			for i := range t.Connections {
-
-				// We only care about the user we passed in.
-				if t.Connections[i].userId == send.UserId {
-
-					select {
-
-					case t.Connections[i].WriteChan <- send.Body:
-
-					default:
-						services.Critical("Channel full. Discarding value (Core channel)")
-
-					}
-
-				}
-
-			}
-
-		// Quotes channel
-		case send := <-t.WsWriteQuoteChan:
-
-			for i := range t.QuotesConnections {
-
-				// We only care about the user we passed in.
-				if t.QuotesConnections[i].userId == send.UserId {
-
-					select {
-
-					case t.QuotesConnections[i].WriteChan <- send.Body:
-
-					default:
-						services.Critical("Channel full. Discarding value (Quotes channel)")
-
-					}
-
-				}
-
-			}
-
-		}
-
-	}
-
 }
 
 /* End File */
