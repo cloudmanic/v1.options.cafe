@@ -12,7 +12,9 @@ import (
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/archive"
+	"github.com/cloudmanic/app.options.cafe/backend/library/notify"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"github.com/cnf/structhash"
 )
 
 //
@@ -47,15 +49,24 @@ func (t *Base) DoOrdersTicker() {
 // Ticker - Orders : 3 seconds
 //
 func (t *Base) DoOrdersActiveTicker() {
-	var err error
+	var hash string = ""
 
 	for {
 		// Load up orders
-		err = t.GetOrders()
+		lastHash, err := t.GetOrders()
 
 		if err != nil {
 			services.Warning(err)
 		}
+
+		// If there has been any changes in our orders send a notice.
+		if (len(hash) > 0) && (hash != lastHash) {
+			notify.PushWebsocket(t.User.Id, "change-detected", `{ "type": "orders" }`)
+			notify.PushWebsocket(t.User.Id, "change-detected", `{ "type": "trade-groups" }`)
+		}
+
+		// Store this hash for next time.
+		hash = lastHash
 
 		// Sleep for 3 second.
 		time.Sleep(time.Second * 3)
@@ -85,13 +96,12 @@ func (t *Base) GetAllOrders() ([]types.Order, error) {
 
 	// Return Happy
 	return orders, nil
-
 }
 
 //
-// Do get orders
+// Do get orders. Returns a hash of the orders
 //
-func (t *Base) GetOrders() error {
+func (t *Base) GetOrders() (string, error) {
 
 	orders := []types.Order{}
 
@@ -99,7 +109,7 @@ func (t *Base) GetOrders() error {
 	orders, err := t.Api.GetOrders()
 
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	// Save the orders in the fetch object
@@ -114,15 +124,22 @@ func (t *Base) GetOrders() error {
 		fmt.Errorf("Fetch.GetOrders() - StoreOrders() : ", err)
 	}
 
+	// Get a hash of the data structure.
+	hash, err := structhash.Hash(orders, 1)
+
+	if err != nil {
+		return "", err
+	}
+
 	// Send up websocket.
 	err = t.WriteDataChannel("orders", orders)
 
 	if err != nil {
-		return fmt.Errorf("Fetch.GetOrders() : ", err)
+		return "", fmt.Errorf("Fetch.GetOrders() : ", err)
 	}
 
 	// Return Happy
-	return nil
+	return hash, nil
 
 }
 

@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/notify"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
@@ -100,6 +101,8 @@ func doMultiLegOrders(db models.Datastore, userId uint, brokerId uint) error {
 			continue
 		}
 
+		// Notify
+		notify.PushWebsocket(userId, "change-detected", `{ "type": "order-filled", "id": `+strconv.Itoa(int(row.Id))+` }`)
 	}
 
 	// Return happy
