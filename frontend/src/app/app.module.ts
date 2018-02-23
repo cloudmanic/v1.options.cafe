@@ -47,6 +47,7 @@ import { ReportsSubnavComponent } from './reports/sub-nav/subnav.component';
 import { ReportsHomeComponent } from './reports/home/home.component';
 
 // Trading
+import { IvrComponent } from './trading/dashboard/ivr/ivr.component';
 import { SubnavComponent } from './trading/sub-nav/subnav.component';
 import { TradesComponent } from './trading/trades/home.component';
 import { WatchlistComponent } from './trading/dashboard/watchlist/watchlist.component';
@@ -90,6 +91,7 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     ReportsHomeComponent,
     
     // Trading
+    IvrComponent,
     OrdersComponent,
     SubnavComponent,
     TradesComponent,

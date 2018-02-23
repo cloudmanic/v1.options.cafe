@@ -10,7 +10,7 @@ import { QuoteService } from '../../../providers/websocket/quote.service';
 import { StateService } from '../../../providers/state/state.service';
 
 @Component({
-  selector: 'app-trading-market-quotes',
+  selector: '[app-trading-market-quotes]',
   templateUrl: './market-quotes.component.html'
 })
 

@@ -1,61 +1,63 @@
-<table>
-  <tr>
-    <th>DOW</th>
+<div class="table__inner">
+  <table>
+    <tr>
+      <th>DOW</th>
 
-    <td [ngClass]="{ 'title-red': (quotes['$DJI']?.dailyChange() < 0), 'title-green': (quotes['$DJI']?.dailyChange() > 0) }">
-      {{ quotes["$DJI"]?.last | currency:'USD':'symbol':'1.2-2' }}
-    </td>
+      <td [ngClass]="{ 'title-red': (quotes['$DJI']?.dailyChange() < 0), 'title-green': (quotes['$DJI']?.dailyChange() > 0) }">
+        {{ quotes["$DJI"]?.last | currency:'USD':'symbol':'1.2-2' }}
+      </td>
 
-    <th>S&amp;P 500</th>
+      <th>S&amp;P 500</th>
 
-    <td [ngClass]="{ 'title-red': (quotes['SPX']?.dailyChange() < 0), 'title-green': (quotes['SPX']?.dailyChange() > 0) }">
-      {{ quotes["SPX"]?.last | currency:'USD':'symbol':'1.2-2' }}
-    </td>
+      <td [ngClass]="{ 'title-red': (quotes['SPX']?.dailyChange() < 0), 'title-green': (quotes['SPX']?.dailyChange() > 0) }">
+        {{ quotes["SPX"]?.last | currency:'USD':'symbol':'1.2-2' }}
+      </td>
 
-    <th>NASDAQ</th>
+      <th>NASDAQ</th>
 
-    <td [ngClass]="{ 'title-red': (quotes['COMP']?.dailyChange() < 0), 'title-green': (quotes['COMP']?.dailyChange() > 0) }">
-      {{ quotes["COMP"]?.last | currency:'USD':'symbol':'1.2-2' }}
-    </td>
+      <td [ngClass]="{ 'title-red': (quotes['COMP']?.dailyChange() < 0), 'title-green': (quotes['COMP']?.dailyChange() > 0) }">
+        {{ quotes["COMP"]?.last | currency:'USD':'symbol':'1.2-2' }}
+      </td>
 
-    <th>VIX</th>
+      <th>VIX</th>
 
-    <td [ngClass]="{ 'title-red': (quotes['VIX']?.dailyChange() < 0), 'title-green': (quotes['VIX']?.dailyChange() > 0) }">
-      {{ quotes["VIX"]?.last | currency:'USD':'symbol':'1.2-2' }}
-    </td>    
-  </tr>
+      <td [ngClass]="{ 'title-red': (quotes['VIX']?.dailyChange() < 0), 'title-green': (quotes['VIX']?.dailyChange() > 0) }">
+        {{ quotes["VIX"]?.last | currency:'USD':'symbol':'1.2-2' }}
+      </td>    
+    </tr>
 
-  <tr>
-    <td>
-      {{ quotes["$DJI"]?.dailyChange() | currency:'USD':'symbol':'1.2-2' }}
-    </td>
+    <tr>
+      <td>
+        {{ quotes["$DJI"]?.dailyChange() | currency:'USD':'symbol':'1.2-2' }}
+      </td>
 
-    <td [ngClass]="{ 'title-red': (quotes['$DJI']?.percentChange() < 0), 'title-green': (quotes['$DJI']?.percentChange() > 0) }">
-      ({{ quotes["$DJI"]?.percentChange() | number:'1.2-2' }}%)
-    </td>
+      <td [ngClass]="{ 'title-red': (quotes['$DJI']?.percentChange() < 0), 'title-green': (quotes['$DJI']?.percentChange() > 0) }">
+        ({{ quotes["$DJI"]?.percentChange() | number:'1.2-2' }}%)
+      </td>
 
-    <td>
-      {{ quotes["SPX"]?.dailyChange() | currency:'USD':'symbol':'1.2-2' }}
-    </td>
+      <td>
+        {{ quotes["SPX"]?.dailyChange() | currency:'USD':'symbol':'1.2-2' }}
+      </td>
 
-    <td [ngClass]="{ 'title-red': (quotes['SPX']?.dailyChange() < 0), 'title-green': (quotes['SPX']?.dailyChange() > 0) }">
-      ({{ quotes["SPX"]?.percentChange() | number:'1.2-2' }}%)
-    </td>
+      <td [ngClass]="{ 'title-red': (quotes['SPX']?.dailyChange() < 0), 'title-green': (quotes['SPX']?.dailyChange() > 0) }">
+        ({{ quotes["SPX"]?.percentChange() | number:'1.2-2' }}%)
+      </td>
 
-    <td>
-      {{ quotes["COMP"]?.dailyChange() | currency:'USD':'symbol':'1.2-2' }}
-    </td>
+      <td>
+        {{ quotes["COMP"]?.dailyChange() | currency:'USD':'symbol':'1.2-2' }}
+      </td>
 
-    <td [ngClass]="{ 'title-red': (quotes['COMP']?.dailyChange() < 0), 'title-green': (quotes['COMP']?.dailyChange() > 0) }">
-      ({{ quotes["COMP"]?.percentChange() | number:'1.2-2' }}%)
-    </td>
+      <td [ngClass]="{ 'title-red': (quotes['COMP']?.dailyChange() < 0), 'title-green': (quotes['COMP']?.dailyChange() > 0) }">
+        ({{ quotes["COMP"]?.percentChange() | number:'1.2-2' }}%)
+      </td>
 
-    <td>
-      {{ quotes["VIX"]?.dailyChange() | currency:'USD':'symbol':'1.2-2' }}
-    </td>
+      <td>
+        {{ quotes["VIX"]?.dailyChange() | currency:'USD':'symbol':'1.2-2' }}
+      </td>
 
-    <td [ngClass]="{ 'title-red': (quotes['VIX']?.dailyChange() < 0), 'title-green': (quotes['VIX']?.dailyChange() > 0) }">
-      ({{ quotes["VIX"]?.percentChange() | number:'1.2-2' }}%)
-    </td>
-  </tr>
-</table>
+      <td [ngClass]="{ 'title-red': (quotes['VIX']?.dailyChange() < 0), 'title-green': (quotes['VIX']?.dailyChange() > 0) }">
+        ({{ quotes["VIX"]?.percentChange() | number:'1.2-2' }}%)
+      </td>
+    </tr>
+  </table>
+</div>
