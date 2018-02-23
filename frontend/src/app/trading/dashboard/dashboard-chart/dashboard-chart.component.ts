@@ -4,7 +4,9 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-import { Component, OnInit } from '@angular/core';
+import { chart } from 'highcharts';
+import * as Highcharts from 'highcharts';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { StateService } from '../../../providers/state/state.service';
 
 @Component({
@@ -12,8 +14,12 @@ import { StateService } from '../../../providers/state/state.service';
   templateUrl: './dashboard-chart.component.html'
 })
 
-export class DashboardChartComponent implements OnInit {
-  
+export class DashboardChartComponent implements OnInit 
+{  
+  @ViewChild('chartTarget') chartTarget: ElementRef;
+
+  chart: Highcharts.ChartObject;
+
   //
   // Constructor....
   //
@@ -25,6 +31,52 @@ export class DashboardChartComponent implements OnInit {
   ngOnInit() 
   {
      
+  } 
+  
+  //
+  // After View Init.
+  //
+  ngAfterViewInit() 
+  {
+    //
+    // Setup the high charts options.
+    //
+    const options: Highcharts.Options = {
+      chart: {
+        type: 'bar'
+      },
+      title: {
+        text: 'Fruit Consumption'
+      },
+      xAxis: {
+        categories: ['Apples', 'Bananas', 'Oranges']
+      },
+      yAxis: {
+        title: {
+          text: 'Fruit eaten'
+        }
+      },
+      series: [{
+        name: 'Jane',
+        data: [1, 0, 4]
+      }, {
+        name: 'John',
+        data: [5, 7, 3]
+      }]
+    };
+  
+    // Load the chart
+    this.chart = chart(this.chartTarget.nativeElement, options);
+  }
+
+  //
+  // Add Series.
+  //
+  addSeries(){
+    this.chart.addSeries({
+      name:'Balram',
+      data:[2,3,7]
+    })    
   }  
 
 }

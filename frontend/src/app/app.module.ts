@@ -110,7 +110,7 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     FormsModule,
     BrowserModule,
     SortablejsModule,
-    HttpClientModule   
+    HttpClientModule  
   ],
   
   providers: [ 
