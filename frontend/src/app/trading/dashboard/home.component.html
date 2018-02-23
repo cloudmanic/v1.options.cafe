@@ -47,59 +47,25 @@
     	</li><!-- /.table box-bordered -->
     </ul><!-- /.tables mobile-hidden -->
 
+    <section class="section">
+      
+      <app-watchlist></app-watchlist>								
+    															
+  		<div class="section__content">
+  			<ul class="boxes">
+  				<li class="box--bordered mobile--hidden">
+  					<app-trading-dashboard-chart></app-trading-dashboard-chart>
+  				</li>
 
+          <app-trading-positions></app-trading-positions>
 
+  				<li class="box--bordered">
+            <app-trading-orders></app-trading-orders>
+          </li>
+  			</ul>
+  		</div>
+        
+    </section>
 
-  <section class="section">
-    
-    <app-watchlist></app-watchlist>								
-									
-									
-									
-
-									
-									
-									
-									
-									
-									<div class="section__content">
-										<ul class="boxes">
-											<li class="box--bordered mobile--hidden">
-												<div class="box__head box__head--relative box__head--small">
-													<div class="box__flex">
-														<input type="text" value="AMZN" class="field field--small" />
-
-														<h5 class="box__title">Amazon.com Inc</h5><!-- /.box__title -->
-
-														<strong class="title-green">$436.42 (9.87%)</strong>
-													</div><!-- /.box__flex -->
-
-													<div class="box__absolute select">
-														<select name="field-period" id="field-period">
-															<option value="period-1">Today (1 min)</option>
-
-															<option value="period-2">Today (30 min)</option>
-
-															<option value="period-3">Today (1 hour)</option>
-														</select>
-													</div><!-- /.box__absolute select -->
-												</div><!-- /.box__head box__head-relative box__head-small -->
-
-												<div class="box__body">
-													<figure class="box__image">
-														<img src="/images/temp/chart-1.png" alt="" />
-													</figure><!-- /.box__image -->
-												</div><!-- /.box__body -->
-											</li><!-- /.box-bordered -->
-
-                                            <app-trading-positions></app-trading-positions>
-
-											<li class="box--bordered">
-                                                <app-trading-orders></app-trading-orders>
-                                            </li>
-                      
-										</ul><!-- /.boxes -->
-									</div><!-- /.section__content -->
-								</section><!-- /.section -->
-							</div><!-- /.shell shell-fluid -->
-						</div><!-- /.content__inner -->
+	</div>
+</div>
