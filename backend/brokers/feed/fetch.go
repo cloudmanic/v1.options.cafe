@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cloudmanic/app.options.cafe/backend/controllers"
+	"github.com/cloudmanic/app.options.cafe/backend/websocket"
 )
 
 //
@@ -89,7 +89,7 @@ func (t *Base) WriteDataChannel(send_type string, sendObject interface{}) error 
 	}
 
 	// Write data out websocket
-	t.DataChan <- controllers.SendStruct{UserId: t.User.Id, Body: sendJson}
+	t.DataChan <- websocket.SendStruct{UserId: t.User.Id, Body: sendJson}
 
 	// Return happy.
 	return nil
@@ -101,7 +101,7 @@ func (t *Base) WriteDataChannel(send_type string, sendObject interface{}) error 
 func (t *Base) WriteQuoteChannel(sendJson string) error {
 
 	// Write data out websocket
-	t.QuoteChan <- controllers.SendStruct{UserId: t.User.Id, Body: sendJson}
+	t.QuoteChan <- websocket.SendStruct{UserId: t.User.Id, Body: sendJson}
 
 	// Return happy.
 	return nil

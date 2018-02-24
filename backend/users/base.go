@@ -7,16 +7,16 @@
 package users
 
 import (
-	"github.com/cloudmanic/app.options.cafe/backend/controllers"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/websocket"
 )
 
 type Base struct {
 	DB              *models.DB
 	Users           map[uint]*UserFeed
-	DataChan        chan controllers.SendStruct
-	QuoteChan       chan controllers.SendStruct
-	FeedRequestChan chan controllers.ReceivedStruct
+	DataChan        chan websocket.SendStruct
+	QuoteChan       chan websocket.SendStruct
+	FeedRequestChan chan websocket.ReceivedStruct
 }
 
 /* End File */

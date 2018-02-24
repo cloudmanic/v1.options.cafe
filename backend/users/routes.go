@@ -7,16 +7,16 @@
 package users
 
 import (
-	"github.com/cloudmanic/app.options.cafe/backend/controllers"
+	"github.com/cloudmanic/app.options.cafe/backend/websocket"
 	"github.com/tidwall/gjson"
 )
 
 //
 // Get Routes
 //
-func (t *Base) GetRoutes() map[string]func(*UserFeed, controllers.ReceivedStruct) {
+func (t *Base) GetRoutes() map[string]func(*UserFeed, websocket.ReceivedStruct) {
 
-	routes := make(map[string]func(*UserFeed, controllers.ReceivedStruct))
+	routes := make(map[string]func(*UserFeed, websocket.ReceivedStruct))
 
 	// Set routes
 	routes["watchlists"] = t.WsSendWatchlists

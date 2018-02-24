@@ -22,7 +22,7 @@ import (
 func (t *Controller) StartWebServer() {
 
 	// Listen for data from our broker feeds.
-	go t.DoWsDispatch()
+	go t.WebsocketController.DoWsDispatch()
 
 	// Set GIN Settings
 	gin.SetMode("release")

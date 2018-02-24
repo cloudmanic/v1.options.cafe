@@ -5,9 +5,9 @@ import (
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
-	"github.com/cloudmanic/app.options.cafe/backend/controllers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/websocket"
 )
 
 type Base struct {
@@ -16,8 +16,8 @@ type Base struct {
 	DB       models.Datastore
 	BrokerId uint
 
-	DataChan  chan controllers.SendStruct
-	QuoteChan chan controllers.SendStruct
+	DataChan  chan websocket.SendStruct
+	QuoteChan chan websocket.SendStruct
 
 	muOrders sync.Mutex
 	Orders   []types.Order

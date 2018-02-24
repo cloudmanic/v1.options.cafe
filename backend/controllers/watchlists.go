@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 )
@@ -88,27 +87,7 @@ func (t *Controller) CreateWatchlist(c *gin.Context) {
 	}
 
 	// Return happy JSON
-	json := t.RespondJSON(c, http.StatusOK, wLists)
-
-	// Send new watchlist up websocket.
-	t.SendWatchlistUpWS(userId, json)
-}
-
-//
-// Send watchlist up websocket.
-//
-func (t *Controller) SendWatchlistUpWS(userId uint, json string) {
-
-	// Build JSON we send
-	jsonSend, err := t.WsSendJsonBuild("watchlists", json)
-
-	if err != nil {
-		services.BetterError(err)
-		return
-	}
-
-	// Send new watchlist through the websocket.
-	t.WsWriteChan <- SendStruct{UserId: userId, Body: jsonSend}
+	t.RespondJSON(c, http.StatusOK, wLists)
 }
 
 /* End File */

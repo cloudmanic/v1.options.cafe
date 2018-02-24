@@ -10,7 +10,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/cloudmanic/app.options.cafe/backend/users"
-	"github.com/gorilla/websocket"
+	"github.com/cloudmanic/app.options.cafe/backend/websocket"
 	_ "github.com/jpfuentes2/go-env/autoload"
 )
 
@@ -45,9 +45,9 @@ func main() {
 	defer db.Close()
 
 	// Setup shared channels
-	WsReadChan := make(chan controllers.ReceivedStruct, 1000)
-	WsWriteChan := make(chan controllers.SendStruct, 1000)
-	WsWriteQuoteChan := make(chan controllers.SendStruct, 1000)
+	WsReadChan := make(chan websocket.ReceivedStruct, 1000)
+	WsWriteChan := make(chan websocket.SendStruct, 1000)
+	WsWriteQuoteChan := make(chan websocket.SendStruct, 1000)
 
 	// Setup the notification channel
 	notify.SetWebsocketChannel(WsWriteChan)
@@ -64,15 +64,11 @@ func main() {
 	// Start user feed
 	u.StartFeeds()
 
+	// Create new websocket
+	w := websocket.NewController(db, WsReadChan, WsWriteChan, WsWriteQuoteChan)
+
 	// Startup controller & websockets
-	c := &controllers.Controller{
-		DB:                db,
-		WsReadChan:        WsReadChan,
-		WsWriteChan:       WsWriteChan,
-		WsWriteQuoteChan:  WsWriteQuoteChan,
-		Connections:       make(map[*websocket.Conn]*controllers.WebsocketConnection),
-		QuotesConnections: make(map[*websocket.Conn]*controllers.WebsocketConnection),
-	}
+	c := &controllers.Controller{DB: db, WebsocketController: w}
 
 	// Start websockets & controllers
 	c.StartWebServer()

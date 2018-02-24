@@ -12,15 +12,15 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/brokers"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/feed"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
-	"github.com/cloudmanic/app.options.cafe/backend/controllers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/websocket"
 )
 
 type UserFeed struct {
 	Profile    models.User
-	DataChan   chan controllers.SendStruct
+	DataChan   chan websocket.SendStruct
 	BrokerFeed map[uint]*feed.Base
 }
 
@@ -117,7 +117,7 @@ func (t *Base) DoUserFeed(user models.User) {
 //
 // Refresh all data.
 //
-func (t *Base) RefreshAllData(user *UserFeed, request controllers.ReceivedStruct) {
+func (t *Base) RefreshAllData(user *UserFeed, request websocket.ReceivedStruct) {
 
 	// Loop through each broker and refresh the data.
 	for _, row := range t.Users[user.Profile.Id].BrokerFeed {

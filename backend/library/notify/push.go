@@ -14,16 +14,16 @@ package notify
 import (
 	"encoding/json"
 
-	"github.com/cloudmanic/app.options.cafe/backend/controllers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/websocket"
 )
 
-var websocketChan chan controllers.SendStruct
+var websocketChan chan websocket.SendStruct
 
 //
 // Set the web socket channel.
 //
-func SetWebsocketChannel(ch chan controllers.SendStruct) {
+func SetWebsocketChannel(ch chan websocket.SendStruct) {
 	websocketChan = ch
 }
 
@@ -62,7 +62,7 @@ func Push(userId uint, channels []string, uri string, data_json string) {
 		switch row {
 
 		case "websocket":
-			websocketChan <- controllers.SendStruct{UserId: userId, Body: string(send_json)}
+			websocketChan <- websocket.SendStruct{UserId: userId, Body: string(send_json)}
 		}
 
 	}

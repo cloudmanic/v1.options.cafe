@@ -8,14 +8,15 @@ package controllers
 
 import (
 	"encoding/json"
+	"go/build"
 	"net/http"
 	"strconv"
-	"sync"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/websocket"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
+	env "github.com/jpfuentes2/go-env"
 )
 
 const defaultMysqlLimit = 100
@@ -23,34 +24,43 @@ const httpNoRecordFound = "No Record Found."
 const httpGenericErrMsg = "Please contact support at help@options.cafe."
 
 type Controller struct {
-	DB                models.Datastore
-	WsReadChan        chan ReceivedStruct
-	WsWriteChan       chan SendStruct
-	WsWriteQuoteChan  chan SendStruct
-	Connections       map[*websocket.Conn]*WebsocketConnection
-	QuotesConnections map[*websocket.Conn]*WebsocketConnection
+	DB                  models.Datastore
+	WebsocketController *websocket.Controller
+	// WsReadChan        chan ReceivedStruct
+	// WsWriteChan       chan SendStruct
+	// WsWriteQuoteChan  chan SendStruct
+	// Connections       map[*websocket.Conn]*WebsocketConnection
+	// QuotesConnections map[*websocket.Conn]*WebsocketConnection
 }
 
-type WebsocketConnection struct {
-	WriteChan  chan string
-	connection *websocket.Conn
+// type WebsocketConnection struct {
+// 	WriteChan  chan string
+// 	connection *websocket.Conn
 
-	muUserId sync.Mutex
-	userId   uint
+// 	muUserId sync.Mutex
+// 	userId   uint
 
-	muDeviceId sync.Mutex
-	deviceId   string
-}
+// 	muDeviceId sync.Mutex
+// 	deviceId   string
+// }
 
-type SendStruct struct {
-	Body   string
-	UserId uint
-}
+// type SendStruct struct {
+// 	Body   string
+// 	UserId uint
+// }
 
-type ReceivedStruct struct {
-	Body       string
-	UserId     uint
-	Connection *WebsocketConnection
+// type ReceivedStruct struct {
+// 	Body       string
+// 	UserId     uint
+// 	Connection *WebsocketConnection
+// }
+
+//
+// Start up the controller.
+//
+func init() {
+	// Helpful for testing
+	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/.env")
 }
 
 //

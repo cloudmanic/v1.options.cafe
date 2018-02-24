@@ -9,15 +9,15 @@ package users
 import (
 	"encoding/json"
 
-	"github.com/cloudmanic/app.options.cafe/backend/controllers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/websocket"
 )
 
 //
 // Send a user's watchlist up the websocket channel
 //
-func (t *Base) WsSendWatchlists(user *UserFeed, request controllers.ReceivedStruct) {
+func (t *Base) WsSendWatchlists(user *UserFeed, request websocket.ReceivedStruct) {
 
 	// Get the watchlists
 	wLists, err := t.DB.GetWatchlistsByUserId(user.Profile.Id)
@@ -46,7 +46,7 @@ func (t *Base) WsSendWatchlists(user *UserFeed, request controllers.ReceivedStru
 		}
 
 		// Send up the websocket
-		user.DataChan <- controllers.SendStruct{UserId: user.Profile.Id, Body: string(jsonSend)}
+		user.DataChan <- websocket.SendStruct{UserId: user.Profile.Id, Body: string(jsonSend)}
 
 		// Example to send back to just the current connection. (this is useful for validation)
 		//request.Connection.WriteChan <- jsonSend
