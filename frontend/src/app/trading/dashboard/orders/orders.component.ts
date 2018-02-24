@@ -23,15 +23,14 @@ export class OrdersComponent implements OnInit {
   //
   // Constructor....
   //
-  constructor(private appService: AppService, private quoteService: QuoteService, private siteState: StateService) { }
+  constructor(private appService: AppService, private quoteService: QuoteService, private stateService: StateService) { }
 
   //
   // OnInit....
   //
   ngOnInit() {
     // Get Data from cache
-    this.setOrders(this.appService.orders);
-    this.quotes = this.quoteService.quotes;
+    this.quotes = this.stateService.GetQuotes();
         
     // Subscribe to data updates from the broker - Orders
     this.appService.ordersPush.subscribe(data => {
@@ -51,7 +50,7 @@ export class OrdersComponent implements OnInit {
     var rt = []
     
     // This data has not come in yet.
-    if(! this.siteState.GetActiveBrokerAccount())
+    if(! this.stateService.GetActiveBrokerAccount())
     {
       return;
     }      
@@ -59,7 +58,7 @@ export class OrdersComponent implements OnInit {
     // Filter - We only one the accounts that are active.
     for(var i = 0; i < orders.length; i++)
     {                
-      if(orders[i].AccountId == this.siteState.GetActiveBrokerAccount().AccountNumber)
+      if(orders[i].AccountId == this.stateService.GetActiveBrokerAccount().AccountNumber)
       {
         rt.push(orders[i]);
       }

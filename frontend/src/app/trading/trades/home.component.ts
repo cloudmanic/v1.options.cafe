@@ -4,6 +4,8 @@
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import 'rxjs/add/operator/takeUntil';
+import { Subject } from 'rxjs/Subject';
 import { Component, OnInit } from '@angular/core';
 import { TradeGroup } from '../../models/trade-group';
 import { BrokerAccount } from '../../models/broker-account';
@@ -18,14 +20,16 @@ import { environment } from '../../../environments/environment';
 })
 export class TradesComponent implements OnInit {
 
-  page: number = 1;
-  count: number = 0;
-  limit: number = 0;
-  noLimitCount: number = 0;  
-  tradesList: TradeGroup[];
-  searchTerm: string = ""
-  tradeSelect: string = "All"
-  activeAccount: BrokerAccount
+  private page: number = 1;
+  private count: number = 0;
+  private limit: number = 0;
+  private noLimitCount: number = 0;  
+  private tradesList: TradeGroup[];
+  private searchTerm: string = ""
+  private tradeSelect: string = "All"
+  private activeAccount: BrokerAccount
+
+  private destory: Subject<boolean> = new Subject<boolean>();
   
   //
   // Construct
@@ -49,8 +53,22 @@ export class TradesComponent implements OnInit {
     // Load trade groups from cache.
     this.tradesList = this.stateService.GetActiveTradeGroups(); 
 
+    // Subscribe to changes in the selected broker.
+    this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
+      this.getTradeGroups();
+    });
+
     // Load tradegroups from server
     this.getTradeGroups();
+  }
+
+  //
+  // OnDestroy
+  //
+  ngOnDestroy()
+  {
+    this.destory.next();
+    this.destory.complete();
   }
 
   //

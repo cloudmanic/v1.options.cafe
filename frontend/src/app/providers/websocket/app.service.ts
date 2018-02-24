@@ -22,10 +22,6 @@ declare var ClientJS: any;
 export class AppService  
 {  
   public deviceId = ""
-  //public activeAccount: BrokerAccount;    
-   
-  // Cache some of the data.
-  public orders: Order[];
    
   // Websocket Stuff
   ws = null;
@@ -77,9 +73,8 @@ export class AppService
       break;
     
       // Order refresh
-      case 'orders':
-        this.orders = Order.buildForEmit(msg_data);       
-        this.ordersPush.emit(this.orders);              
+      case 'orders':     
+        this.ordersPush.emit(Order.buildForEmit(msg_data));              
       break; 
 
       // Change detected
@@ -87,25 +82,9 @@ export class AppService
         this.changedDetectedPush.emit(new ChangeDetected(msg_data.type));              
       break;        
     }
-    
   }
 
-  // ------------------------ Push Data Back To Backend --------------------- //
-  
-  //
-  // Request the backend sends all data again. (often do this on state change or page change)
-  //
-  public RequestAllData() {
-    this.ws.send(JSON.stringify({ uri: 'data/all', body: {} }));   
-  }
-  
-  //
-  // Request the backend sends watchlist data.
-  //
-  public RequestWatchlistData() {
-    this.ws.send(JSON.stringify({ uri: 'watchlists', body: {} }));   
-  }
- 
+
   // ---------------------- Websocket Stuff ----------------------- //
 
 
@@ -145,9 +124,6 @@ export class AppService
           uri: 'set-access-token', 
           body: { access_token: localStorage.getItem('access_token'), device_id: this.deviceId }
         }));
-
-        // Request all data.
-        this.RequestAllData()
 
       }, 1000);
       

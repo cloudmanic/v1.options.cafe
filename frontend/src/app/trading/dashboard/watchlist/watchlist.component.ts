@@ -131,8 +131,7 @@ export class WatchlistComponent implements OnInit {
     {
       this.watchlistSettingsActive = true;      
     }
-
-    //this.appService.RequestWatchlistData();
+    
   } 
 
   //

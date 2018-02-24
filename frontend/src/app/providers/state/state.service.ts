@@ -29,6 +29,9 @@ export class StateService
   private tradeGroupTradeSelect: string = "All";
   private activeTradeGroupList: TradeGroup[];
 
+  // Emitters - Pushers
+  public BrokerChange = new EventEmitter<number>();
+
   //
   // Construct.
   //
@@ -156,7 +159,8 @@ export class StateService
   SetActiveBrokerAccount(brokerAccount: BrokerAccount) {
     this.activeBrokerAccount = brokerAccount
     localStorage.setItem('active_account', String(brokerAccount.Id));
-    this.appService.RequestAllData();
+    
+    this.BrokerChange.emit(brokerAccount.Id);
 
     // Clear cached data.
     this.activeTradeGroupList = [];

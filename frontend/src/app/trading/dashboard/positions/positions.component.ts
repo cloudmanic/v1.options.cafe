@@ -4,6 +4,8 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import 'rxjs/add/operator/takeUntil';
+import { Subject } from 'rxjs/Subject';
 import { Component, OnInit } from '@angular/core';
 import { Order } from '../../../models/order';
 import { ChangeDetected } from '../../../models/change-detected';
@@ -24,6 +26,8 @@ export class PositionsComponent implements OnInit {
   public orders: Order[];  
   public tradeGroups: TradeGroupsCont;
 
+  private destory: Subject<boolean> = new Subject<boolean>();
+
   //
   // Constructor....
   //
@@ -41,15 +45,29 @@ export class PositionsComponent implements OnInit {
     this.quotes = this.stateService.GetQuotes();    
     this.tradeGroups = this.stateService.GetDashboardTradeGroups();
 
+    // Subscribe to changes in the selected broker.
+    this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
+      this.getPositions();
+    });
+
     // Subscribe to when changes are detected at the server.
-    this.appService.changedDetectedPush.subscribe(data => {
+    this.appService.changedDetectedPush.takeUntil(this.destory).subscribe(data => {
       this.manageChangeDetection(data);
     }); 
 
     // Subscribe to data updates from the quotes - Market Quotes
-    this.quoteService.marketQuotePushData.subscribe(data => {
+    this.quoteService.marketQuotePushData.takeUntil(this.destory).subscribe(data => {
       this.quotes[data.symbol] = data;
     });     
+  }
+
+  //
+  // OnDestroy
+  //
+  ngOnDestroy()
+  {
+    this.destory.next();
+    this.destory.complete();
   }
 
   //
