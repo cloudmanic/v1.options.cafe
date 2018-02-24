@@ -37,9 +37,6 @@ func (t *Base) StartFeeds() {
 		t.DoUserFeed(users[i])
 	}
 
-	// Listen of income Feed Requests.
-	go t.DoFeedRequestListen()
-
 }
 
 //
@@ -112,20 +109,6 @@ func (t *Base) DoUserFeed(user models.User) {
 		// Start fetching data for this user.
 		go t.Users[user.Id].BrokerFeed[row.Id].Start()
 	}
-}
-
-//
-// Refresh all data.
-//
-func (t *Base) RefreshAllData(user *UserFeed, request websocket.ReceivedStruct) {
-
-	// Loop through each broker and refresh the data.
-	for _, row := range t.Users[user.Profile.Id].BrokerFeed {
-		row.RefreshFromCached()
-	}
-
-	// Send watchlist
-	t.WsSendWatchlists(t.Users[user.Profile.Id], request)
 }
 
 // ---------------- Helper Functions --------------- //

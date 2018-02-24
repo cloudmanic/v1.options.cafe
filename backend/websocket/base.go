@@ -18,7 +18,6 @@ const writeWait = 5 * time.Second
 
 type Controller struct {
 	DB                models.Datastore
-	WsReadChan        chan ReceivedStruct
 	WsWriteChan       chan SendStruct
 	WsWriteQuoteChan  chan SendStruct
 	Connections       map[*websocket.Conn]*WebsocketConnection
@@ -41,20 +40,13 @@ type SendStruct struct {
 	UserId uint
 }
 
-type ReceivedStruct struct {
-	Body       string
-	UserId     uint
-	Connection *WebsocketConnection
-}
-
 //
 // Create a new instance of a websocket controller.
 //
-func NewController(db models.Datastore, WsReadChan chan ReceivedStruct, WsWriteChan chan SendStruct, WsWriteQuoteChan chan SendStruct) *Controller {
+func NewController(db models.Datastore, WsWriteChan chan SendStruct, WsWriteQuoteChan chan SendStruct) *Controller {
 
 	return &Controller{
 		DB:                db,
-		WsReadChan:        WsReadChan,
 		WsWriteChan:       WsWriteChan,
 		WsWriteQuoteChan:  WsWriteQuoteChan,
 		Connections:       make(map[*websocket.Conn]*WebsocketConnection),
@@ -243,7 +235,8 @@ func (t *Controller) ProcessRead(conn *WebsocketConnection, message string, data
 
 	// Default we send over to the user feed.
 	default:
-		t.WsReadChan <- ReceivedStruct{UserId: conn.userId, Body: message, Connection: conn}
+		services.Info("Unknown message coming from websocket - " + message)
+		//t.WsReadChan <- ReceivedStruct{UserId: conn.userId, Body: message, Connection: conn}
 		break
 
 	}
@@ -288,10 +281,6 @@ func (t *Controller) AuthenticateConnection(conn *WebsocketConnection, accessTok
 
 	// Do the writing.
 	go t.DoWsWriting(conn)
-
-	// Send cached data so they do not have to wait for polling.
-	t.WsReadChan <- ReceivedStruct{UserId: conn.userId, Body: "{\"uri\":\"data/all\",\"body\":{}}", Connection: conn}
-
 }
 
 //

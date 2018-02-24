@@ -45,7 +45,6 @@ func main() {
 	defer db.Close()
 
 	// Setup shared channels
-	WsReadChan := make(chan websocket.ReceivedStruct, 1000)
 	WsWriteChan := make(chan websocket.SendStruct, 1000)
 	WsWriteQuoteChan := make(chan websocket.SendStruct, 1000)
 
@@ -54,18 +53,17 @@ func main() {
 
 	// Setup users object & Start users feeds
 	u := &users.Base{
-		DB:              db,
-		Users:           make(map[uint]*users.UserFeed),
-		DataChan:        WsWriteChan,
-		QuoteChan:       WsWriteQuoteChan,
-		FeedRequestChan: WsReadChan,
+		DB:        db,
+		Users:     make(map[uint]*users.UserFeed),
+		DataChan:  WsWriteChan,
+		QuoteChan: WsWriteQuoteChan,
 	}
 
 	// Start user feed
 	u.StartFeeds()
 
 	// Create new websocket
-	w := websocket.NewController(db, WsReadChan, WsWriteChan, WsWriteQuoteChan)
+	w := websocket.NewController(db, WsWriteChan, WsWriteQuoteChan)
 
 	// Startup controller & websockets
 	c := &controllers.Controller{DB: db, WebsocketController: w}

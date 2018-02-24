@@ -7,55 +7,9 @@
 package users
 
 import (
-	"encoding/json"
-
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/cloudmanic/app.options.cafe/backend/websocket"
 )
-
-//
-// Send a user's watchlist up the websocket channel
-//
-func (t *Base) WsSendWatchlists(user *UserFeed, request websocket.ReceivedStruct) {
-
-	// Get the watchlists
-	wLists, err := t.DB.GetWatchlistsByUserId(user.Profile.Id)
-
-	if err != nil {
-		return
-	}
-
-	// Loop through the different watchlists
-	for _, row := range wLists {
-
-		// Convert to a json string.
-		dataJson, err := json.Marshal(row)
-
-		if err != nil {
-			services.Error(err, "WsSendWatchlists() json.Marshal (#1)")
-			continue
-		}
-
-		// Build JSON we send
-		jsonSend, err := t.WsSendJsonBuild("watchlists", dataJson)
-
-		if err != nil {
-			services.Error(err, "WsSendWatchlists() WsSendJsonBuild (#2)")
-			continue
-		}
-
-		// Send up the websocket
-		user.DataChan <- websocket.SendStruct{UserId: user.Profile.Id, Body: string(jsonSend)}
-
-		// Example to send back to just the current connection. (this is useful for validation)
-		//request.Connection.WriteChan <- jsonSend
-
-	}
-
-	// Return happy
-	return
-}
 
 //
 // Verify we have default watchlist in place.
