@@ -9,47 +9,6 @@ import (
 )
 
 //
-// Send cached data up the websocket pipeline.
-// This is useful for when the application wants
-// data between pooling of the broker.
-//
-func (t *Base) RefreshFromCached() error {
-
-	// UserProfile - Send up websocket.
-	err := t.WriteDataChannel("user/profile", t.UserProfile)
-
-	if err != nil {
-		return fmt.Errorf("RefreshFromCached() WriteDataChannel - user/profile : ", err)
-	}
-
-	// MarketStatus - Send up websocket.
-	err = t.WriteDataChannel("market/status", t.MarketStatus)
-
-	if err != nil {
-		return fmt.Errorf("RefreshFromCached() WriteDataChannel - market/status : ", err)
-	}
-
-	// Orders - Send up websocket.
-	err = t.WriteDataChannel("orders", t.Orders)
-
-	if err != nil {
-		return fmt.Errorf("RefreshFromCached() WriteDataChannel - orders : ", err)
-	}
-
-	// Balances - Send up websocket.
-	err = t.WriteDataChannel("balances", t.Balances)
-
-	if err != nil {
-		return fmt.Errorf("RefreshFromCached() WriteDataChannel - balances : ", err)
-	}
-
-	// No error
-	return nil
-}
-
-// ----------------- Helper Functions ---------------- //
-
-//
 // Return a json object ready to be sent up the websocket
 //
 func (t *Base) GetSendJson(uri string, data_json string) (string, error) {

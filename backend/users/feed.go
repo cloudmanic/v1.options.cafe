@@ -85,7 +85,7 @@ func (t *Base) DoUserFeed(user models.User) {
 		switch row.Name {
 
 		case "Tradier":
-			brokerApi = &tradier.Api{BrokerId: row.Id, ApiKey: decryptAccessToken, DB: t.DB}
+			brokerApi = &tradier.Api{ApiKey: decryptAccessToken, DB: t.DB}
 
 		default:
 			services.Critical("Unknown Broker : " + row.Name + " (" + user.Email + ")")

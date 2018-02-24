@@ -18,7 +18,7 @@ type BrokerAccount struct {
 	CreatedAt         time.Time `json:"-"`
 	UpdatedAt         time.Time `json:"-"`
 	UserId            uint      `gorm:"index" sql:"not null;index:UserId" json:"-"`
-	BrokerId          uint      `gorm:"index" sql:"not null;index:BrokerId" json:"-"`
+	BrokerId          uint      `gorm:"index" sql:"not null;index:BrokerId" json:"broker_id"`
 	Name              string    `sql:"not null" json:"name"`
 	AccountNumber     string    `sql:"not null" json:"account_number"`
 	StockCommission   float64   `sql:"type:DECIMAL(12,2)" json:"stock_commission"`

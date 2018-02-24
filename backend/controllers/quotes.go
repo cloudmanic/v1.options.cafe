@@ -7,13 +7,9 @@
 package controllers
 
 import (
-	"errors"
-	"fmt"
-	"io/ioutil"
-	"net/http"
 	"os"
 
-	"github.com/davecgh/go-spew/spew"
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,49 +20,30 @@ import (
 //
 func (t *Controller) GetHistoricalQuotes(c *gin.Context) {
 
-	// Setup http client
-	client := &http.Client{}
+	// // Get the user. This should never error because of the middleware
+	// user, err := t.DB.GetUserById(c.MustGet("userId").(uint))
 
-	// Setup api request
-	req, _ := http.NewRequest("GET", "https://api.tradier.com/v1/markets/history?symbol=spy", nil)
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Authorization", fmt.Sprint("Bearer ", os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN")))
-
-	res, err := client.Do(req)
-
-	// Throw error if we have one
-	if t.RespondError(c, err, httpGenericErrMsg) {
-		return
-	}
-	// Close Body
-	defer res.Body.Close()
-
-	// Make sure the api responded with a 200
-	if res.StatusCode != 200 {
-		t.RespondError(c, errors.New(fmt.Sprint("/markets/history API did not return 200, It returned ", res.StatusCode)), httpGenericErrMsg)
-		return
-	}
-
-	// Read the data we got.
-	body, _ := ioutil.ReadAll(res.Body)
-
-	spew.Dump(string(body))
-
-	// // Bust open the watchlist.
-	// var ws map[string]types.MarketStatus
-
-	// if err := json.Unmarshal(body, &ws); err != nil {
-	// 	return status, err
+	// if err != nil {
+	// 	t.RespondError(c, err, httpGenericErrMsg)
+	// 	return
 	// }
 
-	// // Set the status we return.
-	// status = ws["clock"]
+	// Setup the broker
+	broker := tradier.Api{
+		DB:     t.DB,
+		ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN"),
+	}
 
-	// // Return happy
-	// return status, nil
+	// Make API call to broker.
+	result, err := broker.GetBalances()
+
+	if err != nil {
+		t.RespondError(c, err, httpGenericErrMsg)
+		return
+	}
 
 	// Return happy JSON
-	//c.JSON(200, res.Body)
+	c.JSON(200, result)
 }
 
 /* End File */

@@ -88,8 +88,8 @@ func LoadTestingData(db *gorm.DB) {
 
 	// BrokerAccounts
 	db.Exec("TRUNCATE TABLE broker_accounts;")
-	db.Create(&BrokerAccount{UserId: 1, Name: "Test Account 1", AccountNumber: "YYY123ZY", StockCommission: 5.00, StockMin: 0.00, OptionCommission: 0.35, OptionSingleMin: 5.00, OptionMultiLegMin: 7.00, OptionBase: 0.00})
-	db.Create(&BrokerAccount{UserId: 1, Name: "Test Account 2", AccountNumber: "ABC123ZY", StockCommission: 5.00, StockMin: 0.00, OptionCommission: 0.35, OptionSingleMin: 5.00, OptionMultiLegMin: 7.00, OptionBase: 0.00})
+	db.Create(&BrokerAccount{UserId: 1, BrokerId: 1, Name: "Test Account 1", AccountNumber: "YYY123ZY", StockCommission: 5.00, StockMin: 0.00, OptionCommission: 0.35, OptionSingleMin: 5.00, OptionMultiLegMin: 7.00, OptionBase: 0.00})
+	db.Create(&BrokerAccount{UserId: 1, BrokerId: 1, Name: "Test Account 2", AccountNumber: "ABC123ZY", StockCommission: 5.00, StockMin: 0.00, OptionCommission: 0.35, OptionSingleMin: 5.00, OptionMultiLegMin: 7.00, OptionBase: 0.00})
 
 	// Symbols
 	db.Exec("TRUNCATE TABLE symbols;")

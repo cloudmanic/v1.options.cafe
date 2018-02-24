@@ -7,6 +7,11 @@
 package controllers
 
 import (
+	"flag"
+	"os"
+
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
 )
@@ -15,21 +20,6 @@ import (
 // Return groups in our database.
 //
 func (t *Controller) GetBrokers(c *gin.Context) {
-
-	// // Run the query
-	// results, err := t.DB.GetTradeGroups(models.QueryParam{
-	// 	UserId:           c.MustGet("userId").(uint),
-	// 	Order:            c.Query("order"),
-	// 	Sort:             c.Query("sort"),
-	// 	Limit:            defaultMysqlLimit,
-	// 	Page:             c.Query("page"),
-	// 	Debug:            false,
-	// 	PreLoads:         []string{"Positions"},
-	// 	SearchTerm:       c.Query("search"),
-	// 	SearchCols:       []string{"id", "name", "open_date", "status", "type", "note"},
-	// 	AllowedOrderCols: TradeGroupAllowedOrderCols,
-	// 	Wheres:           []models.KeyValue{{Key: "broker_account_id", Value: c.Query("broker_account_id")}},
-	// })
 
 	var results = []models.Broker{}
 
@@ -47,6 +37,65 @@ func (t *Controller) GetBrokers(c *gin.Context) {
 
 	// Return happy JSON
 	c.JSON(200, results)
+}
+
+//
+// Make an API call to the broker and get balances.
+//
+func (t *Controller) GetBalances(c *gin.Context) {
+
+	var apiKey string = ""
+	var brokers = []models.Broker{}
+
+	// Run the query to get brokers
+	err := t.DB.Query(&brokers, models.QueryParam{
+		UserId: c.MustGet("userId").(uint),
+		Wheres: []models.KeyValue{
+			{Key: "name", Value: "Tradier"},
+		},
+	})
+
+	// Loop through the different brokers- TODO: This only supports one broker. We need to get balance from all brokers and merge data together.
+	if flag.Lookup("test.v") != nil {
+
+		// Get API Key if we are in testing mode
+		if flag.Lookup("test.v") != nil {
+			apiKey = os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN")
+		}
+
+	} else {
+
+		for _, row := range brokers {
+
+			// Decrypt the access token
+			_apiKey, err := helpers.Decrypt(row.AccessToken)
+
+			if err != nil {
+				t.RespondError(c, err, httpGenericErrMsg)
+				return
+			}
+
+			apiKey = _apiKey
+		}
+
+	}
+
+	// Setup the broker
+	broker := tradier.Api{
+		DB:     t.DB,
+		ApiKey: apiKey,
+	}
+
+	// Make API call to broker.
+	result, err := broker.GetBalances()
+
+	if err != nil {
+		t.RespondError(c, err, httpGenericErrMsg)
+		return
+	}
+
+	// Return happy JSON
+	c.JSON(200, result)
 }
 
 /* End File */

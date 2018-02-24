@@ -1,11 +1,17 @@
+//
+// Date: 2/23/2017
+// Author(s): Spicer Matthews (spicer@options.cafe)
+// Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
+//
+
 package types
 
 type Balance struct {
-  AccountNumber string
-  AccountValue float64
-  TotalCash float64 
-  OptionBuyingPower float64
-  StockBuyingPower float64
+	AccountNumber     string  `json:"account_number"`
+	AccountValue      float64 `json:"account_value"`
+	TotalCash         float64 `json:"total_cash"`
+	OptionBuyingPower float64 `json:"option_buying_power"`
+	StockBuyingPower  float64 `json:"stock_buying_power"`
 }
 
 /*

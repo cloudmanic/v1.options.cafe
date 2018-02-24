@@ -25,6 +25,7 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 	{
 		// Brokers
 		apiV1.GET("/brokers", t.GetBrokers)
+		apiV1.GET("/brokers/balances", t.GetBalances)
 
 		// Symbols
 		apiV1.GET("/symbols", t.GetSymbols)
