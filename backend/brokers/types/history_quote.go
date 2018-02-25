@@ -8,6 +8,7 @@ package types
 
 type HistoryQuote struct {
 	Date   string  `json:"date"`
+	Time   string  `json:"time"`
 	Open   float64 `json:"open"`
 	High   float64 `json:"high"`
 	Low    float64 `json:"low"`
