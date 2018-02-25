@@ -8,13 +8,14 @@ package tradier
 
 import (
 	"testing"
+	"time"
 
 	"github.com/nbio/st"
 	gock "gopkg.in/h2non/gock.v1"
 )
 
 //
-// Test - GetMarketStatus
+// Test - GetHistoricalQuotes
 //
 func TestGetHistoricalQuotes01(t *testing.T) {
 
@@ -30,7 +31,10 @@ func TestGetHistoricalQuotes01(t *testing.T) {
 	// Create new tradier instance
 	tradier := &Api{}
 
-	quotes, err := tradier.GetHistoricalQuotes("SPY")
+	// Send API call.
+	start := time.Date(2018, 01, 01, 0, 0, 0, 0, time.UTC)
+	end := time.Date(2018, 02, 23, 0, 0, 0, 0, time.UTC)
+	quotes, err := tradier.GetHistoricalQuotes("SPY", start, end, "daily")
 
 	// Verify the data was return as expected
 	st.Expect(t, err, nil)
@@ -47,6 +51,48 @@ func TestGetHistoricalQuotes01(t *testing.T) {
 	st.Expect(t, quotes[36].Low, 271.25)
 	st.Expect(t, quotes[36].Close, 274.71)
 	st.Expect(t, quotes[36].Volume, 92753578)
+
+	// Verify that we don't have pending mocks
+	st.Expect(t, gock.IsDone(), true)
+}
+
+//
+// Test - GetHistoricalQuotes
+//
+func TestGetHistoricalQuotes02(t *testing.T) {
+
+	// Flush pending mocks after test execution
+	defer gock.Off()
+
+	// Setup mock request.
+	gock.New(apiBaseUrl).
+		Get("/markets/history").
+		Reply(200).
+		BodyString(`{"history":{"day":[{"date":"2017-01-01","open":135.1,"high":139.37,"low":133.05,"close":138.47,"volume":79912670},{"date":"2017-02-01","open":137.66,"high":146.33,"low":136.33,"close":144.91,"volume":75930406},{"date":"2017-03-01","open":146.72,"high":150.15,"low":145.83,"close":146.95,"volume":89749218},{"date":"2017-04-01","open":146.94,"high":156.27,"low":145.76,"close":156.1,"volume":75717119},{"date":"2017-05-01","open":156.22,"high":160.86,"low":153.29,"close":153.88,"volume":86552189},{"date":"2017-06-01","open":153.52,"high":159.2242,"low":150.75,"close":153.4,"volume":100510570},{"date":"2017-07-01","open":154.39,"high":154.79,"low":144.25,"close":148.08,"volume":97247580},{"date":"2017-08-01","open":150.24,"high":156.05,"low":146.89,"close":150.0,"volume":108301722},{"date":"2017-09-01","open":150.26,"high":163.61,"low":149.76,"close":163.56,"volume":110304258},{"date":"2017-10-01","open":164.2,"high":167.94,"low":161.5111,"close":165.31,"volume":68423735},{"date":"2017-11-01","open":166.42,"high":180.67,"low":160.53,"close":179.82,"volume":103228255},{"date":"2017-12-01","open":180.32,"high":191.49,"low":176.7,"close":189.53,"volume":103713592},{"date":"2018-01-01","open":190.21,"high":207.605,"low":187.819,"close":201.81,"volume":87523559},{"date":"2018-02-01","open":199.34,"high":202.25,"low":175.42,"close":188.35,"volume":111317234}]}}`)
+
+	// Create new tradier instance
+	tradier := &Api{}
+
+	// Send API call.
+	start := time.Date(2017, 01, 01, 0, 0, 0, 0, time.UTC)
+	end := time.Date(2018, 02, 23, 0, 0, 0, 0, time.UTC)
+	quotes, err := tradier.GetHistoricalQuotes("HD", start, end, "monthly")
+
+	// Verify the data was return as expected
+	st.Expect(t, err, nil)
+	st.Expect(t, len(quotes), 14)
+	st.Expect(t, quotes[0].Date, "2017-01-01")
+	st.Expect(t, quotes[0].Open, 135.1)
+	st.Expect(t, quotes[0].High, 139.37)
+	st.Expect(t, quotes[0].Low, 133.05)
+	st.Expect(t, quotes[0].Close, 138.47)
+	st.Expect(t, quotes[0].Volume, 79912670)
+	st.Expect(t, quotes[13].Date, "2018-02-01")
+	st.Expect(t, quotes[13].Open, 199.34)
+	st.Expect(t, quotes[13].High, 202.25)
+	st.Expect(t, quotes[13].Low, 175.42)
+	st.Expect(t, quotes[13].Close, 188.35)
+	st.Expect(t, quotes[13].Volume, 111317234)
 
 	// Verify that we don't have pending mocks
 	st.Expect(t, gock.IsDone(), true)

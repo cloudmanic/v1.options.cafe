@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/tidwall/gjson"
@@ -20,15 +21,18 @@ import (
 //
 // Get historical quotes
 //
-func (t *Api) GetHistoricalQuotes(symbol string) ([]types.HistoryQuote, error) {
+func (t *Api) GetHistoricalQuotes(symbol string, start time.Time, end time.Time, interval string) ([]types.HistoryQuote, error) {
 
 	quotes := []types.HistoryQuote{}
 
 	// Setup http client
 	client := &http.Client{}
 
+	// Build request
+	request := apiBaseUrl + "/markets/history?symbol=" + symbol + "&start=" + start.Format("2006-01-02") + "&end=" + end.Format("2006-01-02") + "&interval=" + interval
+
 	// Setup api request
-	req, _ := http.NewRequest("GET", apiBaseUrl+"/markets/history?symbol="+symbol, nil)
+	req, _ := http.NewRequest("GET", request, nil)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Authorization", fmt.Sprint("Bearer ", t.ApiKey))
 

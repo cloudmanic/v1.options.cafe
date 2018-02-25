@@ -1,6 +1,8 @@
 package brokers
 
 import (
+	"time"
+
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
@@ -17,7 +19,7 @@ type Api interface {
 	GetQuotes([]string) ([]types.Quote, error)
 	GetUserProfile() (types.UserProfile, error)
 	DoRefreshAccessTokenIfNeeded(models.User) error
-	GetHistoricalQuotes(symbol string) ([]types.HistoryQuote, error)
+	GetHistoricalQuotes(symbol string, start time.Time, end time.Time, interval string) ([]types.HistoryQuote, error)
 }
 
 /* End File */
