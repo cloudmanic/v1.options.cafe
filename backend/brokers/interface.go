@@ -17,6 +17,7 @@ type Api interface {
 	GetQuotes([]string) ([]types.Quote, error)
 	GetUserProfile() (types.UserProfile, error)
 	DoRefreshAccessTokenIfNeeded(models.User) error
+	GetHistoricalQuotes(symbol string) ([]types.HistoryQuote, error)
 }
 
 /* End File */

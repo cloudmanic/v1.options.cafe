@@ -35,6 +35,7 @@ func TestGetHistoricalQuotes01(t *testing.T) {
 	gin.SetMode("release")
 	gin.DisableConsoleColor()
 	r := gin.New()
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
 	r.GET("/api/v1/quotes/historical", c.GetHistoricalQuotes)
 
 	// Setup writer.

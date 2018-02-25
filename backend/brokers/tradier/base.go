@@ -3,12 +3,14 @@ package tradier
 import (
 	"errors"
 	"fmt"
+	"go/build"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"sync"
 
 	"github.com/cloudmanic/app.options.cafe/backend/models"
+	env "github.com/jpfuentes2/go-env"
 )
 
 const (
@@ -23,6 +25,14 @@ type Api struct {
 
 	muApiKey sync.Mutex
 	ApiKey   string
+}
+
+//
+// Start up the controller.
+//
+func init() {
+	// Helpful for testing
+	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/.env")
 }
 
 //

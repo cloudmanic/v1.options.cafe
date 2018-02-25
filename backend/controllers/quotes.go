@@ -7,9 +7,12 @@
 package controllers
 
 import (
+	"flag"
 	"os"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,18 +23,46 @@ import (
 //
 func (t *Controller) GetHistoricalQuotes(c *gin.Context) {
 
-	// // Get the user. This should never error because of the middleware
-	// user, err := t.DB.GetUserById(c.MustGet("userId").(uint))
+	var apiKey string = ""
+	var brokers = []models.Broker{}
 
-	// if err != nil {
-	// 	t.RespondError(c, err, httpGenericErrMsg)
-	// 	return
-	// }
+	// Run the query to get brokers
+	err := t.DB.Query(&brokers, models.QueryParam{
+		UserId: c.MustGet("userId").(uint),
+		Wheres: []models.KeyValue{
+			{Key: "name", Value: "Tradier"},
+		},
+	})
+
+	// TODO: For now we only support Tradier but as we open up to new brokers we will have to support more.
+	if flag.Lookup("test.v") != nil {
+
+		// Get API Key if we are in testing mode
+		if flag.Lookup("test.v") != nil {
+			apiKey = os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN")
+		}
+
+	} else {
+
+		for _, row := range brokers {
+
+			// Decrypt the access token
+			_apiKey, err := helpers.Decrypt(row.AccessToken)
+
+			if err != nil {
+				t.RespondError(c, err, httpGenericErrMsg)
+				return
+			}
+
+			apiKey = _apiKey
+		}
+
+	}
 
 	// Setup the broker
 	broker := tradier.Api{
 		DB:     t.DB,
-		ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN"),
+		ApiKey: apiKey,
 	}
 
 	// Make API call to broker.
