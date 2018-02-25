@@ -8,7 +8,6 @@ package controllers
 
 import (
 	"flag"
-	"os"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
@@ -35,15 +34,7 @@ func (t *Controller) GetHistoricalQuotes(c *gin.Context) {
 	})
 
 	// TODO: For now we only support Tradier but as we open up to new brokers we will have to support more.
-	if flag.Lookup("test.v") != nil {
-
-		// Get API Key if we are in testing mode
-		if flag.Lookup("test.v") != nil {
-			apiKey = os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN")
-		}
-
-	} else {
-
+	if flag.Lookup("test.v") == nil {
 		for _, row := range brokers {
 
 			// Decrypt the access token
@@ -56,7 +47,6 @@ func (t *Controller) GetHistoricalQuotes(c *gin.Context) {
 
 			apiKey = _apiKey
 		}
-
 	}
 
 	// Setup the broker
@@ -66,7 +56,7 @@ func (t *Controller) GetHistoricalQuotes(c *gin.Context) {
 	}
 
 	// Make API call to broker.
-	result, err := broker.GetBalances()
+	result, err := broker.GetHistoricalQuotes(c.Query("symbol"))
 
 	if err != nil {
 		t.RespondError(c, err, httpGenericErrMsg)
