@@ -6,7 +6,9 @@
 
 import { Injectable } from '@angular/core';
 import { Broker } from '../../models/broker';
+import { Symbol } from '../../models/symbol';
 import { Watchlist } from '../../models/watchlist';
+import { HistoricalQuote } from '../../models/historical-quote';
 import { TradeGroup, TradeGroupsCont } from '../../models/trade-group';
 import { BrokerAccount } from '../../models/broker-account';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
@@ -21,7 +23,10 @@ export class StateService
   private activeBrokerAccount: BrokerAccount;
 
   // Dashboard stuff
+  private dashboardChartRangeSelect: string = "days-monthly-365";
+  private dashboardChartData: HistoricalQuote[];
   private dashboardTradeGroups: TradeGroupsCont;
+  private dashboardChartSymbol: Symbol = new Symbol(1, "SPDR S&P 500 ETF Trust", "SPY", "Equity", null);
   
   // Trade Group stuff
   private tradeGroupPage: number = 1;
@@ -53,6 +58,47 @@ export class StateService
     return this.quotes;
   }
 
+  //
+  // Set a dashboard chart RangeSelect
+  //
+  SetDashboardChartRangeSelect(data: string) {
+    this.dashboardChartRangeSelect = data;
+  }
+
+  //
+  // Get dashboard chart RangeSelect
+  //
+  GetDashboardChartRangeSelect() {
+    return this.dashboardChartRangeSelect;
+  }
+
+  //
+  // Set a dashboard chart symbol
+  //
+  SetDashboardChartSymbol(data: Symbol) {
+    this.dashboardChartSymbol = data;
+  }
+
+  //
+  // Get dashboard chart symbol
+  //
+  GetDashboardChartSymbol() {
+    return this.dashboardChartSymbol;
+  }
+
+  //
+  // Set dashboard chart data
+  //
+  SetDashboardChartData(data: HistoricalQuote[]) {
+    this.dashboardChartData = data;
+  }
+
+  //
+  // Get dashboard chart data
+  //
+  GetDashboardChartData() {
+    return this.dashboardChartData;
+  }
 
   //
   // Set a trade group search term

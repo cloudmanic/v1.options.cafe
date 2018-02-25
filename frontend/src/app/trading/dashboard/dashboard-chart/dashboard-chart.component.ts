@@ -4,10 +4,14 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import 'rxjs/add/operator/takeUntil';
+import { Subject } from 'rxjs/Subject';
 import * as Highcharts from 'highcharts/highstock';
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Symbol } from '../../../models/symbol';
 import { StateService } from '../../../providers/state/state.service';
 import { QuotesService } from '../../../providers/http/quotes.service';
+import { QuoteService } from '../../../providers/websocket/quote.service';
 
 @Component({
   selector: 'app-trading-dashboard-chart',
@@ -16,7 +20,12 @@ import { QuotesService } from '../../../providers/http/quotes.service';
 
 export class DashboardChartComponent implements OnInit 
 {  
-  symbol: string = "spy";
+  quotes = {}
+
+  symbol: Symbol = new Symbol(1, "SPDR S&P 500 ETF Trust", "SPY", "Equity", null);
+  interval: string = "daily";
+  rangeSelect: string;
+  destory: Subject<boolean> = new Subject<boolean>();
 
   Highcharts = Highcharts;
 
@@ -30,6 +39,10 @@ export class DashboardChartComponent implements OnInit
     credits: { enabled: false },
 
     rangeSelector: { enabled: false },
+
+    legend: {
+      enabled: false
+    },
 
     yAxis: {
       startOnTick: false,
@@ -56,15 +69,51 @@ export class DashboardChartComponent implements OnInit
   //
   // Constructor....
   //
-  constructor(private stateService: StateService, private quoteService: QuotesService) { }
+  constructor(private stateService: StateService, private quotesService: QuotesService, private quoteService: QuoteService) { }
 
   //
   // OnInit....
   //
   ngOnInit() 
   {
-    this.getChartData()
+    // Get data from cache.
+    this.quotes = this.stateService.GetQuotes();     
+    this.symbol = this.stateService.GetDashboardChartSymbol();
+    this.rangeSelect = this.stateService.GetDashboardChartRangeSelect();    
+    this.chartOptions.series[0].data = this.stateService.GetDashboardChartData();
+
+    // Subscribe to data updates from the quotes - Market Quotes
+    this.quoteService.marketQuotePushData.takeUntil(this.destory).subscribe(data => {
+      this.quotes[data.symbol] = data;
+    });     
+
+    // Load data for the page.
+    this.getChartData();
   }
+
+  //
+  // OnDestroy
+  //
+  ngOnDestroy()
+  {
+    this.destory.next();
+    this.destory.complete();
+  }  
+
+  //
+  // onSearchTypeAheadClick() 
+  //
+  onSearchTypeAheadClick(symbol: Symbol) {
+
+    if(typeof symbol == "undefined")
+    {
+      return;
+    }
+
+    this.symbol = symbol;
+    this.getChartData();
+    this.stateService.SetDashboardChartSymbol(symbol);    
+  }  
 
   //
   // Update chart.
@@ -72,7 +121,7 @@ export class DashboardChartComponent implements OnInit
   getChartData()
   {
     // Make api call to get historical data.
-    this.quoteService.getHistoricalQuote(this.symbol, new Date("2018-01-01"), new Date('2018-03-01'), 'daily').subscribe((res) => {
+    this.quotesService.getHistoricalQuote(this.symbol.ShortName, this.getStartDate(), new Date(), this.interval).subscribe((res) => {
       var data = [];
       
       for(var i = 0; i < res.length; i++)
@@ -83,16 +132,50 @@ export class DashboardChartComponent implements OnInit
           high: res[i].High,
           low: res[i].Low,
           close: res[i].Close,
-          name: (res[i].Date.getMonth() + 1) + "/" + res[i].Date.getDay() +  "/" + res[i].Date.getFullYear()
-          //color: '#00FF00'
+          name: (res[i].Date.getMonth() + 1) + "/" + res[i].Date.getDate() +  "/" + res[i].Date.getFullYear(),
+          color: (((res[i].Close - res[i].Open) > 0) ? '#5cb85c' : '#ce4260')
         });
       }
 
       // Rebuilt the chart
       this.chartOptions.series[0].data = data;
       this.chartUpdateFlag = true;
+
+      // Store cache
+      this.stateService.SetDashboardChartData(data);
+      this.stateService.SetDashboardChartRangeSelect(this.rangeSelect);
     });    
+  }
+
+  //
+  // Get start date.
+  //
+  getStartDate() : Date {
+    let start = new Date();
+    let parts = this.rangeSelect.split("-");
+    this.interval = parts[1];
+
+    switch(parts[0])
+    {
+      case 'today':
+        console.log("Today.....");
+      break;
+
+      case 'days':
+        let numberOfDaysToSubtract: any = parts[2];
+        start.setDate(start.getDate() - numberOfDaysToSubtract);        
+      break;
+    }
+
+    return start;
   }   
+
+  //
+  // Change date range.
+  //
+  onRangeSelect(event) {
+    this.getChartData();
+  }
 
 }
 

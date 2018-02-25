@@ -1429,6 +1429,11 @@ select::-ms-expand { display: none; }
 
 .mt-3 { margin-top: 3px; }
 .mt-5 { margin-top: 5px; }
+.mt-20 { margin-top: 20px; }
+
+.ml-3 { margin-left: 3px; }
+.ml-5 { margin-left: 5px; }
+.ml-20 { margin-left: 20px; }
 
 /* Hide GooveHq stuff */
 iframe.grv-widget-tag { display: none !important; }

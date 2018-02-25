@@ -27,6 +27,13 @@ export class QuotesService
 
     let ts = "";
 
+    // Is this a max call?
+    if(start.getTime() < 0)
+    {
+      start = new Date("1/1/1980")
+    }
+
+    // Setup request
     let request = environment.app_server + '/api/v1/quotes/historical?symbol=' + symbol + '&start=' + start.toISOString().substring(0, 10) + 
                   '&end=' + end.toISOString().substring(0, 10) + '&interval=' + interval;
 

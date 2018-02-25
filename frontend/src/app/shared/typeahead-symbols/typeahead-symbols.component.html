@@ -1,16 +1,18 @@
-<input type="text" value="" placeholder="Search" class="field" (keyup)="onSearchKeyUp($event)" [(ngModel)]="searchTerm" />
+<span class="dropdown dropdown--search active">
+  <input type="text" value="" placeholder="Search" class="field" (keyup)="onSearchKeyUp($event)" [(ngModel)]="searchTerm" />
 
-<span [hidden]="! typeAheadShow">
-  <div class="dropdown__body">  
+  <span [hidden]="! typeAheadShow">
+    <div class="dropdown__body">  
 
-    <ul class="list-actions">
-      <li *ngFor="let row of typeAheadList; let i = index">
-        <a (click)="onSelected(row)" [ngClass]="{ 'active': (activeItem == i) }">
-          <span>{{ row.ShortName | uppercase }}</span>
-          {{ row.Name }}
-        </a>
-      </li>
-    </ul>
+      <ul class="list-actions">
+        <li *ngFor="let row of typeAheadList; let i = index">
+          <a (click)="onSelected(row)" [ngClass]="{ 'active': (activeItem == i) }">
+            <span>{{ row.ShortName | uppercase }}</span>
+            {{ row.Name }}
+          </a>
+        </li>
+      </ul>
 
-  </div>
+    </div>
+  </span>
 </span>

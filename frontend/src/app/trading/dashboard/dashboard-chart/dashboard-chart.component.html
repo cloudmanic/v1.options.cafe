@@ -1,34 +1,40 @@
 <div class="box__head box__head--relative box__head--small">
   <div class="box__flex">
-    <input type="text" value="AMZN" class="field field--small" />
 
-    <h5 class="box__title">Amazon.com Inc</h5><!-- /.box__title -->
+    <app-typeahead-symbols (selected)="onSearchTypeAheadClick($event)"></app-typeahead-symbols>
 
-    <strong class="title-green">$436.42 (9.87%)</strong>
+    <h5 class="box__title ml-20">{{ symbol?.Name }}</h5>
+
+    <strong>{{ quotes[symbol.ShortName]?.last | currency:'USD':'symbol':'1.2-2' }}</strong>
+
+    <strong [ngClass]="{'title-red': (quotes[symbol?.ShortName]?.dailyChange() < 0), 'title-green': (quotes[symbol?.ShortName]?.dailyChange() > 0)}" class="ml-5">
+      {{ quotes[symbol?.ShortName]?.dailyChange() | currency:'USD':'symbol':'1.2-2' }} <span>({{ quotes[symbol?.ShortName]?.percentChange() | number:'1.2-2' }}%)</span>
+    </strong>    
   </div>
 
   <div class="box__absolute select">
-    <select name="field-period" id="field-period">
-      <option value="period-1">Today (1 min)</option>
-
-      <option value="period-2">Today (30 min)</option>
-
-      <option value="period-3">Today (1 hour)</option>
+    <select name="field-period" id="field-period" [(ngModel)]="rangeSelect" (change)="onRangeSelect($event)">
+      <option value="today-1min-1">Today (1 min)</option>
+      <option value="today-5min-5">Today (5 min)</option>
+      <option value="today-15min-15">Today (15 min)</option>
+      <option value="days-15min-5">5 Days (15 min)</option> 
+      <option value="days-daily-365">1 Year (Daily)</option>
+      <option value="days-weekly-365">1 Year (Weekly)</option> 
+      <option value="days-monthly-365">1 Year (Monthly)</option>  
+      <option value="days-daily-730">2 Years (Daily)</option>
+      <option value="days-weekly-730">2 Years (Weekly)</option> 
+      <option value="days-monthly-730">2 Years (Monthly)</option> 
+      <option value="days-weekly-1825">5 Years (Weekly)</option> 
+      <option value="days-monthly-1825">5 Years (Monthly)</option> 
+      <option value="days-weekly-3650">10 Years (Weekly)</option> 
+      <option value="days-monthly-3650">10 Years (Monthly)</option> 
+      <option value="days-monthly-36500">Max (Monthly)</option>
     </select>
   </div>
 </div>
 
 <div class="box__body">
   <figure class="box__image">
-
-<highcharts-chart 
-  [Highcharts]="Highcharts"
-  [options]="chartOptions"
-  [(update)]="chartUpdateFlag"
-
-  style="width: 100%; height: 400px; display: block;"
-></highcharts-chart>
-
-
+    <highcharts-chart [Highcharts]="Highcharts" [options]="chartOptions" [(update)]="chartUpdateFlag" style="width: 100%; height: 400px; display: block;"></highcharts-chart>
   </figure>
 </div>
