@@ -38,6 +38,8 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		// Trade Groups
 		apiV1.GET("/tradegroups", t.GetTradeGroups)
 
+		// Quotes
+		apiV1.GET("/quotes/historical", t.GetHistoricalQuotes)
 	}
 
 	// ---------- Websockets -------------- //

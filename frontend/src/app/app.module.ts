@@ -20,6 +20,7 @@ import { QuoteService } from './providers/websocket/quote.service';
 import { StateService } from './providers/state/state.service';
 
 // Providers - http
+import { QuotesService } from './providers/http/quotes.service';
 import { BrokerService } from './providers/http/broker.service';
 import { SymbolService } from './providers/http/symbol.service';
 import { WatchlistService } from './providers/http/watchlist.service';
@@ -122,6 +123,7 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     TradeGroupService,
     StateService,
     WatchlistService,
+    QuotesService,
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }    
   ],
   
