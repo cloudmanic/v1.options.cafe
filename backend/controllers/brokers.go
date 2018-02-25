@@ -8,7 +8,6 @@ package controllers
 
 import (
 	"flag"
-	"os"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
@@ -56,15 +55,7 @@ func (t *Controller) GetBalances(c *gin.Context) {
 	})
 
 	// Loop through the different brokers- TODO: This only supports one broker. We need to get balance from all brokers and merge data together.
-	if flag.Lookup("test.v") != nil {
-
-		// Get API Key if we are in testing mode
-		if flag.Lookup("test.v") != nil {
-			apiKey = os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN")
-		}
-
-	} else {
-
+	if flag.Lookup("test.v") == nil {
 		for _, row := range brokers {
 
 			// Decrypt the access token
@@ -77,7 +68,6 @@ func (t *Controller) GetBalances(c *gin.Context) {
 
 			apiKey = _apiKey
 		}
-
 	}
 
 	// Setup the broker

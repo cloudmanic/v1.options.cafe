@@ -16,6 +16,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
 	"github.com/nbio/st"
+	gock "gopkg.in/h2non/gock.v1"
 )
 
 //
@@ -75,6 +76,15 @@ func TestGetBrokers01(t *testing.T) {
 //
 func TestGetBalances01(t *testing.T) {
 
+	// Flush pending mocks after test execution
+	defer gock.Off()
+
+	// Setup mock request.
+	gock.New("https://api.tradier.com/v1").
+		Get("/user/balances").
+		Reply(200).
+		BodyString(`{"accounts":{"account":[{"balances":{"option_short_value":0,"total_equity":0.00000000,"account_number":"6Y111184","account_type":"cash","close_pl":0,"current_requirement":0,"equity":0,"long_market_value":0,"market_value":0,"open_pl":0,"option_long_value":0,"option_requirement":0,"pending_orders_count":0,"short_market_value":0,"stock_long_value":0,"total_cash":0.00000000,"uncleared_funds":0,"pending_cash":0,"cash":{"cash_available":0.00000000,"sweep":0,"unsettled_funds":0}},"account_number":"6Y111184"},{"balances":{"option_short_value":-5166.0000000000000000000,"total_equity":115978.2300000000000000000,"account_number":"6Y777785","account_type":"margin","close_pl":0.00000000,"current_requirement":12600.0000000000000000,"equity":0,"long_market_value":0,"market_value":-751.5000000000000000000,"open_pl":850.5000000000000000000,"option_long_value":4414.5000000000000000000,"option_requirement":12600.0000000000000000,"pending_orders_count":14,"short_market_value":0,"stock_long_value":0,"total_cash":116729.73000000,"uncleared_funds":0,"pending_cash":0,"margin":{"fed_call":0,"maintenance_call":0,"option_buying_power":4129.73000000,"stock_buying_power":8259.46,"stock_short_value":0,"sweep":0}},"account_number":"6Y777785"},{"balances":{"option_short_value":0,"total_equity":3165.660000000000000000,"account_number":"6YA88882","account_type":"cash","close_pl":0.00000000,"current_requirement":0,"equity":0,"long_market_value":0,"market_value":2903.260000000000000000,"open_pl":946.243200000000000000,"option_long_value":0,"option_requirement":0,"pending_orders_count":0,"short_market_value":0,"stock_long_value":2903.260000000000000000,"total_cash":262.40000000,"uncleared_funds":0,"pending_cash":0,"cash":{"cash_available":0.00000000,"sweep":0,"unsettled_funds":0}},"account_number":"6YA88882"}]}}`)
+
 	// Start the db connection.
 	db, _ := models.NewDB()
 
@@ -103,10 +113,24 @@ func TestGetBalances01(t *testing.T) {
 	err := json.Unmarshal([]byte(w.Body.String()), &result)
 
 	// Parse json that returned.
-	// TODO: WE can't test this any further as the Tradier API does not return in any particular order.
-	// We could reorder the results and then test. So TODO here.
 	st.Expect(t, err, nil)
 	st.Expect(t, len(result), 3)
+	st.Expect(t, result[0].AccountNumber, "6Y111184")
+	st.Expect(t, result[0].AccountValue, 0.00)
+	st.Expect(t, result[0].TotalCash, 0.00)
+	st.Expect(t, result[0].OptionBuyingPower, 0.00)
+	st.Expect(t, result[0].StockBuyingPower, 0.00)
+	st.Expect(t, result[1].AccountNumber, "6Y777785")
+	st.Expect(t, result[1].AccountValue, 115978.23)
+	st.Expect(t, result[1].TotalCash, 116729.73)
+	st.Expect(t, result[1].OptionBuyingPower, 4129.73)
+	st.Expect(t, result[1].StockBuyingPower, 8259.46)
+	st.Expect(t, result[2].AccountNumber, "6YA88882")
+	st.Expect(t, result[2].AccountValue, 3165.66)
+	st.Expect(t, result[2].TotalCash, 262.4)
+	st.Expect(t, result[2].OptionBuyingPower, 0.00)
+	st.Expect(t, result[2].StockBuyingPower, 0.00)
+	st.Expect(t, gock.IsDone(), true)
 }
 
 /* End File */
