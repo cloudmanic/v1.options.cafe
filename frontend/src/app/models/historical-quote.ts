@@ -8,6 +8,7 @@ export class HistoricalQuote {
   
   public Date: Date;
   public Open: number;
+  public Close: number;  
   public High: number;
   public Low: number;
   public Volume: number;
@@ -18,12 +19,14 @@ export class HistoricalQuote {
   constructor(
     Date: Date,
     Open: number,
+    Close: number,
     High: number,
     Low: number,
     Volume: number
   ){
     this.Date = Date;
     this.Open = Open;
+    this.Close = Close;    
     this.High = High;
     this.Low = Low;
     this.Volume = Volume;
@@ -46,6 +49,7 @@ export class HistoricalQuote {
       result.push(new HistoricalQuote(
         new Date(data[i].date + " 00:00:00"), 
         data[i].open,
+        data[i].close,
         data[i].high, 
         data[i].low,
         data[i].volume

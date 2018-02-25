@@ -8,6 +8,7 @@ import { Routing } from './app.routing';
 import { SortablejsModule } from 'angular-sortablejs';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './providers/http/token.interceptor';
+import { HighchartsChartComponent } from 'highcharts-angular';
 
 // Shared
 import { PagingComponent } from './shared/paging/paging.component';
@@ -65,6 +66,7 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
   declarations: [
     
     AppComponent,
+    HighchartsChartComponent,
     
     // Layout
     SidebarComponent,

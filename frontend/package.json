@@ -22,8 +22,10 @@
     "@angular/platform-browser-dynamic": "^5.0.0",
     "@angular/router": "^5.0.0",
     "angular-sortablejs": "^2.1.0",
+    "angular2-highcharts": "^0.5.5",
     "core-js": "^2.4.1",
     "highcharts": "^6.0.7",
+    "highcharts-angular": "github:highcharts/highcharts-angular",
     "rxjs": "^5.5.2",
     "sortablejs": "^1.7.0",
     "zone.js": "^0.8.14"

@@ -4,8 +4,7 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-import { chart } from 'highcharts';
-import * as Highcharts from 'highcharts';
+import * as Highcharts from 'highcharts/highstock';
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { StateService } from '../../../providers/state/state.service';
 import { QuotesService } from '../../../providers/http/quotes.service';
@@ -17,11 +16,42 @@ import { QuotesService } from '../../../providers/http/quotes.service';
 
 export class DashboardChartComponent implements OnInit 
 {  
-  @ViewChild('chartTarget') chartTarget: ElementRef;
-
-  chart: Highcharts.ChartObject;
-  
   symbol: string = "spy";
+
+  Highcharts = Highcharts;
+
+  chartConstructor = 'stockChart';
+  
+  chartUpdateFlag: boolean = false;
+  
+  // High charts config
+  chartOptions = {
+    title: { text: '' },
+    credits: { enabled: false },
+
+    rangeSelector: { enabled: false },
+
+    yAxis: {
+      startOnTick: false,
+      endOnTick: false,
+      minPadding: 0.1,
+      maxPadding: 0.1          
+    },  
+
+    xAxis : {
+      type: 'datetime',
+      minRange: 3600 * 1000 // one hour
+    },              
+
+    series : [{
+      name : 'SPY',
+      type: 'candlestick',
+      data: [],
+      turboThreshold: 0,
+      tooltip: { valueDecimals: 2 },
+      dataGrouping: { enabled: false }
+    }]
+  };
 
   //
   // Constructor....
@@ -34,61 +64,33 @@ export class DashboardChartComponent implements OnInit
   ngOnInit() 
   {
     this.getChartData()
-  } 
-    
-  //
-  // After View Init.
-  //
-  ngAfterViewInit() 
-  {
-    //
-    // Setup the high charts options.
-    //
-    const options: Highcharts.Options = {
-      chart: {
-        type: 'bar'
-      },
-      title: {
-        text: 'Fruit Consumption'
-      },
-      xAxis: {
-        categories: ['Apples', 'Bananas', 'Oranges']
-      },
-      yAxis: {
-        title: {
-          text: 'Fruit eaten'
-        }
-      },
-      series: [{
-        name: 'Jane',
-        data: [1, 0, 4]
-      }, {
-        name: 'John',
-        data: [5, 7, 3]
-      }]
-    };
-  
-    // Load the chart
-    this.chart = chart(this.chartTarget.nativeElement, options);
   }
-
-  //
-  // Add Series.
-  //
-  addSeries(){
-    this.chart.addSeries({
-      name:'Balram',
-      data:[2,3,7]
-    })    
-  }  
 
   //
   // Update chart.
   //
   getChartData()
   {
+    // Make api call to get historical data.
     this.quoteService.getHistoricalQuote(this.symbol, new Date("2018-01-01"), new Date('2018-03-01'), 'daily').subscribe((res) => {
-      console.log(res);
+      var data = [];
+      
+      for(var i = 0; i < res.length; i++)
+      {
+        data.push({
+          x: res[i].Date,
+          open: res[i].Open,
+          high: res[i].High,
+          low: res[i].Low,
+          close: res[i].Close,
+          name: (res[i].Date.getMonth() + 1) + "/" + res[i].Date.getDay() +  "/" + res[i].Date.getFullYear()
+          //color: '#00FF00'
+        });
+      }
+
+      // Rebuilt the chart
+      this.chartOptions.series[0].data = data;
+      this.chartUpdateFlag = true;
     });    
   }   
 
