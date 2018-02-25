@@ -4,9 +4,9 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import * as Highcharts from 'highcharts/highstock';
 import 'rxjs/add/operator/takeUntil';
 import { Subject } from 'rxjs/Subject';
-import * as Highcharts from 'highcharts/highstock';
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { Symbol } from '../../../models/symbol';
 import { StateService } from '../../../providers/state/state.service';

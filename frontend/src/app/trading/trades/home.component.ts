@@ -20,16 +20,15 @@ import { environment } from '../../../environments/environment';
 })
 export class TradesComponent implements OnInit {
 
-  private page: number = 1;
-  private count: number = 0;
-  private limit: number = 0;
-  private noLimitCount: number = 0;  
-  private tradesList: TradeGroup[];
-  private searchTerm: string = ""
-  private tradeSelect: string = "All"
-  private activeAccount: BrokerAccount
-
-  private destory: Subject<boolean> = new Subject<boolean>();
+  page: number = 1;
+  count: number = 0;
+  limit: number = 0;
+  noLimitCount: number = 0;  
+  tradesList: TradeGroup[];
+  searchTerm: string = ""
+  tradeSelect: string = "All"
+  activeAccount: BrokerAccount
+  destory: Subject<boolean> = new Subject<boolean>();
   
   //
   // Construct

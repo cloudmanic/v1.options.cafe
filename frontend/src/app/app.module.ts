@@ -8,7 +8,7 @@ import { Routing } from './app.routing';
 import { SortablejsModule } from 'angular-sortablejs';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './providers/http/token.interceptor';
-import { HighchartsChartComponent } from 'highcharts-angular';
+import { HighchartsChartComponent } from './shared/highcharts/highcharts-chart.component';
 
 // Shared
 import { PagingComponent } from './shared/paging/paging.component';
