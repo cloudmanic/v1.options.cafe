@@ -40,7 +40,7 @@ func TestGetHistoricalQuotes01(t *testing.T) {
 	c := &Controller{DB: db}
 
 	// Make a mock request.
-	req, _ := http.NewRequest("GET", "/api/v1/quotes/historical?symbol=spy", nil)
+	req, _ := http.NewRequest("GET", "/api/v1/quotes/historical?symbol=spy&end=2018-01-02&start=2017-01-01&interval=monthly", nil)
 	req.Header.Set("Accept", "application/json")
 
 	// Setup GIN Router

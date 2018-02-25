@@ -8,6 +8,7 @@ package controllers
 
 import (
 	"flag"
+	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
@@ -55,8 +56,30 @@ func (t *Controller) GetHistoricalQuotes(c *gin.Context) {
 		ApiKey: apiKey,
 	}
 
+	// Set start date
+	start, _ := time.Parse("2006-01-02", c.Query("start"))
+
+	if err != nil {
+		t.RespondError(c, err, "Unable to parse the start date.")
+		return
+	}
+
+	// Set end date
+	end, _ := time.Parse("2006-01-02", c.Query("end"))
+
+	if err != nil {
+		t.RespondError(c, err, "Unable to parse the end date.")
+		return
+	}
+
+	// Validate the interval
+	if !IsValidInterval(c.Query("interval")) {
+		t.RespondError(c, err, "Unable to parse the interval.")
+		return
+	}
+
 	// Make API call to broker.
-	result, err := broker.GetHistoricalQuotes(c.Query("symbol"))
+	result, err := broker.GetHistoricalQuotes(c.Query("symbol"), start, end, c.Query("interval"))
 
 	if err != nil {
 		t.RespondError(c, err, httpGenericErrMsg)
@@ -65,6 +88,22 @@ func (t *Controller) GetHistoricalQuotes(c *gin.Context) {
 
 	// Return happy JSON
 	c.JSON(200, result)
+}
+
+// --------------- Helper Functions --------------- //
+
+//
+// Test to see if the interval passed in is valid.
+//
+func IsValidInterval(interval string) bool {
+	switch interval {
+	case
+		"daily",
+		"weekly",
+		"monthly":
+		return true
+	}
+	return false
 }
 
 /* End File */
