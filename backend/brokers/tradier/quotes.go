@@ -42,10 +42,16 @@ func (t *Api) GetQuotes(symbols []string) ([]types.Quote, error) {
 	client := &http.Client{}
 
 	// Setup api request
-	req, _ := http.NewRequest("GET", apiBaseUrl+"/markets/quotes?symbols="+strings.Join(symbols, ","), nil)
+	req, _ := http.NewRequest("GET", apiBaseUrl+"/markets/quotes", nil)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Authorization", fmt.Sprint("Bearer ", t.ApiKey))
 
+	// Build query string
+	q := req.URL.Query()
+	q.Add("symbols", strings.Join(symbols, ","))
+	req.URL.RawQuery = q.Encode()
+
+	// Do API request
 	res, err := client.Do(req)
 
 	if err != nil {
@@ -76,8 +82,6 @@ func (t *Api) GetQuotes(symbols []string) ([]types.Quote, error) {
 	if strings.Contains(string(body), "[") {
 
 		vo := gjson.Get(string(body), "quotes.quote")
-
-		var quotes []types.Quote
 
 		err := json.Unmarshal([]byte(vo.String()), &quotes)
 

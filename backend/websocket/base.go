@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-const writeWait = 5 * time.Second
+const writeWait = 10 * time.Second
 
 type Controller struct {
 	DB                models.Datastore
