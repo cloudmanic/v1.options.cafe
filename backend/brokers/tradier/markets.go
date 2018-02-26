@@ -29,13 +29,19 @@ func (t *Api) GetTimeSalesQuotes(symbol string, start time.Time, end time.Time, 
 	// Setup http client
 	client := &http.Client{}
 
-	// Build request
-	request := apiBaseUrl + "/markets/timesales?symbol=" + symbol + "&start=" + start.Format("2006-01-02 15:04") + "&end=" + end.Format("2006-01-02 15:04") + "&interval=" + interval + "&session_filter=open"
-
 	// Setup api request
-	req, _ := http.NewRequest("GET", request, nil)
+	req, _ := http.NewRequest("GET", apiBaseUrl+"/markets/timesales", nil)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Authorization", fmt.Sprint("Bearer ", t.ApiKey))
+
+	// Build query string
+	q := req.URL.Query()
+	q.Add("symbol", symbol)
+	q.Add("start", start.Format("2006-01-02 15:04"))
+	q.Add("end", end.Format("2006-01-02 15:04"))
+	q.Add("interval", interval)
+	q.Add("session_filter", "open")
+	req.URL.RawQuery = q.Encode()
 
 	res, err := client.Do(req)
 
@@ -55,7 +61,7 @@ func (t *Api) GetTimeSalesQuotes(symbol string, start time.Time, end time.Time, 
 	body, _ := ioutil.ReadAll(res.Body)
 
 	// Reach down in the json - Because Tradier is cray cray
-	vo := gjson.Get(string(body), "series.day")
+	vo := gjson.Get(string(body), "series.data")
 
 	if !vo.Exists() {
 		// Return happy (just not more than one quote)
