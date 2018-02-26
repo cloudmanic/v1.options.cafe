@@ -6,6 +6,7 @@
 
 import * as Highcharts from 'highcharts/highstock';
 import 'rxjs/add/operator/takeUntil';
+import * as moment from 'moment-timezone';
 import { Subject } from 'rxjs/Subject';
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { Symbol } from '../../../models/symbol';
@@ -39,9 +40,18 @@ export class DashboardChartComponent implements OnInit
     credits: { enabled: false },
 
     rangeSelector: { enabled: false },
+    
+    scrollbar: { enabled: false },
 
-    legend: {
-      enabled: false
+    navigator: { enabled: false },
+
+    legend: { enabled: false },
+
+    time: {
+      getTimezoneOffset: function (timestamp) {
+        let timezoneOffset = -moment.tz(timestamp, 'America/Los_Angeles').utcOffset();
+        return timezoneOffset;
+      }
     },
 
     yAxis: {
@@ -53,7 +63,16 @@ export class DashboardChartComponent implements OnInit
 
     xAxis : {
       type: 'datetime',
-      minRange: 3600 * 1000 // one hour
+      minRange: 3600 * 1000,
+      dateTimeLabelFormats: {
+        second: '%I:%M:%S %p',
+        minute: '%I:%M %p',
+        hour: '%I:%M %p',
+        day: '%m/%e %I:%M %p',
+        week: '%m/%e %I:%M %p',
+        month: '%m/%Y',
+        year: '%Y'
+      },          
     },              
 
     series : [{
@@ -157,10 +176,6 @@ export class DashboardChartComponent implements OnInit
 
     switch(parts[0])
     {
-      case 'today':
-        console.log("Today.....");
-      break;
-
       case 'days':
         let numberOfDaysToSubtract: any = parts[2];
         start.setDate(start.getDate() - numberOfDaysToSubtract);        

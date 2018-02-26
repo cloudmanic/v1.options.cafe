@@ -20,6 +20,7 @@ export class HighchartsChartComponent {
   }
   updateValue = false;
   @Output() updateChange = new EventEmitter(true);
+
   @Input() set update(val) {
     if (val) {
       this.updateOrCreateChart();

@@ -22,9 +22,12 @@
     "@angular/platform-browser-dynamic": "^5.0.0",
     "@angular/router": "^5.0.0",
     "angular-sortablejs": "^2.1.0",
+    "angular2-moment": "^1.8.0",
     "core-js": "^2.4.1",
     "highcharts": "^6.0.7",
     "highcharts-angular": "github:highcharts/highcharts-angular",
+    "moment": "^2.20.1",
+    "moment-timezone": "^0.5.14",
     "rxjs": "^5.5.2",
     "sortablejs": "^1.7.0",
     "zone.js": "^0.8.14"

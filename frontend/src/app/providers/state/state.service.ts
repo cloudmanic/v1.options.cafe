@@ -23,7 +23,7 @@ export class StateService
   private activeBrokerAccount: BrokerAccount;
 
   // Dashboard stuff
-  private dashboardChartRangeSelect: string = "days-monthly-365";
+  private dashboardChartRangeSelect: string = "today-1min-1";
   private dashboardChartData: HistoricalQuote[];
   private dashboardTradeGroups: TradeGroupsCont;
   private dashboardChartSymbol: Symbol = new Symbol(1, "SPDR S&P 500 ETF Trust", "SPY", "Equity", null);

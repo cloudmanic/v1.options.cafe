@@ -38,6 +38,7 @@ export class HistoricalQuote {
   public static buildForEmit(data) : HistoricalQuote[]  {
 
     let result = [];
+    let date: Date;
 
     if(! data)
     {
@@ -46,8 +47,16 @@ export class HistoricalQuote {
 
     for(let i = 0; i < data.length; i++)
     {
+      if(data[i].time.length)
+      {
+        date = new Date(data[i].time);
+      } else 
+      {
+        date = new Date(data[i].date + " 00:00:00");
+      }
+
       result.push(new HistoricalQuote(
-        new Date(data[i].date + " 00:00:00"), 
+        date, 
         data[i].open,
         data[i].close,
         data[i].high, 
