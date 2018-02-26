@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
+	"github.com/tidwall/gjson"
 )
 
 type SessionStruct struct {
@@ -73,21 +75,15 @@ func (t *Api) GetQuotes(symbols []string) ([]types.Quote, error) {
 	// Did we get one quote or many?
 	if strings.Contains(string(body), "[") {
 
-		var res map[string]map[string][]types.Quote
+		vo := gjson.Get(string(body), "quotes.quote")
 
-		err := json.Unmarshal(body, &res)
+		var quotes []types.Quote
+
+		err := json.Unmarshal([]byte(vo.String()), &quotes)
 
 		if err != nil {
 			return nil, fmt.Errorf("%s: %s", err, body)
 		}
-
-		quote, ok := res["quotes"]["quote"]
-
-		if !ok {
-			return nil, nil
-		}
-
-		quotes = quote
 
 	} else {
 

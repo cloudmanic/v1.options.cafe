@@ -33,6 +33,7 @@ func (t *Controller) DoLogin(c *gin.Context) {
 
 	type LoginPost struct {
 		Email    string
+		Username string
 		Password string
 	}
 
@@ -44,6 +45,11 @@ func (t *Controller) DoLogin(c *gin.Context) {
 		services.BetterError(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong while logging into your account. Please try again or contact help@options.cafe. Sorry for the trouble."})
 		return
+	}
+
+	// Special case to support username or email
+	if len(post.Username) > 0 {
+		post.Email = post.Username
 	}
 
 	defer c.Request.Body.Close()
