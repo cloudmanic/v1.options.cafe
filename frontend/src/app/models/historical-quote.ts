@@ -47,7 +47,7 @@ export class HistoricalQuote {
 
     for(let i = 0; i < data.length; i++)
     {
-      if(data[i].time.length)
+      if(data[i].time != "0001-01-01T00:00:00Z")
       {
         date = new Date(data[i].time);
       } else 

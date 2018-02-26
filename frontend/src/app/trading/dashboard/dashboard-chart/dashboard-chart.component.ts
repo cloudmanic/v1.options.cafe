@@ -49,6 +49,8 @@ export class DashboardChartComponent implements OnInit
 
     time: {
       getTimezoneOffset: function (timestamp) {
+        // America/Los_Angeles
+        // America/New_York
         let timezoneOffset = -moment.tz(timestamp, 'America/Los_Angeles').utcOffset();
         return timezoneOffset;
       }
