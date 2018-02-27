@@ -13,14 +13,13 @@ import { TradeGroup, TradeGroupsCont } from '../../models/trade-group';
 import { BrokerAccount } from '../../models/broker-account';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { WebsocketService } from '../../providers/http/websocket.service';
 
 @Injectable()
 export class StateService  
 { 
   private quotes = {};
   private activeWatchlist: Watchlist;
-  private activeBrokerAccount: BrokerAccount;
+  private activeBrokerAccount: BrokerAccount = null;
 
   // Dashboard stuff
   private dashboardChartRangeSelect: string = "today-1min-1";
@@ -36,13 +35,6 @@ export class StateService
 
   // Emitters - Pushers
   public BrokerChange = new EventEmitter<number>();
-
-  //
-  // Construct.
-  //
-  constructor(private websocketService: WebsocketService) { 
-    this.activeBrokerAccount = null;
-  }
 
   //
   // Set a quote

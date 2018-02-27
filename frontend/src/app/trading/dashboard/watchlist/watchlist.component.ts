@@ -73,7 +73,6 @@ export class WatchlistComponent implements OnInit {
     // Subscribe to data updates from the quotes - Market Quotes
     this.websocketService.quotePushData.subscribe(data => {
       this.quotes[data.symbol] = data;
-      this.stateService.SetQuote(data)
     }); 
   }
 

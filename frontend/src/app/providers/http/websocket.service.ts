@@ -4,11 +4,10 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 //
-// This is a websocket connection to the backend app. 
-// Other than quotes all communication runs over this connection 
+// This is a websocket connection to the backend app.
 //
 
-import { EventEmitter /* Injectable */ } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { Order } from '../../models/order';
 import { Balance } from '../../models/balance';
@@ -16,10 +15,11 @@ import { OrderLeg } from '../../models/order-leg';
 import { MarketStatus } from '../../models/market-status';
 import { ChangeDetected } from '../../models/change-detected';
 import { MarketQuote } from '../../models/market-quote';
+import { StateService } from '../state/state.service';
 
 declare var ClientJS: any;
 
-//@Injectable()
+@Injectable()
 export class WebsocketService  
 {  
   deviceId = "";
@@ -40,7 +40,7 @@ export class WebsocketService
   //
   // Construct!!
   //
-  constructor() 
+  constructor(private stateService: StateService) 
   {
     // Set the device id
     var clientJs = new ClientJS();
@@ -98,24 +98,14 @@ export class WebsocketService
   //
   private doQuote(msg_data: any)
   {
-    // // Have we seen this quote before?
-    // if(typeof this.quotes[msg_data.symbol] == "undefined")
-    // {
-    //   this.quotes[msg_data.symbol] = new MarketQuote(msg_data.last, msg_data.open, msg_data.bid, msg_data.ask, msg_data.prev_close, msg_data.symbol, msg_data.description);
-    // } else
-    // {
-    //   this.quotes[msg_data.symbol].last = msg_data.last;              
-    //   this.quotes[msg_data.symbol].open = msg_data.open;
-    //   this.quotes[msg_data.symbol].bid = msg_data.bid;              
-    //   this.quotes[msg_data.symbol].ask = msg_data.ask;              
-    //   this.quotes[msg_data.symbol].prev_close = msg_data.prev_close;              
-    //   this.quotes[msg_data.symbol].description = msg_data.description;              
-    // }            
-
-
+    // Build quote
     let quote = new MarketQuote(msg_data.last, msg_data.open, msg_data.bid, msg_data.ask, msg_data.prev_close, msg_data.symbol, msg_data.description);
 
-    this.quotePushData.emit(quote);    
+    // Send quote out to components 
+    this.quotePushData.emit(quote);
+
+    // Store quote in cache
+    this.stateService.SetQuote(quote);    
   }
 
 
