@@ -79,6 +79,9 @@ func (t *Controller) GetHistoricalQuotes(c *gin.Context) {
 		return
 	}
 
+	// Store in active symbols
+	t.DB.CreateActiveSymbol(c.MustGet("userId").(uint), c.Query("symbol"))
+
 	// Make API call to broker.
 	if IsHistorical(c.Query("interval")) {
 

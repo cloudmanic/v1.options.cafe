@@ -33,6 +33,9 @@ func (t *DB) CreateNewWatchlistSymbol(wList Watchlist, symb Symbol, user User, o
 
 	t.Create(&wListSym)
 
+	// Store in active
+	t.CreateActiveSymbol(user.Id, symb.ShortName)
+
 	// Log broker creation.
 	services.Info("CreateNewWatchlistSymbol - Created a new WatchlistSymbol entry - " + symb.ShortName + " " + wList.Name)
 

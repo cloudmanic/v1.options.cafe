@@ -18,6 +18,13 @@ import (
 //
 func (t *Base) DoGetDetailedQuotes() {
 
+	// Store quotes we need for the site.
+	t.DB.CreateActiveSymbol(t.User.Id, "$DJI")
+	t.DB.CreateActiveSymbol(t.User.Id, "SPX")
+	t.DB.CreateActiveSymbol(t.User.Id, "COMP")
+	t.DB.CreateActiveSymbol(t.User.Id, "VIX")
+	t.DB.CreateActiveSymbol(t.User.Id, "SPY")
+
 	for {
 
 		// Load up our DetailedQuotes
@@ -39,7 +46,16 @@ func (t *Base) DoGetDetailedQuotes() {
 //
 func (t *Base) GetActiveSymbolsDetailedQuotes() error {
 
-	symbols := t.GetActiveSymbols()
+	var symbols []string
+
+	// Build active symbols array.
+	results, err := t.DB.GetActiveSymbolsByUser(t.User.Id)
+
+	for _, row := range results {
+		symbols = append(symbols, row.Symbol)
+	}
+
+	//symbols := t.GetActiveSymbols()
 	detailedQuotes, err := t.Api.GetQuotes(symbols)
 
 	if err != nil {

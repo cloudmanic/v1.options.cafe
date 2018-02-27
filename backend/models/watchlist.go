@@ -37,6 +37,7 @@ func (t *DB) GetWatchlistsById(id uint) (Watchlist, error) {
 	// Add in symbols
 	for key := range u.Symbols {
 		t.Model(u.Symbols[key]).Related(&u.Symbols[key].Symbol)
+		t.CreateActiveSymbol(u.UserId, u.Symbols[key].Symbol.ShortName)
 	}
 
 	// Return the Watchlists.
@@ -61,6 +62,7 @@ func (t *DB) GetWatchlistsByIdAndUserId(id uint, userId uint) (Watchlist, error)
 	// Add in symbols
 	for key := range u.Symbols {
 		t.Model(u.Symbols[key]).Related(&u.Symbols[key].Symbol)
+		t.CreateActiveSymbol(u.UserId, u.Symbols[key].Symbol.ShortName)
 	}
 
 	// Return the Watchlists.
@@ -91,6 +93,7 @@ func (t *DB) GetWatchlistsByUserId(userId uint) ([]Watchlist, error) {
 		// Add in Symbols
 		for key2 := range u[key].Symbols {
 			t.Model(u[key].Symbols[key2]).Related(&u[key].Symbols[key2].Symbol)
+			t.CreateActiveSymbol(u[key].UserId, u[key].Symbols[key2].Symbol.ShortName)
 		}
 
 	}

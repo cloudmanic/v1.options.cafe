@@ -96,6 +96,10 @@ type Datastore interface {
 
 	// WatchlistSymbols
 	CreateNewWatchlistSymbol(wList Watchlist, symb Symbol, user User, order uint) (WatchlistSymbol, error)
+
+	// ActiveSymbol
+	GetActiveSymbolsByUser(userId uint) ([]ActiveSymbol, error)
+	CreateActiveSymbol(userId uint, symbol string) (ActiveSymbol, error)
 }
 
 /* End File */

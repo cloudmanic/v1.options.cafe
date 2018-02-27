@@ -117,6 +117,18 @@ func (t *Base) GetOrders() (string, error) {
 	t.Orders = orders
 	t.muOrders.Unlock()
 
+	// Store symbols we use in orders
+	for _, row := range orders {
+
+		t.DB.CreateActiveSymbol(t.User.Id, row.Symbol)
+
+		for _, row2 := range row.Legs {
+			t.DB.CreateActiveSymbol(t.User.Id, row2.Symbol)
+			t.DB.CreateActiveSymbol(t.User.Id, row2.OptionSymbol)
+		}
+
+	}
+
 	// Store the orders in our database
 	err = archive.StoreOrders(t.DB, orders, t.User.Id, t.BrokerId)
 
