@@ -16,13 +16,14 @@ import (
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/library/state"
 	"github.com/cnf/structhash"
 )
 
 type MarketStatus struct {
-	Date        string `json: date`
-	State       string `json: state`
-	Description string `json: description`
+	Date        string `json:"date"`
+	State       string `json:"state"`
+	Description string `json:"description"`
 }
 
 //
@@ -47,6 +48,9 @@ func (t *Controller) StartMarketStatusFeed() {
 			// Build json to send
 			json, err := t.WsSendJsonBuild("change-detected", `{ "type": "market-status" }`)
 			services.Warning(err)
+
+			// Store new market status in our state cache
+			state.SetMarketStatus(status)
 
 			// Send status to all connections
 			t.WsDispatchToAll(json)

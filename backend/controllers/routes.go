@@ -40,6 +40,9 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 
 		// Quotes
 		apiV1.GET("/quotes/historical", t.GetHistoricalQuotes)
+
+		// Status
+		apiV1.GET("/status/market", t.GetMarketStatus)
 	}
 
 	// ---------- Websockets -------------- //

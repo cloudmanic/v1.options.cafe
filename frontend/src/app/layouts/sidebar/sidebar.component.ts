@@ -40,11 +40,6 @@ export class SidebarComponent implements OnInit {
   ngOnInit() {
     this.brokerAccountList = [];
           
-    // Subscribe to data updates from the broker - Market Status
-    this.websocketService.marketStatusPush.subscribe(data => {
-      this.marketStatus = data;      
-    });
-
     // Subscribe to changes in the selected broker.
     this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
       this.getBalances();
@@ -68,7 +63,15 @@ export class SidebarComponent implements OnInit {
   {
     this.destory.next();
     this.destory.complete();
-  }   
+  } 
+
+  //
+  // Get market status.
+  //
+  getMarketStatus()
+  {
+    
+  }  
 
   //
   // Get balances

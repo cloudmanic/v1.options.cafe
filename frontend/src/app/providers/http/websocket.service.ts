@@ -12,7 +12,6 @@ import { environment } from '../../../environments/environment';
 import { Order } from '../../models/order';
 import { Balance } from '../../models/balance';
 import { OrderLeg } from '../../models/order-leg';
-import { MarketStatus } from '../../models/market-status';
 import { ChangeDetected } from '../../models/change-detected';
 import { MarketQuote } from '../../models/market-quote';
 import { StateService } from '../state/state.service';
@@ -33,7 +32,6 @@ export class WebsocketService
   wsReconnecting = new EventEmitter<boolean>();
   ordersPush = new EventEmitter<Order[]>();
   balancesPush = new EventEmitter<Balance[]>();
-  marketStatusPush = new EventEmitter<MarketStatus>();
   changedDetectedPush = new EventEmitter<ChangeDetected>();
   quotePushData = new EventEmitter<MarketQuote>();    
 
@@ -63,17 +61,17 @@ export class WebsocketService
         
     // Send quote to angular component
     switch(msg.uri)
-    {      
+    {  
+      // Quote refresh
+      case 'quote':
+        this.doQuote(msg_data);
+      break;
+
       // Balances refresh
       case 'balances':
         this.balancesPush.emit(Balance.buildForEmit(msg_data));
       break;      
 
-      // Market Status refresh
-      case 'market/status':
-        this.marketStatusPush.emit(MarketStatus.buildForEmit(msg_data));   
-      break;
-    
       // Order refresh
       case 'orders':     
         this.ordersPush.emit(Order.buildForEmit(msg_data));              
@@ -82,12 +80,7 @@ export class WebsocketService
       // Change detected
       case 'change-detected':      
         this.changedDetectedPush.emit(new ChangeDetected(msg_data.type));              
-      break; 
-
-      // Quote refresh
-      case 'quote':
-        this.doQuote(msg_data);
-      break;             
+      break;              
     }
   }
 
