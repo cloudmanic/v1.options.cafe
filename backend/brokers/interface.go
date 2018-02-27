@@ -13,7 +13,6 @@ type Api interface {
 	SendGetRequest(string) (string, error)
 	GetBalances() ([]types.Balance, error)
 	GetHistoryByAccountId(string) ([]types.History, error)
-	GetMarketStatus() (types.MarketStatus, error)
 	GetOrders() ([]types.Order, error)
 	GetAllOrders() ([]types.Order, error)
 	GetQuotes([]string) ([]types.Quote, error)

@@ -22,13 +22,19 @@ func (t *Controller) DoWsWriting(conn *WebsocketConnection) {
 	conn.connection.SetWriteDeadline(time.Now().Add(writeWait))
 
 	for {
-
 		message := <-conn.WriteChan
 		conn.connection.WriteMessage(websocket.TextMessage, []byte(message))
 		conn.connection.SetWriteDeadline(time.Now().Add(writeWait))
-
 	}
+}
 
+//
+// Send a message to all connected clients.
+//
+func (t *Controller) WsDispatchToAll(send string) {
+	for i := range t.Connections {
+		t.Connections[i].WriteChan <- send
+	}
 }
 
 //

@@ -1,10 +1,10 @@
 //
-// Date: 9/4/2017
+// Date: 2/26/2017
 // Author(s): Spicer Matthews (spicer@options.cafe)
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-package tradier
+package websocket
 
 import (
 	"testing"
@@ -14,24 +14,21 @@ import (
 )
 
 //
-// Test - GetMarketStatus
+// Test - CheckMarketStatus
 //
-func TestGetMarketStatus(t *testing.T) {
+func TestCheckMarketStatus01(t *testing.T) {
 
 	// Flush pending mocks after test execution
 	defer gock.Off()
 
 	// Setup mock request.
-	gock.New(apiBaseUrl).
+	gock.New("https://api.tradier.com/v1").
 		Get("/markets/clock").
 		Reply(200).
 		BodyString(`{"clock":{"state":"closed","date":"2017-09-04","timestamp":1504505290,"next_state":"premarket","next_change":"08:00","description":"Market is closed."}}`)
 
-	// Create new tradier instance
-	tradier := &Api{}
-
 	// Make API call
-	marketStatus, err := tradier.GetMarketStatus()
+	marketStatus, err := CheckMarketStatus()
 
 	if err != nil {
 		panic(err)
@@ -44,7 +41,6 @@ func TestGetMarketStatus(t *testing.T) {
 
 	// Verify that we don't have pending mocks
 	st.Expect(t, gock.IsDone(), true)
-
 }
 
 /* End File */

@@ -24,9 +24,6 @@ type Base struct {
 	muBalances sync.Mutex
 	Balances   []types.Balance
 
-	muMarketStatus sync.Mutex
-	MarketStatus   types.MarketStatus
-
 	muUserProfile sync.Mutex
 	UserProfile   types.UserProfile
 }
@@ -50,7 +47,6 @@ func (t *Base) Start() {
 	go t.DoOrdersTicker()
 	go t.DoUserProfileTicker()
 	go t.DoGetDetailedQuotes()
-	go t.DoGetMarketStatusTicker()
 	go t.DoGetBalancesTicker()
 	go t.DoAccessTokenRefresh()
 }

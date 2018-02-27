@@ -66,6 +66,9 @@ func main() {
 	// Startup controller & websockets
 	c := &controllers.Controller{DB: db, WebsocketController: w}
 
+	// Start market status feed
+	go w.StartMarketStatusFeed()
+
 	// Start websockets & controllers
 	c.StartWebServer()
 

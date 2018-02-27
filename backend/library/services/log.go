@@ -73,7 +73,9 @@ func FatalMsg(err error, message string) {
 // Warning Log. (error type only)
 //
 func Warning(err error) {
-	log.Println(ansi.Color("[App:Warning] "+MyCaller()+" : "+err.Error(), "yellow+b"))
+	if err != nil {
+		log.Println(ansi.Color("[App:Warning] "+MyCaller()+" : "+err.Error(), "yellow+b"))
+	}
 }
 
 //
