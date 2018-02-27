@@ -48,6 +48,8 @@ export class SidebarComponent implements OnInit {
     // Subscribe to data updates from the broker - Balances
     this.app.balancesPush.subscribe(data => {
 
+      console.log(data);
+
       // We have not gotten our brokers yet.
       if(! this.stateService.GetActiveBrokerAccount())
       {

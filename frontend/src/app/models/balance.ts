@@ -27,11 +27,11 @@ export class Balance {
     for(let i = 0; i < data.length; i++)
     {
       balances.push(new Balance(
-        data[i].AccountNumber,
-        data[i].AccountValue,
-        data[i].TotalCash,
-        data[i].OptionBuyingPower,
-        data[i].StockBuyingPower        
+        data[i].account_number,
+        data[i].account_value,
+        data[i].total_cash,
+        data[i].option_buying_power,
+        data[i].stock_buying_power        
       ));               
     }
     
