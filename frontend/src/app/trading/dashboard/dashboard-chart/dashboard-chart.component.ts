@@ -4,6 +4,7 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import { Observable } from 'rxjs/Rx';
 import * as Highcharts from 'highcharts/highstock';
 import 'rxjs/add/operator/takeUntil';
 import * as moment from 'moment-timezone';
@@ -101,12 +102,16 @@ export class DashboardChartComponent implements OnInit
     this.quotes = this.stateService.GetQuotes();     
     this.symbol = this.stateService.GetDashboardChartSymbol();
     this.rangeSelect = this.stateService.GetDashboardChartRangeSelect();    
+    this.chartOptions.series[0].name = this.symbol.ShortName;
     this.chartOptions.series[0].data = this.stateService.GetDashboardChartData();
 
     // Subscribe to data updates from the quotes - Market Quotes
     this.websocketService.quotePushData.takeUntil(this.destory).subscribe(data => {
       this.quotes[data.symbol] = data;
     });     
+
+    // Reload the chart every 1min after a 1 min delay to start
+    Observable.timer((1000 * 60), (1000 * 60)).takeUntil(this.destory).subscribe(x => { this.getChartData(); });
 
     // Load data for the page.
     this.getChartData();
@@ -160,6 +165,7 @@ export class DashboardChartComponent implements OnInit
 
       // Rebuilt the chart
       this.chartOptions.series[0].data = data;
+      this.chartOptions.series[0].name = this.symbol.ShortName;
       this.chartUpdateFlag = true;
 
       // Store cache
