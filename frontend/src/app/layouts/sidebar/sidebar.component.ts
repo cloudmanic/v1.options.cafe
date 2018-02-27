@@ -4,6 +4,8 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import 'rxjs/add/operator/takeUntil';
+import { Subject } from 'rxjs/Subject';
 import { Component, OnInit } from '@angular/core';
 import { AppService } from '../../providers/websocket/app.service';
 import { Balance } from '../../models/balance';
@@ -25,6 +27,8 @@ export class SidebarComponent implements OnInit {
   selectedAccount: BrokerAccount;
   brokerAccountList: BrokerAccount[];
 
+  private destory: Subject<boolean> = new Subject<boolean>();
+
   //
   // Construct.
   //
@@ -34,84 +38,110 @@ export class SidebarComponent implements OnInit {
   // Oninit...
   //
   ngOnInit() {
-
     this.brokerAccountList = [];
-
-    // API call to get brokers
-    this.getBrokers()
           
     // Subscribe to data updates from the broker - Market Status
     this.app.marketStatusPush.subscribe(data => {
       this.marketStatus = data;      
     });
-    
+
+    // Subscribe to changes in the selected broker.
+    this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
+      this.getBalances();
+    });
+
     // Subscribe to data updates from the broker - Balances
     this.app.balancesPush.subscribe(data => {
+      this.doBalanaces(data);
+    });  
 
-      console.log(data);
+    // Get broker data
+    this.brokerService.get().subscribe((data) => {
+      this.doBrokers(data);
+    });        
+  }
 
-      // We have not gotten our brokers yet.
-      if(! this.stateService.GetActiveBrokerAccount())
+  //
+  // OnDestroy
+  //
+  ngOnDestroy()
+  {
+    this.destory.next();
+    this.destory.complete();
+  }   
+
+  //
+  // Get balances
+  //
+  getBalances()
+  {
+    // Get balance data
+    this.brokerService.getBalances().subscribe((data) => {    
+      this.doBalanaces(data);
+    });
+  }
+
+  //
+  // Do brokers
+  //
+  doBrokers(data: Broker[])
+  {
+    this.brokerList = data;
+
+    let activeAccountId: string = this.stateService.GetStoredActiveAccountId();
+
+    // Default to first one.
+    if(! activeAccountId)
+    {
+      // Make sure we have at least one broker.
+      if(! this.brokerList[0])
       {
         return false;
       }
 
-      for(var i = 0; i < data.length; i++)
-      {
-        if(data[i].AccountNumber == this.stateService.GetActiveBrokerAccount().AccountNumber)
-        {
-          this.balance = data[i];
-        }
-      }
+      // Do we have a stored broker
+      this.stateService.SetActiveBrokerAccount(this.brokerList[0].BrokerAccounts[0]);
+      activeAccountId = this.stateService.GetStoredActiveAccountId();
+    }
 
-    });       
-        
+    // Loop through all the brokers and set our active broker. And make a list.
+    for(var k = 0; k < this.brokerList.length; k++)
+    {
+      for(var i = 0; i < this.brokerList[k].BrokerAccounts.length; i++)
+      {
+        this.brokerAccountList.push(this.brokerList[k].BrokerAccounts[i]);
+
+        // Set the selected account.
+        if(String(this.brokerList[k].BrokerAccounts[i].Id) == activeAccountId)
+        {
+          this.selectedAccount = this.brokerList[k].BrokerAccounts[i];
+
+          // Force refresh of balances
+          this.stateService.SetActiveBrokerAccount(this.selectedAccount);           
+        }
+      }  
+    }    
   }
 
   //
-  // Get brokers
+  // Do balances 
   //
-  getBrokers() {
+  doBalanaces(data: Balance[])
+  {
+    // We have not gotten our brokers yet.
+    if(! this.stateService.GetActiveBrokerAccount())
+    {
+      return false;
+    }
 
-    // Get broker data
-    this.brokerService.get().subscribe((data) => {
-      this.brokerList = data;
-
-      let activeAccountId: string = this.stateService.GetStoredActiveAccountId();
-
-      // Default to first one.
-      if(! activeAccountId)
+    for(var i = 0; i < data.length; i++)
+    {
+      if(data[i].AccountNumber == this.stateService.GetActiveBrokerAccount().AccountNumber)
       {
-        // Make sure we have at least one broker.
-        if(! this.brokerList[0])
-        {
-          return false;
-        }
-
-        // Do we have a stored broker
-        this.stateService.SetActiveBrokerAccount(this.brokerList[0].BrokerAccounts[0]);
-        activeAccountId = this.stateService.GetStoredActiveAccountId();
+        this.balance = data[i];
       }
-
-      // Loop through all the brokers and set our active broker. And make a list.
-      for(var k = 0; k < this.brokerList.length; k++)
-      {
-        for(var i = 0; i < this.brokerList[k].BrokerAccounts.length; i++)
-        {
-          this.brokerAccountList.push(this.brokerList[k].BrokerAccounts[i]);
-
-          // Set the selected account.
-          if(String(this.brokerList[k].BrokerAccounts[i].Id) == activeAccountId)
-          {
-            this.selectedAccount = this.brokerList[k].BrokerAccounts[i];
-
-            // Force refresh of balances
-            this.stateService.SetActiveBrokerAccount(this.selectedAccount);           
-          }
-        }  
-      }
-    });    
-  }  
+    }
+  }
   
   //
   // On account change.

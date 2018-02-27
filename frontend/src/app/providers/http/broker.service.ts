@@ -8,6 +8,7 @@ import 'rxjs/Rx';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Broker } from '../../models/broker';
+import { Balance } from '../../models/balance';
 import { BrokerAccount } from '../../models/broker-account';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -29,6 +30,15 @@ export class BrokerService
       (data) => { return Broker.buildForEmit(data); 
     });
   }
+
+  //
+  // Get broker balances
+  //
+  getBalances() : Observable<Balance[]> {
+    return this.http.get<Balance[]>(environment.app_server + '/api/v1/brokers/balances').map(
+      (data) => { return Balance.buildForEmit(data); 
+    });
+  }  
 }
 
 /* End File */
