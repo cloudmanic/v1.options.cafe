@@ -74,38 +74,4 @@ func (t *Controller) DoWebsocketConnection(c *gin.Context) {
 	t.DoWsReading(&r_con)
 }
 
-//
-// Handle new quote connections to the app.
-//
-func (t *Controller) DoQuoteWebsocketConnection(c *gin.Context) {
-
-	// setup upgrader
-	var upgrader = websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-		CheckOrigin:     t.CheckOrigin,
-	}
-
-	// Upgrade connection
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-
-	if err != nil {
-		services.BetterError(err)
-		return
-	}
-
-	services.Info("New Websocket Connection - Quote")
-
-	// Close connection when this function ends
-	defer conn.Close()
-
-	// Add the connection to our connection array
-	r_con := WebsocketConnection{connection: conn, WriteChan: make(chan string, 1000)}
-
-	t.QuotesConnections[conn] = &r_con
-
-	// Do reading
-	t.DoWsReading(&r_con)
-}
-
 /* End File */

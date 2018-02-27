@@ -11,11 +11,9 @@ import (
 const writeWait = 10 * time.Second
 
 type Controller struct {
-	DB                models.Datastore
-	WsWriteChan       chan SendStruct
-	WsWriteQuoteChan  chan SendStruct
-	Connections       map[*websocket.Conn]*WebsocketConnection
-	QuotesConnections map[*websocket.Conn]*WebsocketConnection
+	DB          models.Datastore
+	WsWriteChan chan SendStruct
+	Connections map[*websocket.Conn]*WebsocketConnection
 }
 
 type WebsocketConnection struct {
@@ -37,14 +35,12 @@ type SendStruct struct {
 //
 // Create a new instance of a websocket controller.
 //
-func NewController(db models.Datastore, WsWriteChan chan SendStruct, WsWriteQuoteChan chan SendStruct) *Controller {
+func NewController(db models.Datastore, WsWriteChan chan SendStruct) *Controller {
 
 	return &Controller{
-		DB:                db,
-		WsWriteChan:       WsWriteChan,
-		WsWriteQuoteChan:  WsWriteQuoteChan,
-		Connections:       make(map[*websocket.Conn]*WebsocketConnection),
-		QuotesConnections: make(map[*websocket.Conn]*WebsocketConnection),
+		DB:          db,
+		WsWriteChan: WsWriteChan,
+		Connections: make(map[*websocket.Conn]*WebsocketConnection),
 	}
 }
 

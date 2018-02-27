@@ -62,13 +62,6 @@ func (t *Controller) DoWsReading(conn *WebsocketConnection) {
 				services.Info("Client Disconnected (" + conn.deviceId + ") ...")
 			}
 
-			_, ok2 := t.QuotesConnections[conn.connection]
-
-			if ok2 {
-				delete(t.QuotesConnections, conn.connection)
-				services.Info("Client Quote Disconnected (" + conn.deviceId + ") ...")
-			}
-
 			break
 		}
 

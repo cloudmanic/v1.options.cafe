@@ -12,10 +12,9 @@ import (
 )
 
 type Base struct {
-	DB        *models.DB
-	Users     map[uint]*UserFeed
-	DataChan  chan websocket.SendStruct
-	QuoteChan chan websocket.SendStruct
+	DB          *models.DB
+	Users       map[uint]*UserFeed
+	WsWriteChan chan websocket.SendStruct
 }
 
 /* End File */

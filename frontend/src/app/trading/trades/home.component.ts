@@ -9,7 +9,6 @@ import { Subject } from 'rxjs/Subject';
 import { Component, OnInit } from '@angular/core';
 import { TradeGroup } from '../../models/trade-group';
 import { BrokerAccount } from '../../models/broker-account';
-import { AppService } from '../../providers/websocket/app.service';
 import { TradeGroupService } from '../../providers/http/trade-group.service';
 import { StateService } from '../../providers/state/state.service';
 import { environment } from '../../../environments/environment';
@@ -33,7 +32,7 @@ export class TradesComponent implements OnInit {
   //
   // Construct
   //
-  constructor(private appService: AppService, private tradeGroupService: TradeGroupService, private stateService: StateService) {}
+  constructor(private tradeGroupService: TradeGroupService, private stateService: StateService) {}
 
   //
   // On Init

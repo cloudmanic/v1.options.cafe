@@ -15,14 +15,15 @@ import { Balance } from '../../models/balance';
 import { OrderLeg } from '../../models/order-leg';
 import { MarketStatus } from '../../models/market-status';
 import { ChangeDetected } from '../../models/change-detected';
+import { MarketQuote } from '../../models/market-quote';
 
 declare var ClientJS: any;
 
 //@Injectable()
-export class AppService  
+export class WebsocketService  
 {  
-  public deviceId = ""
-   
+  deviceId = "";
+
   // Websocket Stuff
   ws = null;
   heartbeat = null;
@@ -33,7 +34,8 @@ export class AppService
   ordersPush = new EventEmitter<Order[]>();
   balancesPush = new EventEmitter<Balance[]>();
   marketStatusPush = new EventEmitter<MarketStatus>();
-  changedDetectedPush = new EventEmitter<ChangeDetected>();  
+  changedDetectedPush = new EventEmitter<ChangeDetected>();
+  quotePushData = new EventEmitter<MarketQuote>();    
 
   //
   // Construct!!
@@ -80,8 +82,40 @@ export class AppService
       // Change detected
       case 'change-detected':      
         this.changedDetectedPush.emit(new ChangeDetected(msg_data.type));              
-      break;        
+      break; 
+
+      // Quote refresh
+      case 'quote':
+        this.doQuote(msg_data);
+      break;             
     }
+  }
+
+  //
+  // Manage the income quote.
+  // 
+  // {"type":"index","symbol":"$DJI","size":0,"last":25709.27,"open":25403.35,"high":25732.8,"low":25398.56,"bid":25717.47,"ask":25784.6,"close":25709.27,"prev_close":0,"change":399.28,"change_percentage":1.58,"volume":473357480,"average_volume":0,"last_volume":0,"description":"Dow Jones Industrial Average"}
+  //
+  private doQuote(msg_data: any)
+  {
+    // // Have we seen this quote before?
+    // if(typeof this.quotes[msg_data.symbol] == "undefined")
+    // {
+    //   this.quotes[msg_data.symbol] = new MarketQuote(msg_data.last, msg_data.open, msg_data.bid, msg_data.ask, msg_data.prev_close, msg_data.symbol, msg_data.description);
+    // } else
+    // {
+    //   this.quotes[msg_data.symbol].last = msg_data.last;              
+    //   this.quotes[msg_data.symbol].open = msg_data.open;
+    //   this.quotes[msg_data.symbol].bid = msg_data.bid;              
+    //   this.quotes[msg_data.symbol].ask = msg_data.ask;              
+    //   this.quotes[msg_data.symbol].prev_close = msg_data.prev_close;              
+    //   this.quotes[msg_data.symbol].description = msg_data.description;              
+    // }            
+
+
+    let quote = new MarketQuote(msg_data.last, msg_data.open, msg_data.bid, msg_data.ask, msg_data.prev_close, msg_data.symbol, msg_data.description);
+
+    this.quotePushData.emit(quote);    
   }
 
 
@@ -94,7 +128,7 @@ export class AppService
   setupWebSocket() 
   {
     // Setup websocket
-    this.ws = new WebSocket(environment.ws_server + '/ws/core');
+    this.ws = new WebSocket(environment.ws_server + '/ws');
     
     // Websocket sent data to us.
     this.ws.onmessage = (e) =>

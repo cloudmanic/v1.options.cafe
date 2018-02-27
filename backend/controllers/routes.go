@@ -44,8 +44,7 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 
 	// ---------- Websockets -------------- //
 
-	r.GET("/ws/core", t.WebsocketController.DoWebsocketConnection)
-	r.GET("/ws/quotes", t.WebsocketController.DoQuoteWebsocketConnection)
+	r.GET("/ws", t.WebsocketController.DoWebsocketConnection)
 
 	// ------------ Non-Auth Routes ------ //
 

@@ -10,8 +10,7 @@ import { Component, OnInit } from '@angular/core';
 import { Order } from '../../../models/order';
 import { ChangeDetected } from '../../../models/change-detected';
 import { TradeGroup, TradeGroupsCont } from '../../../models/trade-group';
-import { AppService } from '../../../providers/websocket/app.service';
-import { QuoteService } from '../../../providers/websocket/quote.service';
+import { WebsocketService } from '../../../providers/http/websocket.service';
 import { StateService } from '../../../providers/state/state.service';
 import { TradeGroupService } from '../../../providers/http/trade-group.service';
 
@@ -31,7 +30,7 @@ export class PositionsComponent implements OnInit {
   //
   // Constructor....
   //
-  constructor(private appService: AppService, private quoteService: QuoteService, private stateService: StateService, private tradeGroupService: TradeGroupService) { }
+  constructor(private websocketService: WebsocketService, private stateService: StateService, private tradeGroupService: TradeGroupService) { }
 
   //
   // OnInit....
@@ -51,12 +50,12 @@ export class PositionsComponent implements OnInit {
     });
 
     // Subscribe to when changes are detected at the server.
-    this.appService.changedDetectedPush.takeUntil(this.destory).subscribe(data => {
+    this.websocketService.changedDetectedPush.takeUntil(this.destory).subscribe(data => {
       this.manageChangeDetection(data);
     }); 
 
     // Subscribe to data updates from the quotes - Market Quotes
-    this.quoteService.marketQuotePushData.takeUntil(this.destory).subscribe(data => {
+    this.websocketService.quotePushData.takeUntil(this.destory).subscribe(data => {
       this.quotes[data.symbol] = data;
     });     
   }

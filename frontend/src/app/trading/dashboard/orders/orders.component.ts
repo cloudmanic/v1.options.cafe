@@ -5,10 +5,9 @@
 //
 
 import { Component, OnInit } from '@angular/core';
-import { AppService } from '../../../providers/websocket/app.service';
-import { QuoteService } from '../../../providers/websocket/quote.service';
 import { Order } from '../../../models/order';
 import { StateService } from '../../../providers/state/state.service';
+import { WebsocketService } from '../../../providers/http/websocket.service';
 
 @Component({
   selector: 'app-trading-orders',
@@ -23,7 +22,7 @@ export class OrdersComponent implements OnInit {
   //
   // Constructor....
   //
-  constructor(private appService: AppService, private quoteService: QuoteService, private stateService: StateService) { }
+  constructor(private websocketService: WebsocketService, private stateService: StateService) { }
 
   //
   // OnInit....
@@ -33,12 +32,12 @@ export class OrdersComponent implements OnInit {
     this.quotes = this.stateService.GetQuotes();
         
     // Subscribe to data updates from the broker - Orders
-    this.appService.ordersPush.subscribe(data => {
+    this.websocketService.ordersPush.subscribe(data => {
       this.setOrders(data);
     });    
     
     // Subscribe to data updates from the quotes - Market Quotes
-    this.quoteService.marketQuotePushData.subscribe(data => {
+    this.websocketService.quotePushData.subscribe(data => {
       this.quotes[data.symbol] = data;
     });     
   }

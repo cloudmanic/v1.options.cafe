@@ -48,19 +48,7 @@ func (t *Base) WriteDataChannel(send_type string, sendObject interface{}) error 
 	}
 
 	// Write data out websocket
-	t.DataChan <- websocket.SendStruct{UserId: t.User.Id, Body: sendJson}
-
-	// Return happy.
-	return nil
-}
-
-//
-// Send data up quote websocket.
-//
-func (t *Base) WriteQuoteChannel(sendJson string) error {
-
-	// Write data out websocket
-	t.QuoteChan <- websocket.SendStruct{UserId: t.User.Id, Body: sendJson}
+	t.WsWriteChan <- websocket.SendStruct{UserId: t.User.Id, Body: sendJson}
 
 	// Return happy.
 	return nil

@@ -12,7 +12,7 @@ import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { Symbol } from '../../../models/symbol';
 import { StateService } from '../../../providers/state/state.service';
 import { QuotesService } from '../../../providers/http/quotes.service';
-import { QuoteService } from '../../../providers/websocket/quote.service';
+import { WebsocketService } from '../../../providers/http/websocket.service';
 
 @Component({
   selector: 'app-trading-dashboard-chart',
@@ -90,7 +90,7 @@ export class DashboardChartComponent implements OnInit
   //
   // Constructor....
   //
-  constructor(private stateService: StateService, private quotesService: QuotesService, private quoteService: QuoteService) { }
+  constructor(private stateService: StateService, private quotesService: QuotesService, private websocketService: WebsocketService) { }
 
   //
   // OnInit....
@@ -104,7 +104,7 @@ export class DashboardChartComponent implements OnInit
     this.chartOptions.series[0].data = this.stateService.GetDashboardChartData();
 
     // Subscribe to data updates from the quotes - Market Quotes
-    this.quoteService.marketQuotePushData.takeUntil(this.destory).subscribe(data => {
+    this.websocketService.quotePushData.takeUntil(this.destory).subscribe(data => {
       this.quotes[data.symbol] = data;
     });     
 

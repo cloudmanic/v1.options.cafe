@@ -39,48 +39,13 @@ func (t *Controller) DoWsDispatch() {
 
 	for {
 
-		select {
+		send := <-t.WsWriteChan
 
-		// Core channel
-		case send := <-t.WsWriteChan:
+		for i := range t.Connections {
 
-			for i := range t.Connections {
-
-				// We only care about the user we passed in.
-				if t.Connections[i].userId == send.UserId {
-
-					select {
-
-					case t.Connections[i].WriteChan <- send.Body:
-
-					default:
-						services.Critical("Channel full. Discarding value (Core channel)")
-
-					}
-
-				}
-
-			}
-
-		// Quotes channel
-		case send := <-t.WsWriteQuoteChan:
-
-			for i := range t.QuotesConnections {
-
-				// We only care about the user we passed in.
-				if t.QuotesConnections[i].userId == send.UserId {
-
-					select {
-
-					case t.QuotesConnections[i].WriteChan <- send.Body:
-
-					default:
-						services.Critical("Channel full. Discarding value (Quotes channel)")
-
-					}
-
-				}
-
+			// We only care about the user we passed in.
+			if t.Connections[i].userId == send.UserId {
+				t.Connections[i].WriteChan <- send.Body
 			}
 
 		}

@@ -13,7 +13,7 @@ import { TradeGroup, TradeGroupsCont } from '../../models/trade-group';
 import { BrokerAccount } from '../../models/broker-account';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { AppService } from '../../providers/websocket/app.service';
+import { WebsocketService } from '../../providers/http/websocket.service';
 
 @Injectable()
 export class StateService  
@@ -40,7 +40,7 @@ export class StateService
   //
   // Construct.
   //
-  constructor(private appService: AppService) { 
+  constructor(private websocketService: WebsocketService) { 
     this.activeBrokerAccount = null;
   }
 

@@ -7,12 +7,12 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { SortablejsOptions } from 'angular-sortablejs';
-import { QuoteService } from '../../../providers/websocket/quote.service';
 import { Symbol } from '../../../models/symbol';
 import { Watchlist } from '../../../models/watchlist';
 import { WatchlistService } from '../../../providers/http/watchlist.service';
 import { StateService } from '../../../providers/state/state.service';
 import { environment } from '../../../../environments/environment';
+import { WebsocketService } from '../../../providers/http/websocket.service';
 
 @Component({
   selector: 'app-watchlist',
@@ -37,7 +37,7 @@ export class WatchlistComponent implements OnInit {
   //
   // Construct...
   //
-  constructor(private http: HttpClient, private _eref: ElementRef, private quoteService: QuoteService, private watchlistService: WatchlistService, private stateService: StateService) { }
+  constructor(private http: HttpClient, private _eref: ElementRef, private websocketService: WebsocketService, private watchlistService: WatchlistService, private stateService: StateService) { }
 
   //
   // On Init...
@@ -71,7 +71,7 @@ export class WatchlistComponent implements OnInit {
     };
         
     // Subscribe to data updates from the quotes - Market Quotes
-    this.quoteService.marketQuotePushData.subscribe(data => {
+    this.websocketService.quotePushData.subscribe(data => {
       this.quotes[data.symbol] = data;
       this.stateService.SetQuote(data)
     }); 

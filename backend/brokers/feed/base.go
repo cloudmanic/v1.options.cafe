@@ -16,8 +16,7 @@ type Base struct {
 	DB       models.Datastore
 	BrokerId uint
 
-	DataChan  chan websocket.SendStruct
-	QuoteChan chan websocket.SendStruct
+	WsWriteChan chan websocket.SendStruct
 
 	muOrders sync.Mutex
 	Orders   []types.Order

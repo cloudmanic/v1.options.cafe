@@ -7,7 +7,6 @@
 package feed
 
 import (
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -50,22 +49,8 @@ func (t *Base) GetActiveSymbolsDetailedQuotes() error {
 	// Loop through the quotes sending them up the websocket channel
 	for _, row := range detailedQuotes {
 
-		// Convert to a json string.
-		data_json, err := json.Marshal(row)
-
-		if err != nil {
-			return err
-		}
-
-		// Send data up websocket.
-		send_json, err := t.GetSendJson("quote", string(data_json))
-
-		if err != nil {
-			return err
-		}
-
 		// Send up websocket.
-		err = t.WriteQuoteChannel(send_json)
+		err = t.WriteDataChannel("quote", row)
 
 		if err != nil {
 			return fmt.Errorf("GetActiveSymbolsDetailedQuotes() WriteDataChannel : ", err)

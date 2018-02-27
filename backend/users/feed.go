@@ -19,9 +19,9 @@ import (
 )
 
 type UserFeed struct {
-	Profile    models.User
-	DataChan   chan websocket.SendStruct
-	BrokerFeed map[uint]*feed.Base
+	Profile     models.User
+	WsWriteChan chan websocket.SendStruct
+	BrokerFeed  map[uint]*feed.Base
 }
 
 //
@@ -59,9 +59,9 @@ func (t *Base) DoUserFeed(user models.User) {
 
 	// Set the user to the object
 	t.Users[user.Id] = &UserFeed{
-		Profile:    user,
-		DataChan:   t.DataChan,
-		BrokerFeed: make(map[uint]*feed.Base),
+		Profile:     user,
+		WsWriteChan: t.WsWriteChan,
+		BrokerFeed:  make(map[uint]*feed.Base),
 	}
 
 	// Loop through the different brokers for this user
@@ -98,12 +98,11 @@ func (t *Base) DoUserFeed(user models.User) {
 
 		// Set the library we use to fetching data from our broker's API
 		t.Users[user.Id].BrokerFeed[row.Id] = &feed.Base{
-			DB:        t.DB,
-			User:      user,
-			BrokerId:  row.Id,
-			Api:       brokerApi,
-			DataChan:  t.DataChan,
-			QuoteChan: t.QuoteChan,
+			DB:          t.DB,
+			User:        user,
+			BrokerId:    row.Id,
+			Api:         brokerApi,
+			WsWriteChan: t.WsWriteChan,
 		}
 
 		// Start fetching data for this user.

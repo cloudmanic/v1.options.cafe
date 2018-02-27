@@ -7,13 +7,13 @@
 import 'rxjs/add/operator/takeUntil';
 import { Subject } from 'rxjs/Subject';
 import { Component, OnInit } from '@angular/core';
-import { AppService } from '../../providers/websocket/app.service';
 import { Balance } from '../../models/balance';
 import { MarketStatus } from '../../models/market-status';
 import { Broker } from '../../models/broker';
 import { BrokerAccount } from '../../models/broker-account';
 import { BrokerService } from '../../providers/http/broker.service';
 import { StateService } from '../../providers/state/state.service';
+import { WebsocketService } from '../../providers/http/websocket.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -32,7 +32,7 @@ export class SidebarComponent implements OnInit {
   //
   // Construct.
   //
-  constructor(private app: AppService, private brokerService: BrokerService, private stateService: StateService) { }
+  constructor(private websocketService: WebsocketService, private brokerService: BrokerService, private stateService: StateService) { }
 
   //
   // Oninit...
@@ -41,7 +41,7 @@ export class SidebarComponent implements OnInit {
     this.brokerAccountList = [];
           
     // Subscribe to data updates from the broker - Market Status
-    this.app.marketStatusPush.subscribe(data => {
+    this.websocketService.marketStatusPush.subscribe(data => {
       this.marketStatus = data;      
     });
 
@@ -51,7 +51,7 @@ export class SidebarComponent implements OnInit {
     });
 
     // Subscribe to data updates from the broker - Balances
-    this.app.balancesPush.subscribe(data => {
+    this.websocketService.balancesPush.subscribe(data => {
       this.doBalanaces(data);
     });  
 

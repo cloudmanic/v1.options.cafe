@@ -5,8 +5,7 @@
 //
 
 import { Component, OnInit } from '@angular/core';
-import { AppService } from '../../../providers/websocket/app.service';
-import { QuoteService } from '../../../providers/websocket/quote.service';
+import { WebsocketService } from '../../../providers/http/websocket.service';
 import { StateService } from '../../../providers/state/state.service';
 
 @Component({
@@ -21,7 +20,7 @@ export class MarketQuotesComponent implements OnInit {
   //
   // Constructor....
   //
-  constructor(private appService: AppService, private quoteService: QuoteService, private stateService: StateService) { }
+  constructor(private websocketService: WebsocketService, private stateService: StateService) { }
 
   //
   // OnInit....
@@ -29,10 +28,10 @@ export class MarketQuotesComponent implements OnInit {
   ngOnInit() 
   {
     // Get Data from cache
-    this.quotes = this.quoteService.quotes;
+    this.quotes = this.stateService.GetQuotes();
             
     // Subscribe to data updates from the quotes - Market Quotes
-    this.quoteService.marketQuotePushData.subscribe(data => {
+    this.websocketService.quotePushData.subscribe(data => {
       this.quotes[data.symbol] = data;
     });     
   }  
