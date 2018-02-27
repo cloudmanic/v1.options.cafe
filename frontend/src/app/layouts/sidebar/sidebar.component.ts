@@ -8,11 +8,13 @@ import 'rxjs/add/operator/takeUntil';
 import { Subject } from 'rxjs/Subject';
 import { Component, OnInit } from '@angular/core';
 import { Balance } from '../../models/balance';
+import { ChangeDetected } from '../../models/change-detected';
 import { MarketStatus } from '../../models/market-status';
 import { Broker } from '../../models/broker';
 import { BrokerAccount } from '../../models/broker-account';
 import { BrokerService } from '../../providers/http/broker.service';
 import { StateService } from '../../providers/state/state.service';
+import { StatusService } from '../../providers/http/status.service';
 import { WebsocketService } from '../../providers/http/websocket.service';
 
 @Component({
@@ -32,12 +34,13 @@ export class SidebarComponent implements OnInit {
   //
   // Construct.
   //
-  constructor(private websocketService: WebsocketService, private brokerService: BrokerService, private stateService: StateService) { }
+  constructor(private websocketService: WebsocketService, private brokerService: BrokerService, private stateService: StateService, private statusService: StatusService) { }
 
   //
   // Oninit...
   //
   ngOnInit() {
+    this.getMarketStatus();
     this.brokerAccountList = [];
           
     // Subscribe to changes in the selected broker.
@@ -53,7 +56,12 @@ export class SidebarComponent implements OnInit {
     // Get broker data
     this.brokerService.get().subscribe((data) => {
       this.doBrokers(data);
-    });        
+    });     
+
+    // Subscribe to when changes are detected at the server.
+    this.websocketService.changedDetectedPush.takeUntil(this.destory).subscribe(data => {
+      this.manageChangeDetection(data);
+    });   
   }
 
   //
@@ -66,11 +74,24 @@ export class SidebarComponent implements OnInit {
   } 
 
   //
+  // Manage change detection.
+  //
+  private manageChangeDetection(data: ChangeDetected)
+  {
+    if(data.Type == 'market-status')
+    {
+      this.getMarketStatus();
+    }
+  }
+
+  //
   // Get market status.
   //
   getMarketStatus()
   {
-    
+    this.statusService.getMarketStatus().subscribe(data => {
+      this.marketStatus = data
+    });
   }  
 
   //

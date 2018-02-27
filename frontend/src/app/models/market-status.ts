@@ -18,7 +18,7 @@ export class MarketStatus {
   // Build object for emitting to the app.
   //
   public static buildForEmit(data) : MarketStatus  {
-    return new MarketStatus(data.State, data.Description); 
+    return new MarketStatus(data.state, data.description); 
   }
 }
 

@@ -22,6 +22,7 @@ import { StateService } from './providers/state/state.service';
 import { QuotesService } from './providers/http/quotes.service';
 import { BrokerService } from './providers/http/broker.service';
 import { SymbolService } from './providers/http/symbol.service';
+import { StatusService } from './providers/http/status.service';
 import { WatchlistService } from './providers/http/watchlist.service';
 import { TradeGroupService } from './providers/http/trade-group.service';
 import { WebsocketService } from './providers/http/websocket.service';
@@ -124,6 +125,7 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     StateService,
     WatchlistService,
     WebsocketService,
+    StatusService,
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }    
   ],
   
