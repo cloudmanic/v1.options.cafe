@@ -7,8 +7,8 @@
 
     <strong>{{ quotes[symbol.ShortName]?.last | currency:'USD':'symbol':'1.2-2' }}</strong>
 
-    <strong [ngClass]="{'title-red': (quotes[symbol?.ShortName]?.dailyChange() < 0), 'title-green': (quotes[symbol?.ShortName]?.dailyChange() > 0)}" class="ml-5">
-      {{ quotes[symbol?.ShortName]?.dailyChange() | currency:'USD':'symbol':'1.2-2' }} <span>({{ quotes[symbol?.ShortName]?.percentChange() | number:'1.2-2' }}%)</span>
+    <strong [ngClass]="{'title-red': (quotes[symbol?.ShortName]?.change < 0), 'title-green': (quotes[symbol?.ShortName]?.change > 0)}" class="ml-5">
+      {{ quotes[symbol?.ShortName]?.change | currency:'USD':'symbol':'1.2-2' }} <span>({{ quotes[symbol?.ShortName]?.change_percentage | number:'1.2-2' }}%)</span>
     </strong>    
   </div>
 

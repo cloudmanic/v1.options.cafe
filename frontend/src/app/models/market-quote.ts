@@ -10,41 +10,20 @@ export class MarketQuote {
     public bid: number,    
     public prev_close: number,
     public symbol: string,
-    public description: string
+    public description: string,
+    public change: number,
+    public change_percentage: number,
   ){}
-
-  //
-  // Return the daily change
-  //
-  dailyChange() {
-    return (this.last - this.prev_close).toFixed(2);
-  }
-  
-  //
-  // Return the percent change
-  //
-  percentChange() {
-    
-    // Do we have data yet?
-    if(this.prev_close <= 0)
-    {
-      return 0;
-    }
-    
-    return parseFloat((((this.last - this.prev_close) / this.prev_close) * 100).toFixed(2));
-  }
   
   //
   // Return the class color
   //
   classColor() {
-    
-    let change = this.percentChange();
-    
-    if(change > 0)
+        
+    if(this.change_percentage > 0)
     {
       return 'green';
-    } else if(change < 0)
+    } else if(this.change_percentage < 0)
     {
       return 'red';
     }

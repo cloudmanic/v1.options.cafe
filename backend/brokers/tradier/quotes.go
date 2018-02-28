@@ -12,18 +12,24 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-type SessionStruct struct {
-	Stream struct {
-		Url       string `json:"url"`
-		SessionId string `json:"sessionid"`
-	}
-}
-
-type StreamQuote struct {
-	Type   string `json:"type"`
-	Symbol string `json:"symbol"`
-	Price  string `json:"price"`
-	Size   string `json:"size"`
+type Quote struct {
+	Type             string  `json:"type"`
+	Symbol           string  `json:"symbol"`
+	Size             int     `json:"size"`
+	Last             float64 `json:"last"`
+	Open             float64 `json:"open"`
+	High             float64 `json:"high"`
+	Low              float64 `json:"low"`
+	Bid              float64 `json:"bid"`
+	Ask              float64 `json:"ask"`
+	Close            float64 `json:"close"`
+	PrevClose        float64 `json:"prevclose"`
+	Change           float64 `json:"change"`
+	ChangePercentage float64 `json:"change_percentage"`
+	Volume           int     `json:"volume"`
+	AverageVolume    int     `json:"average_volume"`
+	LastVolume       int     `json:"last_volume"`
+	Description      string  `json:"description"`
 }
 
 //
@@ -36,7 +42,7 @@ func (t *Api) GetQuotes(symbols []string) ([]types.Quote, error) {
 		return nil, nil
 	}
 
-	var quotes []types.Quote
+	var quotes []Quote
 
 	// Setup http client
 	client := &http.Client{}
@@ -91,7 +97,7 @@ func (t *Api) GetQuotes(symbols []string) ([]types.Quote, error) {
 
 	} else {
 
-		var res map[string]map[string]types.Quote
+		var res map[string]map[string]Quote
 
 		err := json.Unmarshal(body, &res)
 
@@ -105,12 +111,39 @@ func (t *Api) GetQuotes(symbols []string) ([]types.Quote, error) {
 			return nil, nil
 		}
 
-		quotes = []types.Quote{quote}
+		quotes = []Quote{quote}
+
+	}
+
+	// Normalize the data
+	realQuotes := []types.Quote{}
+
+	for _, row := range quotes {
+
+		realQuotes = append(realQuotes, types.Quote{
+			Type:             row.Type,
+			Symbol:           row.Symbol,
+			Size:             row.Size,
+			Last:             row.Last,
+			Open:             row.Open,
+			High:             row.High,
+			Low:              row.Low,
+			Bid:              row.Bid,
+			Ask:              row.Ask,
+			Close:            row.Close,
+			PrevClose:        row.PrevClose,
+			Change:           row.Change,
+			ChangePercentage: row.ChangePercentage,
+			Volume:           row.Volume,
+			AverageVolume:    row.AverageVolume,
+			LastVolume:       row.LastVolume,
+			Description:      row.Description,
+		})
 
 	}
 
 	// Return happy
-	return quotes, nil
+	return realQuotes, nil
 }
 
 /* End File */
