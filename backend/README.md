@@ -30,3 +30,9 @@ Some data needs to be imported to kick the application off. For example import a
 
 * ```cd cron && go run *.go --action=symbol-import```
 
+
+## Redis 
+
+* We use Redis. On OSX you install it with `brew install redis`
+
+* OSX: `brew services list` | `brew services redis start` | `brew services restart redis`

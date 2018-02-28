@@ -4,6 +4,7 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import { Observable } from 'rxjs/Rx';
 import 'rxjs/add/operator/takeUntil';
 import { Subject } from 'rxjs/Subject';
 import { Component, OnInit } from '@angular/core';
@@ -61,7 +62,10 @@ export class SidebarComponent implements OnInit {
     // Subscribe to when changes are detected at the server.
     this.websocketService.changedDetectedPush.takeUntil(this.destory).subscribe(data => {
       this.manageChangeDetection(data);
-    });   
+    }); 
+
+    // This is useful for when the change detection was not caught (say laptop sleeping)
+    Observable.timer((1000 * 60), (1000 * 60)).takeUntil(this.destory).subscribe(x => { this.getMarketStatus(); });      
   }
 
   //
