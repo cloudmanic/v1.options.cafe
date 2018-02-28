@@ -7,7 +7,8 @@
 package controllers
 
 import (
-	"github.com/cloudmanic/app.options.cafe/backend/library/state"
+	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
+	"github.com/cloudmanic/app.options.cafe/backend/websocket"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,7 +16,16 @@ import (
 // Return the market status from tradier
 //
 func (t *Controller) GetMarketStatus(c *gin.Context) {
-	c.JSON(200, state.GetMarketStatus())
+
+	// Get value from our cache
+	result := websocket.MarketStatus{}
+	_, err := cache.Get("oc-market-status", &result)
+
+	if t.RespondError(c, err, httpNoRecordFound) {
+		return
+	}
+
+	c.JSON(200, result)
 }
 
 /* End File */

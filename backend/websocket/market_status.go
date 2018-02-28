@@ -15,8 +15,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/library/state"
 	"github.com/cnf/structhash"
 )
 
@@ -49,9 +49,6 @@ func (t *Controller) StartMarketStatusFeed() {
 			json, err := t.WsSendJsonBuild("change-detected", `{ "type": "market-status" }`)
 			services.Warning(err)
 
-			// Store new market status in our state cache
-			state.SetMarketStatus(status)
-
 			// Send status to all connections
 			t.WsDispatchToAll(json)
 
@@ -61,6 +58,9 @@ func (t *Controller) StartMarketStatusFeed() {
 
 		// Store hash
 		storedHash = hash
+
+		// Save the market status in our cache.
+		cache.Set("oc-market-status", status)
 
 		// Sleep for 2 second.
 		time.Sleep(time.Second * 2)

@@ -30,7 +30,6 @@ export class WebsocketService
   
   // Emitters - Pushers
   wsReconnecting = new EventEmitter<boolean>();
-  ordersPush = new EventEmitter<Order[]>();
   balancesPush = new EventEmitter<Balance[]>();
   changedDetectedPush = new EventEmitter<ChangeDetected>();
   quotePushData = new EventEmitter<MarketQuote>();    
@@ -71,11 +70,6 @@ export class WebsocketService
       case 'balances':
         this.balancesPush.emit(Balance.buildForEmit(msg_data));
       break;      
-
-      // Order refresh
-      case 'orders':     
-        this.ordersPush.emit(Order.buildForEmit(msg_data));              
-      break; 
 
       // Change detected
       case 'change-detected':      

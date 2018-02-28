@@ -78,7 +78,27 @@ services:
       - .env      
                       
     networks:
-      - shared       
+      - shared    
+
+  # Redis 4.0
+  redis:
+
+    hostname: redis.options.cafe
+
+    container_name: redis.options.cafe
+
+    image: redis:4.0
+
+    restart: always
+
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: tcp+tls://logs6.papertrailapp.com:49242
+        tag: redis.options.cafe
+
+    networks:
+      - shared         
   
 networks:
   shared:

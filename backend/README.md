@@ -33,6 +33,8 @@ Some data needs to be imported to kick the application off. For example import a
 
 ## Redis 
 
+* We use Redis 4.0
+
 * We use Redis. On OSX you install it with `brew install redis`
 
 * OSX: `brew services list` | `brew services redis start` | `brew services restart redis`

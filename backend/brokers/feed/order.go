@@ -143,13 +143,6 @@ func (t *Base) GetOrders() (string, error) {
 		return "", err
 	}
 
-	// Send up websocket.
-	err = t.WriteDataChannel("orders", orders)
-
-	if err != nil {
-		return "", fmt.Errorf("Fetch.GetOrders() : ", err)
-	}
-
 	// Return Happy
 	return hash, nil
 

@@ -7,6 +7,7 @@
 import 'rxjs/Rx';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { Order } from '../../models/order';
 import { Broker } from '../../models/broker';
 import { Balance } from '../../models/balance';
 import { BrokerAccount } from '../../models/broker-account';
@@ -34,11 +35,20 @@ export class BrokerService
   //
   // Get broker balances
   //
-  getBalances() : Observable<Balance[]> {
-    return this.http.get<Balance[]>(environment.app_server + '/api/v1/brokers/balances').map(
+  getBalances(brokerId: number) : Observable<Balance[]> {
+    return this.http.get<Balance[]>(environment.app_server + '/api/v1/brokers/' + brokerId + '/balances').map(
       (data) => { return Balance.buildForEmit(data); 
     });
-  }  
+  }
+
+  //
+  // Get broker orders
+  //
+  getOrders(brokerId: number) : Observable<Order[]> {
+    return this.http.get<Order[]>(environment.app_server + '/api/v1/brokers/' + brokerId + '/orders').map(
+      (data) => { return Order.buildForEmit(data); 
+    });
+  }    
 }
 
 /* End File */

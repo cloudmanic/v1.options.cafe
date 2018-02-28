@@ -8,6 +8,7 @@ export class BrokerAccount {
 
   public Id: number;
   public Name: string;
+  public BrokerId: number;
   public AccountNumber: string;
   public StockCommission: number;
   public StockMin: number;
@@ -22,6 +23,7 @@ export class BrokerAccount {
   constructor(
     Id: number, 
     Name: string,
+    BrokerId: number, 
     AccountNumber: string,
     StockCommission: number,
     StockMin: number,
@@ -32,6 +34,7 @@ export class BrokerAccount {
   ){
     this.Id = Id;
     this.Name = Name;
+    this.BrokerId = BrokerId;
     this.AccountNumber = AccountNumber;
     this.StockCommission = StockCommission;
     this.StockMin = StockMin;

@@ -4,12 +4,14 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import { Observable } from 'rxjs/Rx';
 import 'rxjs/add/operator/takeUntil';
 import { Subject } from 'rxjs/Subject';
 import { Component, OnInit } from '@angular/core';
 import { Order } from '../../../models/order';
 import { StateService } from '../../../providers/state/state.service';
 import { WebsocketService } from '../../../providers/http/websocket.service';
+import { BrokerService } from '../../../providers/http/broker.service';
 
 @Component({
   selector: 'app-trading-orders',
@@ -26,7 +28,7 @@ export class OrdersComponent implements OnInit {
   //
   // Constructor....
   //
-  constructor(private websocketService: WebsocketService, private stateService: StateService) { }
+  constructor(private websocketService: WebsocketService, private stateService: StateService, private brokerService: BrokerService) { }
 
   //
   // OnInit....
@@ -34,12 +36,7 @@ export class OrdersComponent implements OnInit {
   ngOnInit() {
     // Get Data from cache
     this.quotes = this.stateService.GetQuotes();
-        
-    // Subscribe to data updates from the broker - Orders
-    this.websocketService.ordersPush.subscribe(data => {
-      this.setOrders(data);
-    });    
-    
+            
     // Subscribe to data updates from the quotes - Market Quotes
     this.websocketService.quotePushData.subscribe(data => {
       this.quotes[data.symbol] = data;
@@ -47,8 +44,11 @@ export class OrdersComponent implements OnInit {
   
     // Subscribe to changes in the selected broker.
     this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
-      this.orders = null;
+      this.getOrders();
     });
+
+    // This is useful for when the change detection was not caught (say laptop sleeping)
+    Observable.timer((1000 * 60), (1000 * 60)).takeUntil(this.destory).subscribe(x => { this.getOrders(); });       
   }
 
   //
@@ -58,6 +58,17 @@ export class OrdersComponent implements OnInit {
   {
     this.destory.next();
     this.destory.complete();
+  }  
+
+  //
+  // Get Orders
+  //
+  getOrders()
+  {
+    // Get balance data
+    this.brokerService.getOrders(this.stateService.GetActiveBrokerAccount().BrokerId).subscribe((data) => {    
+      this.setOrders(data);
+    });
   }  
 
   //
