@@ -43,11 +43,6 @@ func (t *Base) GetBalances() error {
 		return err
 	}
 
-	// Save the balances in the fetch object
-	t.muBalances.Lock()
-	t.Balances = balances
-	t.muBalances.Unlock()
-
 	// Send up websocket.
 	err = t.WriteDataChannel("balances", balances)
 

@@ -19,11 +19,11 @@ import (
 func TestSet01(t *testing.T) {
 
 	// Store something in cache
-	Set("options-cafe-testing-1", "Options Cafe is DaBomb.com")
+	Set("oc-testing-1", "Options Cafe is DaBomb.com")
 
 	// Get stored value.
 	result := ""
-	found, err := Get("options-cafe-testing-1", &result)
+	found, err := Get("oc-testing-1", &result)
 
 	// Verify the data was return as expected
 	st.Expect(t, err, nil)
@@ -38,7 +38,7 @@ func TestSet02(t *testing.T) {
 
 	// Get a value we know we do not have
 	result := ""
-	found, _ := Get("options-cafe-testing-not-found", &result)
+	found, _ := Get("oc-testing-not-found", &result)
 
 	// Verify the data was return as expected
 	st.Expect(t, found, false)
@@ -65,11 +65,11 @@ func TestSet03(t *testing.T) {
 	}
 
 	// Store the struct in the cache
-	Set("options-cafe-testing-2", order)
+	Set("oc-testing-2", order)
 
 	// Get a value we know we do not have
 	result := models.Order{}
-	found, _ := Get("options-cafe-testing-2", &result)
+	found, _ := Get("oc-testing-2", &result)
 
 	// Verify the data was return as expected
 	st.Expect(t, found, true)

@@ -86,11 +86,6 @@ func (t *Base) GetUserProfile() error {
 		}
 	}
 
-	// Save the orders in the fetch object
-	t.muUserProfile.Lock()
-	t.UserProfile = userProfile
-	t.muUserProfile.Unlock()
-
 	// Send up websocket.
 	err = t.WriteDataChannel("user/profile", userProfile)
 

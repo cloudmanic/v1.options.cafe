@@ -1,31 +1,18 @@
 package feed
 
 import (
-	"sync"
-
 	"github.com/cloudmanic/app.options.cafe/backend/brokers"
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/cloudmanic/app.options.cafe/backend/websocket"
 )
 
 type Base struct {
-	User     models.User
-	Api      brokers.Api
-	DB       models.Datastore
-	BrokerId uint
-
+	User        models.User
+	Api         brokers.Api
+	DB          models.Datastore
+	BrokerId    uint
 	WsWriteChan chan websocket.SendStruct
-
-	muOrders sync.Mutex
-	Orders   []types.Order
-
-	muBalances sync.Mutex
-	Balances   []types.Balance
-
-	muUserProfile sync.Mutex
-	UserProfile   types.UserProfile
 }
 
 type SendStruct struct {

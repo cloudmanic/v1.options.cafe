@@ -8,10 +8,12 @@ package feed
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/archive"
+	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
 	"github.com/cloudmanic/app.options.cafe/backend/library/notify"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cnf/structhash"
@@ -112,10 +114,8 @@ func (t *Base) GetOrders() (string, error) {
 		return "", err
 	}
 
-	// Save the orders in the fetch object
-	t.muOrders.Lock()
-	t.Orders = orders
-	t.muOrders.Unlock()
+	// Store result in cache.
+	cache.Set("oc-orders-active-"+strconv.Itoa(int(t.User.Id))+"-"+strconv.Itoa(int(t.BrokerId)), orders)
 
 	// Store symbols we use in orders
 	for _, row := range orders {
