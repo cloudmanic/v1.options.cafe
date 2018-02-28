@@ -86,7 +86,7 @@ export class WebsocketService
   private doQuote(msg_data: any)
   {
     // Build quote
-    let quote = new MarketQuote(msg_data.last, msg_data.open, msg_data.bid, msg_data.ask, msg_data.prev_close, msg_data.symbol, msg_data.description, msg_data.change, msg_data.change_percentage);
+    let quote = new MarketQuote(msg_data.last, msg_data.open, msg_data.ask, msg_data.bid, msg_data.prev_close, msg_data.symbol, msg_data.description, msg_data.change, msg_data.change_percentage);
 
     // Send quote out to components 
     this.quotePushData.emit(quote);
