@@ -8,8 +8,11 @@ package controllers
 
 import (
 	"flag"
+	"strconv"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
+	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
@@ -36,6 +39,26 @@ func (t *Controller) GetBrokers(c *gin.Context) {
 
 	// Return happy JSON
 	c.JSON(200, results)
+}
+
+//
+// Get a brokers active orders.
+//
+func (t *Controller) GetBrokerActiveOrders(c *gin.Context) {
+
+	// Build cache key
+	key := "oc-orders-active-" + strconv.Itoa(int(c.MustGet("userId").(uint))) + "-" + string(c.Param("id"))
+
+	// Get a value we know we do not have
+	result := []types.Order{}
+	_, err := cache.Get(key, &result)
+
+	if t.RespondError(c, err, httpNoRecordFound) {
+		return
+	}
+
+	// Return happy.
+	c.JSON(200, result)
 }
 
 //
