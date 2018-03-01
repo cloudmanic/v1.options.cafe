@@ -34,8 +34,8 @@ export class QuotesService
     }
 
     // Setup request
-    let request = environment.app_server + '/api/v1/quotes/historical?symbol=' + symbol + '&start=' + start.getFullYear() + "-" + ("0" + (start.getMonth() + 1)).slice(-2) + "-" + start.getDate() + 
-                  '&end=' + end.getFullYear() + "-" + ("0" + (end.getMonth() + 1)).slice(-2) + "-" + end.getDate() + '&interval=' + interval;
+    let request = environment.app_server + '/api/v1/quotes/historical?symbol=' + symbol + '&start=' + start.getFullYear() + "-" + ("0" + (start.getMonth() + 1)).slice(-2) + "-" + ("0" + start.getDate()).slice(-2) + 
+                  '&end=' + end.getFullYear() + "-" + ("0" + (end.getMonth() + 1)).slice(-2) + "-" + ("0" + end.getDate()).slice(-2) + '&interval=' + interval;
 
     // Make API call.
     return this.http.get<HistoricalQuote[]>(request).map(

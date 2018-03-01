@@ -12,6 +12,7 @@ import { Order } from '../../../models/order';
 import { StateService } from '../../../providers/state/state.service';
 import { WebsocketService } from '../../../providers/http/websocket.service';
 import { BrokerService } from '../../../providers/http/broker.service';
+import { ChangeDetected } from '../../../models/change-detected';
 
 @Component({
   selector: 'app-trading-orders',
@@ -47,6 +48,11 @@ export class OrdersComponent implements OnInit {
       this.getOrders();
     });
 
+    // Subscribe to when changes are detected at the server.
+    this.websocketService.changedDetectedPush.takeUntil(this.destory).subscribe(data => {
+      this.manageChangeDetection(data);
+    });     
+
     // This is useful for when the change detection was not caught (say laptop sleeping)
     Observable.timer((1000 * 60), (1000 * 60)).takeUntil(this.destory).subscribe(x => { this.getOrders(); });       
   }
@@ -59,6 +65,17 @@ export class OrdersComponent implements OnInit {
     this.destory.next();
     this.destory.complete();
   }  
+
+  //
+  // Manage change detection.
+  //
+  private manageChangeDetection(data: ChangeDetected)
+  {
+    if(data.Type == "orders") 
+    {
+      this.getOrders();
+    }
+  }
 
   //
   // Get Orders
