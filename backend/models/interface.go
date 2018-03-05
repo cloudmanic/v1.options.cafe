@@ -45,6 +45,7 @@ type Datastore interface {
 	GetForgotPasswordStepOneEmailHtml(name string, email string, url string) string
 
 	// Sessions
+	UpdateSession(session *Session) error
 	GetByAccessToken(accessToken string) (Session, error)
 	CreateSession(UserId uint, UserAgent string, LastIpAddress string) (Session, error)
 

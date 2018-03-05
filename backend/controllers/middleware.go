@@ -11,7 +11,9 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/realip"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/gin-gonic/gin"
 )
@@ -96,6 +98,11 @@ func (t *Controller) AuthMiddleware() gin.HandlerFunc {
 			c.AbortWithStatus(401)
 			return
 		}
+
+		// Log this request into the last_activity col.
+		session.LastActivity = time.Now()
+		session.LastIpAddress = realip.RealIP(c.Request)
+		t.DB.UpdateSession(&session)
 
 		// Add this user to the context
 		c.Set("userId", user.Id)
