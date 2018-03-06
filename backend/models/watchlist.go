@@ -32,7 +32,7 @@ func (t *DB) GetWatchlistsById(id uint) (Watchlist, error) {
 	}
 
 	// Add in Symbols Lookup
-	t.Model(u).Related(&u.Symbols) // Add in Symbols
+	t.Model(u).Order("`order` asc").Related(&u.Symbols) // Add in Symbols
 
 	// Add in symbols
 	for key := range u.Symbols {
@@ -57,7 +57,7 @@ func (t *DB) GetWatchlistsByIdAndUserId(id uint, userId uint) (Watchlist, error)
 	}
 
 	// Add in Symbols Lookup
-	t.Model(u).Related(&u.Symbols) // Add in Symbols
+	t.Model(u).Order("`order` asc").Related(&u.Symbols) // Add in Symbols
 
 	// Add in symbols
 	for key := range u.Symbols {
@@ -88,7 +88,7 @@ func (t *DB) GetWatchlistsByUserId(userId uint) ([]Watchlist, error) {
 	for key := range u {
 
 		// Add in Symbols Lookup
-		t.Model(u[key]).Related(&u[key].Symbols)
+		t.Model(u[key]).Order("`order` asc").Related(&u[key].Symbols)
 
 		// Add in Symbols
 		for key2 := range u[key].Symbols {
