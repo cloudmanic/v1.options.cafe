@@ -61,6 +61,19 @@ func TestWatchlistAddSymbol01(t *testing.T) {
 	st.Expect(t, result.SymbolId, uint(7))
 	st.Expect(t, result.Order, uint(0))
 	st.Expect(t, result.Symbol.ShortName, "CAT")
+
+	// ----------- Verify the order in the DB is correct --------------- //
+
+	// List of watchlists.
+	list := []models.WatchlistSymbol{}
+
+	// Loop through the watch list and move the order of each symbol down by one in order.
+	db.Order("`order` asc").Where("watchlist_id = ?", result.WatchlistId).Find(&list)
+
+	// Test results.
+	st.Expect(t, len(list), 4)
+	st.Expect(t, list[0].Id, uint(13))
+	st.Expect(t, list[0].Order, uint(0))
 }
 
 //
