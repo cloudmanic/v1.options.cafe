@@ -104,9 +104,7 @@ func (t *Controller) WatchlistAddSymbol(c *gin.Context) {
 	}
 
 	// Validate if a user has access to this watchlist.
-	_, err := t.DB.GetWatchlistsByIdAndUserId(o.WatchlistId, o.UserId)
-
-	if err != nil {
+	if !t.ValidateWatchlistUserAccess(o.UserId, o.WatchlistId) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "No access to this watchlist resource."})
 		return
 	}
@@ -117,8 +115,23 @@ func (t *Controller) WatchlistAddSymbol(c *gin.Context) {
 	}
 
 	// Prepends symbol on to the watchlist.
-	err = t.DB.PrependWatchlistSymbol(&o)
+	err := t.DB.PrependWatchlistSymbol(&o)
 	t.RespondCreated(c, o, err)
+}
+
+// ----------------- Helper Functions -------------------- //
+
+//
+// Validate a user has access to a passed in watchlist.
+//
+func (t *Controller) ValidateWatchlistUserAccess(u uint, w uint) bool {
+	_, err := t.DB.GetWatchlistsByIdAndUserId(w, u)
+
+	if err != nil {
+		return false
+	}
+
+	return true
 }
 
 /* End File */
