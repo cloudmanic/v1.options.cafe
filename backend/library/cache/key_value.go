@@ -8,6 +8,7 @@ package cache
 
 import (
 	"encoding/json"
+	"flag"
 	"go/build"
 	"os"
 
@@ -43,7 +44,9 @@ func init() {
 	}
 
 	// Log success
-	services.Info("Connected to Redis host: " + os.Getenv("REDIS_HOST"))
+	if flag.Lookup("test.v") == nil {
+		services.Info("Connected to Redis host: " + os.Getenv("REDIS_HOST"))
+	}
 }
 
 //

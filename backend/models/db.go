@@ -137,6 +137,14 @@ func LoadTestingData(db *gorm.DB) {
 	db.Create(&Symbol{Name: "SPY Mar 21, 2018 $256.00 Put", ShortName: "SPY180321P00256000", Type: "Option"})
 	db.Create(&Symbol{Name: "SPY Jul 21, 2017 $234.00 Put", ShortName: "SPY170721P00234000", Type: "Option"})
 
+	// Add some watchlists
+	db.Exec("TRUNCATE TABLE watchlists;")
+	db.Exec("TRUNCATE TABLE watchlist_symbols;")
+	db.Create(&Watchlist{UserId: 1, Name: "Watchlist #1 - User 1", Symbols: []WatchlistSymbol{{UserId: 1, SymbolId: 1, Order: 0}, {UserId: 1, SymbolId: 2, Order: 1}, {UserId: 1, SymbolId: 3, Order: 2}}})
+	db.Create(&Watchlist{UserId: 1, Name: "Watchlist #2 - User 1", Symbols: []WatchlistSymbol{{UserId: 1, SymbolId: 1, Order: 0}, {UserId: 1, SymbolId: 2, Order: 1}, {UserId: 1, SymbolId: 3, Order: 2}}})
+	db.Create(&Watchlist{UserId: 2, Name: "Watchlist #1 - User 2", Symbols: []WatchlistSymbol{{UserId: 2, SymbolId: 1, Order: 0}, {UserId: 2, SymbolId: 2, Order: 1}, {UserId: 2, SymbolId: 3, Order: 2}}})
+	db.Create(&Watchlist{UserId: 2, Name: "Watchlist #2 - User 2", Symbols: []WatchlistSymbol{{UserId: 2, SymbolId: 1, Order: 0}, {UserId: 2, SymbolId: 2, Order: 1}, {UserId: 2, SymbolId: 3, Order: 2}}})
+
 	// TradeGroups TODO: make this more complete
 	db.Exec("TRUNCATE TABLE trade_groups;")
 	db.Create(&TradeGroup{UserId: 1, BrokerAccountId: 1, BrokerAccountRef: "abc123", Status: "Open", Type: "Put Credit Spread", OrderIds: "1", Risked: 0.00, Proceeds: 0.00, Profit: 0.00, Commission: 23.45, Note: "Test note #1", OpenDate: ts})

@@ -9,8 +9,8 @@ package models
 import (
 	"time"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/davecgh/go-spew/spew"
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
@@ -28,10 +28,10 @@ type WatchlistSymbol struct {
 //
 // Validate for this model.
 //
-func (a WatchlistSymbol) Validate() error {
+func (a WatchlistSymbol) Validate(db Datastore) error {
 	return validation.ValidateStruct(&a,
 		validation.Field(&a.WatchlistId, validation.Required.Error("The watchlist_id field is required.")),
-		validation.Field(&a.SymbolId, validation.Required.Error("The symbol_id field is required.")),
+		validation.Field(&a.SymbolId, validation.Required.Error("The symbol_id field is required."), validation.By(db.ValidateSymbolId)),
 		validation.Field(&a.UserId, validation.Required.Error("The user_id field is required.")),
 	)
 }
@@ -39,20 +39,30 @@ func (a WatchlistSymbol) Validate() error {
 //
 // Prepend a new WatchlistSymbol entry.
 //
-func (t *DB) PrependWatchlistSymbol(wlistSymb *WatchlistSymbol) error {
+func (t *DB) PrependWatchlistSymbol(w *WatchlistSymbol) error {
 
-	spew.Dump(wlistSymb)
+	list := []WatchlistSymbol{}
 
-	// // Create entry.
-	// wListSym := WatchlistSymbol{WatchlistId: wList.Id, SymbolId: symb.Id, UserId: user.Id, Order: order}
+	// Loop through the watch list and move the order of each symbol down by one in order.
+	t.Where("watchlist_id = ?", w.WatchlistId).Find(&list)
 
-	// t.Create(&wListSym)
+	for _, row := range list {
+		row.Order++
+		t.Save(&row)
+	}
 
-	// // Store in active
-	// t.CreateActiveSymbol(user.Id, symb.ShortName)
+	// Insert the new symbol at the top.
+	w.Order = 0
+	t.Save(w)
 
-	// // Log broker creation.
-	// services.Info("CreateNewWatchlistSymbol - Created a new WatchlistSymbol entry - " + symb.ShortName + " " + wList.Name)
+	// We load in the symbol data for fun (as we return the full object via the API)
+	t.Model(&w).Related(&w.Symbol)
+
+	// Add in parts (even tho options in a watchlist is odd)
+	parts, _ := helpers.OptionParse(w.Symbol.ShortName)
+	w.Symbol.OptionDetails.Type = parts.Type
+	w.Symbol.OptionDetails.Strike = parts.Strike
+	w.Symbol.OptionDetails.Expire = parts.Expire
 
 	// Return the user.
 	return nil

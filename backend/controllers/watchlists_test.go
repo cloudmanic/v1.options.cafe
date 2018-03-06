@@ -8,19 +8,21 @@ package controllers
 
 import (
 	"bytes"
-	"fmt"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
+	"github.com/nbio/st"
+	"github.com/tidwall/gjson"
 )
 
 //
-// Test - WatchlistAdd
+// Test - WatchlistAddSymbol - 01 (Success)
 //
-func TestWatchlistAdd01(t *testing.T) {
+func TestWatchlistAddSymbol01(t *testing.T) {
 
 	// Start the db connection.
 	db, _ := models.NewDB()
@@ -29,10 +31,10 @@ func TestWatchlistAdd01(t *testing.T) {
 	c := &Controller{DB: db}
 
 	// Post data
-	var postStr = []byte(`{ "symbol_id": 5 }`)
+	var postStr = []byte(`{ "symbol_id": 7 }`)
 
 	// Make a mock request.
-	req, _ := http.NewRequest("POST", "/api/v1/watchlists/1/add", bytes.NewBuffer(postStr))
+	req, _ := http.NewRequest("POST", "/api/v1/watchlists/3/symbol", bytes.NewBuffer(postStr))
 	req.Header.Set("Accept", "application/json")
 
 	// Setup GIN Router
@@ -40,39 +42,97 @@ func TestWatchlistAdd01(t *testing.T) {
 	gin.DisableConsoleColor()
 	r := gin.New()
 
-	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
 
-	r.POST("/api/v1/watchlists/1/add", c.WatchlistAdd)
+	r.POST("/api/v1/watchlists/:id/symbol", c.WatchlistAddSymbol)
 
 	// Setup writer.
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
-	fmt.Println(string(w.Body.String()))
+	// Grab result and convert to strut
+	result := models.WatchlistSymbol{}
+	err := json.Unmarshal([]byte(w.Body.String()), &result)
 
-	// // Grab result and convert to strut
-	// result := []models.Broker{}
-	// err := json.Unmarshal([]byte(w.Body.String()), &result)
+	// Parse json that returned.
+	st.Expect(t, err, nil)
+	st.Expect(t, result.UserId, uint(0)) // We remove this in json
+	st.Expect(t, result.WatchlistId, uint(3))
+	st.Expect(t, result.SymbolId, uint(7))
+	st.Expect(t, result.Order, uint(0))
+	st.Expect(t, result.Symbol.ShortName, "CAT")
+}
 
-	// // Parse json that returned.
-	// st.Expect(t, err, nil)
-	// st.Expect(t, len(result), 3)
-	// st.Expect(t, result[0].Id, uint(1))
-	// st.Expect(t, result[1].Id, uint(2))
-	// st.Expect(t, result[2].Id, uint(3))
-	// st.Expect(t, result[0].Name, "Tradier")
-	// st.Expect(t, result[1].Name, "Tradeking")
-	// st.Expect(t, result[2].Name, "Etrade")
-	// st.Expect(t, len(result[0].BrokerAccounts), 2)
-	// st.Expect(t, len(result[1].BrokerAccounts), 0)
-	// st.Expect(t, len(result[2].BrokerAccounts), 0)
-	// st.Expect(t, result[0].BrokerAccounts[0].AccountNumber, "YYY123ZY")
-	// st.Expect(t, result[0].BrokerAccounts[1].AccountNumber, "ABC123ZY")
-	// st.Expect(t, result[0].BrokerAccounts[0].BrokerId, uint(1))
-	// st.Expect(t, result[0].BrokerAccounts[1].BrokerId, uint(1))
-	// st.Expect(t, result[0].BrokerAccounts[0].AccountNumber, "YYY123ZY")
-	// st.Expect(t, result[0].BrokerAccounts[1].AccountNumber, "ABC123ZY")
+//
+// Test - WatchlistAddSymbol - 02 (Another user's watchlist id)
+//
+func TestWatchlistAddSymbol02(t *testing.T) {
 
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Post data
+	var postStr = []byte(`{ "symbol_id": 7 }`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("POST", "/api/v1/watchlists/2/symbol", bytes.NewBuffer(postStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.POST("/api/v1/watchlists/:id/symbol", c.WatchlistAddSymbol)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Parse json that returned.
+	st.Expect(t, w.Code, 401)
+	st.Expect(t, gjson.Get(w.Body.String(), "error").String(), "No access to this watchlist resource.")
+}
+
+//
+// Test - WatchlistAddSymbol - 03 (Invalid symbol id)
+//
+func TestWatchlistAddSymbol03(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Post data
+	var postStr = []byte(`{ "symbol_id": 7999 }`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("POST", "/api/v1/watchlists/3/symbol", bytes.NewBuffer(postStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.POST("/api/v1/watchlists/:id/symbol", c.WatchlistAddSymbol)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Parse json that returned.
+	st.Expect(t, w.Code, 400)
+	st.Expect(t, gjson.Get(w.Body.String(), "errors.symbol_id").String(), "Unknown symbol_id.")
 }
 
 /* End File */

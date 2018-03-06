@@ -28,7 +28,7 @@ func (t *Controller) GetWatchlists(c *gin.Context) {
 	// Get the watchlists
 	wLists, err := t.DB.GetWatchlistsByUserId(userId)
 
-	if t.RespondError(c, err, httpGenericErrMsg) {
+	if t.RespondError(c, err, "No access to this watchlist resource.") {
 		return
 	}
 
@@ -93,24 +93,32 @@ func (t *Controller) CreateWatchlist(c *gin.Context) {
 }
 
 //
-// Add a symbol to a watch list.
+// Add a symbol to a watch list. Inserts into the WatchlistSymbol model.
 //
-func (t *Controller) WatchlistAdd(c *gin.Context) {
+func (t *Controller) WatchlistAddSymbol(c *gin.Context) {
 
 	// Setup WatchlistSymbol obj
-	watchlistSymbol := models.WatchlistSymbol{
+	o := models.WatchlistSymbol{
 		UserId:      c.MustGet("userId").(uint),
 		WatchlistId: helpers.StringToUint(c.Param("id")),
 	}
 
+	// Validate if a user has access to this watchlist.
+	_, err := t.DB.GetWatchlistsByIdAndUserId(o.WatchlistId, o.UserId)
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "No access to this watchlist resource."})
+		return
+	}
+
 	// Here we parse the JSON sent in, assign it to a struct, set validation errors if any.
-	if t.ValidateRequest(c, &watchlistSymbol) != nil {
+	if t.ValidateRequest(c, &o) != nil {
 		return
 	}
 
 	// Prepends symbol on to the watchlist.
-	err := t.DB.PrependWatchlistSymbol(&watchlistSymbol)
-	t.RespondCreated(c, watchlistSymbol, err)
+	err = t.DB.PrependWatchlistSymbol(&o)
+	t.RespondCreated(c, o, err)
 }
 
 /* End File */

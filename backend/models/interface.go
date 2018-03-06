@@ -51,6 +51,7 @@ type Datastore interface {
 
 	// Symbols
 	GetAllSymbols() []Symbol
+	ValidateSymbolId(value interface{}) error
 	SearchSymbols(query string, sType string) ([]Symbol, error)
 	CreateNewOptionSymbol(short string) (Symbol, error)
 	CreateNewSymbol(short string, name string, sType string) (Symbol, error)
@@ -94,7 +95,7 @@ type Datastore interface {
 	GetWatchlistsByIdAndUserId(id uint, userId uint) (Watchlist, error)
 
 	// WatchlistSymbols
-	PrependWatchlistSymbol(wlistSymb *WatchlistSymbol) error
+	PrependWatchlistSymbol(w *WatchlistSymbol) error
 	CreateWatchlistSymbol(wList Watchlist, symb Symbol, user User, order uint) (WatchlistSymbol, error)
 
 	// ActiveSymbol

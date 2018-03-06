@@ -7,6 +7,7 @@
 package models
 
 import (
+	"errors"
 	"strings"
 	"time"
 
@@ -29,6 +30,19 @@ type OptionDetails struct {
 	Expire time.Time `json:"expire"`
 	Type   string    `json:"type"`
 	Strike float64   `json:"strike"`
+}
+
+//
+// Validate if a symbol is real.
+//
+func (t *DB) ValidateSymbolId(value interface{}) error {
+
+	// Query to see if this is a real symbol that we know.
+	if t.Where("Id = ?", value).First(&Symbol{}).RecordNotFound() {
+		return errors.New("Unknown symbol_id.")
+	}
+
+	return nil
 }
 
 //

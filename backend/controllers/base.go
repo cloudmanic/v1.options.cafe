@@ -29,14 +29,13 @@ type Controller struct {
 }
 
 type ValidateRequest interface {
-	Validate() error
+	Validate(models.Datastore) error
 }
 
 //
 // Start up the controller.
 //
 func init() {
-	// Helpful for testing
 	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/.env")
 }
 
@@ -59,7 +58,7 @@ func (t *Controller) ValidateRequest(c *gin.Context, obj ValidateRequest) error 
 	if err := c.ShouldBindJSON(obj); err == nil {
 
 		// Run validation
-		err := obj.Validate()
+		err := obj.Validate(t.DB)
 
 		// If we had validation errors return them and do no more.
 		if err != nil {
