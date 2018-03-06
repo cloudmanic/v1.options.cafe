@@ -28,6 +28,10 @@ type Controller struct {
 	WebsocketController *websocket.Controller
 }
 
+type ValidateRequest interface {
+	Validate() error
+}
+
 //
 // Start up the controller.
 //
@@ -44,6 +48,31 @@ func (t *Controller) AddPagingInfoToHeaders(c *gin.Context, meta models.QueryMet
 	c.Writer.Header().Set("X-Offset", strconv.Itoa(meta.Offset))
 	c.Writer.Header().Set("X-Limit", strconv.Itoa(meta.Limit))
 	c.Writer.Header().Set("X-No-Limit-Count", strconv.Itoa(meta.NoLimitCount))
+}
+
+//
+// Validate and Create object.
+//
+func (t *Controller) ValidateRequest(c *gin.Context, obj ValidateRequest) error {
+
+	// Bind the JSON that got sent into an object and validate.
+	if err := c.ShouldBindJSON(obj); err == nil {
+
+		// Run validation
+		err := obj.Validate()
+
+		// If we had validation errors return them and do no more.
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"errors": err})
+			return err
+		}
+
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return err
+	}
+
+	return nil
 }
 
 //
@@ -76,6 +105,17 @@ func GetSetPagingParms(c *gin.Context) (int, int, int) {
 
 	// Return happy.
 	return page, limit, offset
+}
+
+//
+// Respond with an error or object. When we create a new object in the system
+//
+func (t *Controller) RespondCreated(c *gin.Context, payload interface{}, err error) {
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	} else {
+		c.JSON(http.StatusCreated, payload)
+	}
 }
 
 //

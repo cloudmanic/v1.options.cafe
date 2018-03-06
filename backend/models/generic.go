@@ -31,6 +31,10 @@ type QueryParam struct {
 	AllowedOrderCols []string
 }
 
+type InsertParam struct {
+	Debug bool
+}
+
 type KeyValue struct {
 	Key      string
 	Value    string
@@ -45,6 +49,26 @@ type QueryMetaData struct {
 	LastPage     bool
 	LimitCount   int
 	NoLimitCount int
+}
+
+//
+// Create a new entry.
+//
+func (t *DB) CreateNewRecord(model interface{}, params InsertParam) error {
+
+	query := t.New()
+
+	// Are we debugging this?
+	if params.Debug {
+		query = query.Debug()
+	}
+
+	// Run query.
+	if err := query.Create(model).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 //

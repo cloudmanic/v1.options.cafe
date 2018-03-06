@@ -8,6 +8,7 @@ package models
 
 import (
 	"flag"
+	"go/build"
 	"log"
 	"os"
 	"time"
@@ -15,7 +16,15 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	env "github.com/jpfuentes2/go-env"
 )
+
+//
+// Init.
+//
+func init() {
+	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/.env")
+}
 
 //
 // Start the DB connection.

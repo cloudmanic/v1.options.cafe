@@ -11,6 +11,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 )
@@ -88,6 +90,27 @@ func (t *Controller) CreateWatchlist(c *gin.Context) {
 
 	// Return happy JSON
 	t.RespondJSON(c, http.StatusOK, wLists)
+}
+
+//
+// Add a symbol to a watch list.
+//
+func (t *Controller) WatchlistAdd(c *gin.Context) {
+
+	// Setup WatchlistSymbol obj
+	watchlistSymbol := models.WatchlistSymbol{
+		UserId:      c.MustGet("userId").(uint),
+		WatchlistId: helpers.StringToUint(c.Param("id")),
+	}
+
+	// Here we parse the JSON sent in, assign it to a struct, set validation errors if any.
+	if t.ValidateRequest(c, &watchlistSymbol) != nil {
+		return
+	}
+
+	// Prepends symbol on to the watchlist.
+	err := t.DB.PrependWatchlistSymbol(&watchlistSymbol)
+	t.RespondCreated(c, watchlistSymbol, err)
 }
 
 /* End File */

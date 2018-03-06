@@ -14,6 +14,28 @@ import (
 )
 
 //
+// Test - CreateNewRecord 01
+//
+func TestCreateNewRecord01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := NewDB()
+	defer db.Close()
+
+	// Add a new user test.
+	user := &User{FirstName: "John", LastName: "Smith", Email: "js@cloudmanic.com", Password: "fake-password"}
+
+	// Make the DB query
+	err := db.CreateNewRecord(&user, InsertParam{})
+
+	// Test results
+	st.Expect(t, err, nil)
+	st.Expect(t, user.Id, uint(4))
+	st.Expect(t, user.FirstName, "John")
+
+}
+
+//
 // Test - Get all users
 //
 func TestQuery01(t *testing.T) {

@@ -40,7 +40,7 @@ func (t *Base) VerifyDefaultWatchList(user models.User) {
 	// If no watchlists we create a default one with some default symbols.
 	if err != nil {
 
-		wList, err := t.DB.CreateNewWatchlist(user, "Default")
+		wList, err := t.DB.CreateWatchlist(user.Id, "Default")
 
 		if err != nil {
 			services.Error(err, "(CreateNewWatchlist) Unable to create watchlist Default")
@@ -58,7 +58,7 @@ func (t *Base) VerifyDefaultWatchList(user models.User) {
 			}
 
 			// Add lookup
-			_, err2 := t.DB.CreateNewWatchlistSymbol(wList, symb, user, uint(key))
+			_, err2 := t.DB.CreateWatchlistSymbol(wList, symb, user, uint(key))
 
 			if err2 != nil {
 				services.Error(err2, "(CreateNewWatchlistSymbol) Unable to create symbol "+row.SymShort+" lookup")

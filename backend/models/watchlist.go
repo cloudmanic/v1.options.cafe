@@ -116,19 +116,4 @@ func (t *DB) CreateWatchlist(userId uint, name string) (Watchlist, error) {
 	return wList, nil
 }
 
-//
-// TODO: do away with this.
-// Create a new Watchlist entry.
-//
-func (t *DB) CreateNewWatchlist(user User, name string) (Watchlist, error) {
-
-	// Create entry.
-	wList := Watchlist{Name: name, UserId: user.Id}
-
-	t.Create(&wList)
-
-	// Return the user.
-	return wList, nil
-}
-
 /* End File */

@@ -93,10 +93,9 @@ type Datastore interface {
 	CreateWatchlist(userId uint, name string) (Watchlist, error)
 	GetWatchlistsByIdAndUserId(id uint, userId uint) (Watchlist, error)
 
-	CreateNewWatchlist(user User, name string) (Watchlist, error) // TODO: kill this one
-
 	// WatchlistSymbols
-	CreateNewWatchlistSymbol(wList Watchlist, symb Symbol, user User, order uint) (WatchlistSymbol, error)
+	PrependWatchlistSymbol(wlistSymb *WatchlistSymbol) error
+	CreateWatchlistSymbol(wList Watchlist, symb Symbol, user User, order uint) (WatchlistSymbol, error)
 
 	// ActiveSymbol
 	GetActiveSymbolsByUser(userId uint) ([]ActiveSymbol, error)
