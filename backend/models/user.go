@@ -135,7 +135,7 @@ func (t *DB) GetAllActiveUsers() []User {
 // Login a user in by email and password. The userAgent is a way to marking what device this
 // login request came from. Same with ipAddress.
 //
-func (t *DB) LoginUserByEmailPass(email string, password string, userAgent string, ipAddress string) (User, error) {
+func (t *DB) LoginUserByEmailPass(email string, password string, appId uint, userAgent string, ipAddress string) (User, error) {
 
 	var user User
 
@@ -153,16 +153,18 @@ func (t *DB) LoginUserByEmailPass(email string, password string, userAgent strin
 		return user, err
 	}
 
-	// Create a session so we get an access_token
-	session, err := t.CreateSession(user.Id, userAgent, ipAddress)
+	// Create a session so we get an access_token (if we passed in an appId)
+	if appId > 0 {
+		session, err := t.CreateSession(user.Id, appId, userAgent, ipAddress)
 
-	if err != nil {
-		services.Error(err, "LoginUserByEmailPass - Unable to create session in CreateSession()")
-		return User{}, err
+		if err != nil {
+			services.Error(err, "LoginUserByEmailPass - Unable to create session in CreateSession()")
+			return User{}, err
+		}
+
+		// Add the session to the user object.
+		user.Session = session
 	}
-
-	// Add the session to the user object.
-	user.Session = session
 
 	return user, nil
 }
@@ -201,7 +203,7 @@ func (t *DB) ResetUserPassword(id uint, password string) error {
 //
 // Create a new user.
 //
-func (t *DB) CreateUser(first string, last string, email string, password string, userAgent string, ipAddress string) (User, error) {
+func (t *DB) CreateUser(first string, last string, email string, password string, appId uint, userAgent string, ipAddress string) (User, error) {
 
 	// Lets do some validation
 	if err := t.ValidateCreateUser(first, last, email, password); err != nil {
@@ -227,7 +229,7 @@ func (t *DB) CreateUser(first string, last string, email string, password string
 	services.Info("CreateUser - Created a new user account - " + first + " " + last + " " + email)
 
 	// Create a session so we get an access_token
-	session, err := t.CreateSession(user.Id, userAgent, ipAddress)
+	session, err := t.CreateSession(user.Id, appId, userAgent, ipAddress)
 
 	if err != nil {
 		services.Error(err, "CreateUser - Unable to create session in CreateSession()")

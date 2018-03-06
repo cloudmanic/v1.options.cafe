@@ -20,6 +20,9 @@ type DB struct {
 // Database interface
 type Datastore interface {
 
+	// Applications
+	ValidateClientIdGrantType(clientId string, grantType string) (Application, error)
+
 	// Generic database functions
 	Count(model interface{}, params QueryParam) (uint, error)
 	Query(model interface{}, params QueryParam) error
@@ -47,7 +50,7 @@ type Datastore interface {
 	// Sessions
 	UpdateSession(session *Session) error
 	GetByAccessToken(accessToken string) (Session, error)
-	CreateSession(UserId uint, UserAgent string, LastIpAddress string) (Session, error)
+	CreateSession(UserId uint, appId uint, UserAgent string, LastIpAddress string) (Session, error)
 
 	// Symbols
 	GetAllSymbols() []Symbol
@@ -68,8 +71,8 @@ type Datastore interface {
 	ValidateUserLogin(email string, password string) error
 	GetUserByStripeCustomer(customerId string) (User, error)
 	ValidateCreateUser(first string, last string, email string, password string) error
-	LoginUserByEmailPass(email string, password string, userAgent string, ipAddress string) (User, error)
-	CreateUser(first string, last string, email string, password string, userAgent string, ipAddress string) (User, error)
+	LoginUserByEmailPass(email string, password string, appId uint, userAgent string, ipAddress string) (User, error)
+	CreateUser(first string, last string, email string, password string, appId uint, userAgent string, ipAddress string) (User, error)
 
 	// Orders
 	CreateOrder(order *Order) error

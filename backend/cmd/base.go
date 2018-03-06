@@ -10,16 +10,19 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/cloudmanic/app.options.cafe/backend/cmd/actions"
 	"github.com/cloudmanic/app.options.cafe/backend/library/import/options"
+	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
 
 //
 // Run this and see if we have any commands to run.
 //
-func Run() bool {
+func Run(db *models.DB) bool {
 
 	// Grab flags
-	action := flag.String("cmd", "none", "bulk-eod-options-import")
+	action := flag.String("cmd", "none", "")
+	name := flag.String("name", "", "")
 	flag.Parse()
 
 	switch *action {
@@ -33,6 +36,12 @@ func Run() bool {
 	// EOD options import
 	case "eod-options-import":
 		options.DoEodOptionsImport()
+		return true
+		break
+
+	// Create a new application from the CLI
+	case "create-application":
+		actions.CreateApplication(db, *name)
 		return true
 		break
 

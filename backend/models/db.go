@@ -64,6 +64,7 @@ func NewDB() (*DB, error) {
 	db.AutoMigrate(&Position{})
 	db.AutoMigrate(&TradeGroup{})
 	db.AutoMigrate(&ActiveSymbol{})
+	db.AutoMigrate(&Application{})
 	db.AutoMigrate(&BrokerAccount{})
 	db.AutoMigrate(&ForgotPassword{})
 

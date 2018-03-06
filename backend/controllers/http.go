@@ -10,8 +10,10 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/acme/autocert"
 )
@@ -40,7 +42,16 @@ func (t *Controller) StartWebServer() {
 	router.Use(gin.Recovery())
 
 	// CORS Middleware - Global middleware
-	router.Use(t.CorsMiddleware())
+	router.Use(cors.New(cors.Config{
+		AllowMethods:     []string{"POST", "GET", "PUT", "OPTIONS"},
+		AllowHeaders:     []string{"Authorization", "DNT", "X-CustomHeader", "Keep-Alive", "User-Agent", "X-Requested-With", "If-Modified-Since", "Cache-Control", "Content-Type", "Content-Range,Range"},
+		ExposeHeaders:    []string{"Content-Length", "X-Last-Page", "X-Offset", "X-Limit", "X-No-Limit-Count"},
+		AllowCredentials: true,
+		AllowOriginFunc: func(origin string) bool {
+			return strings.Contains(origin, "localhost")
+		},
+		MaxAge: 12 * time.Hour,
+	}))
 
 	// Register Routes
 	t.DoRoutes(router)

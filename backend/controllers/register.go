@@ -57,7 +57,7 @@ func (t *Controller) DoRegister(c *gin.Context) {
 	}
 
 	// Install new user.
-	user, err := t.DB.CreateUser(post.First, post.Last, post.Email, post.Password, c.Request.UserAgent(), realip.RealIP(c.Request))
+	user, err := t.DB.CreateUser(post.First, post.Last, post.Email, post.Password, 0, c.Request.UserAgent(), realip.RealIP(c.Request))
 
 	if err != nil {
 		services.BetterError(err)

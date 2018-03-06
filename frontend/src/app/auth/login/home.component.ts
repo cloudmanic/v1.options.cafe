@@ -27,7 +27,7 @@ export class AuthLoginComponent implements OnInit {
 
   errorMsg = "";
   successMsg = "";
-  submitBtn = "Log In";
+  submitBtn = "Login";
   returnUrl: "/";
 
   constructor(private http: HttpClient, private router: Router, private activatedRoute: ActivatedRoute) { }
@@ -61,10 +61,14 @@ export class AuthLoginComponent implements OnInit {
     this.errorMsg = "";
     
     // Update submit button
-    this.submitBtn = "Posting...";
+    this.submitBtn = "Logging In...";
+
+    // Add oauth stuff
+    form.value.grant_type = "password";
+    form.value.client_id = environment.client_id;
 
     // Make the the HTTP request:
-    this.http.post<LoginResponse>(environment.app_server + '/login', form.value).subscribe(
+    this.http.post<LoginResponse>(environment.app_server + '/oauth/token', form.value).subscribe(
       
       // Success
       data => {
@@ -88,7 +92,7 @@ export class AuthLoginComponent implements OnInit {
       (err: HttpErrorResponse) => {
 
         // Change button back.
-        this.submitBtn = "Log In";
+        this.submitBtn = "Login";
 
         if (err.error instanceof Error) 
         {

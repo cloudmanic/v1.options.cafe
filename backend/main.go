@@ -30,7 +30,7 @@ func main() {
 	}
 
 	// See if this a command. If so run the command and do not start the app.
-	status := cmd.Run()
+	status := cmd.Run(db)
 
 	if status == true {
 		return
