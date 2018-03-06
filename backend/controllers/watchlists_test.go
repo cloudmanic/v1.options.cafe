@@ -135,4 +135,40 @@ func TestWatchlistAddSymbol03(t *testing.T) {
 	st.Expect(t, gjson.Get(w.Body.String(), "errors.symbol_id").String(), "Unknown symbol_id.")
 }
 
+//
+// Test - WatchlistAddSymbol - 04 (A symbol that is already added to the watchlist)
+//
+func TestWatchlistAddSymbol04(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Post data
+	var postStr = []byte(`{ "symbol_id": 1 }`) // Already added in the testing
+
+	// Make a mock request.
+	req, _ := http.NewRequest("POST", "/api/v1/watchlists/3/symbol", bytes.NewBuffer(postStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.POST("/api/v1/watchlists/:id/symbol", c.WatchlistAddSymbol)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Parse json that returned.
+	st.Expect(t, w.Code, 400)
+	st.Expect(t, gjson.Get(w.Body.String(), "error").String(), "Symbol already part of this watchlist.")
+}
+
 /* End File */

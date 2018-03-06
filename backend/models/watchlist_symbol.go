@@ -7,6 +7,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
@@ -41,6 +42,12 @@ func (a WatchlistSymbol) Validate(db Datastore) error {
 //
 func (t *DB) PrependWatchlistSymbol(w *WatchlistSymbol) error {
 
+	// Just double check this symbol is not already in the database for this watchlist.
+	if !t.Where("watchlist_id = ? AND symbol_id = ?", w.WatchlistId, w.SymbolId).Find(&WatchlistSymbol{}).RecordNotFound() {
+		return errors.New("Symbol already part of this watchlist.")
+	}
+
+	// List of watchlists.
 	list := []WatchlistSymbol{}
 
 	// Loop through the watch list and move the order of each symbol down by one in order.
