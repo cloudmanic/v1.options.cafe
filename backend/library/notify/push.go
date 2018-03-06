@@ -13,6 +13,7 @@ package notify
 
 import (
 	"encoding/json"
+	"flag"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/websocket"
@@ -38,6 +39,11 @@ func PushWebsocket(userId uint, uri string, data_json string) {
 // A general way to push to all channels
 //
 func Push(userId uint, channels []string, uri string, data_json string) {
+
+	// Do nothing if we are testing. TODO: build testing for this.
+	if flag.Lookup("test.v") != nil {
+		return
+	}
 
 	type SendStruct struct {
 		Uri  string `json:"uri"`
