@@ -27,6 +27,8 @@ export class WatchlistComponent implements OnInit {
   showRenameWatchlist = false;
   showDeleteWatchlist = false;
 
+  watchlistRename: string = "";
+
   watchlist: Watchlist = null;
   watchlists: Watchlist[];
   activeWatchlistId: number = 0;  
@@ -115,6 +117,7 @@ export class WatchlistComponent implements OnInit {
       if(this.watchlists[i].Id == this.activeWatchlistId)
       {
         this.watchlist = this.watchlists[i];
+        this.watchlistRename = this.watchlist.Name;
         this.stateService.SetActiveWatchlist(this.watchlist);
         break; 
       }
@@ -172,6 +175,21 @@ export class WatchlistComponent implements OnInit {
     {
       this.watchlistSettingsActive = false;
     }
+  }
+
+  //
+  // Rename the active watchlist.
+  //
+  onWatchlistRenameSubmit() 
+  {
+    // Store this at the server.
+    this.watchlistService.update(this.watchlist.Id, this.watchlistRename).subscribe((data) => {
+      console.log(data);
+    });
+
+    this.watchlist.Name = this.watchlistRename;
+    this.showRenameWatchlist = false;
+    this.watchlistSettingsActive = false;
   }
 
 }

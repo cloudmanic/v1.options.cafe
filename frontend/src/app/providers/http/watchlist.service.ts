@@ -24,7 +24,8 @@ export class WatchlistService
   //
   // Get watchlists
   //
-  get() : Observable<Watchlist[]> {
+  get() : Observable<Watchlist[]> 
+  {
     return this.http.get<Watchlist[]>(environment.app_server + '/api/v1/watchlists').map(
       (data) => { 
         
@@ -44,24 +45,46 @@ export class WatchlistService
   //
   // Get watchlist by Id
   //
-  getById(id: number) : Observable<Watchlist> {
+  getById(id: number) : Observable<Watchlist> 
+  {
     return this.http.get<Watchlist>(environment.app_server + '/api/v1/watchlists/' + id).map(
       (data) => { return Watchlist.buildForEmit(data); 
     });
   } 
 
   //
+  // Update a watchlist by Id
+  //
+  update(id: number, name: string): Observable<boolean> 
+  {
+    let body = {
+      name: name
+    }
+
+    return this.http.put(environment.app_server + '/api/v1/watchlists/' + id, body)
+      .map((data) => { return true; });
+  }
+
+  //
   // Add symbol to a watchlist by Id
   //
-  addSymbolByWatchlistId(id: number, symbolId: number): Observable<Symbol> {
-
+  addSymbolByWatchlistId(id: number, symbolId: number): Observable<Symbol> 
+  {
     let post = {
       symbol_id: symbolId
     }
 
-    return this.http.post<Symbol>(environment.app_server + '/api/v1/watchlists/' + id + '/symbol', post)
+    return this.http.post<AddSymbolResponse>(environment.app_server + '/api/v1/watchlists/' + id + '/symbol', post)
       .map((data) => { return new Symbol().fromJson(data.symbol); });
   }    
+}
+
+//
+// Response of a add Symbol
+//
+interface AddSymbolResponse 
+{
+  symbol: Symbol
 }
 
 /* End File */

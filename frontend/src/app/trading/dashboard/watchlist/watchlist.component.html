@@ -184,7 +184,7 @@
     <div class="shell shell--smaller">
       <div class="form form--menage"> 
 
-        <form action="?" method="post">
+        <form (ngSubmit)="onWatchlistRenameSubmit()">
           <section class="form__section">
             <div class="form__head">
               <h6 class="form__title">Rename Watchlist</h6>
@@ -195,14 +195,14 @@
                 <label for="field-watchlist-name" class="hidden">Watchlist Name</label> 
 
                 <div class="form__controls">
-                  <input type="text" class="field" name="field-watchlist-name" id="field-watchlist-name" required />
+                  <input type="text" class="field" id="field-watchlist-name" maxlength="20" name="watchlistRename" required [(ngModel)]="watchlistRename" />
                 </div>
               </div>
             </div>  
 
             <div class="form__actions">
               <p class="form__hint">
-                <em>24 characters left</em>
+                <em>{{ 20 - watchlistRename.length }} characters left </em>
               </p>  
 
               <div class="form__actions__inner">
