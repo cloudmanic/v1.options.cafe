@@ -20,6 +20,129 @@ import (
 )
 
 //
+// Test UpdateWatchlist - 01
+//
+func TestUpdateWatchlist01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Body data
+	var bodyStr = []byte(`{"name":"An Updated Super Cool Name"}`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("PUT", "/api/v1/watchlists/3", bytes.NewBuffer(bodyStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.PUT("/api/v1/watchlists/:id", c.UpdateWatchlist)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Validate response
+	st.Expect(t, w.Code, 204)
+
+	// Now verify the watchlist was deleted.
+	wList, err := db.GetWatchlistsById(3)
+
+	// Validate
+	st.Expect(t, err, nil)
+	st.Expect(t, wList.Id, uint(3))
+	st.Expect(t, wList.Name, "An Updated Super Cool Name")
+}
+
+//
+// Test UpdateWatchlist - 02 (No access)
+//
+func TestUpdateWatchlist02(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Body data
+	var bodyStr = []byte(`{"name":"An Updated Super Cool Name"}`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("PUT", "/api/v1/watchlists/2", bytes.NewBuffer(bodyStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.PUT("/api/v1/watchlists/:id", c.UpdateWatchlist)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Validate response
+	st.Expect(t, w.Code, 400)
+	st.Expect(t, w.Body.String(), `{"error":"No Record Found."}`)
+
+	// Now verify the watchlist was not changed.
+	wList, err := db.GetWatchlistsById(2)
+
+	// Validate
+	st.Expect(t, err, nil)
+	st.Expect(t, wList.Id, uint(2))
+	st.Expect(t, wList.Name, "Watchlist #2 - User 1")
+}
+
+//
+// Test UpdateWatchlist - 03 (No list found)
+//
+func TestUpdateWatchlist03(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Body data
+	var bodyStr = []byte(`{"name":"An Updated Super Cool Name"}`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("PUT", "/api/v1/watchlists/200", bytes.NewBuffer(bodyStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.PUT("/api/v1/watchlists/:id", c.UpdateWatchlist)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Validate response
+	st.Expect(t, w.Code, 400)
+	st.Expect(t, w.Body.String(), `{"error":"No Record Found."}`)
+}
+
+//
 // Test DeleteWatchlist - 01
 //
 func TestDeleteWatchlist01(t *testing.T) {

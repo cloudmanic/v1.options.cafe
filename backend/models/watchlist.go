@@ -8,6 +8,7 @@ package models
 
 import (
 	"errors"
+	"strings"
 	"time"
 )
 
@@ -18,6 +19,25 @@ type Watchlist struct {
 	UserId    uint              `sql:"not null;index:UserId" json:"user_id"`
 	Name      string            `sql:"not null" json:"name"`
 	Symbols   []WatchlistSymbol `json:"symbols"`
+}
+
+//
+// Update the name of a watchlist.
+//
+func (t *DB) WatchlistUpdate(id uint, name string) error {
+
+	// Get the current watchlist
+	wList, err := t.GetWatchlistsById(id)
+
+	if err != nil {
+		return err
+	}
+
+	// Update.
+	wList.Name = strings.Trim(name, " ")
+	t.Save(&wList)
+
+	return nil
 }
 
 //

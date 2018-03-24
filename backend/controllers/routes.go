@@ -35,6 +35,7 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		apiV1.GET("/watchlists", t.GetWatchlists)
 		apiV1.POST("/watchlists", t.CreateWatchlist)
 		apiV1.GET("/watchlists/:id", t.GetWatchlist)
+		apiV1.PUT("/watchlists/:id", t.UpdateWatchlist)
 		apiV1.DELETE("/watchlists/:id", t.DeleteWatchlist)
 		apiV1.POST("/watchlists/:id/symbol", t.WatchlistAddSymbol)
 

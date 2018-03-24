@@ -96,6 +96,7 @@ type Datastore interface {
 
 	// Watchlists
 	WatchlistDeleteById(id uint) error
+	WatchlistUpdate(id uint, name string) error
 	GetWatchlistsById(id uint) (Watchlist, error)
 	GetWatchlistsByUserId(userId uint) ([]Watchlist, error)
 	CreateWatchlist(userId uint, name string) (Watchlist, error)

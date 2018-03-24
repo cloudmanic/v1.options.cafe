@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
@@ -102,6 +103,62 @@ func (t *Controller) CreateWatchlist(c *gin.Context) {
 
 	// Return happy JSON
 	t.RespondJSON(c, http.StatusOK, wLists)
+}
+
+//
+// Update a watchlist.
+//
+func (t *Controller) UpdateWatchlist(c *gin.Context) {
+
+	// Get the user id.
+	userId := c.MustGet("userId").(uint)
+
+	// Parse json body
+	body, err := ioutil.ReadAll(c.Request.Body)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Set as int
+	id, err := strconv.ParseInt(c.Param("id"), 10, 32)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Get the watchlist by id.
+	_, err = t.DB.GetWatchlistsByIdAndUserId(uint(id), userId)
+
+	if t.RespondError(c, err, httpNoRecordFound) {
+		return
+	}
+
+	// Get the new watchlist name.
+	name := gjson.Get(string(body), "name").String()
+
+	// Validate name
+	if len(strings.Trim(name, " ")) <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Name field can not be empty."})
+		return
+	}
+
+	// Validate if this watchlist is already in the db.
+	if !t.DB.New().Where("user_id = ? AND name = ?", userId, strings.Trim(name, " ")).First(&models.Watchlist{}).RecordNotFound() {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "A watchlist already exists by this name."})
+		return
+	}
+
+	// Update the name of the watchlist.
+	err = t.DB.WatchlistUpdate(uint(id), name)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Return happy JSON
+	c.JSON(http.StatusNoContent, gin.H{})
+
 }
 
 //
