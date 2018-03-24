@@ -24,7 +24,7 @@ export class DashboardChartComponent implements OnInit
 {  
   quotes = {}
 
-  symbol: Symbol = new Symbol(1, "SPDR S&P 500 ETF Trust", "SPY", "Equity", null);
+  symbol: Symbol = new Symbol().New(1, "SPDR S&P 500 ETF Trust", "SPY", "Equity", null);
   interval: string = "daily";
   rangeSelect: string;
   destory: Subject<boolean> = new Subject<boolean>();

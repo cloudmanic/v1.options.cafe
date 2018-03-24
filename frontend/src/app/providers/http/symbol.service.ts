@@ -25,7 +25,7 @@ export class SymbolService
   //
   searchSymbols(query: string) : Observable<Symbol[]> {
     return this.http.get<Symbol[]>(environment.app_server + '/api/v1/symbols?search=' + query).map(
-      (data) => { return Symbol.buildForEmit(data); 
+      (data) => { return new Symbol().fromJsonList(data); 
     });
   }
 }

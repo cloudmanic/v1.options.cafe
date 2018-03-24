@@ -89,18 +89,7 @@ export class TradeGroup {
           data[i].positions[k].cost_basis,
           data[i].positions[k].proceeds,
           data[i].positions[k].profit,
-          new Symbol(
-            data[i].positions[k].symbol.id, 
-            data[i].positions[k].symbol.name, 
-            data[i].positions[k].symbol.short_name, 
-            data[i].positions[k].symbol.type, 
-            new OptionDetails(
-              data[i].positions[k].symbol.option_details.symbol,
-              new Date(data[i].positions[k].symbol.option_details.expire), 
-              data[i].positions[k].symbol.option_details.strike, 
-              data[i].positions[k].symbol.option_details.type
-            )
-          )                           
+          new Symbol().fromJson(data[i].positions[k].symbol)                           
         ));
       }
 

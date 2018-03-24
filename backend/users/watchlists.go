@@ -40,7 +40,7 @@ func (t *Base) VerifyDefaultWatchList(user models.User) {
 	// If no watchlists we create a default one with some default symbols.
 	if err != nil {
 
-		wList, err := t.DB.CreateWatchlist(user.Id, "Default")
+		wList, err := t.DB.CreateWatchlist(user.Id, "My Watchlist")
 
 		if err != nil {
 			services.Error(err, "(CreateNewWatchlist) Unable to create watchlist Default")

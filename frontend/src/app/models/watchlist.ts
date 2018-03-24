@@ -9,14 +9,14 @@ import { WatchlistItems } from './watchlist-items';
 
 export class Watchlist 
 {
-  public Id: string;
+  public Id: number;
   public Name: string;    
   public Symbols: WatchlistItems[];
 
   //
   // Construct
   //
-  constructor(Id: string, Name: string, Items: WatchlistItems[]) {
+  constructor(Id: number, Name: string, Items: WatchlistItems[]) {
     this.Id = Id;
     this.Name = Name;
     this.Symbols = Items;
@@ -32,7 +32,7 @@ export class Watchlist
     // Build Items
     for(let i = 0; i < data.symbols.length; i++)
     {
-      symbs.push(new WatchlistItems(data.symbols[i].id, new Symbol(data.symbols[i].symbol.id, data.symbols[i].symbol.name, data.symbols[i].symbol.short_name, "Equity", null)));
+      symbs.push(new WatchlistItems(data.symbols[i].id, new Symbol().fromJson(data.symbols[i].symbol)));
     }
 
     // Return happy.

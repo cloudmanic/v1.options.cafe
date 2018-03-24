@@ -7,51 +7,65 @@
 //
 // Symbol Model
 //
-export class Symbol {
-  public Id: number;
-  public Name: string;
-  public ShortName: string;
-  public Type: string;  
-  public OptionDetails: OptionDetails;
+export class Symbol 
+{
+  Id: number;
+  Name: string;
+  ShortName: string;
+  Type: string;  
+  OptionDetails: OptionDetails;
 
   //
-  // Constructor
+  // Create a new object
   //
-  constructor(Id: number, Name: string, ShortName: string, Type: string, OptionDetails: OptionDetails) {
-    this.Id = Id;
-    this.Name = Name;
-    this.ShortName = ShortName;
-    this.Type = Type;    
-    this.OptionDetails = OptionDetails;
+  New(Id: number, Name: string, ShortName: string, Type: string, OptionDetails: OptionDetails): Symbol 
+  {
+    let obj = new Symbol();
+
+    obj.Id = Id;
+    obj.Name = Name;
+    obj.ShortName = ShortName;
+    obj.Type = Type;
+    obj.OptionDetails = OptionDetails;
+
+    return obj;
   }
 
   //
-  // Build object for emitting to the app.
+  // Json to Object.
   //
-  public static buildForEmit(data) : Symbol[]  {
+  fromJson(json: Object): Symbol 
+  {
+    this.Id = json["id"];
+    this.Name = json["name"];
+    this.ShortName = json["short_name"];
+    this.Type = json["type"];
+    this.OptionDetails = new OptionDetails(json["option_details"].symbol, new Date(json["option_details"].expire), json["option_details"].strike, json["option_details"].type);
+    return this;
+  }
 
-    let symbols = [];
+  //
+  // Build from JSON list.
+  //
+  fromJsonList(json: Object[]): Symbol[] {
+    let result = [];
 
-    if(! data)
-    {
-      return symbols;      
+    if (!json) {
+      return result;
     }
 
-    for(let i = 0; i < data.length; i++)
-    {
-      symbols.push(new Symbol(
-        data[i].id, 
-        data[i].name,         
-        data[i].short_name,
-        data[i].type,         
-        new OptionDetails(data[i].option_details.symbol, new Date(data[i].option_details.expire), data[i].option_details.strike, data[i].option_details.type)
-       ));
-    }    
+    for (let i = 0; i < json.length; i++) {
+      result.push(new Symbol().fromJson(json[i]));
+    }
 
-    return symbols; 
+    // Return happy
+    return result;
   }
 }
 
+//
+// Option details. 
+//
 export class OptionDetails {
   public Symbol: string;
   public Expire: Date;

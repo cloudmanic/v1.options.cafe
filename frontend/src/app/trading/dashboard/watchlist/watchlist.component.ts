@@ -29,7 +29,7 @@ export class WatchlistComponent implements OnInit {
 
   watchlist: Watchlist = null;
   watchlists: Watchlist[];
-  activeWatchlistId: string = "";  
+  activeWatchlistId: number = 0;  
   watchlistEditState = false;
   watchlistSettingsActive = false;
   sortOptions: SortablejsOptions = { animation: 150, handle: ".drag-handle" };
@@ -95,6 +95,16 @@ export class WatchlistComponent implements OnInit {
   }
 
   //
+  // Get active watchlist from a click
+  //
+  setActiveListClick(watchlist : Watchlist)
+  {
+    this.activeWatchlistId = watchlist.Id;
+    this.setActiveWatchlist();
+    this.watchlistSettingsActive = false;
+  }
+
+  //
   // Get active watchlist
   //
   setActiveWatchlist() 
@@ -112,10 +122,13 @@ export class WatchlistComponent implements OnInit {
   }
 
   //
-  // onSearchTypeAheadClick() 
+  // onSearchTypeAheadClick() - Add a symbol to a watch list.
   //
   onSearchTypeAheadClick(symbol: Symbol) {
-   console.log(symbol)
+    // Send request to the server.
+    this.watchlistService.addSymbolByWatchlistId(this.watchlist.Id, symbol.Id).subscribe((data) => {
+      this.getAllWatchlists();
+    });
   }
 
   //
