@@ -105,6 +105,39 @@ func (t *Controller) CreateWatchlist(c *gin.Context) {
 }
 
 //
+// Delete a watchlist.
+//
+func (t *Controller) DeleteWatchlist(c *gin.Context) {
+
+	// Get the user id.
+	userId := c.MustGet("userId").(uint)
+
+	// Set as int
+	id, err := strconv.ParseInt(c.Param("id"), 10, 32)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Get the watchlist by id.
+	_, err = t.DB.GetWatchlistsByIdAndUserId(uint(id), userId)
+
+	if t.RespondError(c, err, httpNoRecordFound) {
+		return
+	}
+
+	// Now delete the watchlist.
+	err = t.DB.WatchlistDeleteById(uint(id))
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Return happy JSON
+	c.JSON(http.StatusNoContent, gin.H{})
+}
+
+//
 // Add a symbol to a watch list. Inserts into the WatchlistSymbol model.
 //
 func (t *Controller) WatchlistAddSymbol(c *gin.Context) {

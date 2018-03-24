@@ -95,6 +95,7 @@ type Datastore interface {
 	UpdateTradeGroup(tg *TradeGroup) error
 
 	// Watchlists
+	WatchlistDeleteById(id uint) error
 	GetWatchlistsById(id uint) (Watchlist, error)
 	GetWatchlistsByUserId(userId uint) ([]Watchlist, error)
 	CreateWatchlist(userId uint, name string) (Watchlist, error)
@@ -102,6 +103,7 @@ type Datastore interface {
 
 	// WatchlistSymbols
 	PrependWatchlistSymbol(w *WatchlistSymbol) error
+	WatchlistSymbolGetByWatchlistId(id uint) []WatchlistSymbol
 	CreateWatchlistSymbol(wList Watchlist, symb Symbol, user User, order uint) (WatchlistSymbol, error)
 
 	// ActiveSymbol

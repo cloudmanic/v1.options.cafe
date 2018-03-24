@@ -20,6 +20,51 @@ import (
 )
 
 //
+// Test DeleteWatchlist - 01
+//
+func TestDeleteWatchlist01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Make a mock request.
+	req, _ := http.NewRequest("DELETE", "/api/v1/watchlists/3", nil)
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.DELETE("/api/v1/watchlists/:id", c.DeleteWatchlist)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Validate response
+	st.Expect(t, w.Code, 204)
+
+	// Now verify the watchlist was deleted.
+	wList, err := db.GetWatchlistsById(3)
+
+	// Validate
+	st.Expect(t, err.Error(), "[Models:GetWatchlistsById] Record not found")
+	st.Expect(t, wList.Id, uint(0))
+
+	// Verify the symbols were also deleted
+	sList := db.WatchlistSymbolGetByWatchlistId(3)
+
+	// Validate
+	st.Expect(t, len(sList), 0)
+}
+
+//
 // Test CreateWatchlist - 01
 //
 func TestCreateWatchlist01(t *testing.T) {

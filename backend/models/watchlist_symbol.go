@@ -38,6 +38,30 @@ func (a WatchlistSymbol) Validate(db Datastore) error {
 }
 
 //
+// Get symbols by watchlist.
+//
+func (t *DB) WatchlistSymbolGetByWatchlistId(id uint) []WatchlistSymbol {
+
+	list := []WatchlistSymbol{}
+
+	// Query and get list.
+	t.Preload("Symbol").Where("watchlist_id = ?", id).Order("`order` asc").Find(&list)
+
+	// Add in options parts
+	for key, row := range list {
+		if row.Symbol.Type == "Option" {
+			parts, _ := helpers.OptionParse(row.Symbol.ShortName)
+			list[key].Symbol.OptionDetails.Type = parts.Type
+			list[key].Symbol.OptionDetails.Strike = parts.Strike
+			list[key].Symbol.OptionDetails.Expire = parts.Expire
+		}
+	}
+
+	// Return data.
+	return list
+}
+
+//
 // Prepend a new WatchlistSymbol entry.
 //
 func (t *DB) PrependWatchlistSymbol(w *WatchlistSymbol) error {

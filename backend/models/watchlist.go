@@ -21,6 +21,25 @@ type Watchlist struct {
 }
 
 //
+// Delete a watchlist by id.
+//
+func (t *DB) WatchlistDeleteById(id uint) error {
+
+	// First we have to delete all the symbols connected with the watchlist.
+	if err := t.Where("watchlist_id = ?", id).Delete(&WatchlistSymbol{}).Error; err != nil {
+		return err
+	}
+
+	// Now lets delete this watchlist.
+	if err := t.Where("id = ?", id).Delete(&Watchlist{}).Error; err != nil {
+		return err
+	}
+
+	// Return happy
+	return nil
+}
+
+//
 // Get a Watchlists by id.
 //
 func (t *DB) GetWatchlistsById(id uint) (Watchlist, error) {
