@@ -20,6 +20,119 @@ import (
 )
 
 //
+// Test CreateWatchlist - 01
+//
+func TestCreateWatchlist01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Post data
+	var postStr = []byte(`{"name":"Super Cool Test Watchlist"}`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("POST", "/api/v1/watchlists", bytes.NewBuffer(postStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.POST("/api/v1/watchlists", c.CreateWatchlist)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Grab result and convert to strut
+	result := models.Watchlist{}
+	err := json.Unmarshal([]byte(w.Body.String()), &result)
+
+	// Parse json that returned.
+	st.Expect(t, err, nil)
+	st.Expect(t, result.Id, uint(5))
+	st.Expect(t, result.Name, "Super Cool Test Watchlist")
+	st.Expect(t, result.UserId, uint(2))
+	st.Expect(t, len(result.Symbols), 0)
+}
+
+//
+// Test CreateWatchlist - 02 (empty name)
+//
+func TestCreateWatchlist02(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Post data
+	var postStr = []byte(`{"name":""}`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("POST", "/api/v1/watchlists", bytes.NewBuffer(postStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.POST("/api/v1/watchlists", c.CreateWatchlist)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Parse json that returned.
+	st.Expect(t, w.Body.String(), `{"error":"Name field can not be empty."}`)
+}
+
+//
+// Test CreateWatchlist - 03 (duplicate name)
+//
+func TestCreateWatchlist03(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Post data
+	var postStr = []byte(`{"name":"Watchlist #2 - User 2"}`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("POST", "/api/v1/watchlists", bytes.NewBuffer(postStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.POST("/api/v1/watchlists", c.CreateWatchlist)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Parse json that returned.
+	st.Expect(t, w.Body.String(), `{"error":"A watchlist already exists by this name."}`)
+}
+
+//
 // Test - WatchlistAddSymbol - 01 (Success)
 //
 func TestWatchlistAddSymbol01(t *testing.T) {

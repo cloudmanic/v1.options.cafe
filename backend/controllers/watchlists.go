@@ -81,6 +81,18 @@ func (t *Controller) CreateWatchlist(c *gin.Context) {
 
 	name := gjson.Get(string(body), "name").String()
 
+	// Validate name
+	if len(name) <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Name field can not be empty."})
+		return
+	}
+
+	// Validate if this watchlist is already in the db.
+	if !t.DB.New().Where("user_id = ? AND name = ?", userId, name).First(&models.Watchlist{}).RecordNotFound() {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "A watchlist already exists by this name."})
+		return
+	}
+
 	// Get the watchlists
 	wLists, err := t.DB.CreateWatchlist(userId, name)
 

@@ -20,6 +20,9 @@ type DB struct {
 // Database interface
 type Datastore interface {
 
+	// Gorm Functions
+	New() *gorm.DB
+
 	// Applications
 	ValidateClientIdGrantType(clientId string, grantType string) (Application, error)
 
