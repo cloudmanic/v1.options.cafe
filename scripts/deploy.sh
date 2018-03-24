@@ -12,17 +12,13 @@ cd ../backend
 echo "Building app.options.cafe"
 env GOOS=linux GOARCH=amd64 go build -o builds/app.options.cafe
 
-echo "Building cron.options.cafe"
-cd cron
-env GOOS=linux GOARCH=amd64 go build -o ../builds/cron.options.cafe
-
 # Build frontend
-cd ../../frontend/docker
+cd ../frontend
 
 echo "Building Frontend"
-docker-compose run --rm app ng build -prod
+ng build -prod
 
-cd ../../scripts
+cd ../scripts
 
 # Deploy to backend with Ansible
 cd ../ansible

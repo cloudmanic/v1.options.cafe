@@ -5,7 +5,7 @@
 //
 
 import { Component, OnInit } from '@angular/core';
-import { NgForm }   from '@angular/forms';
+import { NgForm }  from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { environment } from '../../../environments/environment';

@@ -11,6 +11,8 @@ import (
 	"fmt"
 
 	"github.com/cloudmanic/app.options.cafe/backend/cmd/actions"
+	"github.com/cloudmanic/app.options.cafe/backend/cron"
+	"github.com/cloudmanic/app.options.cafe/backend/library/backtest"
 	"github.com/cloudmanic/app.options.cafe/backend/library/import/options"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
@@ -23,6 +25,7 @@ func Run(db *models.DB) bool {
 	// Grab flags
 	action := flag.String("cmd", "none", "")
 	name := flag.String("name", "", "")
+	symbol := flag.String("symbol", "", "")
 	flag.Parse()
 
 	switch *action {
@@ -39,9 +42,21 @@ func Run(db *models.DB) bool {
 		return true
 		break
 
+	// Download a EOD options symbol locally (go run main.go -cmd=download-eod-symbol -symbol=spy)
+	case "download-eod-symbol":
+		backtest.DownloadEodSymbol(*symbol, true)
+		return true
+		break
+
 	// Create a new application from the CLI
 	case "create-application":
 		actions.CreateApplication(db, *name)
+		return true
+		break
+
+	// Start cron server
+	case "cron":
+		cron.Start(db)
 		return true
 		break
 

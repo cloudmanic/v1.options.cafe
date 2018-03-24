@@ -4,40 +4,22 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-package main
+package cron
 
 import (
 	"os"
-	"runtime"
 
 	"github.com/cloudmanic/app.options.cafe/backend/cron/data_import"
 	"github.com/cloudmanic/app.options.cafe/backend/library/import/options"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/jasonlvhit/gocron"
-	env "github.com/jpfuentes2/go-env"
 )
 
 //
-// Main....
+// Start....
 //
-func main() {
-
-	// Setup CPU stuff.
-	runtime.GOMAXPROCS(runtime.NumCPU())
-
-	// Load ENV (if we have it.)
-	env.ReadEnv("../.env")
-
-	// Start the db connection.
-	db, err := models.NewDB()
-
-	if err != nil {
-		services.Fatal(err)
-	}
-
-	// Close db when this app dies. (This might be useless)
-	defer db.Close()
+func Start(db *models.DB) {
 
 	// Setup instance
 	d := data_import.Base{DB: db}

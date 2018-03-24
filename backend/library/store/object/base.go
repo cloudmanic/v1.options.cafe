@@ -79,11 +79,11 @@ func UploadObject(filePath string, storePath string) error {
 func DownloadObject(objectPath string) (string, error) {
 
 	// Set the cache dir.
-	cacheDir := os.Getenv("CACHE_DIR") + "/object-store/"
+	cacheDir := os.Getenv("CACHE_DIR") + "/object-store/" + filepath.Dir(objectPath) + "/"
 
 	// Make a directory to download.
 	if _, err := os.Stat(cacheDir); os.IsNotExist(err) {
-		os.Mkdir(cacheDir, 0755)
+		os.MkdirAll(cacheDir, 0755)
 	}
 
 	// New returns an Amazon S3 compatible client object. API compatibility (v2 or v4)

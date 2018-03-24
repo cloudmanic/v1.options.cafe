@@ -33,7 +33,7 @@ RUN set -x \
   && chown -R deploy:deploy /work  
   
 # Copy binary into place.
-COPY cron.options.cafe /work/app
+COPY app.options.cafe /work/app
 
 # This needs to be at the bottom. (back from root)
 USER deploy
@@ -42,4 +42,4 @@ USER deploy
 WORKDIR /work
 
 # Start the server
-CMD ["./app"]
+CMD ["./app", "-cmd=cron"]
