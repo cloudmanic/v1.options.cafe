@@ -8,6 +8,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"flag"
 	"go/build"
 	"net/http"
 	"strconv"
@@ -144,7 +145,10 @@ func (t *Controller) RespondJSON(c *gin.Context, status int, payload interface{}
 func (t *Controller) RespondError(c *gin.Context, err error, msg string) bool {
 
 	if err != nil {
-		services.Warning(err)
+		if flag.Lookup("test.v") == nil {
+			services.Warning(err)
+		}
+
 		c.JSON(http.StatusBadRequest, gin.H{"error": msg})
 		return true
 	}
