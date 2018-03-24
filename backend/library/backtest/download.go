@@ -17,9 +17,11 @@ package backtest
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"bitbucket.org/api.triwou.org/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/library/files"
 	"github.com/cloudmanic/app.options.cafe/backend/library/store/object"
 )
 
@@ -33,7 +35,10 @@ type Job struct {
 //
 // Download one symbol and store it locally for back testing.
 //
-func DownloadEodSymbol(symbol string, cli bool) {
+func DownloadEodSymbol(symbol string, cli bool) []string {
+
+	var total int = 0
+	var allFiles []string
 
 	// Log if we are cli
 	if cli {
@@ -54,26 +59,34 @@ func DownloadEodSymbol(symbol string, cli bool) {
 
 	if err != nil {
 		services.Warning(err)
-		return
+		return allFiles
 	}
-
-	// Get file count
-	count := len(list)
 
 	// Send all files to workers.
 	for key, row := range list {
-		jobs <- Job{Path: row.Key, Index: key}
+
+		// Check the MD5 the current file. If we already have the file no need to re-download.
+		md5Hash := files.Md5(os.Getenv("CACHE_DIR") + "/object-store/" + row.Key)
+
+		// Files we return.
+		allFiles = append(allFiles, os.Getenv("CACHE_DIR")+"/object-store/"+row.Key)
+
+		// Send download job to the workers
+		if md5Hash != strings.Replace(row.ETag, `"`, "", -1) {
+			total++
+			jobs <- Job{Path: row.Key, Index: key}
+		}
 	}
 
 	// Close jobs so the workers return.
 	close(jobs)
 
 	// Collect results so this function does not just return.
-	for a := 0; a < count; a++ {
+	for a := 0; a < total; a++ {
 		job := <-results
 
 		if cli {
-			fmt.Println(job.Index, " of ", count)
+			fmt.Println(job.Index, " of ", total)
 		}
 	}
 
@@ -81,6 +94,9 @@ func DownloadEodSymbol(symbol string, cli bool) {
 	if cli {
 		fmt.Println("Done download of all " + symbol + " daily options data.")
 	}
+
+	// Return a list of all files.
+	return allFiles
 }
 
 //
