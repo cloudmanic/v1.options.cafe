@@ -168,4 +168,14 @@ func (t *DB) WatchlistReorder(id uint, ids []int) error {
 	return nil
 }
 
+//
+// Delete symbol from watchlist.
+//
+func (t *DB) WatchlistRemoveSymbol(id uint, symbId uint) error {
+
+	t.Where("id = ? AND watchlist_id = ?", symbId, id).Delete(&WatchlistSymbol{})
+
+	return nil
+}
+
 /* End File */

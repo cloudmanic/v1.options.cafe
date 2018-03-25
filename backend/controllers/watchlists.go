@@ -269,6 +269,44 @@ func (t *Controller) WatchlistReorder(c *gin.Context) {
 	c.JSON(http.StatusNoContent, gin.H{})
 }
 
+//
+// Delete a symbol from a watchlist.
+func (t *Controller) WatchlistDeleteSymbol(c *gin.Context) {
+
+	// Get the user id.
+	userId := c.MustGet("userId").(uint)
+
+	// Set as int
+	id, err := strconv.ParseInt(c.Param("id"), 10, 32)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Set as int - symb
+	symbId, err := strconv.ParseInt(c.Param("symb"), 10, 32)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Validate if a user has access to this watchlist.
+	if !t.ValidateWatchlistUserAccess(userId, uint(id)) {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "No access to this watchlist resource."})
+		return
+	}
+
+	// Delete symbol from watchlist.
+	err = t.DB.WatchlistRemoveSymbol(uint(id), uint(symbId))
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Return happy JSON
+	c.JSON(http.StatusNoContent, gin.H{})
+}
+
 // ----------------- Helper Functions -------------------- //
 
 //

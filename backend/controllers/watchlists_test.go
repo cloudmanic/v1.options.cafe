@@ -546,4 +546,79 @@ func TestWatchlistReorder02(t *testing.T) {
 	st.Expect(t, w.Body.String(), `{"error":"No access to this watchlist resource."}`)
 }
 
+//
+// Test WatchlistDeleteSymbol - 01
+//
+func TestWatchlistDeleteSymbol01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Make a mock request.
+	req, _ := http.NewRequest("DELETE", "/api/v1/watchlists/3/symbol/8", nil)
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.DELETE("/api/v1/watchlists/:id/symbol/:symb", c.WatchlistDeleteSymbol)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Parse json that returned.
+	st.Expect(t, w.Code, 204)
+
+	// Check the database to make sure the ids are in the correct order.
+	wList, err := db.GetWatchlistsById(3)
+
+	// Parse json that returned.
+	st.Expect(t, err, nil)
+	st.Expect(t, wList.Id, uint(3))
+	st.Expect(t, len(wList.Symbols), 2)
+	st.Expect(t, wList.Symbols[0].Id, uint(7))
+	st.Expect(t, wList.Symbols[1].Id, uint(9))
+}
+
+//
+// Test WatchlistDeleteSymbol - 02 (No Access)
+//
+func TestWatchlistDeleteSymbol02(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Make a mock request.
+	req, _ := http.NewRequest("DELETE", "/api/v1/watchlists/2/symbol/8", nil)
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.DELETE("/api/v1/watchlists/:id/symbol/:symb", c.WatchlistDeleteSymbol)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Parse json that returned.
+	st.Expect(t, w.Code, 401)
+	st.Expect(t, w.Body.String(), `{"error":"No access to this watchlist resource."}`)
+}
+
 /* End File */

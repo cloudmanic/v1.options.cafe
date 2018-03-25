@@ -99,6 +99,7 @@ type Datastore interface {
 	WatchlistReorder(id uint, ids []int) error
 	WatchlistUpdate(id uint, name string) error
 	GetWatchlistsById(id uint) (Watchlist, error)
+	WatchlistRemoveSymbol(id uint, symbId uint) error
 	GetWatchlistsByUserId(userId uint) ([]Watchlist, error)
 	CreateWatchlist(userId uint, name string) (Watchlist, error)
 	GetWatchlistsByIdAndUserId(id uint, userId uint) (Watchlist, error)
