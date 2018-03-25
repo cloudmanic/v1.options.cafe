@@ -96,7 +96,7 @@
 <aside class="section__aside box--bordered mobile--hidden" [hidden]="! watchlistEditState">
  
   <div class="box__head box__head--relative box__head--medium">
-    <h5 class="box__title">Edit Watchlist</h5>
+    <h5 class="box__title">{{ watchlist?.Name }}</h5>
     
     <div class="box__absolute">
       <a class="link-action link-action--small" (click)="onEditWatchListDone()">Done</a>
@@ -138,7 +138,7 @@
     <div class="shell shell--medium">
       <div class="form form--menage">
 
-        <form action="?" method="post">
+        <form (ngSubmit)="onWatchlistAddSubmit(f)" #f="ngForm">
           <section class="form__section">
             <div class="form__head">
               <h6 class="form__title">Add Watchlist</h6>
@@ -148,8 +148,9 @@
               <div class="form__row">
                 <label for="field-watchlist-name" class="hidden">Watchlist Name</label> 
 
-                <div class="form__controls">
-                  <input type="text" class="field" name="field-watchlist-name" id="field-watchlist-name" required />
+                <div class="form__controls" [ngClass]="{ 'form__error': watchlistAddError }">
+                  <input type="text" class="field" id="field-watchlist-name" required name="watchlistAdd" [(ngModel)]="watchlistAdd" maxlength="20" />
+                  <span class="msg">{{ watchlistAddError }}</span>
                 </div>
 
               </div>
@@ -157,14 +158,14 @@
 
             <div class="form__actions">
               <p class="form__hint">
-                <em>50 characters left</em>
+                <em>{{ 20 - watchlistAdd.length }} characters left </em>
               </p> 
 
               <div class="form__actions__inner">
 
                 <a (click)="showAddWatchlist = !showAddWatchlist" class="link-action link-action--small popup--close">Cancel</a>  
 
-                <input type="submit" value="Add" class="btn btn--red form__btn" />
+                <input type="submit" value="Add" class="btn btn--red form__btn" [disabled]="! f.valid" />
               </div>
             </div>
           </section>
@@ -184,7 +185,7 @@
     <div class="shell shell--smaller">
       <div class="form form--menage"> 
 
-        <form (ngSubmit)="onWatchlistRenameSubmit()">
+        <form (ngSubmit)="onWatchlistRenameSubmit(f)" #f="ngForm">
           <section class="form__section">
             <div class="form__head">
               <h6 class="form__title">Rename Watchlist</h6>
@@ -194,9 +195,11 @@
               <div class="form__row">
                 <label for="field-watchlist-name" class="hidden">Watchlist Name</label> 
 
-                <div class="form__controls">
+                <div class="form__controls" [ngClass]="{ 'form__error': watchlistRenameError }">
                   <input type="text" class="field" id="field-watchlist-name" maxlength="20" name="watchlistRename" required [(ngModel)]="watchlistRename" />
+                  <span class="msg">{{ watchlistRenameError }}</span>
                 </div>
+
               </div>
             </div>  
 
@@ -208,7 +211,7 @@
               <div class="form__actions__inner">
                 <a (click)="showRenameWatchlist = !showRenameWatchlist" class="link-action link-action--small popup--close">Cancel</a>  
 
-                <input type="submit" value="Save" class="btn btn--red form__btn" />
+                <input type="submit" value="Save" class="btn btn--red form__btn" [disabled]="! f.valid" />
               </div>
             </div>
           </section>
@@ -228,7 +231,7 @@
     <div class="shell shell--xxsmall">
       <div class="form form--menage">
 
-        <form action="?" method="post">
+        <form (ngSubmit)="onDeleteWatchlist(f)" #f="ngForm">
           <section class="form__section">
             <div class="form__head">
               <h6 class="form__title">Delete watchlist</h6>
@@ -238,7 +241,7 @@
               <div class="form__actions__inner">
                 <a (click)="showDeleteWatchlist = !showDeleteWatchlist" class="link-action link-action--small popup--close">Cancel</a>  
 
-                <input type="submit" value="Delete" class="btn btn--red form__btn" />
+                <input type="submit" value="Delete" class="btn btn--red form__btn" [disabled]="! f.valid" />
               </div>
             </div>
           </section>

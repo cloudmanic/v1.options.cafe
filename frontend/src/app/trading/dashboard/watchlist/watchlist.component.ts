@@ -4,6 +4,7 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import { NgForm } from '@angular/forms';
 import { Component, OnInit, ElementRef } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { SortablejsOptions } from 'angular-sortablejs';
@@ -27,7 +28,10 @@ export class WatchlistComponent implements OnInit {
   showRenameWatchlist = false;
   showDeleteWatchlist = false;
 
+  watchlistAdd: string = "";
+  watchlistAddError: string = "";
   watchlistRename: string = "";
+  watchlistRenameError: string = "";
 
   watchlist: Watchlist = null;
   watchlists: Watchlist[];
@@ -178,18 +182,69 @@ export class WatchlistComponent implements OnInit {
   }
 
   //
-  // Rename the active watchlist.
+  // On delete watchlist.
   //
-  onWatchlistRenameSubmit() 
+  onDeleteWatchlist(form: NgForm)
   {
     // Store this at the server.
-    this.watchlistService.update(this.watchlist.Id, this.watchlistRename).subscribe((data) => {
-      console.log(data);
-    });
+    this.watchlistService.delete(this.watchlist.Id).subscribe((data) => {
+      this.activeWatchlistId = 0;
+      this.getAllWatchlists();
+    });    
 
-    this.watchlist.Name = this.watchlistRename;
-    this.showRenameWatchlist = false;
-    this.watchlistSettingsActive = false;
+    this.showDeleteWatchlist = false;
+    this.watchlistSettingsActive = false;    
+  }
+
+  //
+  // Add a new watchlist.
+  //
+  onWatchlistAddSubmit(form: NgForm)
+  {
+    this.watchlistAddError = "";
+
+    // Store this at the server.
+    this.watchlistService.create(this.watchlistAdd).subscribe(
+
+    // Syccess
+    (data) => {
+      this.watchlists.push(data);
+      this.activeWatchlistId = data.Id;
+      this.setActiveWatchlist();
+      this.watchlistEditState = true;
+
+      this.watchlistAdd = "";
+      this.showAddWatchlist = false;
+      this.watchlistSettingsActive = false;       
+    },
+
+    // Error
+    (err: HttpErrorResponse) => {
+      this.watchlistAddError = err.error.error;
+    });  
+  }
+
+  //
+  // Rename the active watchlist.
+  //
+  onWatchlistRenameSubmit(form: NgForm)
+  {
+    this.watchlistRenameError = "";
+
+    // Store this at the server.
+    this.watchlistService.update(this.watchlist.Id, this.watchlistRename).subscribe(
+
+    // Success
+    (data) => {
+      this.watchlist.Name = this.watchlistRename;
+      this.watchlistSettingsActive = false;
+      this.showRenameWatchlist = false;
+    },
+
+    // Error
+    (err: HttpErrorResponse) => {
+      this.watchlistRenameError = err.error.error;
+    });
   }
 
 }

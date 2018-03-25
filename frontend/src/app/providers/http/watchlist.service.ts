@@ -34,7 +34,7 @@ export class WatchlistService
         // Build data
         for(let i = 0; i < data.length; i++)
         {
-          watchlists.push(Watchlist.buildForEmit(data[i])) 
+          watchlists.push(new Watchlist().fromJson(data[i])); 
         }
 
         return watchlists; 
@@ -47,10 +47,21 @@ export class WatchlistService
   //
   getById(id: number) : Observable<Watchlist> 
   {
-    return this.http.get<Watchlist>(environment.app_server + '/api/v1/watchlists/' + id).map(
-      (data) => { return Watchlist.buildForEmit(data); 
-    });
+    return this.http.get<Watchlist>(environment.app_server + '/api/v1/watchlists/' + id)
+      .map((data) => { return new Watchlist().fromJson(data); });
   } 
+
+  //
+  // Create a new watchlist
+  //
+  create(name: string): Observable<Watchlist> {
+    let body = {
+      name: name
+    }
+
+    return this.http.post<Watchlist>(environment.app_server + '/api/v1/watchlists', body)
+      .map((data) => { return new Watchlist().fromJson(data); });
+  }
 
   //
   // Update a watchlist by Id
@@ -64,6 +75,14 @@ export class WatchlistService
     return this.http.put(environment.app_server + '/api/v1/watchlists/' + id, body)
       .map((data) => { return true; });
   }
+
+  //
+  // Delete watchlist by Id
+  //
+  delete(id: number): Observable<boolean> {
+    return this.http.delete(environment.app_server + '/api/v1/watchlists/' + id)
+      .map((data) => { return true; });
+  }   
 
   //
   // Add symbol to a watchlist by Id

@@ -794,6 +794,9 @@ select::-ms-expand { display: none; }
 .form .form__col--size5 { width: 350px; }
 .form .form__col--size6 { width: 149px; }
 .form .form__col--size7 { width: 80px; }
+.form .msg { display: none; }
+.form .form__error .msg { display: inline-block; font-weight: 700; font-size: 14px; line-height: 2; color: #c5351b; }
+
 /* Tablet Portrait */
 @media (max-width: 1023px) {
   .form .form__actions--flex { -webkit-flex-wrap: wrap; -ms-flex-wrap: wrap; flex-wrap: wrap; -webkit-justify-content: flex-end; -ms-flex-pack: end; justify-content: flex-end; padding-top: 20px; }

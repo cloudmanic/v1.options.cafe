@@ -9,36 +9,29 @@ import { WatchlistItems } from './watchlist-items';
 
 export class Watchlist 
 {
-  public Id: number;
-  public Name: string;    
-  public Symbols: WatchlistItems[];
+  Id: number;
+  Name: string;    
+  Symbols: WatchlistItems[];
 
   //
-  // Construct
+  // Json to Object.
   //
-  constructor(Id: number, Name: string, Items: WatchlistItems[]) {
-    this.Id = Id;
-    this.Name = Name;
-    this.Symbols = Items;
-  } 
- 
-  //
-  // Build build the data for emitting to the app. 
-  //
-  public static buildForEmit(data) : Watchlist {
-
-    let symbs = [];
+  fromJson(json: Object): Watchlist {
+    let wl = new Watchlist();
+    wl.Id = json["id"];
+    wl.Name = json["name"];
+    wl.Symbols = [];
 
     // Build Items
-    for(let i = 0; i < data.symbols.length; i++)
+    if (json["symbols"]) 
     {
-      symbs.push(new WatchlistItems(data.symbols[i].id, new Symbol().fromJson(data.symbols[i].symbol)));
-    }
+      for (let i = 0; i < json["symbols"].length; i++) {
+        wl.Symbols.push(new WatchlistItems(json["symbols"][i].id, new Symbol().fromJson(json["symbols"][i].symbol)));
+      }
+    }    
 
-    // Return happy.
-    return new Watchlist(data.id, data.name, symbs);
-  }
-  
+    return wl;
+  }  
 }
 
 /* End File */
