@@ -95,6 +95,18 @@ export class WatchlistService
 
     return this.http.post<AddSymbolResponse>(environment.app_server + '/api/v1/watchlists/' + id + '/symbol', post)
       .map((data) => { return new Symbol().fromJson(data.symbol); });
+  }
+
+  //
+  // Reorder the symbols in a watchlist by Id
+  //
+  reorder(id: number, ids: number[]): Observable<boolean> {
+    let body = {
+      ids: ids
+    }
+
+    return this.http.put(environment.app_server + '/api/v1/watchlists/' + id + '/reorder', body)
+      .map((data) => { return true; });
   }    
 }
 

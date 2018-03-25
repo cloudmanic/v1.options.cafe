@@ -69,11 +69,13 @@ export class WatchlistComponent implements OnInit {
 
       for(let i = 0; i < event.to.getElementsByTagName("li").length; i++)
       {
-        ids.push(event.to.getElementsByTagName("li")[i].id);
+        ids.push(Number(event.to.getElementsByTagName("li")[i].id));
       }
 
-      // This is the new list. (watchlist_symbols)
-      console.log(ids);
+      // Send request to the server.
+      this.watchlistService.reorder(this.watchlist.Id, ids).subscribe((data) => {
+        this.getAllWatchlists();
+      });
     };
         
     // Subscribe to data updates from the quotes - Market Quotes
