@@ -249,6 +249,17 @@ export class WatchlistComponent implements OnInit {
     });
   }
 
+  //
+  // Delete a symbol from a watchlist
+  //
+  doDeleteSymbol(id: number)
+  {
+    // Store this at the server.
+    this.watchlistService.deleteSymbol(this.watchlist.Id, id).subscribe((data) => {
+      this.getAllWatchlists();
+    });
+  }
+
 }
 
 /* End File */

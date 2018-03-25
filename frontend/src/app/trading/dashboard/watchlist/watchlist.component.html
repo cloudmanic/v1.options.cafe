@@ -24,13 +24,6 @@
               {{ row.Name }}
             </a>
           </li>
-          
-<!--           <li>
-            <a href="#">
-              <i class="ico-check"></i>
-              Watchlist Watchlist 24ch
-            </a>
-          </li> -->
         </ul>
 
 
@@ -119,7 +112,7 @@
         <em>{{ row.Symbol.Name }}</em>
       </p>
       
-      <a href="#" class="btn-action btn--delete">
+      <a (click)="doDeleteSymbol(row.Id)" class="btn-action btn--delete">
         <i class="fa fa-trash"></i>
       </a>
       

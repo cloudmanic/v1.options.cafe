@@ -107,6 +107,15 @@ export class WatchlistService
 
     return this.http.put(environment.app_server + '/api/v1/watchlists/' + id + '/reorder', body)
       .map((data) => { return true; });
+  } 
+
+
+  //
+  // Delete a symbol from a watchlist
+  //
+  deleteSymbol(id: number, symbol: number): Observable<boolean> {
+    return this.http.delete(environment.app_server + '/api/v1/watchlists/' + id + '/symbol/' + symbol)
+      .map((data) => { return true; });
   }    
 }
 
