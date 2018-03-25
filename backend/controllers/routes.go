@@ -38,6 +38,7 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		apiV1.PUT("/watchlists/:id", t.UpdateWatchlist)
 		apiV1.DELETE("/watchlists/:id", t.DeleteWatchlist)
 		apiV1.POST("/watchlists/:id/symbol", t.WatchlistAddSymbol)
+		apiV1.PUT("/watchlists/:id/reorder", t.WatchlistReorder)
 
 		// Trade Groups
 		apiV1.GET("/tradegroups", t.GetTradeGroups)

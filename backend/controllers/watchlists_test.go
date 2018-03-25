@@ -465,4 +465,85 @@ func TestWatchlistAddSymbol04(t *testing.T) {
 	st.Expect(t, gjson.Get(w.Body.String(), "error").String(), "Symbol already part of this watchlist.")
 }
 
+//
+// Test WatchlistReorder - 01
+//
+func TestWatchlistReorder01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Body data
+	var bodyStr = []byte(`{ "ids": [ 8, 9, 7 ] }`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("PUT", "/api/v1/watchlists/3/reorder", bytes.NewBuffer(bodyStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.PUT("/api/v1/watchlists/:id/reorder", c.WatchlistReorder)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Parse json that returned.
+	st.Expect(t, w.Code, 204)
+
+	// Check the database to make sure the ids are in the correct order.
+	wList, err := db.GetWatchlistsById(3)
+
+	// Parse json that returned.
+	st.Expect(t, err, nil)
+	st.Expect(t, wList.Id, uint(3))
+	st.Expect(t, wList.Symbols[0].Id, uint(8))
+	st.Expect(t, wList.Symbols[1].Id, uint(9))
+	st.Expect(t, wList.Symbols[2].Id, uint(7))
+}
+
+//
+// Test WatchlistReorder - 02 (No Access)
+//
+func TestWatchlistReorder02(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Body data
+	var bodyStr = []byte(`{ "ids": [ 8, 9, 7 ] }`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("PUT", "/api/v1/watchlists/2/reorder", bytes.NewBuffer(bodyStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.PUT("/api/v1/watchlists/:id/reorder", c.WatchlistReorder)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Parse json that returned.
+	st.Expect(t, w.Code, 401)
+	st.Expect(t, w.Body.String(), `{"error":"No access to this watchlist resource."}`)
+}
+
 /* End File */

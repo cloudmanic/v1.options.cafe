@@ -155,4 +155,17 @@ func (t *DB) CreateWatchlist(userId uint, name string) (Watchlist, error) {
 	return wList, nil
 }
 
+//
+// Reorder a watchlist
+//
+func (t *DB) WatchlistReorder(id uint, ids []int) error {
+
+	// Loop through and change the order.
+	for key, row := range ids {
+		t.Model(&WatchlistSymbol{}).Where("id = ? AND watchlist_id = ?", row, id).Update("order", key)
+	}
+
+	return nil
+}
+
 /* End File */

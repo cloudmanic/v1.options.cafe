@@ -221,6 +221,54 @@ func (t *Controller) WatchlistAddSymbol(c *gin.Context) {
 	t.RespondCreated(c, o, err)
 }
 
+//
+// Reorder a watch list.
+//
+func (t *Controller) WatchlistReorder(c *gin.Context) {
+
+	// Get the user id.
+	userId := c.MustGet("userId").(uint)
+
+	// Set as int
+	id, err := strconv.ParseInt(c.Param("id"), 10, 32)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Validate if a user has access to this watchlist.
+	if !t.ValidateWatchlistUserAccess(userId, uint(id)) {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "No access to this watchlist resource."})
+		return
+	}
+
+	// Ids was into the model.
+	var ids []int
+
+	// Parse json body
+	jsonBody, err := ioutil.ReadAll(c.Request.Body)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	result := gjson.Get(string(jsonBody), "ids")
+
+	for _, id := range result.Array() {
+		ids = append(ids, int(id.Int()))
+	}
+
+	// Send the reorder into our model
+	err = t.DB.WatchlistReorder(uint(id), ids)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Return happy JSON
+	c.JSON(http.StatusNoContent, gin.H{})
+}
+
 // ----------------- Helper Functions -------------------- //
 
 //
