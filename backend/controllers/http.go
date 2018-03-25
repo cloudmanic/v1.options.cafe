@@ -48,7 +48,7 @@ func (t *Controller) StartWebServer() {
 		ExposeHeaders:    []string{"Content-Length", "X-Last-Page", "X-Offset", "X-Limit", "X-No-Limit-Count"},
 		AllowCredentials: true,
 		AllowOriginFunc: func(origin string) bool {
-			return strings.Contains(origin, "localhost")
+			return (origin == os.Getenv("SITE_URL")) || strings.Contains(origin, "localhost")
 		},
 		MaxAge: 12 * time.Hour,
 	}))
