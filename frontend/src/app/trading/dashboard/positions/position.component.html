@@ -87,7 +87,7 @@
       </div><!-- /.dropdown select -->
     </div><!-- /.table table-large -->
 
-    <div class="progress" *ngIf="getTradeProgress(row) != 0">
+    <div class="progress" *ngIf="showProgressbar()">
       <strong class="progress__number">{{ getTradeProgress(row) | number:'1.2-2' }}%</strong>
 
       <div class="progress__bar">

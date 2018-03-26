@@ -246,10 +246,10 @@ export class PositionComponent implements OnInit
         return this.getProgressOptionsTrade(tradeGroup);
 
       case 'Put Credit Spread':
-        return (this.getCreditSpreadProfitLoss(tradeGroup) / tradeGroup.Credit) * 100;
+        return (this.getPutCreditSpreadProfitLoss(tradeGroup) / tradeGroup.Credit) * 100;
 
       case 'Call Credit Spread':
-        return (this.getCreditSpreadProfitLoss(tradeGroup) / tradeGroup.Credit) * 100;          
+        return (this.getCallCreditSpreadProfitLoss(tradeGroup) / tradeGroup.Credit) * 100;          
     }
 
     return 0.00
@@ -266,9 +266,12 @@ export class PositionComponent implements OnInit
     switch(tradeGroup.Type)
     {
       case 'Put Credit Spread':
-      case 'Call Credit Spread':
-        p = (this.getCreditSpreadProfitLoss(tradeGroup) / tradeGroup.Credit) * 100;
+        p = (this.getPutCreditSpreadProfitLoss(tradeGroup) / tradeGroup.Credit) * 100;
       break;
+
+      case 'Call Credit Spread':
+        p = (this.getCallCreditSpreadProfitLoss(tradeGroup) / tradeGroup.Credit) * 100;
+        break;
 
       case 'Option':
         p = this.getProgressOptionsTrade(tradeGroup);
@@ -290,7 +293,7 @@ export class PositionComponent implements OnInit
   //
   // Get the total P&L for put credit spreads
   //
-  getCreditSpreadProfitLoss(tradeGroup: TradeGroup) : number 
+  getPutCreditSpreadProfitLoss(tradeGroup: TradeGroup): number 
   {
     if(typeof this.quotes[tradeGroup.Positions[0].Symbol.ShortName] == "undefined")
     {
@@ -306,6 +309,22 @@ export class PositionComponent implements OnInit
   }
 
   //
+  // Get the total P&L for put credit spreads - Call Credit Spread
+  //
+  getCallCreditSpreadProfitLoss(tradeGroup: TradeGroup): number 
+  {
+    if (typeof this.quotes[tradeGroup.Positions[0].Symbol.ShortName] == "undefined") {
+      return 0.00;
+    }
+
+    if (typeof this.quotes[tradeGroup.Positions[1].Symbol.ShortName] == "undefined") {
+      return 0.00;
+    }
+
+    return tradeGroup.Credit - ((((this.quotes[tradeGroup.Positions[1].Symbol.ShortName].ask - this.quotes[tradeGroup.Positions[0].Symbol.ShortName].bid) * 100) * Math.abs(tradeGroup.Positions[0].Qty)) * -1);
+  }
+
+  //
   // Get trade profit and loss
   //
   getTradeProfitLoss(tradeGroup: TradeGroup) : number 
@@ -314,14 +333,24 @@ export class PositionComponent implements OnInit
     switch(tradeGroup.Type)
     {
       case 'Put Credit Spread':
+        return this.getPutCreditSpreadProfitLoss(tradeGroup);
+
       case 'Call Credit Spread':
-        return this.getCreditSpreadProfitLoss(tradeGroup);
+        return this.getCallCreditSpreadProfitLoss(tradeGroup);        
 
       case 'Option':
         return this.getOptionProfitLoss(tradeGroup.Positions[0]);            
     }
 
     return 0.00;
+  }
+
+  //
+  // Do we show a progress bar
+  //
+  showProgressbar() : boolean
+  {
+    return true;
   }
 }
 
