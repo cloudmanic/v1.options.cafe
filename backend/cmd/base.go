@@ -12,6 +12,7 @@ import (
 
 	"github.com/cloudmanic/app.options.cafe/backend/cmd/actions"
 	"github.com/cloudmanic/app.options.cafe/backend/cron"
+	"github.com/cloudmanic/app.options.cafe/backend/cron/data_import"
 	"github.com/cloudmanic/app.options.cafe/backend/library/backtest"
 	"github.com/cloudmanic/app.options.cafe/backend/library/import/options"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
@@ -51,6 +52,13 @@ func Run(db *models.DB) bool {
 	// Create a new application from the CLI
 	case "create-application":
 		actions.CreateApplication(db, *name)
+		return true
+		break
+
+	// Download all the symbols Tradier knows about. (typically run daily from cron)
+	case "symbol-import":
+		d := data_import.Base{DB: db}
+		d.DoSymbolImport()
 		return true
 		break
 
