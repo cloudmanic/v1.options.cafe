@@ -28,7 +28,7 @@
             <a class="btn-close btn-close--large" (click)="toggleTradeBuilder()"></a>
           </div>
 
-        </div><!-- /.tabs__head box__head box__head-relative -->
+        </div>
 
         <div class="tabs__body">
           <div class="tab"></div><!-- /.tab -->
@@ -57,14 +57,12 @@
                     <tr>
                       <td>{{ symbol?.Name }}</td>
 
-                      <td></td>
-
                       <td>
-                        <strong class="title-green">$4.54</strong>
+                        <strong [ngClass]="{'title-red': (quotes[symbol.ShortName]?.change_percentage < 0), 'title-green': (quotes[symbol.ShortName]?.change_percentage > 0)}">{{ quotes[symbol.ShortName]?.change | currency:'USD':'symbol':'1.2-2' }}</strong>
                       </td>
 
                       <td>
-                        <strong class="title-green">(4.54%)</strong>
+                        <strong [ngClass]="{'title-red': (quotes[symbol.ShortName]?.change_percentage < 0), 'title-green': (quotes[symbol.ShortName]?.change_percentage > 0)}">({{ quotes[symbol.ShortName]?.change_percentage | number:'1.2-2' }}%)</strong>
                       </td>
                     </tr>
 
@@ -72,14 +70,12 @@
                       <td>{{ symbol?.ShortName }}</td>
 
                       <td>
-                        BID <strong>22.66 x 3</strong>
+                        BID <strong>{{ quotes[symbol.ShortName]?.bid | currency:'USD':'symbol':'1.2-2' }}</strong>
                       </td>
 
                       <td>
-                        ASK <strong>22.67 x 30</strong>
+                        ASK <strong>{{ quotes[symbol.ShortName]?.ask | currency:'USD':'symbol':'1.2-2' }}</strong>
                       </td>
-
-                      <td></td>
                     </tr>
                   </table>
                 </div>
@@ -94,8 +90,6 @@
                   <div class="form__row">
                     <div class="form__col form__col--clear form__col--size4">
                       
-
-
 
 
                       <div class="form__row" *ngFor="let row of tradeDetails.Legs; let k = index">
@@ -222,8 +216,11 @@
                       </div><!-- /.form__row -->
                     </div><!-- /.form__col form__col-clear form__col-size4 -->
 
+
+
                     <div class="form__col form__col--clear form__col--size5">
-                      <div class="table-rows">
+
+                      <div class="table-rows" *ngFor="let row of tradeDetails.Legs; let k = index;">
                         <table>
                           <tr>
                             <td>APY May 10 2017 $198</td>
@@ -249,94 +246,14 @@
                             </td>
                           </tr>
                         </table>
-                      </div><!-- /.table-rows -->
+                      </div>
 
-                      <div class="table-rows">
-                        <table>
-                          <tr>
-                            <td>APY May 10 2017 $198</td>
+                    </div>
 
-                            <td>CALL</td>
-
-                            <td>
-                              <strong class="title-green">0.00</strong>
-                            </td>
-
-                            <td>
-                              <strong class="title-green">(0.00)</strong>
-                            </td>
-                          </tr>
-
-                          <tr>
-                            <td>
-                              BID <strong>22.66 x 3</strong>
-                            </td>
-
-                            <td colspan="3">
-                              ASK <strong>22.67 x 30</strong>
-                            </td>
-                          </tr>
-                        </table>
-                      </div><!-- /.table-rows -->
-
-                      <div class="table-rows">
-                        <table>
-                          <tr>
-                            <td>APY May 10 2017 $198</td>
-
-                            <td>CALL</td>
-
-                            <td>
-                              <strong class="title-green">0.00</strong>
-                            </td>
-
-                            <td>
-                              <strong class="title-green">(0.00)</strong>
-                            </td>
-                          </tr>
-
-                          <tr>
-                            <td>
-                              BID <strong>22.66 x 3</strong>
-                            </td>
-
-                            <td colspan="3">
-                              ASK <strong>22.67 x 30</strong>
-                            </td>
-                          </tr>
-                        </table>
-                      </div><!-- /.table-rows -->
-
-                      <div class="table-rows">
-                        <table>
-                          <tr>
-                            <td>APY May 10 2017 $198</td>
-
-                            <td>CALL</td>
-
-                            <td>
-                              <strong class="title-green">0.00</strong>
-                            </td>
-
-                            <td>
-                              <strong class="title-green">(0.00)</strong>
-                            </td>
-                          </tr>
-
-                          <tr>
-                            <td>
-                              BID <strong>22.66 x 3</strong>
-                            </td>
-
-                            <td colspan="3">
-                              ASK <strong>22.67 x 30</strong>
-                            </td>
-                          </tr>
-                        </table>
-                      </div><!-- /.table-rows -->
-                    </div><!-- /.form__col form__col-clear form__col-size5 -->
                   </div><!-- /.form__row -->
                 </div><!-- /.form__body -->
+
+
 
                 <div class="form__actions">
                   <div class="form__actions__inner">

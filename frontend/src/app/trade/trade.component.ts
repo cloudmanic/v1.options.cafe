@@ -7,7 +7,7 @@
 import { Symbol } from '../models/symbol';
 import { Component, OnInit } from '@angular/core';
 import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../providers/http/trade.service';
-
+import { WebsocketService } from '../providers/http/websocket.service';
 
 
 @Component({
@@ -17,6 +17,7 @@ import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../prov
 
 export class TradeComponent implements OnInit 
 {
+  quotes = {}
   symbol: Symbol;
   typeAheadSymbol: Symbol;
   tradeDetails: TradeDetails = new TradeDetails();
@@ -25,7 +26,7 @@ export class TradeComponent implements OnInit
   //
   // Construct.
   //
-  constructor(private tradeService: TradeService) 
+  constructor(private websocketService: WebsocketService, private tradeService: TradeService) 
   { 
     // Set Defaults (also used for development)
     this.tradeDetails.Symbol = "SPY";
@@ -41,6 +42,11 @@ export class TradeComponent implements OnInit
     
 
     //console.log(this.tradeDetails); 
+
+    // Subscribe to data updates from the quotes - Market Quotes
+    this.websocketService.quotePushData.subscribe(data => {
+      this.quotes[data.symbol] = data;
+    }); 
   }
 
   //
