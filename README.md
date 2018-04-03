@@ -14,3 +14,7 @@ We assume the server is already setup for us. At Cloudmanic we have a different 
 
 * You need to add ```ansible/.vault_pass``` with the value password as the only string in the file. https://www.digitalocean.com/community/tutorials/how-to-use-vault-to-protect-sensitive-ansible-data-on-ubuntu-16-04
 
+
+## Getting Up And Running
+
+- Run `go run main.go -cmd=symbol-import` to import all the possible symbols into the symbols db table.

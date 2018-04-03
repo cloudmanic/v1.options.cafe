@@ -4,6 +4,7 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import { TradeService, TradeEvent, TradeDetails } from '../../providers/http/trade.service';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 
 @Component({
@@ -11,11 +12,26 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
   templateUrl: './subnav.component.html'
 })
 
-export class SubnavComponent implements OnInit {
+export class SubnavComponent implements OnInit 
+{
+  //
+  // Construct.
+  //
+  constructor(private tradeService: TradeService) { }
 
-  constructor() { }
+  //
+  // OnInit
+  //
+  ngOnInit() 
+  {
+  }
 
-  ngOnInit() {
+  //
+  // On Trade Click.
+  //
+  onTradeClick()
+  {
+    this.tradeService.PushEvent(new TradeEvent().createNew("toggle-trade-builder", new TradeDetails());
   }
 
 }

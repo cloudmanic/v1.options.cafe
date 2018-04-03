@@ -1,0 +1,462 @@
+<div class="content__inner" *ngIf="showTradeBuilder">
+  <div class="shell shell--large">
+    <aside class="section box--bordered">
+      <div class="tabs">
+        <div class="tabs__head box__head box__head--relative">
+          
+          <nav class="tabs__nav">
+            <ul>
+              <li [ngClass]="{'current': (tradeDetails.Class == 'equity') }">
+                <a (click)="setTradeClass('equity')">Equity</a>
+              </li>
+
+              <li [ngClass]="{'current': (tradeDetails.Class == 'option') }">
+                <a (click)="setTradeClass('option')">Option</a>
+              </li>
+
+              <li [ngClass]="{'current': (tradeDetails.Class == 'multileg') }">
+                <a (click)="setTradeClass('multileg')">Multileg</a>
+              </li>
+
+              <li [ngClass]="{'current': (tradeDetails.Class == 'combo') }">
+                <a (click)="setTradeClass('combo')">Combo</a>
+              </li>
+            </ul>
+          </nav>
+
+          <div class="box__absolute box__absolute--close">
+            <a class="btn-close btn-close--large" (click)="toggleTradeBuilder()"></a>
+          </div>
+
+        </div><!-- /.tabs__head box__head box__head-relative -->
+
+        <div class="tabs__body">
+          <div class="tab"></div><!-- /.tab -->
+
+          <div class="tab"></div><!-- /.tab -->
+
+          <div class="tab current">
+            <div class="tab__flex">
+              <div class="tab__inner">
+                <div class="search">
+                  <form action="?" method="get">
+                    <div class="dropdown dropdown--search">
+                      <label for="q" class="hidden">Equity or Symbol</label>
+                      <input type="search" name="symbol" id="q" value="" placeholder="Equity or Symbol" class="field search__field" [(ngModel)]="tradeDetails.Symbol" />
+
+                      <input type="submit" value="Search" class="btn search__btn" />
+
+                      <div class="dropdown__body">
+                        <ul class="list-actions">
+                          <li>
+                            <a href="#">
+                              <span>AAL</span>
+
+                              American Airlines Group Inc
+                            </a>
+                          </li>
+
+                          <li>
+                            <a href="#">
+                              <span>AAPL</span>
+
+                              Apple Inc
+                            </a>
+                          </li>
+
+                          <li>
+                            <a href="#">
+                              <span>ADBE</span>
+
+                              Adobe Systems Inc
+                            </a>
+                          </li>
+
+                          <li>
+                            <a href="#">
+                              <span>ADI</span>
+
+                              Analog Devices Inc
+                            </a>
+                          </li>
+
+                          <li>
+                            <a href="#">
+                              <span>ADP</span>
+
+                              Automatic Data Processing Inc
+                            </a>
+                          </li>
+
+                          <li>
+                            <a href="#">
+                              <span>ADSK</span>
+
+                              Autodesk Inc
+                            </a>
+                          </li>
+
+                          <li>
+                            <a href="#">
+                              <span>AKAM</span>
+
+                              Akamai Technologies Inc
+                            </a>
+                          </li>
+
+                          <li>
+                            <a href="#">
+                              <span>ALXN</span>
+
+                              Alexion Pharmaceuticals Inc
+                            </a>
+                          </li>
+
+                          <li>
+                            <a href="#">
+                              <span>AMAT</span>
+
+                              Applied Materials Inc
+                            </a>
+                          </li>
+
+                          <li>
+                            <a href="#">
+                              <span>AMGN</span>
+
+                              Amgen Inc
+                            </a>
+                          </li>
+
+                          <li>
+                            <a href="#">
+                              <span>AMZN</span>
+
+                              Amazon.com Inc
+                            </a>
+                          </li>
+
+                          <li>
+                            <a href="#">
+                              <span>ATVI</span>
+
+                              Activision Blizzard Inc
+                            </a>
+                          </li>
+
+                          <li>
+                            <a href="#">
+                              <span>AVGO</span>
+
+                              Broadcom Ltd
+                            </a>
+                          </li>
+                        </ul><!-- /.list-actions -->
+                      </div><!-- /.dropdown__body -->
+                    </div><!-- /.dropdown dropdown-search -->
+                  </form>
+                </div><!-- /.search -->
+              </div><!-- /.tab__inner -->
+
+              <div class="tab__inner">
+                <div class="table--stocks">
+                  <table>
+                    <tr>
+                      <td>Amazon.com Inc</td>
+
+                      <td></td>
+
+                      <td>
+                        <strong class="title-green">$4.54</strong>
+                      </td>
+
+                      <td>
+                        <strong class="title-green">(4.54%)</strong>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>AMZN</td>
+
+                      <td>
+                        BID <strong>22.66 x 3</strong>
+                      </td>
+
+                      <td>
+                        ASK <strong>22.67 x 30</strong>
+                      </td>
+
+                      <td></td>
+                    </tr>
+                  </table>
+                </div><!-- /.table-stocks -->
+              </div><!-- /.tab__inner -->
+            </div><!-- /.tab__flex -->
+
+            <div class="form form--search">
+              <form action="?" method="post">
+                <div class="form__body">
+                  <div class="form__row">
+                    <div class="form__col form__col--clear form__col--size4">
+                      
+
+
+
+
+                      <div class="form__row" *ngFor="let row of tradeDetails.Legs; let k = index">
+                        <div class="form__col form__col--size1">
+                          <label for="field-search-expirations" class="hidden">Expirations</label>
+
+                          <div class="form__controls">
+                            <div class="select">
+                              <select name="field-search-expirations" id="field-search-expirations">
+                                <option value="option-1">Expirations</option>
+
+                                <option value="option-2">Option 2</option>
+
+                                <option value="option-3" selected>4/13/17</option>
+                              </select>
+                            </div><!-- /.select -->
+                          </div><!-- /.form__controls -->
+                        </div><!-- /.form__col form__col-size1 -->
+
+                        <div class="form__col form__col--size3">
+                          <label for="field-search-strike" class="hidden">Strike</label>
+
+                          <div class="form__controls">
+                            <div class="select">
+                              <select name="field-search-strike" id="field-search-strike">
+                                <option value="option-1-1" >Strike</option>
+
+                                <option value="option-1-2">Option 2</option>
+
+                                <option value="option-1-3" selected>170</option>
+                              </select>
+                            </div><!-- /.select -->
+                          </div><!-- /.form__controls -->
+                        </div><!-- /.form__col form__col-size3 -->
+
+                        <div class="form__col form__col--size3">
+                          <label for="field-search-call" class="hidden">Call</label>
+
+                          <div class="form__controls">
+                            <div class="select not--selected">
+                              <select name="field-search-call" id="field-search-call">
+                                <option value="option-2-1">Call</option>
+
+                                <option value="option-2-2">Call 2</option>
+                              </select>
+                            </div><!-- /.select not-selected -->
+                          </div><!-- /.form__controls -->
+                        </div><!-- /.form__col form__col-size3 -->
+
+                        <div class="form__col form__col--size3">
+                          <label for="field-search-side" class="hidden">Side</label>
+
+                          <div class="form__controls">
+                            <div class="select not--selected">
+                              <select name="field-search-side" id="field-search-side">
+                                <option value="option-3-1" selected>Side</option>
+
+                                <option value="option-3-2">Option 2</option>
+                              </select>
+                            </div><!-- /.select not-selected -->
+                          </div><!-- /.form__controls -->
+                        </div><!-- /.form__col form__col-size3 -->
+
+
+                        <div class="form__col form__col--size2">
+                          <label for="field-quantity-{{ k }}" class="hidden">Quantity</label>
+                          <div class="form__controls">
+                            <input type="text" class="field" name="Qty[]" id="field-quantity-{{ k }}" placeholder="Quantity" [(ngModel)]="row.Qty" />
+                          </div>
+                        </div>
+
+
+                        <div class="form__col form__col--size7">
+                          <a href="#" class="btn-square">
+                            <i class="ico-trash"></i>
+                          </a>
+
+                          <a href="#" class="btn-square">
+                            <i class="ico-plus-blue"></i>
+                          </a>
+                        </div><!-- /.form__col form__col-size7 -->
+                      </div><!-- /.form__row -->
+
+
+
+
+
+
+
+                      <div class="form__row">
+
+                        <div class="form__col form__col--size1">
+                          <label for="field-search-order-type" class="hidden">Order Type</label>
+                          <div class="form__controls">
+
+                            <div class="select">
+                              <select name="OrderType" id="field-search-order-type" [(ngModel)]="tradeDetails.OrderType">
+                                <option value="market">Market</option>
+                                <option value="debit">Net Debit</option>
+                                <option value="credit">Net Credit</option>
+                                <option value="even">Even</option>                                
+                              </select>
+                            </div>
+
+                          </div>
+                        </div>
+
+
+
+                        <div class="form__col form__col--size3">
+                          <label for="field-search-day" class="hidden">Day</label>
+                          <div class="form__controls">
+
+                            <div class="select">
+                              <select name="Duration" id="field-search-day" [(ngModel)]="tradeDetails.Duration">
+                                <option value="day">Day</option>
+                                <option value="gtc">GTC</option>
+                              </select>
+                            </div>
+
+                          </div>
+                        </div>
+
+                      </div><!-- /.form__row -->
+                    </div><!-- /.form__col form__col-clear form__col-size4 -->
+
+                    <div class="form__col form__col--clear form__col--size5">
+                      <div class="table-rows">
+                        <table>
+                          <tr>
+                            <td>APY May 10 2017 $198</td>
+
+                            <td>CALL</td>
+
+                            <td>
+                              <strong class="title-green">0.00</strong>
+                            </td>
+
+                            <td>
+                              <strong class="title-green">(0.00)</strong>
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <td>
+                              BID <strong>22.66 x 3</strong>
+                            </td>
+
+                            <td colspan="3">
+                              ASK <strong>22.67 x 30</strong>
+                            </td>
+                          </tr>
+                        </table>
+                      </div><!-- /.table-rows -->
+
+                      <div class="table-rows">
+                        <table>
+                          <tr>
+                            <td>APY May 10 2017 $198</td>
+
+                            <td>CALL</td>
+
+                            <td>
+                              <strong class="title-green">0.00</strong>
+                            </td>
+
+                            <td>
+                              <strong class="title-green">(0.00)</strong>
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <td>
+                              BID <strong>22.66 x 3</strong>
+                            </td>
+
+                            <td colspan="3">
+                              ASK <strong>22.67 x 30</strong>
+                            </td>
+                          </tr>
+                        </table>
+                      </div><!-- /.table-rows -->
+
+                      <div class="table-rows">
+                        <table>
+                          <tr>
+                            <td>APY May 10 2017 $198</td>
+
+                            <td>CALL</td>
+
+                            <td>
+                              <strong class="title-green">0.00</strong>
+                            </td>
+
+                            <td>
+                              <strong class="title-green">(0.00)</strong>
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <td>
+                              BID <strong>22.66 x 3</strong>
+                            </td>
+
+                            <td colspan="3">
+                              ASK <strong>22.67 x 30</strong>
+                            </td>
+                          </tr>
+                        </table>
+                      </div><!-- /.table-rows -->
+
+                      <div class="table-rows">
+                        <table>
+                          <tr>
+                            <td>APY May 10 2017 $198</td>
+
+                            <td>CALL</td>
+
+                            <td>
+                              <strong class="title-green">0.00</strong>
+                            </td>
+
+                            <td>
+                              <strong class="title-green">(0.00)</strong>
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <td>
+                              BID <strong>22.66 x 3</strong>
+                            </td>
+
+                            <td colspan="3">
+                              ASK <strong>22.67 x 30</strong>
+                            </td>
+                          </tr>
+                        </table>
+                      </div><!-- /.table-rows -->
+                    </div><!-- /.form__col form__col-clear form__col-size5 -->
+                  </div><!-- /.form__row -->
+                </div><!-- /.form__body -->
+
+                <div class="form__actions">
+                  <div class="form__actions__inner">
+                    <input type="reset" value="Reset" class="link-action" />
+
+                    <input type="submit" value="Preview" class="btn form__btn" />
+                  </div><!-- /.form__actions__inner -->
+                </div><!-- /.form__actions -->
+              </form>
+            </div><!-- /.form form-search -->
+          </div><!-- /.tab current -->
+
+          <div class="tab"></div><!-- /.tab -->
+        </div><!-- /.tabs__body -->
+      </div><!-- /.tabs -->
+    </aside><!-- /.section box-bordered -->
+  </div><!-- /.shell shell-large -->
+</div><!-- /.content__inner -->

@@ -19,6 +19,7 @@ import { AuthGuard } from './auth/guards/auth.service';
 import { StateService } from './providers/state/state.service';
 
 // Providers - http
+import { TradeService } from './providers/http/trade.service';
 import { QuotesService } from './providers/http/quotes.service';
 import { BrokerService } from './providers/http/broker.service';
 import { SymbolService } from './providers/http/symbol.service';
@@ -61,6 +62,7 @@ import { PositionComponent } from './trading/dashboard/positions/position.compon
 import { MarketQuotesComponent } from './trading/dashboard/market-quotes/market-quotes.component';
 import { DashboardChartComponent } from './trading/dashboard/dashboard-chart/dashboard-chart.component';
 import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-symbols.component';
+import { TradeComponent } from './trade/trade.component';
 
 @NgModule({
   declarations: [
@@ -106,6 +108,7 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     MarketQuotesComponent,
     DashboardChartComponent,
     TypeaheadSymbolsComponent,
+    TradeComponent,
   ],
   
   imports: [
@@ -126,6 +129,7 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
     WatchlistService,
     WebsocketService,
     StatusService,
+    TradeService,
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }    
   ],
   
