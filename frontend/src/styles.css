@@ -1438,6 +1438,11 @@ select::-ms-expand { display: none; }
 .ml-5 { margin-left: 5px; }
 .ml-20 { margin-left: 20px; }
 
+/* Trade Builder */
+.trade-builder .trade-search { display: flex; }
+.trade-builder .trade-search .typeahead-cont { width: 100%; }
+.trade-builder .trade-search .typeahead-cont .field { width: 98%; }
+
 /* Hide GooveHq stuff */
 iframe.grv-widget-tag { display: none !important; }
 iframe.grv-widget-app { display: block !important; }

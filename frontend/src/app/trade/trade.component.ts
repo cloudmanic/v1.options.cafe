@@ -4,6 +4,7 @@
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import { Symbol } from '../models/symbol';
 import { Component, OnInit } from '@angular/core';
 import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../providers/http/trade.service';
 
@@ -16,6 +17,8 @@ import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../prov
 
 export class TradeComponent implements OnInit 
 {
+  symbol: Symbol;
+  typeAheadSymbol: Symbol;
   tradeDetails: TradeDetails = new TradeDetails();
   showTradeBuilder: boolean = true;
 
@@ -37,7 +40,7 @@ export class TradeComponent implements OnInit
     this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180402P00264000", "buy_to_open", 10));   
     
 
-    console.log(this.tradeDetails); 
+    //console.log(this.tradeDetails); 
   }
 
   //
@@ -91,6 +94,25 @@ export class TradeComponent implements OnInit
     this.tradeDetails.Class = type;
   }
 
+  //
+  // onSearchTypeAheadClick() 
+  //
+  onSearchTypeAheadClick(symbol: Symbol) 
+  {
+    if (typeof symbol == "undefined") {
+      return;
+    }
+    
+    this.typeAheadSymbol = symbol;
+  } 
+
+  //
+  // onSearchSubmit()
+  //
+  onSearchSubmit() 
+  {
+    this.symbol = this.typeAheadSymbol;
+  }
 }
 
 /* End File */

@@ -7,7 +7,7 @@
 import 'rxjs/Rx'
 import { Symbol } from '../../models/symbol';
 import { SymbolService } from '../../providers/http/symbol.service';
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, Input, EventEmitter } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -18,6 +18,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 export class TypeaheadSymbolsComponent implements OnInit {
 
+  @Input() clearAfterSelect: string = "true";
   @Output('selected') symbolSelected = new EventEmitter<Symbol>();
 
   searchTerm: string = ""
@@ -43,7 +44,15 @@ export class TypeaheadSymbolsComponent implements OnInit {
     this.typeAheadList = []
     this.typeAheadShow = false;
     this.activeItem = -1;
-    this.searchTerm = '';        
+
+    // Clear after select.
+    if(this.clearAfterSelect == "true") 
+    {
+      this.searchTerm = '';
+    } else
+    {
+      this.searchTerm = symbol.ShortName;
+    }
   }
 
   //

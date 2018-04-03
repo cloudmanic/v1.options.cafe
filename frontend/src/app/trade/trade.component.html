@@ -1,4 +1,4 @@
-<div class="content__inner" *ngIf="showTradeBuilder">
+<div class="content__inner trade-builder" *ngIf="showTradeBuilder">
   <div class="shell shell--large">
     <aside class="section box--bordered">
       <div class="tabs">
@@ -37,132 +37,25 @@
 
           <div class="tab current">
             <div class="tab__flex">
+
+
               <div class="tab__inner">
                 <div class="search">
-                  <form action="?" method="get">
-                    <div class="dropdown dropdown--search">
-                      <label for="q" class="hidden">Equity or Symbol</label>
-                      <input type="search" name="symbol" id="q" value="" placeholder="Equity or Symbol" class="field search__field" [(ngModel)]="tradeDetails.Symbol" />
-
+                  <form (submit)="onSearchSubmit()">
+                    <div class="dropdown dropdown--search trade-search">
+                      <app-typeahead-symbols (selected)="onSearchTypeAheadClick($event)" clearAfterSelect="false" class="typeahead-cont"></app-typeahead-symbols>
                       <input type="submit" value="Search" class="btn search__btn" />
-
-                      <div class="dropdown__body">
-                        <ul class="list-actions">
-                          <li>
-                            <a href="#">
-                              <span>AAL</span>
-
-                              American Airlines Group Inc
-                            </a>
-                          </li>
-
-                          <li>
-                            <a href="#">
-                              <span>AAPL</span>
-
-                              Apple Inc
-                            </a>
-                          </li>
-
-                          <li>
-                            <a href="#">
-                              <span>ADBE</span>
-
-                              Adobe Systems Inc
-                            </a>
-                          </li>
-
-                          <li>
-                            <a href="#">
-                              <span>ADI</span>
-
-                              Analog Devices Inc
-                            </a>
-                          </li>
-
-                          <li>
-                            <a href="#">
-                              <span>ADP</span>
-
-                              Automatic Data Processing Inc
-                            </a>
-                          </li>
-
-                          <li>
-                            <a href="#">
-                              <span>ADSK</span>
-
-                              Autodesk Inc
-                            </a>
-                          </li>
-
-                          <li>
-                            <a href="#">
-                              <span>AKAM</span>
-
-                              Akamai Technologies Inc
-                            </a>
-                          </li>
-
-                          <li>
-                            <a href="#">
-                              <span>ALXN</span>
-
-                              Alexion Pharmaceuticals Inc
-                            </a>
-                          </li>
-
-                          <li>
-                            <a href="#">
-                              <span>AMAT</span>
-
-                              Applied Materials Inc
-                            </a>
-                          </li>
-
-                          <li>
-                            <a href="#">
-                              <span>AMGN</span>
-
-                              Amgen Inc
-                            </a>
-                          </li>
-
-                          <li>
-                            <a href="#">
-                              <span>AMZN</span>
-
-                              Amazon.com Inc
-                            </a>
-                          </li>
-
-                          <li>
-                            <a href="#">
-                              <span>ATVI</span>
-
-                              Activision Blizzard Inc
-                            </a>
-                          </li>
-
-                          <li>
-                            <a href="#">
-                              <span>AVGO</span>
-
-                              Broadcom Ltd
-                            </a>
-                          </li>
-                        </ul><!-- /.list-actions -->
-                      </div><!-- /.dropdown__body -->
-                    </div><!-- /.dropdown dropdown-search -->
+                    </div>
                   </form>
-                </div><!-- /.search -->
-              </div><!-- /.tab__inner -->
+                </div>
+              </div>
 
-              <div class="tab__inner">
+
+              <div class="tab__inner" *ngIf="symbol">
                 <div class="table--stocks">
                   <table>
                     <tr>
-                      <td>Amazon.com Inc</td>
+                      <td>{{ symbol?.Name }}</td>
 
                       <td></td>
 
@@ -176,7 +69,7 @@
                     </tr>
 
                     <tr>
-                      <td>AMZN</td>
+                      <td>{{ symbol?.ShortName }}</td>
 
                       <td>
                         BID <strong>22.66 x 3</strong>
@@ -189,8 +82,10 @@
                       <td></td>
                     </tr>
                   </table>
-                </div><!-- /.table-stocks -->
-              </div><!-- /.tab__inner -->
+                </div>
+              </div>
+
+
             </div><!-- /.tab__flex -->
 
             <div class="form form--search">
