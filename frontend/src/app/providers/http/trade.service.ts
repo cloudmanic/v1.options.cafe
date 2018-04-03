@@ -4,12 +4,39 @@
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import { Observable } from 'rxjs/Observable';
+import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 @Injectable()
 export class TradeService 
 {
   tradeEvent = new EventEmitter<TradeEvent>();
+
+  //
+  // Construct.
+  //
+  constructor(private http: HttpClient) { }
+
+  //
+  // Get option expirations
+  //
+  getOptionExpirations(symbol: string): Observable<Date[]> {
+    return this.http.get<string[]>(environment.app_server + '/api/v1/quotes/options/expirations/' + symbol).map(
+      (data) => {
+
+        let dates: Date[] = []
+
+        // Build data
+        for (let i = 0; i < data.length; i++) {
+          dates.push(new Date(data[i]));
+        }
+
+        return dates;
+      }
+    );
+  }
 
   //
   // Push an event.

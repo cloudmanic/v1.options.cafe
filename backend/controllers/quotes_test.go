@@ -20,6 +20,53 @@ import (
 )
 
 //
+// Test - GetOptionsExpirations
+//
+func TestGetOptionsExpirations01(t *testing.T) {
+
+	// Flush pending mocks after test execution
+	defer gock.Off()
+
+	// Setup mock request.
+	gock.New("https://api.tradier.com/v1").
+		Get("/markets/options/expirations").
+		Reply(200).
+		BodyString(`{"expirations":{"date":["2018-04-04","2018-04-06","2018-04-09","2018-04-11","2018-04-13","2018-04-16","2018-04-18","2018-04-20","2018-04-23","2018-04-25","2018-04-27","2018-04-30","2018-05-02","2018-05-04","2018-05-07","2018-05-09","2018-05-11","2018-05-18","2018-06-15","2018-06-29","2018-07-20","2018-09-21","2018-09-28","2018-12-21","2018-12-31","2019-01-18","2019-03-15","2019-03-29","2019-06-21","2019-09-20","2019-12-20","2020-01-17","2020-03-20","2020-12-18"]}}`)
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Make a mock request.
+	req, _ := http.NewRequest("GET", "/quotes/options/expirations/spy", nil)
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+	r.GET("/quotes/options/expirations/:symb", c.GetOptionsExpirations)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	var dates []string
+
+	err := json.Unmarshal([]byte(w.Body.String()), &dates)
+
+	// Parse json that returned.
+	st.Expect(t, err, nil)
+	st.Expect(t, len(dates), 34)
+	st.Expect(t, dates[0], "2018-04-04")
+	st.Expect(t, dates[3], "2018-04-11")
+	st.Expect(t, dates[33], "2020-12-18")
+}
+
+//
 // Test - GetHistoricalQuotes
 //
 func TestGetHistoricalQuotes01(t *testing.T) {

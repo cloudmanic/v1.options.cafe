@@ -20,6 +20,7 @@ export class TradeComponent implements OnInit
   quotes = {}
   symbol: Symbol;
   typeAheadSymbol: Symbol;
+  symbolExpirations: Date[] = [];
   tradeDetails: TradeDetails = new TradeDetails();
   showTradeBuilder: boolean = true;
 
@@ -41,7 +42,8 @@ export class TradeComponent implements OnInit
     this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180402P00264000", "buy_to_open", 10));   
     
 
-    //console.log(this.tradeDetails); 
+    //console.log(this.tradeDetails);
+
 
     // Subscribe to data updates from the quotes - Market Quotes
     this.websocketService.quotePushData.subscribe(data => {
@@ -109,6 +111,7 @@ export class TradeComponent implements OnInit
       return;
     }
     
+    // Set the symbol
     this.typeAheadSymbol = symbol;
   } 
 
@@ -117,7 +120,28 @@ export class TradeComponent implements OnInit
   //
   onSearchSubmit() 
   {
+    // Set the symbol
     this.symbol = this.typeAheadSymbol;
+    this.tradeDetails.Symbol = this.symbol.ShortName;
+
+    // Load expire dates
+    this.loadExpireDates();    
+  }
+
+  //
+  // Load expire dates
+  //
+  loadExpireDates()
+  {
+    this.symbolExpirations = [];
+    
+    // Make API call to get option expire dates.
+    this.tradeService.getOptionExpirations(this.tradeDetails.Symbol).subscribe(data => {
+      for (let i = 0; i < data.length; i++)
+      {
+        this.symbolExpirations.push(data[i]);
+      }
+    });
   }
 }
 

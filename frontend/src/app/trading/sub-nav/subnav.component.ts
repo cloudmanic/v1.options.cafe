@@ -31,7 +31,7 @@ export class SubnavComponent implements OnInit
   //
   onTradeClick()
   {
-    this.tradeService.PushEvent(new TradeEvent().createNew("toggle-trade-builder", new TradeDetails());
+    this.tradeService.PushEvent(new TradeEvent().createNew("toggle-trade-builder", new TradeDetails()));
   }
 
 }

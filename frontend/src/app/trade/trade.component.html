@@ -84,7 +84,7 @@
 
             </div><!-- /.tab__flex -->
 
-            <div class="form form--search">
+            <div class="form form--search" *ngIf="symbol">
               <form action="?" method="post">
                 <div class="form__body">
                   <div class="form__row">
@@ -99,14 +99,11 @@
                           <div class="form__controls">
                             <div class="select">
                               <select name="field-search-expirations" id="field-search-expirations">
-                                <option value="option-1">Expirations</option>
-
-                                <option value="option-2">Option 2</option>
-
-                                <option value="option-3" selected>4/13/17</option>
+                                <option value="{{ row2 }}" *ngFor="let row2 of symbolExpirations">{{ row2 | date:'shortDate' }}</option>
                               </select>
-                            </div><!-- /.select -->
-                          </div><!-- /.form__controls -->
+                            </div>
+                          </div>
+
                         </div><!-- /.form__col form__col-size1 -->
 
                         <div class="form__col form__col--size3">
