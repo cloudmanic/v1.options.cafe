@@ -22,53 +22,36 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-// //
-// // Get a full options chain by symbol. Just to keep things simple we us our
-// // admin account with Tradier to get this information. At this point
-// // no need to support this with every broker and such.
-// //
-// func (t *Controller) GetOptionsChainByExpiration(c *gin.Context) {
+//
+// Return a full option chain based on symbol and expire date.
+//
+func (t *Controller) GetOptionsChainByExpiration(c *gin.Context) {
 
-// 	var result []string
+	// Get access token
+	apiKey, err := t.GetTradierAccessToken(c)
 
-// 	// Create client
-// 	client := &http.Client{}
+	if err != nil {
+		t.RespondError(c, err, httpGenericErrMsg)
+		return
+	}
 
-// 	// Create request
-// 	req, err := http.NewRequest("GET", "https://api.tradier.com/v1/markets/options/chains?symbol="+c.Param("symb")+"&expiration="+c.Param("expire"), nil)
+	// Setup the broker
+	broker := tradier.Api{
+		DB:     t.DB,
+		ApiKey: apiKey,
+	}
 
-// 	// Headers
-// 	req.Header.Add("Authorization", "Bearer "+os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN"))
-// 	req.Header.Add("Accept", "application/json")
+	// Get chain from tradier.
+	chain, err := broker.GetOptionsChainByExpiration(c.Param("symb"), c.Param("expire"))
 
-// 	// Fetch Request
-// 	res, err := client.Do(req)
+	if err != nil {
+		t.RespondError(c, err, httpGenericErrMsg)
+		return
+	}
 
-// 	if err != nil {
-// 		fmt.Println("Failure : ", err)
-// 	}
-
-// 	// Close Body
-// 	defer res.Body.Close()
-
-// 	// Read Response Body
-// 	json, _ := ioutil.ReadAll(res.Body)
-
-// 	// Make sure the api responded with a 200
-// 	if res.StatusCode != 200 {
-// 		t.RespondError(c, errors.New("Failed response from Tradier."), httpGenericErrMsg)
-// 		return
-// 	}
-
-// 	// // Loop through the dates
-// 	// dates := gjson.Get(string(json), "expirations.date")
-// 	// for _, row := range dates.Array() {
-// 	// 	result = append(result, row.String())
-// 	// }
-
-// 	// Return happy JSON
-// 	c.JSON(200, result)
-// }
+	// Return happy JSON
+	c.JSON(200, chain)
+}
 
 //
 // Pass in a symbol and return a list of all expirations for
@@ -126,31 +109,12 @@ func (t *Controller) GetOptionsExpirations(c *gin.Context) {
 //
 func (t *Controller) GetHistoricalQuotes(c *gin.Context) {
 
-	var apiKey string = ""
-	var brokers = []models.Broker{}
+	// Get access token
+	apiKey, err := t.GetTradierAccessToken(c)
 
-	// Run the query to get brokers
-	err := t.DB.Query(&brokers, models.QueryParam{
-		UserId: c.MustGet("userId").(uint),
-		Wheres: []models.KeyValue{
-			{Key: "name", Value: "Tradier"},
-		},
-	})
-
-	// TODO: For now we only support Tradier but as we open up to new brokers we will have to support more.
-	if flag.Lookup("test.v") == nil {
-		for _, row := range brokers {
-
-			// Decrypt the access token
-			_apiKey, err := helpers.Decrypt(row.AccessToken)
-
-			if err != nil {
-				t.RespondError(c, err, httpGenericErrMsg)
-				return
-			}
-
-			apiKey = _apiKey
-		}
+	if err != nil {
+		t.RespondError(c, err, httpGenericErrMsg)
+		return
 	}
 
 	// Setup the broker
@@ -166,7 +130,7 @@ func (t *Controller) GetHistoricalQuotes(c *gin.Context) {
 	}
 
 	// Set start date
-	start, _ := time.Parse("2006-01-02 15:04", c.Query("start")+" 09:30")
+	start, err := time.Parse("2006-01-02 15:04", c.Query("start")+" 09:30")
 
 	if err != nil {
 		t.RespondError(c, err, "Unable to parse the start date.")
@@ -215,6 +179,45 @@ func (t *Controller) GetHistoricalQuotes(c *gin.Context) {
 }
 
 // --------------- Helper Functions --------------- //
+
+//
+// Get access tradier access token.
+//
+func (t *Controller) GetTradierAccessToken(c *gin.Context) (string, error) {
+
+	var apiKey string = ""
+	var brokers = []models.Broker{}
+
+	// Run the query to get brokers
+	err := t.DB.Query(&brokers, models.QueryParam{
+		UserId: c.MustGet("userId").(uint),
+		Wheres: []models.KeyValue{
+			{Key: "name", Value: "Tradier"},
+		},
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	// TODO: For now we only support Tradier but as we open up to new brokers we will have to support more.
+	if flag.Lookup("test.v") == nil {
+		for _, row := range brokers {
+
+			// Decrypt the access token
+			_apiKey, err := helpers.Decrypt(row.AccessToken)
+
+			if err != nil {
+				return "", err
+			}
+
+			apiKey = _apiKey
+		}
+	}
+
+	// Return Happy
+	return apiKey, nil
+}
 
 //
 // Test to see if this is a historical quote or a time sales quote
