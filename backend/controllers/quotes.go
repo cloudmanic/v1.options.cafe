@@ -22,6 +22,54 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+// //
+// // Get a full options chain by symbol. Just to keep things simple we us our
+// // admin account with Tradier to get this information. At this point
+// // no need to support this with every broker and such.
+// //
+// func (t *Controller) GetOptionsChainByExpiration(c *gin.Context) {
+
+// 	var result []string
+
+// 	// Create client
+// 	client := &http.Client{}
+
+// 	// Create request
+// 	req, err := http.NewRequest("GET", "https://api.tradier.com/v1/markets/options/chains?symbol="+c.Param("symb")+"&expiration="+c.Param("expire"), nil)
+
+// 	// Headers
+// 	req.Header.Add("Authorization", "Bearer "+os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN"))
+// 	req.Header.Add("Accept", "application/json")
+
+// 	// Fetch Request
+// 	res, err := client.Do(req)
+
+// 	if err != nil {
+// 		fmt.Println("Failure : ", err)
+// 	}
+
+// 	// Close Body
+// 	defer res.Body.Close()
+
+// 	// Read Response Body
+// 	json, _ := ioutil.ReadAll(res.Body)
+
+// 	// Make sure the api responded with a 200
+// 	if res.StatusCode != 200 {
+// 		t.RespondError(c, errors.New("Failed response from Tradier."), httpGenericErrMsg)
+// 		return
+// 	}
+
+// 	// // Loop through the dates
+// 	// dates := gjson.Get(string(json), "expirations.date")
+// 	// for _, row := range dates.Array() {
+// 	// 	result = append(result, row.String())
+// 	// }
+
+// 	// Return happy JSON
+// 	c.JSON(200, result)
+// }
+
 //
 // Pass in a symbol and return a list of all expirations for
 // this options symbol. Just to keep things simple we us our
