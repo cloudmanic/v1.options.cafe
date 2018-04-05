@@ -4,8 +4,10 @@
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import * as moment from 'moment';
 import { Symbol } from '../models/symbol';
 import { Component, OnInit } from '@angular/core';
+import { OptionsChainService } from '../providers/http/options-chain.service';
 import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../providers/http/trade.service';
 import { WebsocketService } from '../providers/http/websocket.service';
 
@@ -27,7 +29,7 @@ export class TradeComponent implements OnInit
   //
   // Construct.
   //
-  constructor(private websocketService: WebsocketService, private tradeService: TradeService) 
+  constructor(private websocketService: WebsocketService, private tradeService: TradeService, private optionsChainService: OptionsChainService) 
   { 
     // Set Defaults (also used for development)
     this.tradeDetails.Symbol = "SPY";
@@ -38,9 +40,12 @@ export class TradeComponent implements OnInit
     
     // Build legs
     this.tradeDetails.Legs = [];
-    this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180402P00262000", "sell_to_open", 10));
-    this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180402P00264000", "buy_to_open", 10));   
+    this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180402P00262000", moment("2018-05-04").toDate(), "Puts", 210, "sell_to_open", 10));
+    this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180402P00264000", moment("2018-05-04").toDate(), "Calls", 192, "buy_to_open", 10));   
     
+
+    // Load data (we call this only when we pass in a full trade)
+    this.loadChainForAllLegs();
 
     //console.log(this.tradeDetails);
 
@@ -142,6 +147,36 @@ export class TradeComponent implements OnInit
         this.symbolExpirations.push(data[i]);
       }
     });
+  }
+
+  //
+  // Load chain for all legs (normally called at the start when we pass in a full trade)
+  //
+  loadChainForAllLegs()
+  {
+    for (let i = 0; i < this.tradeDetails.Legs.length; i++)
+    {
+      this.onExpireChange(this.tradeDetails.Legs[i], i);
+    }
+  }
+
+  //
+  // On expire change.
+  //
+  onExpireChange(leg: TradeOptionLegs, index: number) 
+  {
+    // Api call to get the option chain.
+    this.optionsChainService.getChainBySymbolExpire(this.tradeDetails.Symbol, leg.Expire).subscribe(data => {
+      this.tradeDetails.Legs[index].Chain = data;
+    });  
+  }
+
+  //
+  // onTypeChange - When we pick a call or a put
+  //
+  onTypeChange(leg: TradeOptionLegs, index: number)
+  {
+    console.log(this.tradeDetails);
   }
 }
 

@@ -2,7 +2,7 @@
 // Date: 2018-04-03
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-04-03
+// Last Modified: 2018-04-04
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -33,9 +33,9 @@ type OptionsChainItem struct {
 	Low              float64 `json:"low"`
 	Close            float64 `json:"close"`
 	Bid              float64 `json:"bid"`
-	BidSize          int     `json:"bidsize"`
+	BidSize          int     `json:"bid_size"`
 	Ask              float64 `json:"ask"`
-	AskSize          int     `json:"asksize""`
+	AskSize          int     `json:"ask_size""`
 	OpenInterest     int     `json:"open_interest"`
 }
 

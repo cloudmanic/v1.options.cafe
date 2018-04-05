@@ -4,6 +4,8 @@
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import * as moment from 'moment';
+import { OptionsChain } from '../../models/options-chain';
 import { Observable } from 'rxjs/Observable';
 import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
@@ -30,7 +32,7 @@ export class TradeService
 
         // Build data
         for (let i = 0; i < data.length; i++) {
-          dates.push(new Date(data[i]));
+          dates.push(moment(data[i]).toDate());
         }
 
         return dates;
@@ -86,15 +88,22 @@ export class TradeDetails
 export class TradeOptionLegs 
 {
   Symbol: string;
+  Expire: Date; // Used just for the forms (not to be posted when creating a trade)
+  Strike: number;
   Side: string; // buy_to_open, sell_to_open, buy_to_close, sell_to_close
   Qty: number;
+  Type: string; // (Puts | Calls) Used just for the forms (not to be posted when creating a trade)
+  Chain: OptionsChain; // Used just for the forms (not to be posted when creating a trade)
 
   //
   // Create new.
   //
-  createNew(symbol: string, side: string, qty: number) : TradeOptionLegs {
+  createNew(symbol: string, expire: Date, type: string, strike: number, side: string, qty: number) : TradeOptionLegs {
     let obj = new TradeOptionLegs();
     obj.Symbol = symbol;
+    obj.Expire = expire;
+    obj.Type = type;
+    obj.Strike = strike;
     obj.Side = side;
     obj.Qty = qty;
     return obj;

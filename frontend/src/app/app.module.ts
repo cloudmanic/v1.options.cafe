@@ -19,6 +19,7 @@ import { AuthGuard } from './auth/guards/auth.service';
 import { StateService } from './providers/state/state.service';
 
 // Providers - http
+import { OptionsChainService } from './providers/http/options-chain.service';
 import { TradeService } from './providers/http/trade.service';
 import { QuotesService } from './providers/http/quotes.service';
 import { BrokerService } from './providers/http/broker.service';
@@ -130,6 +131,7 @@ import { TradeComponent } from './trade/trade.component';
     WebsocketService,
     StatusService,
     TradeService,
+    OptionsChainService,
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }    
   ],
   
