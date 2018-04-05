@@ -16,13 +16,17 @@ import (
 )
 
 type Symbol struct {
-	Id            uint          `gorm:"primary_key" json:"id"`
-	CreatedAt     time.Time     `json:"-"`
-	UpdatedAt     time.Time     `json:"-"`
-	ShortName     string        `sql:"not null" json:"short_name"`
-	Name          string        `sql:"not null" json:"name"`
-	Type          string        `sql:"not null;type:ENUM('Equity', 'Option', 'Other');default:'Equity'" json:"type"`
-	OptionDetails OptionDetails `json:"option_details"`
+	Id               uint          `gorm:"primary_key" json:"id"`
+	CreatedAt        time.Time     `json:"-"`
+	UpdatedAt        time.Time     `json:"-"`
+	ShortName        string        `sql:"not null" json:"short_name"`
+	Name             string        `sql:"not null" json:"name"`
+	Type             string        `sql:"not null;type:ENUM('Equity', 'Option', 'Other');default:'Equity'" json:"type"`
+	OptionUnderlying string        `json:"option_underlying"`
+	OptionType       string        `json:"option_type"`
+	OptionExpire     time.Time     `gorm:"type:date" json:"option_expire"`
+	OptionStrike     float64       `json:"option_strike"`
+	OptionDetails    OptionDetails `json:"option_details"`
 }
 
 type OptionDetails struct {
@@ -56,7 +60,7 @@ func (t *DB) CreateNewOptionSymbol(short string) (Symbol, error) {
 	parts, err := helpers.OptionParse(short)
 
 	if err != nil {
-		services.Error(err, "[Models:CreateNewOptionSymbol] - Unable to parse option symbol.")
+		services.Error(err, "[Models:CreateNewOptionSymbol] - Unable to parse option symbol. - "+short)
 		return Symbol{}, err
 	}
 
@@ -76,6 +80,24 @@ func (t *DB) CreateNewSymbol(short string, name string, sType string) (Symbol, e
 
 		// Create entry.
 		symb = Symbol{Name: name, ShortName: strings.ToUpper(short), Type: sType}
+
+		// Is this an option
+		if sType == "Option" {
+
+			// Get the parts of the option
+			parts, err := helpers.OptionParse(short)
+
+			if err != nil {
+				services.Error(err, "[Models:CreateNewSymbol] - Unable to parse option symbol. - "+short)
+				return Symbol{}, err
+			}
+
+			// Add in options data.
+			symb.OptionUnderlying = parts.Symbol
+			symb.OptionType = parts.Type
+			symb.OptionExpire = parts.Expire
+			symb.OptionStrike = parts.Strike
+		}
 
 		t.Create(&symb)
 

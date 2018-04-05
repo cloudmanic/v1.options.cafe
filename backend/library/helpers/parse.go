@@ -12,6 +12,8 @@ import (
 	"regexp"
 	"strconv"
 	"time"
+
+	"github.com/araddon/dateparse"
 )
 
 type OptionParts struct {
@@ -32,9 +34,9 @@ type OptionParts struct {
 //
 func OptionParse(optionSymb string) (OptionParts, error) {
 
-	// Length must be 18 chars
-	if len(optionSymb) != 18 {
-		return OptionParts{}, errors.New("Options symbol string must be 18 chars.")
+	// Length must be at least 16 chars
+	if len(optionSymb) < 16 {
+		return OptionParts{}, errors.New("Options symbol string must at least 16 chars. - " + optionSymb)
 	}
 
 	// Parse the options string
@@ -51,7 +53,11 @@ func OptionParse(optionSymb string) (OptionParts, error) {
 	year = year + 2000 // TODO: in year 3000 this will be a bug :)
 
 	// Build date
-	date := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
+	date, err := dateparse.ParseLocal(matches[0][3] + "/" + matches[0][4] + "/" + matches[0][2])
+
+	if err != nil {
+		return OptionParts{}, err
+	}
 
 	// Get type string.
 	var typeStr = "Call"
@@ -76,7 +82,7 @@ func OptionParse(optionSymb string) (OptionParts, error) {
 		Year:   uint(year),
 		Month:  uint(month),
 		Day:    uint(day),
-		Expire: date,
+		Expire: date.UTC(),
 		Type:   typeStr,
 		Strike: strike,
 	}, nil
