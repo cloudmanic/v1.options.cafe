@@ -9,7 +9,6 @@ package controllers
 import (
 	"errors"
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -54,6 +53,55 @@ func (t *Controller) GetOptionsChainByExpiration(c *gin.Context) {
 }
 
 //
+// Pass in a symbol and expire date to get a list of strikes.
+// For now we just use our admin Tradier API key. Some day we
+// should redo this to use the users API key.
+//
+func (t *Controller) GetOptionsStikesBySymbolExpiration(c *gin.Context) {
+
+	var result []int64
+
+	// Create client
+	client := &http.Client{}
+
+	// Create request
+	req, err := http.NewRequest("GET", "https://api.tradier.com/v1/markets/options/strikes?symbol="+c.Param("symb")+"&expiration="+c.Param("expire"), nil)
+
+	// Headers
+	req.Header.Add("Authorization", "Bearer "+os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN"))
+	req.Header.Add("Accept", "application/json")
+
+	// Fetch Request
+	res, err := client.Do(req)
+
+	if err != nil {
+		t.RespondError(c, err, httpGenericErrMsg)
+		return
+	}
+
+	// Close Body
+	defer res.Body.Close()
+
+	// Read Response Body
+	json, _ := ioutil.ReadAll(res.Body)
+
+	// Make sure the api responded with a 200
+	if res.StatusCode != 200 {
+		t.RespondError(c, errors.New("Failed response from Tradier."), httpGenericErrMsg)
+		return
+	}
+
+	// Loop through the strikes
+	s := gjson.Get(string(json), "strikes.strike")
+	for _, row := range s.Array() {
+		result = append(result, row.Int())
+	}
+
+	// Return happy JSON
+	c.JSON(200, result)
+}
+
+//
 // Pass in a symbol and return a list of all expirations for
 // this options symbol. Just to keep things simple we us our
 // admin account with Tradier to get this information. At this point
@@ -77,7 +125,8 @@ func (t *Controller) GetOptionsExpirations(c *gin.Context) {
 	res, err := client.Do(req)
 
 	if err != nil {
-		fmt.Println("Failure : ", err)
+		t.RespondError(c, err, httpGenericErrMsg)
+		return
 	}
 
 	// Close Body

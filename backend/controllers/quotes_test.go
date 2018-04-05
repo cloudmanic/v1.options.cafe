@@ -71,6 +71,50 @@ func TestGetOptionsChainByExpiration01(t *testing.T) {
 }
 
 //
+// Test - GetOptionsStikesBySymbolExpiration
+//
+func TestGetOptionsStikesBySymbolExpiration01(t *testing.T) {
+
+	// Flush pending mocks after test execution
+	defer gock.Off()
+
+	// Setup mock request.
+	gock.New("https://api.tradier.com/v1").
+		Get("/markets/options/strikes").
+		Reply(200).
+		BodyString(`{"strikes":{"strike":[100.0,105.0,110.0,115.0,120.0,125.0,130.0,135.0,140.0,145.0,150.0,155.0,156.0,157.0,158.0,159.0,160.0,161.0,162.0,163.0,164.0,165.0,166.0,167.0,168.0,169.0,170.0,171.0,172.0,173.0,174.0,175.0,176.0,177.0,178.0,179.0,180.0,181.0,182.0,183.0,184.0,185.0,186.0,187.0,188.0,189.0,190.0,191.0,192.0,193.0,194.0,195.0,196.0,197.0,198.0,199.0,200.0,201.0,202.0,203.0,204.0,205.0,206.0,207.0,208.0,209.0,210.0,211.0,212.0,213.0,214.0,215.0,216.0,217.0,218.0,219.0,220.0,221.0,222.0,223.0,224.0,225.0,226.0,227.0,228.0,229.0,230.0,231.0,232.0,233.0,234.0,235.0,236.0,237.0,238.0,239.0,240.0,241.0,242.0,243.0,244.0,245.0,246.0,247.0,247.5,248.0,249.0,250.0,251.0,252.0,252.5,253.0,253.5,254.0,254.5,255.0,255.5,256.0,256.5,257.0,257.5,258.0,258.5,259.0,259.5,260.0,260.5,261.0,261.5,262.0,262.5,263.0,264.0,265.0,266.0,267.0,267.5,268.0,269.0,270.0,270.5,271.0,271.5,272.0,272.5,273.0,273.5,274.0,274.5,275.0,275.5,276.0,276.5,277.0,277.5,278.0,278.5,279.0,279.5,280.0,280.5,281.0,281.5,282.0,282.5,283.0,283.5,284.0,284.5,285.0,286.0,287.0,287.5,288.0,289.0,290.0,291.0,292.0,292.5,293.0,294.0,295.0,296.0,297.0,297.5,298.0,299.0,300.0,301.0,302.0,302.5,303.0,304.0,305.0,306.0,307.0,308.0,309.0,310.0,311.0,312.0,313.0,314.0,315.0,316.0,317.0,318.0,319.0,320.0,325.0,330.0,335.0,340.0,345.0,350.0,355.0,360.0,365.0,370.0]}}`)
+
+	// Create controller
+	c := &Controller{}
+
+	// Make a mock request.
+	req, _ := http.NewRequest("GET", "/api/v1/quotes/options/strikes/spy/2018-04-20", nil)
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+	r.GET("/api/v1/quotes/options/strikes/:symb/:expire", c.GetOptionsStikesBySymbolExpiration)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	var strikes []int64
+
+	err := json.Unmarshal([]byte(w.Body.String()), &strikes)
+
+	// Parse json that returned.
+	st.Expect(t, err, nil)
+	st.Expect(t, len(strikes), 219)
+	st.Expect(t, strikes[0], int64(100))
+	st.Expect(t, strikes[3], int64(115))
+	st.Expect(t, strikes[33], int64(177))
+}
+
+//
 // Test - GetOptionsExpirations
 //
 func TestGetOptionsExpirations01(t *testing.T) {
@@ -84,11 +128,8 @@ func TestGetOptionsExpirations01(t *testing.T) {
 		Reply(200).
 		BodyString(`{"expirations":{"date":["2018-04-04","2018-04-06","2018-04-09","2018-04-11","2018-04-13","2018-04-16","2018-04-18","2018-04-20","2018-04-23","2018-04-25","2018-04-27","2018-04-30","2018-05-02","2018-05-04","2018-05-07","2018-05-09","2018-05-11","2018-05-18","2018-06-15","2018-06-29","2018-07-20","2018-09-21","2018-09-28","2018-12-21","2018-12-31","2019-01-18","2019-03-15","2019-03-29","2019-06-21","2019-09-20","2019-12-20","2020-01-17","2020-03-20","2020-12-18"]}}`)
 
-	// Start the db connection.
-	db, _ := models.NewDB()
-
 	// Create controller
-	c := &Controller{DB: db}
+	c := &Controller{}
 
 	// Make a mock request.
 	req, _ := http.NewRequest("GET", "/quotes/options/expirations/spy", nil)
