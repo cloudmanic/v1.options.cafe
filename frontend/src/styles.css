@@ -1438,6 +1438,10 @@ select::-ms-expand { display: none; }
 .ml-5 { margin-left: 5px; }
 .ml-20 { margin-left: 20px; }
 
+/* Widths */
+.width-95 { width: 95px !important; }
+.width-135 { width: 135px !important; }
+
 /* Trade Builder */
 .trade-builder .trade-search { display: flex; }
 .trade-builder .trade-search .typeahead-cont { width: 100%; }

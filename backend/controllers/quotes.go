@@ -59,7 +59,7 @@ func (t *Controller) GetOptionsChainByExpiration(c *gin.Context) {
 //
 func (t *Controller) GetOptionsStikesBySymbolExpiration(c *gin.Context) {
 
-	var result []int64
+	var result []float64
 
 	// Create client
 	client := &http.Client{}
@@ -94,7 +94,7 @@ func (t *Controller) GetOptionsStikesBySymbolExpiration(c *gin.Context) {
 	// Loop through the strikes
 	s := gjson.Get(string(json), "strikes.strike")
 	for _, row := range s.Array() {
-		result = append(result, row.Int())
+		result = append(result, row.Float())
 	}
 
 	// Return happy JSON

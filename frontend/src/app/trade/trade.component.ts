@@ -31,21 +31,21 @@ export class TradeComponent implements OnInit
   //
   constructor(private websocketService: WebsocketService, private tradeService: TradeService, private optionsChainService: OptionsChainService) 
   { 
-    // Set Defaults (also used for development)
-    this.tradeDetails.Symbol = "SPY";
-    this.tradeDetails.Class = "multileg";
-    this.tradeDetails.OrderType = "credit";
-    this.tradeDetails.Duration = "gtc";
-    this.tradeDetails.Price = 0.21;
+    // // Set Defaults (also used for development)
+    // this.tradeDetails.Symbol = "SPY";
+    // this.tradeDetails.Class = "multileg";
+    // this.tradeDetails.OrderType = "credit";
+    // this.tradeDetails.Duration = "gtc";
+    // this.tradeDetails.Price = 0.21;
     
-    // Build legs
-    this.tradeDetails.Legs = [];
-    this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180402P00262000", moment("2018-05-04").toDate(), "Puts", 210, "sell_to_open", 10));
-    this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180402P00264000", moment("2018-05-04").toDate(), "Calls", 192, "buy_to_open", 10));   
+    // // Build legs
+    // this.tradeDetails.Legs = [];
+    // this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180402P00262000", moment("2018-05-04").toDate(), "Puts", 190, "sell_to_open", 10));
+    // this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180402P00264000", moment("2018-05-04").toDate(), "Calls", 190, "buy_to_open", 10));   
     
 
-    // Load data (we call this only when we pass in a full trade)
-    this.loadChainForAllLegs();
+    // // Load data (we call this only when we pass in a full trade)
+    // this.loadChainForAllLegs();
 
     //console.log(this.tradeDetails);
 
@@ -130,13 +130,13 @@ export class TradeComponent implements OnInit
     this.tradeDetails.Symbol = this.symbol.ShortName;
 
     // Load expire dates
-    this.loadExpireDates();    
+    this.loadExpireDates(true);    
   }
 
   //
   // Load expire dates
   //
-  loadExpireDates()
+  loadExpireDates(addLeg: boolean)
   {
     this.symbolExpirations = [];
     
@@ -145,6 +145,17 @@ export class TradeComponent implements OnInit
       for (let i = 0; i < data.length; i++)
       {
         this.symbolExpirations.push(data[i]);
+      }
+
+      // Add first leg
+      if(addLeg) 
+      {
+        this.tradeDetails.Legs = [];
+        this.tradeDetails.Legs.push(new TradeOptionLegs());
+        this.tradeDetails.Legs[0].Type = "Puts";
+        this.tradeDetails.Legs[0].Side = "buy_to_open";
+        this.tradeDetails.Legs[0].Expire = this.symbolExpirations[0];
+        this.onExpireChange(this.tradeDetails.Legs[0], 0);
       }
     });
   }
@@ -165,10 +176,31 @@ export class TradeComponent implements OnInit
   //
   onExpireChange(leg: TradeOptionLegs, index: number) 
   {
-    // Api call to get the option chain.
-    this.optionsChainService.getChainBySymbolExpire(this.tradeDetails.Symbol, leg.Expire).subscribe(data => {
-      this.tradeDetails.Legs[index].Chain = data;
-    });  
+    // Api call to get the strikes for this chain.
+    this.tradeService.getOptionStrikesBySymbolExpiration(this.tradeDetails.Symbol, leg.Expire).subscribe(data => {
+      this.tradeDetails.Legs[index].Strikes = data;
+
+      // Make sure our strike is still valid.
+      let found = false;
+
+      for(let i = 0; i < this.tradeDetails.Legs[index].Strikes.length; i++)
+      {
+        if(this.tradeDetails.Legs[index].Strikes[i] == this.tradeDetails.Legs[index].Strike)
+        {
+          found = true;
+        }
+      }
+
+      if(! found)
+      {
+        this.tradeDetails.Legs[index].Strike = this.tradeDetails.Legs[index].Strikes[0];
+      }
+    });
+
+    // // Api call to get the option chain.
+    // this.optionsChainService.getChainBySymbolExpire(this.tradeDetails.Symbol, leg.Expire).subscribe(data => {
+    //   this.tradeDetails.Legs[index].Chain = data;
+    // });  
   }
 
   //
@@ -176,8 +208,31 @@ export class TradeComponent implements OnInit
   //
   onTypeChange(leg: TradeOptionLegs, index: number)
   {
-    console.log(this.tradeDetails);
+    //console.log(this.tradeDetails);
   }
+
+  //
+  // Duplicate leg
+  //
+  duplicateLeg(leg: TradeOptionLegs)
+  {
+    let newLeg = new TradeOptionLegs();
+    newLeg.Symbol = leg.Symbol;
+    newLeg.Expire = leg.Expire;
+    newLeg.Type = leg.Type;
+    newLeg.Strike = leg.Strike;
+    newLeg.Side = leg.Side;
+    newLeg.Qty = leg.Qty;
+    newLeg.Strikes = leg.Strikes;
+    this.tradeDetails.Legs.push(newLeg); 
+  }
+
+  //
+  // Remove leg
+  //
+  removeLeg(leg: TradeOptionLegs, index: number) {
+    this.tradeDetails.Legs.splice(index, 1);
+  }  
 }
 
 /* End File */

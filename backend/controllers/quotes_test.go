@@ -102,16 +102,16 @@ func TestGetOptionsStikesBySymbolExpiration01(t *testing.T) {
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
-	var strikes []int64
+	var strikes []float64
 
 	err := json.Unmarshal([]byte(w.Body.String()), &strikes)
 
 	// Parse json that returned.
 	st.Expect(t, err, nil)
 	st.Expect(t, len(strikes), 219)
-	st.Expect(t, strikes[0], int64(100))
-	st.Expect(t, strikes[3], int64(115))
-	st.Expect(t, strikes[33], int64(177))
+	st.Expect(t, strikes[0], float64(100.00))
+	st.Expect(t, strikes[3], float64(115.00))
+	st.Expect(t, strikes[33], float64(177.00))
 }
 
 //

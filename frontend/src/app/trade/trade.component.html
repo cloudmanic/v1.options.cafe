@@ -92,46 +92,50 @@
                       
 
 
+
+
+
+
                       <div class="form__row" *ngFor="let row of tradeDetails.Legs; let k = index">
                         <div class="form__col form__col--size1">
-                          <label for="field-expire" class="hidden">Expirations</label>
+                          <label for="field-expire-{{ k }}" class="hidden">Expirations</label>
 
                           <div class="form__controls">
                             <div class="select">
-                              <select name="Expire[]" id="field-expire" (change)="onExpireChange(row, k)" [(ngModel)]="row.Expire">
+                              <select name="Expire[]" id="field-expire-{{ k }}" (change)="onExpireChange(row, k)" [(ngModel)]="row.Expire">
                                 <option value="{{ row2 }}" *ngFor="let row2 of symbolExpirations">{{ row2 | date:'shortDate' }}</option>
                               </select>
                             </div>
                           </div>
 
-                        </div><!-- /.form__col form__col-size1 -->
+                        </div>
 
-                        <div class="form__col form__col--size2">
-                          <label for="field-strike" class="hidden">Strike</label>
+                        <div class="form__col width-95">
+                          <label for="field-strike-{{ k }}" class="hidden">Strike</label>
 
                           <div class="form__controls">
                             <div class="select">
-                              <select name="Strike[]" id="field-strike" [(ngModel)]="row.Strike">
-                                <option value="{{ row2.Strike }}" *ngFor="let row2 of row.Chain?.Calls">{{ row2.Strike }}</option>
+                              <select name="Strike[]" id="field-strike-{{ k }}" [(ngModel)]="row.Strike">
+                                <option value="{{ row2 }}" *ngFor="let row2 of row.Strikes">{{ row2 }}</option>
                               </select>
                             </div>
                           </div>
-                        </div><!-- /.form__col form__col-size3 -->
+                        </div>
 
                         <div class="form__col form__col--size2">
-                          <label for="field-call" class="hidden">Call</label>
+                          <label for="field-call-{{ k }}" class="hidden">Call</label>
 
                           <div class="form__controls">
                             <div class="select">
-                              <select name="Type[]" id="field-call" (change)="onTypeChange(row, k)" [(ngModel)]="row.Type">
+                              <select name="Type[]" id="field-call-{{ k }}" (change)="onTypeChange(row, k)" [(ngModel)]="row.Type">
                                 <option value="Calls">Call</option>
                                 <option value="Puts">Put</option>
                               </select>
                             </div>
                           </div>
-                        </div><!-- /.form__col form__col-size3 -->
+                        </div>
 
-                        <div class="form__col form__col--size3">
+                        <div class="form__col width-135">
                           <label for="field-side" class="hidden">Side</label>
 
                           <div class="form__controls">
@@ -142,29 +146,29 @@
                                 <option value="buy_to_close">Buy to Close</option>
                                 <option value="sell_to_close">Sell to Close</option>
                               </select>
-                            </div><!-- /.select not-selected -->
-                          </div><!-- /.form__controls -->
-                        </div><!-- /.form__col form__col-size3 -->
+                            </div>
+                          </div>
+                        </div>
 
 
                         <div class="form__col form__col--size2">
                           <label for="field-quantity-{{ k }}" class="hidden">Quantity</label>
                           <div class="form__controls">
-                            <input type="text" class="field" name="Qty[]" id="field-quantity-{{ k }}" placeholder="Quantity" [(ngModel)]="row.Qty" />
+                            <input type="text" class="field" name="Qty[{{ k }}]" id="field-quantity-{{ k }}" placeholder="Quantity" [(ngModel)]="row.Qty" />
                           </div>
                         </div>
 
 
                         <div class="form__col form__col--size7">
-                          <a href="#" class="btn-square">
+                          <a class="btn-square" (click)="removeLeg(row, k)">
                             <i class="ico-trash"></i>
                           </a>
 
-                          <a href="#" class="btn-square">
+                          <a class="btn-square" (click)="duplicateLeg(row)">
                             <i class="ico-plus-blue"></i>
                           </a>
-                        </div><!-- /.form__col form__col-size7 -->
-                      </div><!-- /.form__row -->
+                        </div>
+                      </div>
 
 
 

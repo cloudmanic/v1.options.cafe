@@ -24,7 +24,8 @@ export class TradeService
   //
   // Get option expirations
   //
-  getOptionExpirations(symbol: string): Observable<Date[]> {
+  getOptionExpirations(symbol: string): Observable<Date[]> 
+  {
     return this.http.get<string[]>(environment.app_server + '/api/v1/quotes/options/expirations/' + symbol).map(
       (data) => {
 
@@ -36,6 +37,28 @@ export class TradeService
         }
 
         return dates;
+      }
+    );
+  }
+
+  //
+  // Get option expirations
+  //
+  getOptionStrikesBySymbolExpiration(symbol: string, expire: Date): Observable<number[]> 
+  {
+    let expr = moment(new Date(expire)).format("YYYY-MM-DD"); 
+
+    return this.http.get<number[]>(environment.app_server + '/api/v1/quotes/options/strikes/' + symbol + '/' + expr).map(
+      (data) => {
+
+        let strikes: number[] = []
+
+        // Build data
+        for (let i = 0; i < data.length; i++) {
+          strikes.push(data[i]);
+        }
+
+        return strikes;
       }
     );
   }
@@ -93,6 +116,7 @@ export class TradeOptionLegs
   Side: string; // buy_to_open, sell_to_open, buy_to_close, sell_to_close
   Qty: number;
   Type: string; // (Puts | Calls) Used just for the forms (not to be posted when creating a trade)
+  Strikes: number[]; // Used just for the forms (not to be posted when creating a trade)
   Chain: OptionsChain; // Used just for the forms (not to be posted when creating a trade)
 
   //
@@ -106,6 +130,7 @@ export class TradeOptionLegs
     obj.Strike = strike;
     obj.Side = side;
     obj.Qty = qty;
+    obj.Strikes = [];
     return obj;
   }
 }
