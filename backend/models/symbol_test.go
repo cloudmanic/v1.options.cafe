@@ -50,9 +50,9 @@ func TestGetAllSymbols01(t *testing.T) {
 	st.Expect(t, syms[3].ShortName, "SPY180316P00253000")
 	st.Expect(t, syms[3].Name, "SPY Mar 16, 2018 $253.00 Put")
 	st.Expect(t, syms[3].Type, "Option")
-	st.Expect(t, syms[3].OptionDetails.Type, "Put")
-	st.Expect(t, syms[3].OptionDetails.Strike, 253.00)
-	st.Expect(t, syms[3].OptionDetails.Expire, time.Date(2018, 03, 16, 0, 0, 0, 0000, time.UTC))
+	st.Expect(t, syms[3].OptionType, "Put")
+	st.Expect(t, syms[3].OptionStrike, 253.00)
+	st.Expect(t, syms[3].OptionExpire, time.Date(2018, 03, 16, 0, 0, 0, 0000, time.UTC))
 }
 
 //

@@ -10,7 +10,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	validation "github.com/go-ozzo/ozzo-validation"
 )
@@ -47,16 +46,6 @@ func (t *DB) WatchlistSymbolGetByWatchlistId(id uint) []WatchlistSymbol {
 	// Query and get list.
 	t.Preload("Symbol").Where("watchlist_id = ?", id).Order("`order` asc").Find(&list)
 
-	// Add in options parts
-	for key, row := range list {
-		if row.Symbol.Type == "Option" {
-			parts, _ := helpers.OptionParse(row.Symbol.ShortName)
-			list[key].Symbol.OptionDetails.Type = parts.Type
-			list[key].Symbol.OptionDetails.Strike = parts.Strike
-			list[key].Symbol.OptionDetails.Expire = parts.Expire
-		}
-	}
-
 	// Return data.
 	return list
 }
@@ -88,12 +77,6 @@ func (t *DB) PrependWatchlistSymbol(w *WatchlistSymbol) error {
 
 	// We load in the symbol data for fun (as we return the full object via the API)
 	t.Model(&w).Related(&w.Symbol)
-
-	// Add in parts (even tho options in a watchlist is odd)
-	parts, _ := helpers.OptionParse(w.Symbol.ShortName)
-	w.Symbol.OptionDetails.Type = parts.Type
-	w.Symbol.OptionDetails.Strike = parts.Strike
-	w.Symbol.OptionDetails.Expire = parts.Expire
 
 	// Return the user.
 	return nil

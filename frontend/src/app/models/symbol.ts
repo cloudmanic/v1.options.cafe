@@ -13,12 +13,15 @@ export class Symbol
   Name: string;
   ShortName: string;
   Type: string;  
-  OptionDetails: OptionDetails;
+  OptionUnderlying: string;
+  OptionType: string;
+  OptionExpire: Date;
+  OptionStrike: number;
 
   //
   // Create a new object
   //
-  New(Id: number, Name: string, ShortName: string, Type: string, OptionDetails: OptionDetails): Symbol 
+  New(Id: number, Name: string, ShortName: string, Type: string, underlying: string, optionType: string, expire: Date, strike: number): Symbol 
   {
     let obj = new Symbol();
 
@@ -26,7 +29,10 @@ export class Symbol
     obj.Name = Name;
     obj.ShortName = ShortName;
     obj.Type = Type;
-    obj.OptionDetails = OptionDetails;
+    obj.OptionUnderlying = underlying;
+    obj.OptionType = optionType;
+    obj.OptionExpire = expire;
+    obj.OptionStrike = strike;
 
     return obj;
   }
@@ -40,7 +46,10 @@ export class Symbol
     this.Name = json["name"];
     this.ShortName = json["short_name"];
     this.Type = json["type"];
-    this.OptionDetails = new OptionDetails(json["option_details"].symbol, new Date(json["option_details"].expire), json["option_details"].strike, json["option_details"].type);
+    this.OptionUnderlying = json["option_underlying"];
+    this.OptionType = json["option_type"];
+    this.OptionExpire = json["option_expire"];
+    this.OptionStrike = json["option_strike"];
     return this;
   }
 
@@ -61,26 +70,6 @@ export class Symbol
     // Return happy
     return result;
   }
-}
-
-//
-// Option details. 
-//
-export class OptionDetails {
-  public Symbol: string;
-  public Expire: Date;
-  public Strike: number;
-  public Type: string;
-
-  //
-  // Constructor
-  //
-  constructor(Symbol: string, Expire: Date, Strike: number, Type: string) {
-    this.Symbol = Symbol;
-    this.Expire = Expire;
-    this.Strike = Strike;
-    this.Type = Type;
-  }  
 }
 
 /* End Find */

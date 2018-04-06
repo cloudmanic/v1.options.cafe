@@ -4,7 +4,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 )
 
@@ -108,15 +107,6 @@ func (t *DB) tradeGroupAddSymbolsToPositions(tgs []TradeGroup) error {
 	for key, row := range tgs {
 		for key2, row2 := range tgs[key].Positions {
 			t.Model(row2).Related(&tgs[key].Positions[key2].Symbol)
-
-			// Add in options parts
-			if tgs[key].Positions[key2].Symbol.Type == "Option" {
-				parts, _ := helpers.OptionParse(tgs[key].Positions[key2].Symbol.ShortName)
-				tgs[key].Positions[key2].Symbol.OptionDetails.Symbol = parts.Symbol
-				tgs[key].Positions[key2].Symbol.OptionDetails.Type = parts.Type
-				tgs[key].Positions[key2].Symbol.OptionDetails.Strike = parts.Strike
-				tgs[key].Positions[key2].Symbol.OptionDetails.Expire = parts.Expire
-			}
 		}
 
 		// Stupid code to make it so GoFMT does not delete in range statement

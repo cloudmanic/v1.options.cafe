@@ -60,7 +60,7 @@ export class PositionComponent implements OnInit
       return 0;
     }   
     
-    return Math.round((tradeGroup.Positions[0].Symbol.OptionDetails.Expire.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));   
+    return Math.round((tradeGroup.Positions[0].Symbol.OptionExpire.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));   
   }
 
   //
@@ -90,14 +90,14 @@ export class PositionComponent implements OnInit
     }
 
 
-    if(tradeGroup.Positions[0].Symbol.OptionDetails.Type == 'Put')
+    if (tradeGroup.Positions[0].Symbol.OptionType == 'Put')
     {
-      return ((this.quotes[short_strike.Symbol.OptionDetails.Symbol].last - short_strike.Symbol.OptionDetails.Strike) / 
-              ((this.quotes[short_strike.Symbol.OptionDetails.Symbol].last + short_strike.Symbol.OptionDetails.Strike) / 2)) * 100;
+      return ((this.quotes[short_strike.Symbol.OptionUnderlying].last - short_strike.Symbol.OptionStrike) / 
+        ((this.quotes[short_strike.Symbol.OptionUnderlying].last + short_strike.Symbol.OptionStrike) / 2)) * 100;
     } else
     {
-      return ((short_strike.Symbol.OptionDetails.Strike - this.quotes[short_strike.Symbol.OptionDetails.Symbol].last) / 
-              ((short_strike.Symbol.OptionDetails.Strike + this.quotes[short_strike.Symbol.OptionDetails.Symbol].last) / 2)) * 100;    
+      return ((short_strike.Symbol.OptionStrike - this.quotes[short_strike.Symbol.OptionUnderlying].last) / 
+        ((short_strike.Symbol.OptionStrike + this.quotes[short_strike.Symbol.OptionUnderlying].last) / 2)) * 100;    
     }
   }
 

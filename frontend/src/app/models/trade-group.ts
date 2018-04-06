@@ -4,7 +4,7 @@
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-import { Symbol, OptionDetails } from './symbol';
+import { Symbol } from './symbol';
 import { Position } from './position';
 
 //
