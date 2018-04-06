@@ -8,7 +8,6 @@ package models
 
 import (
 	"testing"
-	"time"
 
 	env "github.com/jpfuentes2/go-env"
 	"github.com/nbio/st"
@@ -37,8 +36,8 @@ func TestGetTradeGroups01(t *testing.T) {
 	st.Expect(t, tgs[0].Positions[1].Symbol.Type, "Option")
 	st.Expect(t, tgs[0].Positions[1].Symbol.OptionType, "Put")
 	st.Expect(t, tgs[0].Positions[1].Symbol.OptionUnderlying, "SPY")
-	st.Expect(t, tgs[0].Positions[1].Symbol.OptionStrike 266.00)
-	st.Expect(t, tgs[0].Positions[1].Symbol.OptionExpire, time.Date(2018, 03, 16, 0, 0, 0, 0000, time.UTC))
+	st.Expect(t, tgs[0].Positions[1].Symbol.OptionStrike, 266.00)
+	st.Expect(t, tgs[0].Positions[1].Symbol.OptionExpire.Format("01/02/2006"), "03/16/2018")
 }
 
 //

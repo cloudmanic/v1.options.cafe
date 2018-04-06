@@ -32,7 +32,7 @@ func TestCreateActiveSymbol01(t *testing.T) {
 
 	// Test results
 	st.Expect(t, syb1.Id, uint(1))
-	st.Expect(t, syb2.Id, uint(2))
+	st.Expect(t, syb2.Id, uint(7))
 	st.Expect(t, syb3.Id, uint(1))
 
 }
