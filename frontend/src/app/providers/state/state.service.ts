@@ -25,7 +25,7 @@ export class StateService
   private dashboardChartRangeSelect: string = "today-1min-1";
   private dashboardChartData: HistoricalQuote[];
   private dashboardTradeGroups: TradeGroupsCont;
-  private dashboardChartSymbol: Symbol = new Symbol().New(1, "SPDR S&P 500 ETF Trust", "SPY", "Equity", null);
+  private dashboardChartSymbol: Symbol = new Symbol().New(1, "SPDR S&P 500 ETF Trust", "SPY", "Equity", null, null, null, null);
   
   // Trade Group stuff
   private tradeGroupPage: number = 1;
