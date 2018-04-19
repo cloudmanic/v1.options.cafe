@@ -179,4 +179,20 @@ func (t *DB) SearchSymbols(query string, sType string) ([]Symbol, error) {
 	return symbols, nil
 }
 
+//
+// Get options symbol by parts
+//
+func (t *DB) GetOptionByParts(optionUnderlying string, optionType string, optionExpire time.Time, optionStrike float64) (Symbol, error) {
+
+	var symbol Symbol
+
+	// Query to see if this is a real symbol that we know.
+	if t.Where("option_underlying = ? AND option_type = ? AND option_expire = ? AND option_strike = ?", optionUnderlying, optionType, optionExpire.Format("2006-01-02"), optionStrike).First(&symbol).RecordNotFound() {
+		return symbol, errors.New("Unknown symbol.")
+	}
+
+	// Return the symbol
+	return symbol, nil
+}
+
 /* End File */

@@ -31,6 +31,7 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		// Symbols
 		apiV1.GET("/symbols", t.GetSymbols)
 		apiV1.POST("/symbols/add-active-symbol", t.AddActiveSymbol)
+		apiV1.POST("/symbols/get-option-symbol-from-parts", t.GetOptionSymbolFromParts)
 
 		// Watchlists
 		apiV1.GET("/watchlists", t.GetWatchlists)

@@ -9,6 +9,7 @@ package models
 import (
 	"testing"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	env "github.com/jpfuentes2/go-env"
 	"github.com/nbio/st"
 )
@@ -154,6 +155,35 @@ func TestCreateNewOptionSymbol01(t *testing.T) {
 	st.Expect(t, sym.ShortName, "SPY180209P00276000")
 	st.Expect(t, sym.Name, "SPY Feb 9, 2018 $276.00 Put")
 	st.Expect(t, sym.Type, "Option")
+}
+
+//
+// Test - GetOptionByParts
+//
+func TestGetOptionByParts01(t *testing.T) {
+
+	// Load config file.
+	env.ReadEnv("../.env")
+
+	// Start the db connection.
+	db, _ := NewDB()
+	defer db.Close()
+
+	// Set date.
+	expireDate := helpers.ParseDateNoError("2018-02-09")
+
+	// Query database
+	sym, err := db.GetOptionByParts("SPY", "Put", expireDate, 276)
+
+	// Test results
+	st.Expect(t, err, nil)
+	st.Expect(t, sym.Id, uint(11))
+	st.Expect(t, sym.ShortName, "SPY180209P00276000")
+	st.Expect(t, sym.Name, "SPY Feb 9, 2018 $276.00 Put")
+	st.Expect(t, sym.OptionUnderlying, "SPY")
+	st.Expect(t, sym.OptionType, "Put")
+	st.Expect(t, sym.OptionExpire, expireDate)
+	st.Expect(t, sym.OptionStrike, 276.00)
 }
 
 /* End File */

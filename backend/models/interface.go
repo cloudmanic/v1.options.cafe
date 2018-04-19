@@ -62,6 +62,7 @@ type Datastore interface {
 	CreateNewOptionSymbol(short string) (Symbol, error)
 	CreateNewSymbol(short string, name string, sType string) (Symbol, error)
 	UpdateSymbol(id uint, short string, name string, sType string) (Symbol, error)
+	GetOptionByParts(optionUnderlying string, optionType string, optionExpire time.Time, optionStrike float64) (Symbol, error)
 
 	// Users
 	GetAllUsers() []User
