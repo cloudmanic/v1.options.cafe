@@ -4,6 +4,8 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import * as moment from 'moment';
+
 //
 // Symbol Model
 //
@@ -48,7 +50,7 @@ export class Symbol
     this.Type = json["type"];
     this.OptionUnderlying = json["option_underlying"];
     this.OptionType = json["option_type"];
-    this.OptionExpire = json["option_expire"];
+    this.OptionExpire = moment(json["option_expire"]).toDate();
     this.OptionStrike = json["option_strike"];
     return this;
   }
