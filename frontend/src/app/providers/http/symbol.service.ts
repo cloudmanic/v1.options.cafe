@@ -28,6 +28,27 @@ export class SymbolService
       (data) => { return new Symbol().fromJsonList(data); 
     });
   }
+
+  //
+  // Add an active symbol
+  //
+  addActiveSymbol(symbol: string): Observable<AddActiveSymbolResponse> {
+    return this.http.post<AddActiveSymbolResponse>(environment.app_server + '/api/v1/symbols/add-active-symbol', { symbol: symbol }).map(
+      (data) => {
+        let r = new AddActiveSymbolResponse();
+        r.Id = data["id"];
+        r.Symbol = data["symbol"];
+        return r;
+      });
+  }
+}
+
+//
+// Response of a add Symbol
+//
+export class AddActiveSymbolResponse {
+  Id: number;
+  Symbol: string;
 }
 
 /* End File */

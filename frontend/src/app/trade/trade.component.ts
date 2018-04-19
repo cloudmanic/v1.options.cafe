@@ -7,6 +7,7 @@
 import * as moment from 'moment';
 import { Symbol } from '../models/symbol';
 import { Component, OnInit } from '@angular/core';
+import { SymbolService } from '../providers/http/symbol.service';
 import { OptionsChainService } from '../providers/http/options-chain.service';
 import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../providers/http/trade.service';
 import { WebsocketService } from '../providers/http/websocket.service';
@@ -29,7 +30,7 @@ export class TradeComponent implements OnInit
   //
   // Construct.
   //
-  constructor(private websocketService: WebsocketService, private tradeService: TradeService, private optionsChainService: OptionsChainService) 
+  constructor(private websocketService: WebsocketService, private tradeService: TradeService, private optionsChainService: OptionsChainService, private symbolService: SymbolService) 
   { 
     // // Set Defaults (also used for development)
     // this.tradeDetails.Symbol = "SPY";
@@ -169,6 +170,9 @@ export class TradeComponent implements OnInit
     {
       this.onExpireChange(this.tradeDetails.Legs[i], i);
     }
+
+    // Load leg quotes
+    this.loadLegQuotes();
   }
 
   //
@@ -200,7 +204,10 @@ export class TradeComponent implements OnInit
     // // Api call to get the option chain.
     // this.optionsChainService.getChainBySymbolExpire(this.tradeDetails.Symbol, leg.Expire).subscribe(data => {
     //   this.tradeDetails.Legs[index].Chain = data;
-    // });  
+    // }); 
+
+    // Load leg quotes
+    this.loadLegQuotes();  
   }
 
   //
@@ -209,6 +216,7 @@ export class TradeComponent implements OnInit
   onTypeChange(leg: TradeOptionLegs, index: number)
   {
     //console.log(this.tradeDetails);
+    this.loadLegQuotes();
   }
 
   //
@@ -224,14 +232,35 @@ export class TradeComponent implements OnInit
     newLeg.Side = leg.Side;
     newLeg.Qty = leg.Qty;
     newLeg.Strikes = leg.Strikes;
-    this.tradeDetails.Legs.push(newLeg); 
+    this.tradeDetails.Legs.push(newLeg);
+
+    // Load leg quotes
+    this.loadLegQuotes(); 
   }
 
   //
   // Remove leg
   //
-  removeLeg(leg: TradeOptionLegs, index: number) {
+  removeLeg(leg: TradeOptionLegs, index: number) 
+  {
     this.tradeDetails.Legs.splice(index, 1);
+  }
+
+  //
+  // Load quotes for legs
+  //
+  loadLegQuotes() 
+  {
+    for (let i = 0; i < this.tradeDetails.Legs.length; i++)
+    {  
+      if (this.tradeDetails.Legs[i].Symbol) 
+      {
+        // Send AJAX call to start streaming quotes for this symbol.
+        this.symbolService.addActiveSymbol(this.tradeDetails.Legs[i].Symbol).subscribe(data => {
+          //console.log(data);
+        });
+      }
+    } 
   }  
 }
 
