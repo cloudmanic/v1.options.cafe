@@ -39,6 +39,9 @@ func (t *DB) CreateActiveSymbol(userId uint, symbol string) (ActiveSymbol, error
 
 	t.Where(ActiveSymbol{UserId: userId, Symbol: symbol}).FirstOrCreate(&entry)
 
+	// Update the updated at column. This is useful for when we purge unused symbols.
+	t.Save(&entry)
+
 	return entry, nil
 }
 

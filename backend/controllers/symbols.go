@@ -7,10 +7,12 @@
 package controllers
 
 import (
+	"io/ioutil"
 	"net/http"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/gin-gonic/gin"
+	"github.com/tidwall/gjson"
 )
 
 //
@@ -37,11 +39,48 @@ func (t *Controller) DoSymbolSearch(c *gin.Context) {
 
 	if err != nil {
 		services.BetterError(err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": httpGenericErrMsg})
+		return
 	}
 
 	// Return happy JSON
 	c.JSON(200, symbols)
+}
+
+//
+// Add a symbol to active symbols by user.
+//
+func (t *Controller) AddActiveSymbol(c *gin.Context) {
+
+	// // // Get the user id.
+	userId := c.MustGet("userId").(uint)
+
+	// Parse json body
+	body, err := ioutil.ReadAll(c.Request.Body)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	symbol := gjson.Get(string(body), "symbol").String()
+
+	// Validate name
+	if len(symbol) <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "symbol field can not be empty."})
+		return
+	}
+
+	// Store the symbol
+	act, err := t.DB.CreateActiveSymbol(userId, symbol)
+
+	if err != nil {
+		services.BetterError(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": httpGenericErrMsg})
+		return
+	}
+
+	// Return happy JSON
+	c.JSON(200, act)
 }
 
 /* End File */
