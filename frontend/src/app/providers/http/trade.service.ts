@@ -5,6 +5,7 @@
 //
 
 import * as moment from 'moment';
+import { Symbol } from '../../models/symbol';
 import { OptionsChain } from '../../models/options-chain';
 import { Observable } from 'rxjs/Observable';
 import { HttpClient } from '@angular/common/http';
@@ -110,19 +111,19 @@ export class TradeDetails
 //
 export class TradeOptionLegs 
 {
-  Symbol: string;
+  Symbol: Symbol;
   Expire: Date; // Used just for the forms (not to be posted when creating a trade)
   Strike: number;
   Side: string; // buy_to_open, sell_to_open, buy_to_close, sell_to_close
   Qty: number;
-  Type: string; // (Puts | Calls) Used just for the forms (not to be posted when creating a trade)
+  Type: string; // (Put | Call) Used just for the forms (not to be posted when creating a trade)
   Strikes: number[]; // Used just for the forms (not to be posted when creating a trade)
   Chain: OptionsChain; // Used just for the forms (not to be posted when creating a trade)
 
   //
   // Create new.
   //
-  createNew(symbol: string, expire: Date, type: string, strike: number, side: string, qty: number) : TradeOptionLegs {
+  createNew(symbol: Symbol, expire: Date, type: string, strike: number, side: string, qty: number): TradeOptionLegs {
     let obj = new TradeOptionLegs();
     obj.Symbol = symbol;
     obj.Expire = expire;

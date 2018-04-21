@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 )
@@ -193,6 +194,24 @@ func (t *DB) GetOptionByParts(optionUnderlying string, optionType string, option
 
 	// Return the symbol
 	return symbol, nil
+}
+
+//
+// Load an options chain into the symbols table.
+//
+func (t *DB) LoadSymbolsByOptionsChain(chain types.OptionsChain) error {
+
+	// Deal with puts.
+	for _, row := range chain.Puts {
+		t.CreateNewOptionSymbol(row.Symbol)
+	}
+
+	// Deal with calls.
+	for _, row := range chain.Calls {
+		t.CreateNewOptionSymbol(row.Symbol)
+	}
+
+	return nil
 }
 
 /* End File */

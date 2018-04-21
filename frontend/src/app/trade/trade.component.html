@@ -115,7 +115,7 @@
 
                           <div class="form__controls">
                             <div class="select">
-                              <select name="Strike[]" id="field-strike-{{ k }}" [(ngModel)]="row.Strike">
+                              <select name="Strike[]" id="field-strike-{{ k }}" [(ngModel)]="row.Strike" (change)="onStrikeChange(row, k)">
                                 <option value="{{ row2 }}" *ngFor="let row2 of row.Strikes">{{ row2 }}</option>
                               </select>
                             </div>
@@ -128,8 +128,8 @@
                           <div class="form__controls">
                             <div class="select">
                               <select name="Type[]" id="field-call-{{ k }}" (change)="onTypeChange(row, k)" [(ngModel)]="row.Type">
-                                <option value="Calls">Call</option>
-                                <option value="Puts">Put</option>
+                                <option value="Call">Call</option>
+                                <option value="Put">Put</option>
                               </select>
                             </div>
                           </div>
@@ -218,28 +218,28 @@
                     <div class="form__col form__col--clear form__col--size5">
 
                       <div class="table-rows" *ngFor="let row of tradeDetails.Legs; let k = index;">
-                        <table>
+                        <table *ngIf="row.Symbol?.ShortName">
                           <tr>
-                            <td>APY May 10 2017 $198</td>
-
-                            <td>CALL</td>
+                            <td>{{ row.Symbol.Name }}</td>
 
                             <td>
-                              <strong class="title-green">0.00</strong>
+                              <strong>{{ quotes[row.Symbol.ShortName]?.last | currency:'USD':'symbol':'1.2-2' }}</strong>
                             </td>
 
                             <td>
-                              <strong class="title-green">(0.00)</strong>
+                              <strong [ngClass]="{'title-red': (quotes[row.Symbol.ShortName]?.change_percentage < 0), 'title-green': (quotes[row.Symbol.ShortName]?.change_percentage > 0)}">
+                                ({{ quotes[row.Symbol.ShortName]?.change_percentage | number:'1.2-2' }}%)
+                              </strong>
                             </td>
                           </tr>
 
                           <tr>
                             <td>
-                              BID <strong>22.66 x 3</strong>
+                              BID <strong>{{ quotes[row.Symbol.ShortName]?.bid | currency:'USD':'symbol':'1.2-2' }}</strong>
                             </td>
 
                             <td colspan="3">
-                              ASK <strong>22.67 x 30</strong>
+                              ASK <strong>{{ quotes[row.Symbol.ShortName]?.ask | currency:'USD':'symbol':'1.2-2' }}</strong>
                             </td>
                           </tr>
                         </table>

@@ -32,8 +32,12 @@ export class TradeComponent implements OnInit
   //
   constructor(private websocketService: WebsocketService, private tradeService: TradeService, private optionsChainService: OptionsChainService, private symbolService: SymbolService) 
   { 
+    // Default values
+    this.tradeDetails.Duration = "day";    
+    this.tradeDetails.OrderType = "market";
+
     // // Set Defaults (also used for development)
-    // this.tradeDetails.Symbol = "SPY";
+    // this.tradeDetails.Symbol = new Symbol().New(0, "SPY Apr 23, 2018 $190.00 Call", "SPY180423C00190000" "Option", "SPY" "Call", moment("2018-04-23").toDate(), 190);
     // this.tradeDetails.Class = "multileg";
     // this.tradeDetails.OrderType = "credit";
     // this.tradeDetails.Duration = "gtc";
@@ -41,8 +45,8 @@ export class TradeComponent implements OnInit
     
     // // Build legs
     // this.tradeDetails.Legs = [];
-    // this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180402P00262000", moment("2018-05-04").toDate(), "Puts", 190, "sell_to_open", 10));
-    // this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180402P00264000", moment("2018-05-04").toDate(), "Calls", 190, "buy_to_open", 10));   
+    // this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180402P00262000", moment("2018-05-04").toDate(), "Put", 190, "sell_to_open", 10));
+    // this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180402P00264000", moment("2018-05-04").toDate(), "Call", 190, "buy_to_open", 10));   
     
 
     // // Load data (we call this only when we pass in a full trade)
@@ -130,6 +134,11 @@ export class TradeComponent implements OnInit
     this.symbol = this.typeAheadSymbol;
     this.tradeDetails.Symbol = this.symbol.ShortName;
 
+    console.log(this.symbol);
+
+    // Make sure we are getting quotes from the websocket for this symbol.
+    this.symbolService.addActiveSymbol(this.symbol.ShortName).subscribe();
+
     // Load expire dates
     this.loadExpireDates(true);    
   }
@@ -153,7 +162,7 @@ export class TradeComponent implements OnInit
       {
         this.tradeDetails.Legs = [];
         this.tradeDetails.Legs.push(new TradeOptionLegs());
-        this.tradeDetails.Legs[0].Type = "Puts";
+        this.tradeDetails.Legs[0].Type = "Put";
         this.tradeDetails.Legs[0].Side = "buy_to_open";
         this.tradeDetails.Legs[0].Expire = this.symbolExpirations[0];
         this.onExpireChange(this.tradeDetails.Legs[0], 0);
@@ -166,13 +175,11 @@ export class TradeComponent implements OnInit
   //
   loadChainForAllLegs()
   {
-    for (let i = 0; i < this.tradeDetails.Legs.length; i++)
+    for (let i = 0; i < this.tradeDetails.Legs.length; i++) 
     {
       this.onExpireChange(this.tradeDetails.Legs[i], i);
+      this.loadLegSymbol(this.tradeDetails.Legs[i]);
     }
-
-    // Load leg quotes
-    this.loadLegQuotes();
   }
 
   //
@@ -199,15 +206,18 @@ export class TradeComponent implements OnInit
       {
         this.tradeDetails.Legs[index].Strike = this.tradeDetails.Legs[index].Strikes[0];
       }
+    
+      // Load leg quotes
+      this.loadLegSymbol(leg);
     });
+  }
 
-    // // Api call to get the option chain.
-    // this.optionsChainService.getChainBySymbolExpire(this.tradeDetails.Symbol, leg.Expire).subscribe(data => {
-    //   this.tradeDetails.Legs[index].Chain = data;
-    // }); 
-
-    // Load leg quotes
-    this.loadLegQuotes();  
+  //
+  // onStrikeChange - On strike change.
+  //
+  onStrikeChange(leg: TradeOptionLegs, index: number)
+  {
+    this.loadLegSymbol(leg);    
   }
 
   //
@@ -215,8 +225,7 @@ export class TradeComponent implements OnInit
   //
   onTypeChange(leg: TradeOptionLegs, index: number)
   {
-    //console.log(this.tradeDetails);
-    this.loadLegQuotes();
+    this.loadLegSymbol(leg);
   }
 
   //
@@ -235,7 +244,7 @@ export class TradeComponent implements OnInit
     this.tradeDetails.Legs.push(newLeg);
 
     // Load leg quotes
-    this.loadLegQuotes(); 
+    this.loadLegSymbol(leg); 
   }
 
   //
@@ -247,20 +256,15 @@ export class TradeComponent implements OnInit
   }
 
   //
-  // Load quotes for legs
+  // Load symbol for the leg
   //
-  loadLegQuotes() 
+  loadLegSymbol(leg: TradeOptionLegs) 
   {
-    for (let i = 0; i < this.tradeDetails.Legs.length; i++)
-    {  
-      if (this.tradeDetails.Legs[i].Symbol) 
-      {
-        // Send AJAX call to start streaming quotes for this symbol.
-        this.symbolService.addActiveSymbol(this.tradeDetails.Legs[i].Symbol).subscribe(data => {
-          //console.log(data);
-        });
-      }
-    } 
+    // Ajax call to get option symbol based on these 3 params
+    this.symbolService.getOptionSymbolFromParts(this.symbol.ShortName, leg.Expire, leg.Strike, leg.Type).subscribe(data => {
+      leg.Symbol = data;
+    });
+
   }  
 }
 

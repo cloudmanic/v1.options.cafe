@@ -11,6 +11,7 @@ import (
 	"net/http"
 
 	"github.com/araddon/dateparse"
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
@@ -111,6 +112,41 @@ func (t *Controller) GetOptionSymbolFromParts(c *gin.Context) {
 	if t.RespondError(c, err, "Invalid expire date.") {
 		return
 	}
+
+	// ------------ First we load the entire option chain from Tradier : TODO: someday make this via the users' account -------------- //
+	// ------------ We do this to make sure our symbols table is up to date with the latest for this symbol -------------------------- //
+
+	// Get access token
+	apiKey, err := t.GetTradierAccessToken(c)
+
+	if err != nil {
+		t.RespondError(c, err, httpGenericErrMsg)
+		return
+	}
+
+	// Setup the broker
+	broker := tradier.Api{
+		DB:     t.DB,
+		ApiKey: apiKey,
+	}
+
+	// Get chain from tradier.
+	chain, err := broker.GetOptionsChainByExpiration(symbol, expire)
+
+	if err != nil {
+		t.RespondError(c, err, httpGenericErrMsg)
+		return
+	}
+
+	// Make sure all these chains are in our symbols table.
+	err = t.DB.LoadSymbolsByOptionsChain(chain)
+
+	if err != nil {
+		t.RespondError(c, err, httpGenericErrMsg)
+		return
+	}
+
+	// ----------- Now Search for the option in the symbols table ------------ //
 
 	// Query database
 	symb, err := t.DB.GetOptionByParts(symbol, optionType, expireDate, strike)

@@ -9,6 +9,7 @@ package models
 import (
 	"time"
 
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 )
@@ -62,6 +63,7 @@ type Datastore interface {
 	CreateNewOptionSymbol(short string) (Symbol, error)
 	CreateNewSymbol(short string, name string, sType string) (Symbol, error)
 	UpdateSymbol(id uint, short string, name string, sType string) (Symbol, error)
+	LoadSymbolsByOptionsChain(chain types.OptionsChain) error
 	GetOptionByParts(optionUnderlying string, optionType string, optionExpire time.Time, optionStrike float64) (Symbol, error)
 
 	// Users

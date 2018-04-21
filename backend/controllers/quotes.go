@@ -48,6 +48,14 @@ func (t *Controller) GetOptionsChainByExpiration(c *gin.Context) {
 		return
 	}
 
+	// Make sure all these chains are in our symbols table.
+	err = t.DB.LoadSymbolsByOptionsChain(chain)
+
+	if err != nil {
+		t.RespondError(c, err, httpGenericErrMsg)
+		return
+	}
+
 	// Return happy JSON
 	c.JSON(200, chain)
 }
