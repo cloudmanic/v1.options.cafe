@@ -64,6 +64,7 @@ import { MarketQuotesComponent } from './trading/dashboard/market-quotes/market-
 import { DashboardChartComponent } from './trading/dashboard/dashboard-chart/dashboard-chart.component';
 import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-symbols.component';
 import { TradeComponent } from './trade/trade.component';
+import { TradeMultiLegComponent } from './trade/trade-multi-leg/trade-multi-leg.component';
 
 @NgModule({
   declarations: [
@@ -110,6 +111,7 @@ import { TradeComponent } from './trade/trade.component';
     DashboardChartComponent,
     TypeaheadSymbolsComponent,
     TradeComponent,
+    TradeMultiLegComponent,
   ],
   
   imports: [

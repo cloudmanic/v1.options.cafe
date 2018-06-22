@@ -1,0 +1,223 @@
+<div class="tab__flex">
+
+  <div class="tab__inner">
+    <div class="search">
+      <form (submit)="onSearchSubmit()">
+        <div class="dropdown dropdown--search trade-search">
+          <app-typeahead-symbols (selected)="onSearchTypeAheadClick($event)" clearAfterSelect="false" class="typeahead-cont"></app-typeahead-symbols>
+          <input type="submit" value="Search" class="btn search__btn" />
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <div class="tab__inner" *ngIf="symbol">
+    <div class="table--stocks">
+      <table>
+        <tr>
+          <td>{{ symbol?.Name }}</td>
+
+          <td>
+            <strong [ngClass]="{'title-red': (quotes[symbol.ShortName]?.change_percentage < 0), 'title-green': (quotes[symbol.ShortName]?.change_percentage > 0)}">{{ quotes[symbol.ShortName]?.change | currency:'USD':'symbol':'1.2-2' }}</strong>
+          </td>
+
+          <td>
+            <strong [ngClass]="{'title-red': (quotes[symbol.ShortName]?.change_percentage < 0), 'title-green': (quotes[symbol.ShortName]?.change_percentage > 0)}">({{ quotes[symbol.ShortName]?.change_percentage | number:'1.2-2' }}%)</strong>
+          </td>
+        </tr>
+
+        <tr>
+          <td>{{ symbol?.ShortName }}</td>
+
+          <td>
+            BID <strong>{{ quotes[symbol.ShortName]?.bid | currency:'USD':'symbol':'1.2-2' }}</strong>
+          </td>
+
+          <td>
+            ASK <strong>{{ quotes[symbol.ShortName]?.ask | currency:'USD':'symbol':'1.2-2' }}</strong>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+
+
+
+
+
+<div class="form form--search" *ngIf="symbol">
+
+
+  <form action="?" method="post">
+    <div class="form__body">
+      <div class="form__row">
+        <div class="form__col form__col--clear form__col--size4">
+          
+
+
+          <div class="form__row" *ngFor="let row of tradeDetails.Legs; let k = index">
+            <div class="form__col form__col--size1">
+              <label for="field-expire-{{ k }}" class="hidden">Expirations</label>
+
+              <div class="form__controls">
+                <div class="select">
+                  <select name="Expire[]" id="field-expire-{{ k }}" (change)="onExpireChange(row, k)" [(ngModel)]="row.Expire">
+                    <option value="{{ row2 }}" *ngFor="let row2 of symbolExpirations">{{ row2 | date:'shortDate' }}</option>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="form__col width-95">
+              <label for="field-strike-{{ k }}" class="hidden">Strike</label>
+
+              <div class="form__controls">
+                <div class="select">
+                  <select name="Strike[]" id="field-strike-{{ k }}" [(ngModel)]="row.Strike" (change)="onStrikeChange(row, k)">
+                    <option value="{{ row2 }}" *ngFor="let row2 of row.Strikes">{{ row2 }}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form__col form__col--size2">
+              <label for="field-call-{{ k }}" class="hidden">Call</label>
+
+              <div class="form__controls">
+                <div class="select">
+                  <select name="Type[]" id="field-call-{{ k }}" (change)="onTypeChange(row, k)" [(ngModel)]="row.Type">
+                    <option value="Call">Call</option>
+                    <option value="Put">Put</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form__col width-135">
+              <label for="field-side" class="hidden">Side</label>
+
+              <div class="form__controls">
+                <div class="select">
+                  <select name="Side[]" id="field-side" [(ngModel)]="row.Side">
+                    <option value="buy_to_open">Buy to Open</option>
+                    <option value="sell_to_open">Sell to Open</option>
+                    <option value="buy_to_close">Buy to Close</option>
+                    <option value="sell_to_close">Sell to Close</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="form__col form__col--size2">
+              <label for="field-quantity-{{ k }}" class="hidden">Quantity</label>
+              <div class="form__controls">
+                <input type="text" class="field" name="Qty[{{ k }}]" id="field-quantity-{{ k }}" placeholder="Quantity" [(ngModel)]="row.Qty" />
+              </div>
+            </div>
+
+
+            <div class="form__col form__col--size7">
+              <a class="btn-square" (click)="removeLeg(row, k)">
+                <i class="ico-trash"></i>
+              </a>
+
+              <a class="btn-square" (click)="duplicateLeg(row)">
+                <i class="ico-plus-blue"></i>
+              </a>
+            </div>
+          </div>
+
+
+          <div class="form__row">
+
+            <div class="form__col form__col--size1">
+              <label for="field-search-order-type" class="hidden">Order Type</label>
+              <div class="form__controls">
+
+                <div class="select">
+                  <select name="OrderType" id="field-search-order-type" [(ngModel)]="tradeDetails.OrderType">
+                    <option value="market">Market</option>
+                    <option value="debit">Net Debit</option>
+                    <option value="credit">Net Credit</option>
+                    <option value="even">Even</option>                                
+                  </select>
+                </div>
+
+              </div>
+            </div>
+
+
+
+            <div class="form__col form__col--size3">
+              <label for="field-search-day" class="hidden">Day</label>
+              <div class="form__controls">
+
+                <div class="select">
+                  <select name="Duration" id="field-search-day" [(ngModel)]="tradeDetails.Duration">
+                    <option value="day">Day</option>
+                    <option value="gtc">GTC</option>
+                  </select>
+                </div>
+
+              </div>
+            </div>
+
+          </div><!-- /.form__row -->
+        </div><!-- /.form__col form__col-clear form__col-size4 -->
+
+
+
+        <div class="form__col form__col--clear form__col--size5">
+
+          <div class="table-rows" *ngFor="let row of tradeDetails.Legs; let k = index;">
+            <table *ngIf="row.Symbol?.ShortName">
+              <tr>
+                <td>{{ row.Symbol.Name }}</td>
+
+                <td>
+                  <strong>{{ quotes[row.Symbol.ShortName]?.last | currency:'USD':'symbol':'1.2-2' }}</strong>
+                </td>
+
+                <td>
+                  <strong [ngClass]="{'title-red': (quotes[row.Symbol.ShortName]?.change_percentage < 0), 'title-green': (quotes[row.Symbol.ShortName]?.change_percentage > 0)}">
+                    ({{ quotes[row.Symbol.ShortName]?.change_percentage | number:'1.2-2' }}%)
+                  </strong>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  BID <strong>{{ quotes[row.Symbol.ShortName]?.bid | currency:'USD':'symbol':'1.2-2' }}</strong>
+                </td>
+
+                <td colspan="3">
+                  ASK <strong>{{ quotes[row.Symbol.ShortName]?.ask | currency:'USD':'symbol':'1.2-2' }}</strong>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+        </div>
+
+      </div><!-- /.form__row -->
+    </div><!-- /.form__body -->
+
+
+
+    <div class="form__actions">
+      <div class="form__actions__inner">
+        <input type="reset" value="Reset" class="link-action" />
+
+        <input type="submit" value="Preview" class="btn form__btn" (click)="previewTrade()" />
+      </div><!-- /.form__actions__inner -->
+    </div><!-- /.form__actions -->
+  </form>
+
+
+</div>
