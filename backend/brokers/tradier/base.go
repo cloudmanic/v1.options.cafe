@@ -1,11 +1,13 @@
 package tradier
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"go/build"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 	"sync"
 
@@ -46,6 +48,45 @@ func (t *Api) SetActiveSymbols(symbols []string) {
 
 	t.activeSymbols = strings.Join(symbols, ",")
 
+}
+
+//
+// Send a POST request to Tradier. Returns the JSON string or an error
+//
+func (t *Api) SendPostRequest(urlStr string, params url.Values) (string, error) {
+
+	// Setup http client
+	client := &http.Client{}
+
+	// Setup api request
+	req, _ := http.NewRequest("POST", apiBaseUrl+urlStr, bytes.NewBufferString(params.Encode()))
+	req.Header.Set("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
+	req.Header.Set("Authorization", fmt.Sprint("Bearer ", t.ApiKey))
+
+	res, err := client.Do(req)
+
+	if err != nil {
+		return "", err
+	}
+
+	// Close Body
+	defer res.Body.Close()
+
+	// Make sure the api responded with a 200
+	if res.StatusCode != 200 {
+		return "", errors.New(fmt.Sprint("API did not return 200, It returned (", urlStr, ")", res.StatusCode))
+	}
+
+	// Read the data we got.
+	body, err := ioutil.ReadAll(res.Body)
+
+	if err != nil {
+		return "", err
+	}
+
+	// Return happy.
+	return string(body), nil
 }
 
 //

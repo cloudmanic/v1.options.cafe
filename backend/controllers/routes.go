@@ -23,6 +23,9 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 
 	apiV1.Use(t.AuthMiddleware())
 	{
+		// Orders
+		apiV1.POST("/orders/preview", t.PreviewOrder)
+
 		// Brokers
 		apiV1.GET("/brokers", t.GetBrokers)
 		apiV1.GET("/brokers/:id/balances", t.GetBalances)

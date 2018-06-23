@@ -30,6 +30,42 @@ type BrokerAccount struct {
 }
 
 //
+// Get the broker account by id and user id
+//
+func (t *DB) GetBrokerAccountByIdUserId(id uint, userId uint) (BrokerAccount, error) {
+
+	ba := BrokerAccount{}
+
+	// Query and get broker account
+	t.Where("id = ? AND user_id = ?", id, userId).First(&ba)
+
+	// Return happy
+	return ba, nil
+}
+
+//
+// Get broker from broker account.
+//
+func (t *DB) GetBrokerFromBrokerAccountAndUserId(id uint, userId uint) (Broker, error) {
+
+	// Get broker account.
+	brokerAccount, err := t.GetBrokerAccountByIdUserId(id, userId)
+
+	if err != nil {
+		return Broker{}, err
+	}
+
+	// Get the broker
+	broker, err := t.GetBrokerById(brokerAccount.BrokerId)
+
+	if err != nil {
+		return Broker{}, err
+	}
+
+	return broker, nil
+}
+
+//
 // Update the broker account object.
 //
 func (t *DB) UpdateBrokerAccount(brokerAccount *BrokerAccount) error {
@@ -48,7 +84,7 @@ func (t *DB) GetBrokerAccountByBrokerAccountNumber(brokerId uint, accountNumber 
 
 	ba := BrokerAccount{}
 
-	// Query and get all orders we have not reviewed before.
+	// Query and get broker account
 	t.Where("broker_id = ? AND account_number = ?", brokerId, accountNumber).First(&ba)
 
 	// Return happy

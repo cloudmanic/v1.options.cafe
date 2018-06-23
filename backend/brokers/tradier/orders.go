@@ -3,12 +3,63 @@ package tradier
 import (
 	"encoding/json"
 	"errors"
+	"net/url"
 	"strconv"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/tidwall/gjson"
 )
+
+//
+// Preview order
+//
+func (t *Api) PreviewOrder(accountId string, order types.Order) (types.OrderPreview, error) {
+
+	// Build Form
+	params := url.Values{}
+	params.Set("preview", "true")
+	params.Set("price", strconv.FormatFloat(order.Price, 'f', 2, 64))
+	params.Set("type", order.Type)
+	params.Set("symbol", order.Symbol)
+	params.Set("duration", order.Duration)
+	params.Set("class", order.Class)
+
+	// Multi Leg?
+	for key, row := range order.Legs {
+		params.Set("side["+strconv.Itoa(key)+"]", row.Side)
+		params.Set("quantity["+strconv.Itoa(key)+"]", strconv.FormatFloat(row.Quantity, 'f', 2, 64))
+		params.Set("option_symbol["+strconv.Itoa(key)+"]", row.OptionSymbol)
+	}
+
+	// Get the JSON
+	jsonRt, err := t.SendPostRequest("/accounts/"+accountId+"/orders", params)
+
+	spew.Dump(jsonRt)
+
+	if err != nil {
+		return types.OrderPreview{}, err
+	}
+
+	// Check for errors
+	errMsg := gjson.Get(jsonRt, "errors.error").String()
+
+	if len(errMsg) > 0 {
+		return types.OrderPreview{Status: "Error", Error: errMsg}, nil
+	}
+
+	// Grab result and convert to strut
+	result := types.OrderPreview{}
+	vo := gjson.Get(jsonRt, "order").String()
+	err2 := json.Unmarshal([]byte(vo), &result)
+
+	if err2 != nil {
+		return types.OrderPreview{}, err2
+	}
+
+	return result, nil
+}
 
 //
 // Get All Orders Ever

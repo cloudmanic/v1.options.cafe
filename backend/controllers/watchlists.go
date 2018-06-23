@@ -70,7 +70,7 @@ func (t *Controller) GetWatchlist(c *gin.Context) {
 //
 func (t *Controller) CreateWatchlist(c *gin.Context) {
 
-	// // // Get the user id.
+	// Get the user id.
 	userId := c.MustGet("userId").(uint)
 
 	// Parse json body

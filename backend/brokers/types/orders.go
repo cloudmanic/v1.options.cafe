@@ -1,43 +1,61 @@
 package types
 
+type OrderPreview struct {
+	Status            string  `json:"status"`
+	Error             string  `json:"error"`
+	Commission        float64 `json:"commission"`
+	Cost              float64 `json:"cost"`
+	Fees              float64 `json:"fees"`
+	Symbol            string  `json:"symbol"`
+	Type              string  `json:"type"`
+	Duration          string  `json:"duration"`
+	Price             float64 `json:"price"`
+	OrderCost         float64 `json:"order_cost"`
+	MarginChange      float64 `json:"margin_change"`
+	OptionRequirement float64 `json:"option_requirement"`
+	Class             string  `json:"class"`
+	Strategy          string  `json:"strategy"`
+}
+
 type Order struct {
-	Id                string
-	AccountId         string
-	Type              string
-	Symbol            string
-	Side              string
-	Quantity          float64
-	Status            string
-	Duration          string
-	Price             float64
-	AvgFillPrice      float64
-	ExecQuantity      float64
-	LastFillPrice     float64
-	LastFillQuantity  float64
-	RemainingQuantity float64
-	CreateDate        string
-	TransactionDate   string
-	Class             string
-	OptionSymbol      string
-	NumLegs           int
-	Legs              []OrderLeg
+	Id                string     `json:"-"`
+	AccountId         string     `json:"account_id"`
+	BrokerAccountId   uint       `json:"broker_account_id"`
+	Type              string     `json:"type"`
+	Symbol            string     `json:"symbol"`
+	Side              string     `json:"side"`
+	Quantity          float64    `json:"quantity"`
+	Status            string     `json:"-"`
+	Duration          string     `json:"duration"`
+	Price             float64    `json:"price"`
+	AvgFillPrice      float64    `json:"-"`
+	ExecQuantity      float64    `json:"-"`
+	LastFillPrice     float64    `json:"-"`
+	LastFillQuantity  float64    `json:"-"`
+	RemainingQuantity float64    `json:"-"`
+	CreateDate        string     `json:"-"`
+	TransactionDate   string     `json:"-"`
+	Class             string     `json:"class"`
+	OptionSymbol      string     `json:"option_symbol"`
+	NumLegs           int        `json:"-"`
+	Legs              []OrderLeg `json:"legs"`
 }
 
 type OrderLeg struct {
-	Type              string
-	Symbol            string
-	OptionSymbol      string
-	Side              string
-	Quantity          float64
-	Status            string
-	Duration          string
-	AvgFillPrice      float64
-	ExecQuantity      float64
-	LastFillPrice     float64
-	LastFillQuantity  float64
-	RemainingQuantity float64
-	CreateDate        string
-	TransactionDate   string
+	Type              string  `json:"type"`
+	Symbol            string  `json:"symbol"`
+	OptionSymbol      string  `json:"option_symbol"`
+	Side              string  `json:"side"`
+	Quantity          float64 `json:"quantity"`
+	Status            string  `json:"-"`
+	Duration          string  `json:"duration"`
+	AvgFillPrice      float64 `json:"-"`
+	ExecQuantity      float64 `json:"-"`
+	LastFillPrice     float64 `json:"-"`
+	LastFillQuantity  float64 `json:"-"`
+	RemainingQuantity float64 `json:"-"`
+	CreateDate        string  `json:"-"`
+	TransactionDate   string  `json:"-"`
 }
 
 // Tradier Temp Object for json decodeing

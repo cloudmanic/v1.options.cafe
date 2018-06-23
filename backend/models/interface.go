@@ -40,6 +40,8 @@ type Datastore interface {
 	CreateNewBroker(name string, user User, accessToken string, refreshToken string, tokenExpirationDate time.Time) (Broker, error)
 
 	// Broker Accounts
+	GetBrokerAccountByIdUserId(id uint, userId uint) (BrokerAccount, error)
+	GetBrokerFromBrokerAccountAndUserId(id uint, userId uint) (Broker, error)
 	UpdateBrokerAccount(brokerAccount *BrokerAccount) error
 	FirstOrCreateBrokerAccount(brokerAccount *BrokerAccount) (bool, error)
 	GetBrokerAccountByBrokerAccountNumber(brokerId uint, accountNumber string) (BrokerAccount, error)
