@@ -37,6 +37,14 @@ export class AuthLoginComponent implements OnInit {
   //
   ngOnInit() {
     
+    // Remove access token on server
+    let access_token = localStorage.getItem('access_token');
+
+    if(access_token && access_token.length)
+    {
+      this.http.get(environment.app_server + '/oauth/logout?access_token=' + access_token).subscribe();
+    }
+
     // Remove local storage
     localStorage.removeItem('user_id');    
     localStorage.removeItem('access_token');
@@ -49,7 +57,6 @@ export class AuthLoginComponent implements OnInit {
     
     // get return url from route parameters or default to '/'
     this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '/';    
-    
   }
   
   //

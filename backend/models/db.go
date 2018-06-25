@@ -106,6 +106,9 @@ func LoadTestingData(db *gorm.DB) {
 	// ActiveSymbol
 	db.Exec("TRUNCATE TABLE active_symbols;")
 
+	// Sessions
+	db.Exec("TRUNCATE TABLE sessions;")
+
 	// Symbols
 	db.Exec("TRUNCATE TABLE symbols;")
 	db.Create(&Symbol{Name: "SPDR S&P 500 ETF Trust", ShortName: "SPY", Type: "Equity"})

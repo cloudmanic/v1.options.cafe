@@ -68,6 +68,7 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 
 	// oAuth Routes
 	r.POST("/oauth/token", t.DoOauthToken)
+	r.GET("/oauth/logout", t.DoLogOut)
 
 	// Other Auth Routes
 	r.POST("/register", t.DoRegister)
