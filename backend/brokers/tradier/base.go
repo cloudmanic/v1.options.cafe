@@ -73,16 +73,16 @@ func (t *Api) SendPostRequest(urlStr string, params url.Values) (string, error) 
 	// Close Body
 	defer res.Body.Close()
 
-	// Make sure the api responded with a 200
-	if res.StatusCode != 200 {
-		return "", errors.New(fmt.Sprint("API did not return 200, It returned (", urlStr, ")", res.StatusCode))
-	}
-
 	// Read the data we got.
 	body, err := ioutil.ReadAll(res.Body)
 
 	if err != nil {
 		return "", err
+	}
+
+	// Make sure the api responded with a 200
+	if res.StatusCode != 200 {
+		return "", errors.New(fmt.Sprint("API did not return 200, It returned (", urlStr, ")", res.StatusCode, " ", string(body)))
 	}
 
 	// Return happy.
@@ -111,16 +111,16 @@ func (t *Api) SendGetRequest(urlStr string) (string, error) {
 	// Close Body
 	defer res.Body.Close()
 
-	// Make sure the api responded with a 200
-	if res.StatusCode != 200 {
-		return "", errors.New(fmt.Sprint("API did not return 200, It returned (", urlStr, ")", res.StatusCode))
-	}
-
 	// Read the data we got.
 	body, err := ioutil.ReadAll(res.Body)
 
 	if err != nil {
 		return "", err
+	}
+
+	// Make sure the api responded with a 200
+	if res.StatusCode != 200 {
+		return "", errors.New(fmt.Sprint("API did not return 200, It returned (", urlStr, ")", res.StatusCode, " ", string(body)))
 	}
 
 	// Return happy.

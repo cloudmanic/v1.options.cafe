@@ -8,35 +8,56 @@ import (
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/tidwall/gjson"
 )
+
+//
+// Submit order
+//
+func (t *Api) SubmitOrder(accountId string, order types.Order) (types.OrderSubmit, error) {
+
+	// Prep Order
+	params := prepOrder(order)
+
+	// Get the JSON
+	jsonRt, err := t.SendPostRequest("/accounts/"+accountId+"/orders", params)
+
+	if err != nil {
+		return types.OrderSubmit{}, err
+	}
+
+	// Check for errors
+	errMsg := gjson.Get(jsonRt, "errors.error").String()
+
+	if len(errMsg) > 0 {
+		return types.OrderSubmit{Status: "Error", Error: errMsg}, nil
+	}
+
+	// Grab result and convert to strut
+	result := types.OrderSubmit{}
+	vo := gjson.Get(jsonRt, "order").String()
+	err2 := json.Unmarshal([]byte(vo), &result)
+
+	if err2 != nil {
+		return types.OrderSubmit{}, err2
+	}
+
+	return result, nil
+}
 
 //
 // Preview order
 //
 func (t *Api) PreviewOrder(accountId string, order types.Order) (types.OrderPreview, error) {
 
-	// Build Form
-	params := url.Values{}
-	params.Set("preview", "true")
-	params.Set("price", strconv.FormatFloat(order.Price, 'f', 2, 64))
-	params.Set("type", order.Type)
-	params.Set("symbol", order.Symbol)
-	params.Set("duration", order.Duration)
-	params.Set("class", order.Class)
+	// Prep Order
+	params := prepOrder(order)
 
-	// Multi Leg?
-	for key, row := range order.Legs {
-		params.Set("side["+strconv.Itoa(key)+"]", row.Side)
-		params.Set("quantity["+strconv.Itoa(key)+"]", strconv.FormatFloat(row.Quantity, 'f', 2, 64))
-		params.Set("option_symbol["+strconv.Itoa(key)+"]", row.OptionSymbol)
-	}
+	// Set to Preview
+	params.Set("preview", "true")
 
 	// Get the JSON
 	jsonRt, err := t.SendPostRequest("/accounts/"+accountId+"/orders", params)
-
-	spew.Dump(jsonRt)
 
 	if err != nil {
 		return types.OrderPreview{}, err
@@ -407,6 +428,32 @@ func (t *Api) tempOrderArray2OrderArray(t_orders *[]types.TradierOrder, orders *
 	// Success
 	return nil
 
+}
+
+// ----------------- Helper Functions -------------------- //
+
+//
+// Prep order
+//
+func prepOrder(order types.Order) url.Values {
+
+	// Build Form
+	params := url.Values{}
+	params.Set("price", strconv.FormatFloat(order.Price, 'f', 2, 64))
+	params.Set("type", order.Type)
+	params.Set("symbol", order.Symbol)
+	params.Set("duration", order.Duration)
+	params.Set("class", order.Class)
+
+	// Multi Leg?
+	for key, row := range order.Legs {
+		params.Set("side["+strconv.Itoa(key)+"]", row.Side)
+		params.Set("quantity["+strconv.Itoa(key)+"]", strconv.FormatFloat(row.Quantity, 'f', 2, 64))
+		params.Set("option_symbol["+strconv.Itoa(key)+"]", row.OptionSymbol)
+	}
+
+	// Return Happy
+	return params
 }
 
 /* End File */

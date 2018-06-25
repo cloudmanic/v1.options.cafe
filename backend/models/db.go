@@ -94,7 +94,7 @@ func LoadTestingData(db *gorm.DB) {
 
 	// Brokers
 	db.Exec("TRUNCATE TABLE brokers;")
-	db.Create(&Broker{Name: "Tradier", UserId: 1, AccessToken: "4b_qOMJNtCQzhWbY32hCeLxM3m3lr7BQSo9rewzY3RrZnn9_FQsjmpFlq9sZqTp-", RefreshToken: "abc", TokenExpirationDate: ts})
+	db.Create(&Broker{Name: "Tradier", UserId: 1, AccessToken: "CLOwLO2cMnx-N_bPEexiVo9z9oRR80nPI9ycxQw3KQ-WQ4OP3D44gIbfLScAZ9pv", RefreshToken: "abc", TokenExpirationDate: ts})
 	db.Create(&Broker{Name: "Tradeking", UserId: 1, AccessToken: "456", RefreshToken: "xyz", TokenExpirationDate: ts})
 	db.Create(&Broker{Name: "Etrade", UserId: 1, AccessToken: "789", RefreshToken: "mno", TokenExpirationDate: ts})
 

@@ -1,5 +1,11 @@
 package types
 
+type OrderSubmit struct {
+	Id     uint   `json:"id"`
+	Status string `json:"status"`
+	Error  string `json:"error"`
+}
+
 type OrderPreview struct {
 	Status            string  `json:"status"`
 	Error             string  `json:"error"`

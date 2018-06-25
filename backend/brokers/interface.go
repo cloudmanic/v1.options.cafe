@@ -11,6 +11,7 @@ type Api interface {
 	GetBrokerConfig() *types.BrokerConfig
 	GetBalances() ([]types.Balance, error)
 	GetHistoryByAccountId(string) ([]types.History, error)
+	SubmitOrder(accountId string, order types.Order) (types.OrderSubmit, error)
 	PreviewOrder(accountId string, order types.Order) (types.OrderPreview, error)
 	GetOrders() ([]types.Order, error)
 	GetAllOrders() ([]types.Order, error)

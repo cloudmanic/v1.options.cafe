@@ -12,6 +12,8 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,6 +21,60 @@ import (
 // Preview an order
 //
 func (t *Controller) PreviewOrder(c *gin.Context) {
+
+	// Build request
+	order, brokerCont, brokerAccount, err := orderBuildRequest(t, c)
+
+	if err != nil {
+		services.Warning(err)
+		return
+	}
+
+	// Send preview request to broker
+	preview, err := brokerCont.PreviewOrder(brokerAccount.AccountNumber, order)
+
+	if err != nil {
+		services.Warning(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Preview error."})
+		return
+	}
+
+	// Return happy JSON
+	c.JSON(200, preview)
+}
+
+//
+// Place an order
+//
+func (t *Controller) SubmitOrder(c *gin.Context) {
+
+	// Build request
+	order, brokerCont, brokerAccount, err := orderBuildRequest(t, c)
+
+	if err != nil {
+		services.Warning(err)
+		return
+	}
+
+	// Send order request to broker
+	orderRequest, err := brokerCont.SubmitOrder(brokerAccount.AccountNumber, order)
+
+	if err != nil {
+		services.Warning(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Order error."})
+		return
+	}
+
+	// Return happy JSON
+	c.JSON(200, orderRequest)
+}
+
+// --------------- Helper Function --------------------- //
+
+//
+// Shared logic between
+//
+func orderBuildRequest(t *Controller, c *gin.Context) (types.Order, tradier.Api, models.BrokerAccount, error) {
 
 	// Get the user id.
 	userId := c.MustGet("userId").(uint)
@@ -28,7 +84,7 @@ func (t *Controller) PreviewOrder(c *gin.Context) {
 	// Json to Object
 	if err := c.ShouldBindJSON(&order); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		return types.Order{}, tradier.Api{}, models.BrokerAccount{}, err
 	}
 
 	// Get broker account.
@@ -36,7 +92,7 @@ func (t *Controller) PreviewOrder(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Unknown broker. (#001)"})
-		return
+		return types.Order{}, tradier.Api{}, models.BrokerAccount{}, err
 	}
 
 	// Get the broker
@@ -44,7 +100,7 @@ func (t *Controller) PreviewOrder(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Unknown broker. (#002)"})
-		return
+		return types.Order{}, tradier.Api{}, models.BrokerAccount{}, err
 	}
 
 	// Decrypt the access token
@@ -52,7 +108,7 @@ func (t *Controller) PreviewOrder(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Unknown broker. (#003)"})
-		return
+		return types.Order{}, tradier.Api{}, models.BrokerAccount{}, err
 	}
 
 	// Setup the broker
@@ -61,16 +117,8 @@ func (t *Controller) PreviewOrder(c *gin.Context) {
 		ApiKey: apiKey,
 	}
 
-	// Send preview request to broker
-	preview, err := brokerCont.PreviewOrder(brokerAccount.AccountNumber, order)
-
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Preview error."})
-		return
-	}
-
-	// Return happy JSON
-	c.JSON(200, preview)
+	// Return happy
+	return order, brokerCont, brokerAccount, nil
 }
 
 /* End File */
