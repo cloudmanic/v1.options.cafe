@@ -38,6 +38,13 @@ export class TradeMultiLegComponent implements OnInit
   ngOnInit() {}
 
   //
+  // Submit Trade
+  //
+  submitTrade() {
+    alert("submit trade");
+  }
+
+  //
   // Preview Trade
   //
   previewTrade() {
@@ -57,8 +64,7 @@ export class TradeMultiLegComponent implements OnInit
           alert(err.error.message);
         } else 
         {
-          var json = JSON.parse(err.error); // Bug....Angular 4.4.4
-          alert(json.error);
+          alert(err.error.error);
         }
 
       }

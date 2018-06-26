@@ -33,7 +33,7 @@ export class TradeService
       symbol: trade.Symbol,
       duration: trade.Duration,
       type: trade.OrderType,
-      price: trade.Price,
+      price: Number(trade.Price),
       legs: []
     }
 

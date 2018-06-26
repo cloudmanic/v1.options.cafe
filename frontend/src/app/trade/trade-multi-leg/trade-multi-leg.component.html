@@ -149,8 +149,23 @@
                   </select>
                 </div>
 
+
+
+
               </div>
             </div>
+
+
+
+            <div class="form__col form__col--size3" *ngIf="(tradeDetails.OrderType == 'debit') || (tradeDetails.OrderType == 'credit')">
+              <label for="field-search-limit" class="hidden">Amount</label>
+
+              <div class="form__controls">
+                <input type="text" class="field" name="field-search-limit" id="field-search-limit" placeholder="Amount" [(ngModel)]="tradeDetails.Price" />
+              </div>
+            </div>          
+
+
 
 
 
@@ -224,6 +239,9 @@
     </div><!-- /.form__body -->
 
 
+
+
+
     <div class="form__actions--flex">
       <div class="table-preview form__aside" *ngIf="orderPreview">
 
@@ -276,7 +294,7 @@
       <div class="form__actions__inner" *ngIf="orderPreview">
         <input type="reset" value="Reset" class="link-action" />
         <input type="submit" value="Preview" class="btn form__btn" (click)="previewTrade()" />
-        <input type="submit" value="Submit" class="btn btn--pink form__btn" *ngIf="! orderPreview.Error" />
+        <input type="submit" value="Submit" class="btn btn--pink form__btn" *ngIf="! orderPreview.Error" (click)="submitTrade()" />
       </div><!-- /.form__actions__inner -->
     </div><!-- /.form__actions-flex -->
 
