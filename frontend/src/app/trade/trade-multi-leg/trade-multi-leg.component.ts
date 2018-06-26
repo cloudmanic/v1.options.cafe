@@ -181,6 +181,121 @@ export class TradeMultiLegComponent implements OnInit
 
   }  
 
+  // 
+  // Set bid price 
+  //
+  getBidPrice() : number
+  {
+    let price = 0.00;
+    let qtyKnown = 0.00;
+    let qtyDifferent = false;
+
+    if (! this.tradeDetails.Legs)
+    {
+      return price;
+    }
+
+    for (let i = 0; i < this.tradeDetails.Legs.length; i++)
+    {
+      if (this.tradeDetails.Legs[i].Symbol)
+      {
+        if (this.quotes[this.tradeDetails.Legs[i].Symbol.ShortName] && (this.tradeDetails.Legs[i].Qty > 0))
+        {
+          // Determine of all qtys are the same or not.
+          if (qtyKnown == 0.00)
+          {
+            qtyKnown = this.tradeDetails.Legs[i].Qty;
+          } else if (qtyKnown != this.tradeDetails.Legs[i].Qty)
+          {
+            qtyDifferent = true;
+          }
+
+          if(this.tradeDetails.Legs[i].Side == 'buy_to_open')
+          {
+            price = price + (this.quotes[this.tradeDetails.Legs[i].Symbol.ShortName].bid * this.tradeDetails.Legs[i].Qty);
+          } else
+          {
+            price = price - (this.quotes[this.tradeDetails.Legs[i].Symbol.ShortName].ask * this.tradeDetails.Legs[i].Qty);            
+          }
+        }
+      }
+      
+    }
+
+    // If qtys are the same....
+    if(!qtyDifferent)
+    {
+      price = (price / qtyKnown);
+    }
+
+    // Return the price.
+    return price;
+  }
+
+  // 
+  // Set ask price 
+  //
+  getAskPrice(): number {
+    let price = 0.00;
+    let qtyKnown = 0.00;
+    let qtyDifferent = false;    
+
+    if (!this.tradeDetails.Legs) 
+    {
+      return price;
+    }
+
+    for (let i = 0; i < this.tradeDetails.Legs.length; i++) 
+    {
+      if (this.tradeDetails.Legs[i].Symbol) 
+      {
+        if (this.quotes[this.tradeDetails.Legs[i].Symbol.ShortName] && (this.tradeDetails.Legs[i].Qty > 0)) 
+        {
+          // Determine of all qtys are the same or not.
+          if (qtyKnown == 0.00) 
+          {
+            qtyKnown = this.tradeDetails.Legs[i].Qty;
+          } else if (qtyKnown != this.tradeDetails.Legs[i].Qty) 
+          {
+            qtyDifferent = true;
+          }
+
+          if (this.tradeDetails.Legs[i].Side == 'buy_to_open') 
+          {
+            price = price + (this.quotes[this.tradeDetails.Legs[i].Symbol.ShortName].ask * this.tradeDetails.Legs[i].Qty);
+          } else 
+          {
+            price = price - (this.quotes[this.tradeDetails.Legs[i].Symbol.ShortName].bid * this.tradeDetails.Legs[i].Qty);
+          }
+        }
+      }
+
+    }
+
+    // If qtys are the same....
+    if (!qtyDifferent) 
+    {
+      price = (price / qtyKnown);
+    }
+
+    // Return the price.
+    return price;
+  }
+
+  // 
+  // Set mid price 
+  //
+  getMidPrice(): number {
+
+    if (!this.tradeDetails.Legs) 
+    {
+      return 0.00;
+    }
+
+    // Return the price.
+    return (this.getAskPrice() + this.getBidPrice()) / 2;
+  }
+
 }
 
 /* End File */

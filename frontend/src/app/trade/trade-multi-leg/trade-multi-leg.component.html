@@ -204,12 +204,19 @@
 
           </div>
 
-          <div class="net-quote">
+          <div class="net-quote" *ngIf="getAskPrice() < 0">
             <h3>Net Quote</h3>
-            <p>Credit Bid: $0.18</p>
-            <p>Credit Ask: $0.33</p>
-            <p>Credit Mid: $0.26</p>
+            <p>Credit Ask: {{ (getAskPrice() * -1) | currency:'USD':'symbol':'1.2-2' }}</p>            
+            <p>Credit Bid: {{ (getBidPrice() * -1) | currency:'USD':'symbol':'1.2-2' }}</p>
+            <p>Credit Mid: {{ (getMidPrice() * -1) | currency:'USD':'symbol':'1.2-2' }}</p>
           </div>          
+
+          <div class="net-quote" *ngIf="getAskPrice() > 0">
+            <h3>Net Quote</h3>
+            <p>Debit Ask: {{ getAskPrice() | currency:'USD':'symbol':'1.2-2' }}</p>            
+            <p>Debit Bid: {{ getBidPrice() | currency:'USD':'symbol':'1.2-2' }}</p>
+            <p>Debit Mid: {{ getMidPrice() | currency:'USD':'symbol':'1.2-2' }}</p>
+          </div> 
 
         </div>
 
