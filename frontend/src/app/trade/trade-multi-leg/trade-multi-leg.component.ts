@@ -8,8 +8,9 @@ import * as moment from 'moment';
 import { Symbol } from '../../models/symbol';
 import { Component, OnInit, Input } from '@angular/core';
 import { SymbolService } from '../../providers/http/symbol.service';
+import { StateService } from '../../providers/state/state.service';
 import { OptionsChainService } from '../../providers/http/options-chain.service';
-import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../../providers/http/trade.service';
+import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs, OrderPreview } from '../../providers/http/trade.service';
 
 @Component({
   selector: 'app-trade-multi-leg',
@@ -22,13 +23,14 @@ export class TradeMultiLegComponent implements OnInit
   @Input() tradeDetails: TradeDetails;
 
   symbol: Symbol;
+  orderPreview: OrderPreview;
   typeAheadSymbol: Symbol;
   symbolExpirations: Date[] = [];
 
   //
   // Construct.
   //
-  constructor(private tradeService: TradeService, private optionsChainService: OptionsChainService, private symbolService: SymbolService) {}
+  constructor(private tradeService: TradeService, private optionsChainService: OptionsChainService, private symbolService: SymbolService, private stateService: StateService) { }
 
   //
   // OnInit.
@@ -39,9 +41,29 @@ export class TradeMultiLegComponent implements OnInit
   // Preview Trade
   //
   previewTrade() {
-    alert('Preview');
+    // Ajax call to preview trade.
+    this.tradeService.previewTrade(this.tradeDetails, this.stateService.GetStoredActiveAccountId()).subscribe(
 
-    console.log(this.tradeDetails);
+      // Success (as in no server errors)
+      data => {
+        this.orderPreview = data;
+      },
+
+      // Error
+      (err: HttpErrorResponse) => {
+
+        if (err.error instanceof Error) 
+        {
+          alert(err.error.message);
+        } else 
+        {
+          var json = JSON.parse(err.error); // Bug....Angular 4.4.4
+          alert(json.error);
+        }
+
+      }
+
+    );
   }
 
   //

@@ -23,6 +23,35 @@ export class TradeService
   constructor(private http: HttpClient) { }
 
   //
+  // Preview trade.
+  //
+  previewTrade(trade: TradeDetails, brokerAccountId: string): Observable<OrderPreview> {
+  {
+    let body = {
+      broker_account_id: parseInt(brokerAccountId),
+      class: trade.Class,
+      symbol: trade.Symbol,
+      duration: trade.Duration,
+      type: trade.OrderType,
+      price: trade.Price,
+      legs: []
+    }
+
+    for(let i = 0; i < trade.Legs.length; i++)
+    {
+      body.legs.push({
+        side: trade.Legs[i].Side, 
+        quantity: parseInt(trade.Legs[i].Qty), 
+        option_symbol: trade.Legs[i].Symbol.ShortName
+      });
+    }
+
+      return this.http.post<OrderPreview>(environment.app_server + '/api/v1/orders/preview', body)
+        .map((data) => { return new OrderPreview().fromJson(data); });
+    }    
+  }
+
+  //
   // Get option expirations
   //
   getOptionExpirations(symbol: string): Observable<Date[]> 
@@ -91,6 +120,49 @@ export class TradeEvent
     obj.TradeDetails = tradeDetails;
     return obj;
   }
+}
+
+//
+// Trade Preview response
+//
+export class OrderPreview 
+{
+  Status: string;
+  Error: string;
+  Commission: number;
+  Cost: number;
+  Fees: number;
+  Symbol: string;
+  Type: string;
+  Duration: string;
+  Price: number;
+  OrderCost: number;
+  MarginChange: number;
+  OptionRequirement: number;
+  Class: string;
+  Strategy: string;
+
+  //
+  // Json to Object.
+  //
+  fromJson(json: Object): OrderPreview {
+    let op = new OrderPreview();
+    op.Status = json["status"];
+    op.Error = json["error"];
+    op.Commission = json["commission"];
+    op.Cost = json["cost"];
+    op.Fees = json["fees"];
+    op.Symbol = json["symbol"];
+    op.Type = json["type"];
+    op.Duration = json["duration"];
+    op.Price = json["price"];
+    op.OrderCost = json["order_cost"];
+    op.MarginChange = json["margin_change"];
+    op.OptionRequirement = json["option_requirement"];
+    op.Class = json["class"];
+    op.Strategy = json["strategy"];
+    return op;
+  }   
 }
 
 //

@@ -225,8 +225,16 @@
 
 
     <div class="form__actions--flex">
-      <div class="table-preview form__aside">
-        <table>
+      <div class="table-preview form__aside" *ngIf="orderPreview">
+
+        <div class="banner banner--medium banner--error" *ngIf="orderPreview.Error">
+          <h6 class="banner__title">
+            <strong>{{ orderPreview.Error }}</strong>
+          </h6>
+        </div> 
+
+
+        <table *ngIf="! orderPreview.Error">
           <tr>
             <th>Trade Preview</th>
 
@@ -234,15 +242,23 @@
               <p>
                 COMMISSION <br />
 
-                <strong>$1.00</strong>
+                <strong>{{ orderPreview.Commission | currency:'USD':'symbol':'1.2-2' }}</strong>
               </p>
             </td>
 
-            <td>
+            <td *ngIf="orderPreview.OrderCost < 0">
+              <p>
+                ORDER PROCEEDS <br />
+
+                <strong>{{ (orderPreview.OrderCost * -1) | currency:'USD':'symbol':'1.2-2' }}</strong>
+              </p>
+            </td>
+
+            <td *ngIf="orderPreview.OrderCost > 0">
               <p>
                 ORDER COST <br />
 
-                <strong>$130.00</strong>
+                <strong>{{ orderPreview.OrderCost | currency:'USD':'symbol':'1.2-2' }}</strong>
               </p>
             </td>
 
@@ -250,22 +266,22 @@
               <p>
                 EST. TOTAL COST <br />
 
-                <strong>$130.00</strong>
+                <strong>{{ orderPreview.Cost | currency:'USD':'symbol':'1.2-2' }}</strong>
               </p>
             </td>
           </tr>
         </table>
       </div><!-- /.table-preview form__aside -->
 
-      <div class="form__actions__inner">
+      <div class="form__actions__inner" *ngIf="orderPreview">
         <input type="reset" value="Reset" class="link-action" />
-
-        <input type="submit" value="Submit" class="btn btn--pink form__btn" />
+        <input type="submit" value="Preview" class="btn form__btn" (click)="previewTrade()" />
+        <input type="submit" value="Submit" class="btn btn--pink form__btn" *ngIf="! orderPreview.Error" />
       </div><!-- /.form__actions__inner -->
     </div><!-- /.form__actions-flex -->
 
 
-    <div class="form__actions">
+    <div class="form__actions" *ngIf="! orderPreview">
       <div class="form__actions__inner">
         <input type="reset" value="Reset" class="link-action" />
 
