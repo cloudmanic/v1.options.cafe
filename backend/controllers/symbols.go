@@ -9,6 +9,7 @@ package controllers
 import (
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/araddon/dateparse"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
@@ -116,24 +117,25 @@ func (t *Controller) GetOptionSymbolFromParts(c *gin.Context) {
 	// ------------ First we load the entire option chain from Tradier : TODO: someday make this via the users' account -------------- //
 	// ------------ We do this to make sure our symbols table is up to date with the latest for this symbol -------------------------- //
 
-	// Get access token
-	apiKey, err := t.GetTradierAccessToken(c)
+	// // Get access token
+	// apiKey, err := t.GetTradierAccessToken(c)
 
-	if err != nil {
-		t.RespondError(c, err, httpGenericErrMsg)
-		return
-	}
+	// if err != nil {
+	// 	t.RespondError(c, err, httpGenericErrMsg)
+	// 	return
+	// }
 
 	// Setup the broker
 	broker := tradier.Api{
 		DB:     t.DB,
-		ApiKey: apiKey,
+		ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN"),
 	}
 
 	// Get chain from tradier.
 	chain, err := broker.GetOptionsChainByExpiration(symbol, expire)
 
 	if err != nil {
+		services.Warning(err)
 		t.RespondError(c, err, httpGenericErrMsg)
 		return
 	}

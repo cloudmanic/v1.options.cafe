@@ -53,7 +53,7 @@ func OptionParse(optionSymb string) (OptionParts, error) {
 	year = year + 2000 // TODO: in year 3000 this will be a bug :)
 
 	// Build date
-	date, err := dateparse.ParseLocal(matches[0][3] + "/" + matches[0][4] + "/" + matches[0][2])
+	date, err := dateparse.ParseLocal(matches[0][3] + "/" + matches[0][4] + "/" + strconv.Itoa(year))
 
 	if err != nil {
 		return OptionParts{}, err
