@@ -1447,6 +1447,7 @@ select::-ms-expand { display: none; }
 .trade-builder .trade-search .typeahead-cont { width: 100%; }
 .trade-builder .trade-search .typeahead-cont .field { width: 98%; }
 .trade-builder .table--stocks td:nth-child(n+3) { text-align: left; }
+.trade-builder .net-quote { display: flex; font-size: 14px; margin-top: 15px; text-align: center; }
 
 /* Hide GooveHq stuff */
 iframe.grv-widget-tag { display: none !important; }
