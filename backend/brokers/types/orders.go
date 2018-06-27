@@ -24,26 +24,26 @@ type OrderPreview struct {
 }
 
 type Order struct {
-	Id                string     `json:"-"`
+	Id                string     `json:"id"`
 	AccountId         string     `json:"account_id"`
 	BrokerAccountId   uint       `json:"broker_account_id"`
 	Type              string     `json:"type"`
 	Symbol            string     `json:"symbol"`
 	Side              string     `json:"side"`
 	Quantity          float64    `json:"quantity"`
-	Status            string     `json:"-"`
+	Status            string     `json:"status"`
 	Duration          string     `json:"duration"`
 	Price             float64    `json:"price"`
-	AvgFillPrice      float64    `json:"-"`
-	ExecQuantity      float64    `json:"-"`
-	LastFillPrice     float64    `json:"-"`
-	LastFillQuantity  float64    `json:"-"`
-	RemainingQuantity float64    `json:"-"`
-	CreateDate        string     `json:"-"`
-	TransactionDate   string     `json:"-"`
+	AvgFillPrice      float64    `json:"avg_fill_price"`
+	ExecQuantity      float64    `json:"exec_quantity"`
+	LastFillPrice     float64    `json:"last_fill_price"`
+	LastFillQuantity  float64    `json:"last_fill_quantity"`
+	RemainingQuantity float64    `json:"remaining_quantity"`
+	CreateDate        string     `json:"create_date"`
+	TransactionDate   string     `json:"transaction_date"`
 	Class             string     `json:"class"`
 	OptionSymbol      string     `json:"option_symbol"`
-	NumLegs           int        `json:"-"`
+	NumLegs           int        `json:"num_legs"`
 	Legs              []OrderLeg `json:"legs"`
 }
 
@@ -53,15 +53,15 @@ type OrderLeg struct {
 	OptionSymbol      string  `json:"option_symbol"`
 	Side              string  `json:"side"`
 	Quantity          float64 `json:"quantity"`
-	Status            string  `json:"-"`
+	Status            string  `json:"status"`
 	Duration          string  `json:"duration"`
-	AvgFillPrice      float64 `json:"-"`
-	ExecQuantity      float64 `json:"-"`
-	LastFillPrice     float64 `json:"-"`
-	LastFillQuantity  float64 `json:"-"`
-	RemainingQuantity float64 `json:"-"`
-	CreateDate        string  `json:"-"`
-	TransactionDate   string  `json:"-"`
+	AvgFillPrice      float64 `json:"avg_fill_price"`
+	ExecQuantity      float64 `json:"exec_quantity"`
+	LastFillPrice     float64 `json:"last_fill_price"`
+	LastFillQuantity  float64 `json:"last_fill_quantity"`
+	RemainingQuantity float64 `json:"remaining_quantity"`
+	CreateDate        string  `json:"create_date"`
+	TransactionDate   string  `json:"transaction_date"`
 }
 
 // Tradier Temp Object for json decodeing

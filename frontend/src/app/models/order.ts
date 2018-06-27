@@ -48,50 +48,47 @@ export class Order {
       // Add in the legs
       let legs = [];
       
-      if(data[i].NumLegs > 0)
+      for(let k = 0; k < data[i].legs.length; k++)
       {
-        for(let k = 0; k < data[i].Legs.length; k++)
-        {
-          legs.push(new OrderLeg(
-            data[i].Legs[k].Type,
-            data[i].Legs[k].Symbol,
-            data[i].Legs[k].OptionSymbol, 
-            data[i].Legs[k].Side, 
-            data[i].Legs[k].Quantity, 
-            data[i].Legs[k].Status, 
-            data[i].Legs[k].Duration, 
-            data[i].Legs[k].AvgFillPrice, 
-            data[i].Legs[k].ExecQuantity, 
-            data[i].Legs[k].LastFillPrice, 
-            data[i].Legs[k].LastFillQuantity, 
-            data[i].Legs[k].RemainingQuantity, 
-            data[i].Legs[k].CreateDate, 
-            data[i].Legs[k].TransactionDate          
-          ));
-        }
+        legs.push(new OrderLeg(
+          data[i].legs[k].class,
+          data[i].legs[k].symbol,
+          data[i].legs[k].option_symbol, 
+          data[i].legs[k].side, 
+          data[i].legs[k].quantity, 
+          data[i].legs[k].status, 
+          data[i].legs[k].duration, 
+          data[i].legs[k].avg_fill_price, 
+          data[i].legs[k].exec_quantity, 
+          data[i].legs[k].last_fill_price, 
+          data[i].legs[k].last_fill_quantity, 
+          data[i].legs[k].remaining_quantity, 
+          data[i].legs[k].create_date, 
+          data[i].legs[k].transaction_date          
+        ));
       }
       
       // Push the order on
       orders.push(new Order(
-          data[i].Id,
-          data[i].AccountId,
-          data[i].AvgFillPrice,
-          data[i].Class,
-          data[i].CreateDate,
-          data[i].Duration,
-          data[i].ExecQuantity,
-          data[i].LastFillPrice,
-          data[i].LastFillQuantity,
-          data[i].NumLegs,
-          data[i].Price,
-          data[i].Quantity,
-          data[i].RemainingQuantity,
-          data[i].Side,
-          data[i].Status,
-          data[i].Symbol,
-          data[i].TransactionDate,
-          data[i].Type,
-          data[i].OptionSymbol,
+          data[i].id,
+          data[i].account_id,
+          data[i].avg_fill_price,
+          data[i].class,
+          data[i].create_date,
+          data[i].duration,
+          data[i].exec_quantity,
+          data[i].last_fill_price,
+          data[i].last_fill_quantity,
+          data[i].num_legs,
+          data[i].price,
+          data[i].quantity,
+          data[i].remaining_quantity,
+          data[i].side,
+          data[i].status,
+          data[i].symbol,
+          data[i].transaction_date,
+          data[i].type,
+          data[i].option_symbol,
           legs));
                
     }

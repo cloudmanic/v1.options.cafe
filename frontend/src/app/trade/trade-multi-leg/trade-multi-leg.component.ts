@@ -5,6 +5,7 @@
 //
 
 import * as moment from 'moment';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Symbol } from '../../models/symbol';
 import { Component, OnInit, Input } from '@angular/core';
 import { SymbolService } from '../../providers/http/symbol.service';

@@ -94,6 +94,9 @@ export class OrdersComponent implements OnInit {
   private setOrders(orders: Order[]) {
     var rt = []
     
+    console.log(orders);
+    console.log(this.stateService.GetActiveBrokerAccount());
+
     // This data has not come in yet.
     if(! this.stateService.GetActiveBrokerAccount())
     {

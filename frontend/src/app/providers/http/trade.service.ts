@@ -39,11 +39,11 @@ export class TradeService
 
     for(let i = 0; i < trade.Legs.length; i++)
     {
-      body.legs.push({
-        side: trade.Legs[i].Side, 
-        quantity: parseInt(trade.Legs[i].Qty), 
-        option_symbol: trade.Legs[i].Symbol.ShortName
-      });
+      body.legs.push(new TradeOptionLegsPost().createNew(
+        trade.Legs[i].Side, 
+        trade.Legs[i].Qty, 
+        trade.Legs[i].Symbol.ShortName
+      ));
     }
 
       return this.http.post<OrderPreview>(environment.app_server + '/api/v1/orders/preview', body)
@@ -176,6 +176,27 @@ export class TradeDetails
   Duration: string; // day, gtc
   Price: number;
   Legs: TradeOptionLegs[];
+}
+
+//
+// Trade Option Legs
+//
+export class TradeOptionLegsPost 
+{
+  symbol: string;
+  side: string;
+  qty: number;
+
+  //
+  // Create new.
+  //
+  createNew(side: string, qty: number, symbol: string): TradeOptionLegsPost {
+    let obj = new TradeOptionLegsPost();
+    obj.symbol = symbol;
+    obj.side = side;
+    obj.qty = qty;
+    return obj;
+  }  
 }
 
 //
