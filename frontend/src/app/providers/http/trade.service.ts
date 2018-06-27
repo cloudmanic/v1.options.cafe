@@ -41,7 +41,7 @@ export class TradeService
     {
       body.legs.push(new TradeOptionLegsPost().createNew(
         trade.Legs[i].Side, 
-        trade.Legs[i].Qty, 
+        Number(trade.Legs[i].Qty), 
         trade.Legs[i].Symbol.ShortName
       ));
     }
@@ -183,18 +183,18 @@ export class TradeDetails
 //
 export class TradeOptionLegsPost 
 {
-  symbol: string;
+  option_symbol: string;
   side: string;
-  qty: number;
+  quantity: number;
 
   //
   // Create new.
   //
   createNew(side: string, qty: number, symbol: string): TradeOptionLegsPost {
     let obj = new TradeOptionLegsPost();
-    obj.symbol = symbol;
+    obj.option_symbol = symbol;
     obj.side = side;
-    obj.qty = qty;
+    obj.quantity = qty;
     return obj;
   }  
 }
