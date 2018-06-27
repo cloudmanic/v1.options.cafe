@@ -22,6 +22,15 @@ export class SymbolService
   constructor(private http: HttpClient) { }
 
   //
+  // Get a symbol
+  //
+  getSymbol(symbol: string): Observable<Symbol> {
+    return this.http.get<Symbol>(environment.app_server + '/api/v1/symbols/' + symbol).map((data) => {
+      return new Symbol().fromJson(data);
+    });
+  }
+
+  //
   // Search for symbols
   //
   searchSymbols(query: string) : Observable<Symbol[]> 

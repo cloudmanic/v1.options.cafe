@@ -19,6 +19,105 @@ import (
 )
 
 //
+// Test - TestGetSymbol - 01
+//
+func TestGetSymbol01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Make a mock request.
+	req, _ := http.NewRequest("GET", "/api/v1/symbols/SPY180525P00257000", nil)
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.GET("/api/v1/symbols/:symb", c.GetSymbol)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Parse json that returned.
+	st.Expect(t, w.Code, 404)
+	st.Expect(t, w.Body.String(), `{"error":"No symbol found."}`)
+}
+
+//
+// Test - TestGetSymbol - 02
+//
+func TestGetSymbol02(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Make a mock request.
+	req, _ := http.NewRequest("GET", "/api/v1/symbols/spy", nil)
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.GET("/api/v1/symbols/:symb", c.GetSymbol)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Parse json that returned.
+	st.Expect(t, w.Code, 200)
+	st.Expect(t, w.Body.String(), `{"id":1,"short_name":"SPY","name":"SPDR S\u0026P 500 ETF Trust","type":"Equity","option_underlying":"","option_type":"","option_expire":"0001-01-01T00:00:00Z","option_strike":0}`)
+}
+
+//
+// Test - TestGetSymbol - 03
+//
+func TestGetSymbol03(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Make a mock request.
+	req, _ := http.NewRequest("GET", "/api/v1/symbols/SPY180316P00270000", nil)
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.GET("/api/v1/symbols/:symb", c.GetSymbol)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Parse json that returned.
+	st.Expect(t, w.Code, 200)
+	st.Expect(t, w.Body.String(), `{"id":17,"short_name":"SPY180316P00270000","name":"SPY Mar 16, 2018 $270.00 Put","type":"Option","option_underlying":"SPY","option_type":"Put","option_expire":"2018-03-16T00:00:00-07:00","option_strike":270}`)
+}
+
+//
 // Test AddActiveSymbol - 01
 //
 func TestAddActiveSymbol01(t *testing.T) {

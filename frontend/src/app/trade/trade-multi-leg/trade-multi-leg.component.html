@@ -4,7 +4,7 @@
     <div class="search">
       <form (submit)="onSearchSubmit()">
         <div class="dropdown dropdown--search trade-search">
-          <app-typeahead-symbols (selected)="onSearchTypeAheadClick($event)" clearAfterSelect="false" class="typeahead-cont"></app-typeahead-symbols>
+          <app-typeahead-symbols (selected)="onSearchTypeAheadClick($event)" searchTerm="{{ typeAheadSymbol?.ShortName }}" clearAfterSelect="false" class="typeahead-cont"></app-typeahead-symbols>
           <input type="submit" value="Search" class="btn search__btn" />
         </div>
       </form>
@@ -292,7 +292,7 @@
       </div><!-- /.table-preview form__aside -->
 
       <div class="form__actions__inner" *ngIf="orderPreview">
-        <input type="reset" value="Reset" class="link-action" />
+        <input type="reset" value="Reset" class="link-action" (click)="restTrade()" />
         <input type="submit" value="Preview" class="btn form__btn" (click)="previewTrade()" />
         <input type="submit" value="Submit" class="btn btn--pink form__btn" *ngIf="! orderPreview.Error" (click)="submitTrade()" />
       </div><!-- /.form__actions__inner -->
@@ -301,8 +301,7 @@
 
     <div class="form__actions" *ngIf="! orderPreview">
       <div class="form__actions__inner">
-        <input type="reset" value="Reset" class="link-action" />
-
+        <input type="reset" value="Reset" class="link-action" (click)="restTrade()" />
         <input type="submit" value="Preview" class="btn form__btn" (click)="previewTrade()" />
       </div><!-- /.form__actions__inner -->
     </div><!-- /.form__actions -->

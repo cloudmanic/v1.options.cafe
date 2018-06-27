@@ -21,20 +21,23 @@ import { WebsocketService } from '../providers/http/websocket.service';
 export class TradeComponent implements OnInit 
 {
   quotes = {}
-  showTradeBuilder: boolean = true;
+  showTradeBuilder: boolean = false;
   tradeDetails: TradeDetails = new TradeDetails();
 
   //
   // Construct.
   //
   constructor(private websocketService: WebsocketService, private tradeService: TradeService, private optionsChainService: OptionsChainService, private symbolService: SymbolService) {
-    // Default values
-    this.tradeDetails.Class = "multileg";
-    this.tradeDetails.Duration = "day";
-    this.tradeDetails.OrderType = "market";
+    
+    // this.showTradeBuilder = true;
+
+    // // Default values
+    // this.tradeDetails.Class = "multileg";
+    // this.tradeDetails.Duration = "day";
+    // this.tradeDetails.OrderType = "market";
 
     // // Set Defaults (also used for development)
-    // this.tradeDetails.Symbol = new Symbol().New(0, "SPY Apr 23, 2018 $190.00 Call", "SPY180423C00190000" "Option", "SPY" "Call", moment("2018-04-23").toDate(), 190);
+    // this.tradeDetails.Symbol = "SPY";
     // this.tradeDetails.Class = "multileg";
     // this.tradeDetails.OrderType = "credit";
     // this.tradeDetails.Duration = "gtc";
@@ -42,15 +45,8 @@ export class TradeComponent implements OnInit
 
     // // Build legs
     // this.tradeDetails.Legs = [];
-    // this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180402P00262000", moment("2018-05-04").toDate(), "Put", 190, "sell_to_open", 10));
-    // this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180402P00264000", moment("2018-05-04").toDate(), "Call", 190, "buy_to_open", 10));   
-
-
-    // // Load data (we call this only when we pass in a full trade)
-    // this.loadChainForAllLegs();
-
-    //console.log(this.tradeDetails);
-
+    // this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180627P00270000", moment("2018-06-27").toDate(), "Put", 270, "buy_to_open", 10));
+    // this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180627P00272000", moment("2018-06-27").toDate(), "Put", 272, "sell_to_open", 10));   
 
     // Subscribe to data updates from the quotes - Market Quotes
     this.websocketService.quotePushData.subscribe(data => {
@@ -79,7 +75,9 @@ export class TradeComponent implements OnInit
     // Set default if need be.
     if(this.tradeDetails.Class == undefined) 
     {
-      this.tradeDetails.Class = "equity";
+      this.tradeDetails.Class = "multileg";
+      this.tradeDetails.Duration = "day";
+      this.tradeDetails.OrderType = "market";
     }
 
     // Toggle form.

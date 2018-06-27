@@ -35,7 +35,21 @@ export class TradeMultiLegComponent implements OnInit
   //
   // OnInit.
   //
-  ngOnInit() {}
+  ngOnInit() {
+
+    // Get and set symbols
+    this.symbolService.getSymbol(this.tradeDetails.Symbol).subscribe(data => {
+      this.symbol = data;
+      this.typeAheadSymbol = data;
+
+      // Load expire dates
+      this.loadExpireDates(false);
+
+      // Load data (we call this only when we pass in a full trade)
+      this.loadChainForAllLegs();      
+    });
+
+  }
 
   //
   // Submit Trade
@@ -73,10 +87,31 @@ export class TradeMultiLegComponent implements OnInit
   }
 
   //
+  // Reset trade
+  //
+  restTrade()
+  {
+    // Set Defaults
+    this.tradeDetails.Symbol = "";
+    this.tradeDetails.Class = "multileg";
+    this.tradeDetails.OrderType = "market";
+    this.tradeDetails.Duration = "day";
+    this.tradeDetails.Price = 0.00;
+
+    // Build legs
+    this.tradeDetails.Legs = [];
+
+    // Reset symbol
+    this.symbol = null;
+    this.typeAheadSymbol = null;
+  }
+
+  //
   // onSearchTypeAheadClick() 
   //
   onSearchTypeAheadClick(symbol: Symbol) {
-    if (typeof symbol == "undefined") {
+    if(typeof symbol == "undefined") 
+    {
       return;
     }
 
@@ -107,12 +142,14 @@ export class TradeMultiLegComponent implements OnInit
 
     // Make API call to get option expire dates.
     this.tradeService.getOptionExpirations(this.tradeDetails.Symbol).subscribe(data => {
-      for (let i = 0; i < data.length; i++) {
+      for (let i = 0; i < data.length; i++) 
+      {
         this.symbolExpirations.push(data[i]);
       }
 
       // Add first leg
-      if (addLeg) {
+      if (addLeg) 
+      {
         this.tradeDetails.Legs = [];
         this.tradeDetails.Legs.push(new TradeOptionLegs());
         this.tradeDetails.Legs[0].Type = "Put";
@@ -127,9 +164,9 @@ export class TradeMultiLegComponent implements OnInit
   // Load chain for all legs (normally called at the start when we pass in a full trade)
   //
   loadChainForAllLegs() {
-    for (let i = 0; i < this.tradeDetails.Legs.length; i++) {
+    for (let i = 0; i < this.tradeDetails.Legs.length; i++) 
+    {
       this.onExpireChange(this.tradeDetails.Legs[i], i);
-      this.loadLegSymbol(this.tradeDetails.Legs[i]);
     }
   }
 
@@ -144,13 +181,16 @@ export class TradeMultiLegComponent implements OnInit
       // Make sure our strike is still valid.
       let found = false;
 
-      for (let i = 0; i < this.tradeDetails.Legs[index].Strikes.length; i++) {
-        if (this.tradeDetails.Legs[index].Strikes[i] == this.tradeDetails.Legs[index].Strike) {
+      for (let i = 0; i < this.tradeDetails.Legs[index].Strikes.length; i++) 
+      {
+        if (this.tradeDetails.Legs[index].Strikes[i] == this.tradeDetails.Legs[index].Strike) 
+        {
           found = true;
         }
       }
 
-      if (!found) {
+      if (!found) 
+      {
         this.tradeDetails.Legs[index].Strike = this.tradeDetails.Legs[index].Strikes[0];
       }
 

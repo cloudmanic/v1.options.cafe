@@ -18,10 +18,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 export class TypeaheadSymbolsComponent implements OnInit {
 
+  @Input() searchTerm: string = "";
   @Input() clearAfterSelect: string = "true";
   @Output('selected') symbolSelected = new EventEmitter<Symbol>();
 
-  searchTerm: string = ""
   activeItem: number = -1;
   typeAheadList: Symbol[];
   typeAheadShow = false;  

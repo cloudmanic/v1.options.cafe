@@ -14,9 +14,32 @@ import (
 	"github.com/araddon/dateparse"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 )
+
+//
+// Return symbol in our database.
+//
+func (t *Controller) GetSymbol(c *gin.Context) {
+
+	// Run DB query
+	symbol := models.Symbol{}
+
+	// Another test to see if search works
+	err := t.DB.Query(&symbol, models.QueryParam{
+		Wheres: []models.KeyValue{{Key: "short_name", Value: c.Param("symb")}},
+	})
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No symbol found."})
+		return
+	}
+
+	// Return happy JSON
+	c.JSON(200, symbol)
+}
 
 //
 // Return symbols in our database.
