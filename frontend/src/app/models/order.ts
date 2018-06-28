@@ -48,24 +48,27 @@ export class Order {
       // Add in the legs
       let legs = [];
       
-      for(let k = 0; k < data[i].legs.length; k++)
+      if(data[i].legs)
       {
-        legs.push(new OrderLeg(
-          data[i].legs[k].class,
-          data[i].legs[k].symbol,
-          data[i].legs[k].option_symbol, 
-          data[i].legs[k].side, 
-          data[i].legs[k].quantity, 
-          data[i].legs[k].status, 
-          data[i].legs[k].duration, 
-          data[i].legs[k].avg_fill_price, 
-          data[i].legs[k].exec_quantity, 
-          data[i].legs[k].last_fill_price, 
-          data[i].legs[k].last_fill_quantity, 
-          data[i].legs[k].remaining_quantity, 
-          data[i].legs[k].create_date, 
-          data[i].legs[k].transaction_date          
-        ));
+        for(let k = 0; k < data[i].legs.length; k++)
+        {
+          legs.push(new OrderLeg(
+            data[i].legs[k].class,
+            data[i].legs[k].symbol,
+            data[i].legs[k].option_symbol, 
+            data[i].legs[k].side, 
+            data[i].legs[k].quantity, 
+            data[i].legs[k].status, 
+            data[i].legs[k].duration, 
+            data[i].legs[k].avg_fill_price, 
+            data[i].legs[k].exec_quantity, 
+            data[i].legs[k].last_fill_price, 
+            data[i].legs[k].last_fill_quantity, 
+            data[i].legs[k].remaining_quantity, 
+            data[i].legs[k].create_date, 
+            data[i].legs[k].transaction_date          
+          ));
+        }
       }
       
       // Push the order on

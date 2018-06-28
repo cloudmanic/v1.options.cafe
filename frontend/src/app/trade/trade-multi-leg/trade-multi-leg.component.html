@@ -59,14 +59,14 @@
           
 
 
-          <div class="form__row" *ngFor="let row of tradeDetails.Legs; let k = index">
+          <div class="form__row" *ngFor="let row of tradeDetails.Legs; let k = index;">
             <div class="form__col form__col--size1">
               <label for="field-expire-{{ k }}" class="hidden">Expirations</label>
 
               <div class="form__controls">
                 <div class="select">
-                  <select name="Expire[]" id="field-expire-{{ k }}" (change)="onExpireChange(row, k)" [(ngModel)]="row.Expire">
-                    <option value="{{ row2 }}" *ngFor="let row2 of symbolExpirations">{{ row2 | date:'shortDate' }}</option>
+                  <select name="Expire[{{ k }}]" id="field-expire-{{ k }}" (change)="onExpireChange(row, k)" [(ngModel)]="row.Expire">
+                    <option value="{{ row2 }}" *ngFor="let row2 of symbolExpirations;">{{ row2 | date:'shortDate' }}</option>
                   </select>
                 </div>
               </div>
@@ -78,7 +78,7 @@
 
               <div class="form__controls">
                 <div class="select">
-                  <select name="Strike[]" id="field-strike-{{ k }}" [(ngModel)]="row.Strike" (change)="onStrikeChange(row, k)">
+                  <select name="Strike[{{ k }}]" id="field-strike-{{ k }}" [(ngModel)]="row.Strike" (change)="onStrikeChange(row, k)">
                     <option value="{{ row2 }}" *ngFor="let row2 of row.Strikes">{{ row2 }}</option>
                   </select>
                 </div>
@@ -90,7 +90,7 @@
 
               <div class="form__controls">
                 <div class="select">
-                  <select name="Type[]" id="field-call-{{ k }}" (change)="onTypeChange(row, k)" [(ngModel)]="row.Type">
+                  <select name="Type[{{ k }}]" id="field-call-{{ k }}" (change)="onTypeChange(row, k)" [(ngModel)]="row.Type">
                     <option value="Call">Call</option>
                     <option value="Put">Put</option>
                   </select>
@@ -103,7 +103,7 @@
 
               <div class="form__controls">
                 <div class="select">
-                  <select name="Side[]" id="field-side" [(ngModel)]="row.Side">
+                  <select name="Side[{{ k }}]" id="field-side" [(ngModel)]="row.Side">
                     <option value="buy_to_open">Buy to Open</option>
                     <option value="sell_to_open">Sell to Open</option>
                     <option value="buy_to_close">Buy to Close</option>

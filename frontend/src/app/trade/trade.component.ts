@@ -29,12 +29,12 @@ export class TradeComponent implements OnInit
   //
   constructor(private websocketService: WebsocketService, private tradeService: TradeService, private optionsChainService: OptionsChainService, private symbolService: SymbolService) {
     
-    // this.showTradeBuilder = true;
+    //this.showTradeBuilder = true;
 
-    // // Default values
-    // this.tradeDetails.Class = "multileg";
-    // this.tradeDetails.Duration = "day";
-    // this.tradeDetails.OrderType = "market";
+    // Default values
+    this.tradeDetails.Class = "multileg";
+    this.tradeDetails.Duration = "day";
+    this.tradeDetails.OrderType = "market";
 
     // // Set Defaults (also used for development)
     // this.tradeDetails.Symbol = "SPY";

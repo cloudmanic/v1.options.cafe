@@ -40,16 +40,19 @@ export class TradeMultiLegComponent implements OnInit
   ngOnInit() {
 
     // Get and set symbols
-    this.symbolService.getSymbol(this.tradeDetails.Symbol).subscribe(data => {
-      this.symbol = data;
-      this.typeAheadSymbol = data;
+    if(this.tradeDetails.Symbol) 
+    {
+      this.symbolService.getSymbol(this.tradeDetails.Symbol).subscribe(data => {
+        this.symbol = data;
+        this.typeAheadSymbol = data;
 
-      // Load expire dates
-      this.loadExpireDates(false);
+        // Load expire dates
+        this.loadExpireDates(false);
 
-      // Load data (we call this only when we pass in a full trade)
-      this.loadChainForAllLegs();      
-    });
+        // Load data (we call this only when we pass in a full trade)
+        this.loadChainForAllLegs();
+      });
+    }
 
   }
 
@@ -73,6 +76,9 @@ export class TradeMultiLegComponent implements OnInit
 
           // Show success notice
           this.stateService.SiteSuccess.emit("Order Submitted: Your order number is #" + data.Id); 
+        } else
+        {
+          alert(data.Error);
         }
       },
 
