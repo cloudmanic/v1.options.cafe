@@ -67,7 +67,7 @@ export class PositionsComponent implements OnInit {
   {
     this.destory.next();
     this.destory.complete();
-  }
+  } 
 
   //
   // Manage change detection.

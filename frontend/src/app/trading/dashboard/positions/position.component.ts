@@ -7,6 +7,8 @@
 import { Order } from '../../../models/order';
 import { TradeGroup } from '../../../models/trade-group';
 import { Position } from '../../../models/position';
+import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../../../providers/http/trade.service';
+import { DropdownAction } from '../../../shared/dropdown-select/dropdown-select.component';
 import { Component, OnInit, Input, Output, OnChanges, EventEmitter } from '@angular/core';
 
 @Component({
@@ -21,15 +23,70 @@ export class PositionComponent implements OnInit
   @Input() title: string;   
   @Input() tradeGroups: TradeGroup[]; 
 
+  actions: DropdownAction[] = null; 
+
   //
   // Constructor....
   //
-  constructor() { }
+  constructor(private tradeService: TradeService) { }
 
   //
   // OnInit....
   //
-  ngOnInit() { }
+  ngOnInit() { 
+
+    // Setup actions
+    this.setupActions();
+
+  }
+
+  //
+  // Setup actions.
+  //
+  setupActions()
+  {
+    let das = []
+
+    // First action
+    let da1 = new DropdownAction();
+    da1.title = "Close Trade @ $0.03";
+
+    // Place trade to close
+    da1.click = (row: TradeGroup) => {
+
+      // Set values
+      let tradeDetails = new TradeDetails(); 
+      tradeDetails.Symbol = "SPY";
+      tradeDetails.Class = "multileg";
+      tradeDetails.OrderType = "debit";
+      tradeDetails.Duration = "gtc";
+      tradeDetails.Price = 0.03;
+
+      // Build legs
+      tradeDetails.Legs = [];
+      
+      for (let i = 0; i < row.Positions.length; i++)
+      {
+        let side = "sell_to_close";
+        let qty = row.Positions[i].Qty;
+
+        if (row.Positions[i].Qty < 0)
+        {
+          side = "buy_to_close";
+          qty = qty * -1;
+        }
+
+        tradeDetails.Legs.push(new TradeOptionLegs().createNew(row.Positions[i].Symbol, row.Positions[i].Symbol.OptionExpire, row.Positions[i].Symbol.OptionType, row.Positions[i].Symbol.OptionStrike, side, qty));
+      }
+
+      // Open builder to place trade.
+      this.tradeService.tradeEvent.emit(new TradeEvent().createNew("toggle-trade-builder", tradeDetails));
+    };
+
+    das.push(da1);
+
+    this.actions = das;
+  }
 
   //
   // Get trade group total header title.
@@ -351,7 +408,7 @@ export class PositionComponent implements OnInit
   showProgressbar() : boolean
   {
     return true;
-  }
+  }  
 }
 
 /* End File */

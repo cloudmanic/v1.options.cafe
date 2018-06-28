@@ -62,29 +62,8 @@
         </table>
       </div>
 
-      <div class="dropdown select">
-        <div class="dropdown__head dropdown--trigger"></div>
+      <app-dropdown-select [actions]="actions" [data]="row"></app-dropdown-select>
 
-        <div class="dropdown__body">
-          <ul class="list-actions">
-            <li>
-              <a href="#">Position Details</a>
-            </li>
-
-            <li>
-              <a href="#">Close Trade @ $0.03</a>
-            </li>
-
-            <li>
-              <a href="#">Close Trade @ Market</a>
-            </li>
-
-            <li>
-              <a href="#">Close Trade @ Limit</a>
-            </li>
-          </ul><!-- /.list-actions -->
-        </div><!-- /.dropdown__body -->
-      </div><!-- /.dropdown select -->
     </div><!-- /.table table-large -->
 
     <div class="progress" *ngIf="showProgressbar()">

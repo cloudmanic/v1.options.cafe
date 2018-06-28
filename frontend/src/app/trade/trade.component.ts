@@ -28,25 +28,11 @@ export class TradeComponent implements OnInit
   // Construct.
   //
   constructor(private websocketService: WebsocketService, private tradeService: TradeService, private optionsChainService: OptionsChainService, private symbolService: SymbolService) {
-    
-    //this.showTradeBuilder = true;
 
     // Default values
     this.tradeDetails.Class = "multileg";
     this.tradeDetails.Duration = "day";
     this.tradeDetails.OrderType = "market";
-
-    // // Set Defaults (also used for development)
-    // this.tradeDetails.Symbol = "SPY";
-    // this.tradeDetails.Class = "multileg";
-    // this.tradeDetails.OrderType = "credit";
-    // this.tradeDetails.Duration = "gtc";
-    // this.tradeDetails.Price = 0.21;
-
-    // // Build legs
-    // this.tradeDetails.Legs = [];
-    // this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180713P00270000", moment("2018-07-13").toDate(), "Put", 270, "buy_to_open", 10));
-    // this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180713P00272000", moment("2018-07-13").toDate(), "Put", 272, "sell_to_open", 10));   
 
     // Subscribe to data updates from the quotes - Market Quotes
     this.websocketService.quotePushData.subscribe(data => {
@@ -75,6 +61,9 @@ export class TradeComponent implements OnInit
       this.toggleTradeBuilder();
       return;
     }
+
+    // Scroll to top of page
+    window.scrollTo(0, 0);
 
     // Populate the form.
     this.tradeDetails = data.TradeDetails;

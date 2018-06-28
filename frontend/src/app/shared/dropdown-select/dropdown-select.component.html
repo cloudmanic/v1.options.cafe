@@ -1,0 +1,12 @@
+<div class="dropdown select" [ngClass]="{ 'active': active }">
+  <div class="dropdown__head dropdown--trigger" (click)="onToggleDropDown()"></div>
+
+  <div class="dropdown__body">
+    <ul class="list-actions">
+      <li *ngFor="let row of actions;">
+        <a (click)="row.click(data)">{{ row.title }}</a>
+      </li>
+    </ul>
+  </div>
+
+</div>
