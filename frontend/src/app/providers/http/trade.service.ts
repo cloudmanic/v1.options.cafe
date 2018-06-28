@@ -23,9 +23,37 @@ export class TradeService
   constructor(private http: HttpClient) { }
 
   //
+  // Submit trade.
+  //
+  submitTrade(trade: TradeDetails, brokerAccountId: string): Observable<OrderSubmit>
+  {
+    let body = {
+      broker_account_id: parseInt(brokerAccountId),
+      class: trade.Class,
+      symbol: trade.Symbol,
+      duration: trade.Duration,
+      type: trade.OrderType,
+      price: Number(trade.Price),
+      legs: []
+    }
+
+    for (let i = 0; i < trade.Legs.length; i++) 
+    {
+      body.legs.push(new TradeOptionLegsPost().createNew(
+        trade.Legs[i].Side,
+        Number(trade.Legs[i].Qty),
+        trade.Legs[i].Symbol.ShortName
+      ));
+    }
+
+    return this.http.post<OrderSubmit>(environment.app_server + '/api/v1/orders', body)
+      .map((data) => { return new OrderSubmit().fromJson(data); });
+  }
+
+  //
   // Preview trade.
   //
-  previewTrade(trade: TradeDetails, brokerAccountId: string): Observable<OrderPreview> {
+  previewTrade(trade: TradeDetails, brokerAccountId: string): Observable<OrderPreview>
   {
     let body = {
       broker_account_id: parseInt(brokerAccountId),
@@ -46,9 +74,8 @@ export class TradeService
       ));
     }
 
-      return this.http.post<OrderPreview>(environment.app_server + '/api/v1/orders/preview', body)
-        .map((data) => { return new OrderPreview().fromJson(data); });
-    }    
+    return this.http.post<OrderPreview>(environment.app_server + '/api/v1/orders/preview', body)
+      .map((data) => { return new OrderPreview().fromJson(data); });   
   }
 
   //
@@ -119,6 +146,26 @@ export class TradeEvent
     obj.Action = action;
     obj.TradeDetails = tradeDetails;
     return obj;
+  }
+}
+
+//
+// Trade Submit response
+//
+export class OrderSubmit {
+  Id: number;
+  Status: string;
+  Error: string;
+
+  //
+  // Json to Object.
+  //
+  fromJson(json: Object): OrderSubmit {
+    let op = new OrderSubmit();
+    op.Id = json["id"];
+    op.Status = json["status"];
+    op.Error = json["error"];
+    return op;
   }
 }
 

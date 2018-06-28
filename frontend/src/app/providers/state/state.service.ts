@@ -34,6 +34,7 @@ export class StateService
   private activeTradeGroupList: TradeGroup[];
 
   // Emitters - Pushers
+  public SiteSuccess = new EventEmitter<string>();
   public BrokerChange = new EventEmitter<number>();
 
   //

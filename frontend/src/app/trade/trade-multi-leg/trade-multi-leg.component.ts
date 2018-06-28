@@ -21,6 +21,7 @@ import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs, OrderPreview }
 export class TradeMultiLegComponent implements OnInit 
 {
   @Input() quotes = {};
+  @Input() showTradeBuilder: boolean;
   @Input() tradeDetails: TradeDetails;
 
   symbol: Symbol;
@@ -56,7 +57,39 @@ export class TradeMultiLegComponent implements OnInit
   // Submit Trade
   //
   submitTrade() {
-    alert("submit trade");
+    // Ajax call to submit trade.
+    this.tradeService.submitTrade(this.tradeDetails, this.stateService.GetStoredActiveAccountId()).subscribe(
+
+      // Success (as in no server errors)
+      data => {
+        if (data.Status == "ok")
+        {
+          this.restTrade();
+
+          // Close trade window
+          let event = new TradeEvent();
+          event.Action = "trade-success";
+          this.tradeService.tradeEvent.emit(event);
+
+          // Show success notice
+          this.stateService.SiteSuccess.emit("Order Submitted: Your order number is #" + data.Id); 
+        }
+      },
+
+      // Error
+      (err: HttpErrorResponse) => {
+
+        if (err.error instanceof Error) 
+        {
+          alert(err.error.message);
+        } else 
+        {
+          alert(err.error.error);
+        }
+
+      }
+
+    );
   }
 
   //

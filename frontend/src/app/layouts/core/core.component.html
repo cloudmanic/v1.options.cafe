@@ -1,5 +1,12 @@
 <div class="wrapper">
 
+  <div class="banner banner--success banner--fixed" *ngIf="successMsg">
+    <a class="btn-close" (click)="closeSuccess()"></a>
+    <h6 class="banner__title">
+      <strong>{{ successMsg }}</strong>
+    </h6>
+  </div>
+
   <div class="main-dashboard">
 		
     <app-sidebar></app-sidebar>

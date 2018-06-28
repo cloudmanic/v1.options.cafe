@@ -40,7 +40,7 @@
           </div>
 
           <div class="tab" [ngClass]="{'current': (tradeDetails.Class == 'multileg') }">
-            <app-trade-multi-leg [quotes]="quotes" [tradeDetails]="tradeDetails"></app-trade-multi-leg>
+            <app-trade-multi-leg [showTradeBuilder]="showTradeBuilder" [quotes]="quotes" [tradeDetails]="tradeDetails"></app-trade-multi-leg>
           </div>
 
           <div class="tab" [ngClass]="{'current': (tradeDetails.Class == 'combo') }">

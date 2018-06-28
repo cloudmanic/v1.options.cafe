@@ -45,8 +45,8 @@ export class TradeComponent implements OnInit
 
     // // Build legs
     // this.tradeDetails.Legs = [];
-    // this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180627P00270000", moment("2018-06-27").toDate(), "Put", 270, "buy_to_open", 10));
-    // this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180627P00272000", moment("2018-06-27").toDate(), "Put", 272, "sell_to_open", 10));   
+    // this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180713P00270000", moment("2018-07-13").toDate(), "Put", 270, "buy_to_open", 10));
+    // this.tradeDetails.Legs.push(new TradeOptionLegs().createNew("SPY180713P00272000", moment("2018-07-13").toDate(), "Put", 272, "sell_to_open", 10));   
 
     // Subscribe to data updates from the quotes - Market Quotes
     this.websocketService.quotePushData.subscribe(data => {
@@ -69,6 +69,13 @@ export class TradeComponent implements OnInit
   //
   manageTradeEvent(data: TradeEvent) 
   {
+    // Successful Trade
+    if(data.Action == "trade-success")
+    {
+      this.toggleTradeBuilder();
+      return;
+    }
+
     // Populate the form.
     this.tradeDetails = data.TradeDetails;
 
