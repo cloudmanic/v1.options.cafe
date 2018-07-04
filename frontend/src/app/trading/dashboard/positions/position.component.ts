@@ -35,7 +35,7 @@ export class PositionComponent implements OnInit
   //
   ngOnInit() { 
 
-    // Setup actions
+    // Setup Dropdown actions
     this.setupActions();
 
   }

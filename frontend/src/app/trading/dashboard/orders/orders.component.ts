@@ -13,6 +13,7 @@ import { StateService } from '../../../providers/state/state.service';
 import { WebsocketService } from '../../../providers/http/websocket.service';
 import { BrokerService } from '../../../providers/http/broker.service';
 import { ChangeDetected } from '../../../models/change-detected';
+import { DropdownAction } from '../../../shared/dropdown-select/dropdown-select.component';
 
 @Component({
   selector: 'app-trading-orders',
@@ -22,7 +23,8 @@ import { ChangeDetected } from '../../../models/change-detected';
 export class OrdersComponent implements OnInit {
   
   quotes = {}
-  orders: Order[]  
+  orders: Order[]
+  actions: DropdownAction[] = null;   
 
   private destory: Subject<boolean> = new Subject<boolean>();  
 
@@ -35,6 +37,9 @@ export class OrdersComponent implements OnInit {
   // OnInit....
   //
   ngOnInit() {
+    // Setup Dropdown actions
+    this.setupDropdownActions();
+
     // Get Data from cache
     this.quotes = this.stateService.GetQuotes();
             
@@ -64,6 +69,26 @@ export class OrdersComponent implements OnInit {
   {
     this.destory.next();
     this.destory.complete();
+  }  
+
+  //
+  // Setup Drop down actions.
+  //
+  setupDropdownActions() {
+    let das = []
+
+    // First action
+    let da1 = new DropdownAction();
+    da1.title = "Cancel Trade";
+
+    // Cancel order action
+    da1.click = (row: Order) => {
+      console.log(row);
+    };
+
+    das.push(da1);
+
+    this.actions = das;
   }  
 
   //

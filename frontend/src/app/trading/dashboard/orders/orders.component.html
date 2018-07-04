@@ -162,29 +162,9 @@
                 <td *ngIf="i > 0">&nbsp;</td>
 
                 <td rowspan="2" *ngIf="i == 0">
-                  <div class="dropdown select">
-                    <div class="dropdown__head dropdown--trigger"></div> 
 
-                    <div class="dropdown__body">
-                      <ul class="list-actions">
-                        <li>
-                          <a href="#">Position Details</a>
-                        </li> 
+                  <app-dropdown-select [actions]="actions" [data]="row"></app-dropdown-select>
 
-                      <li>
-                          <a href="#">Close Trade @ $0.03</a>
-                        </li> 
-
-                      <li>
-                          <a href="#">Close Trade @ Market</a>
-                        </li> 
-
-                      <li>
-                          <a href="#">Close Trade @ Limit</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
                 </td>
 
               </tr>

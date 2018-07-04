@@ -66,6 +66,8 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
 import { TradeComponent } from './trade/trade.component';
 import { TradeMultiLegComponent } from './trade/trade-multi-leg/trade-multi-leg.component';
 import { DropdownSelectComponent } from './shared/dropdown-select/dropdown-select.component';
+import { SettingsComponent } from './settings/settings.component';
+import { SubNavComponent } from './settings/sub-nav/sub-nav.component';
 
 @NgModule({
   declarations: [
@@ -114,6 +116,8 @@ import { DropdownSelectComponent } from './shared/dropdown-select/dropdown-selec
     TradeComponent,
     TradeMultiLegComponent,
     DropdownSelectComponent,
+    SettingsComponent,
+    SubNavComponent,
   ],
   
   imports: [

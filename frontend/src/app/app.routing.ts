@@ -14,6 +14,9 @@ import { AuthForgotPasswordComponent } from './auth/forgot-password/home.compone
 // Layouts
 import { LayoutCoreComponent } from './layouts/core/core.component';
 
+// Setting
+import { SettingsComponent } from './settings/settings.component';
+
 // Backtest
 import { BacktestHomeComponent } from './backtest/home/home.component';
 
@@ -42,7 +45,8 @@ const appRoutes: Routes = [
     { path: 'screener', component: ScreenerComponent, canActivate: [ AuthGuard ] },
     { path: 'trades', component: TradesComponent, canActivate: [ AuthGuard ] },
     { path: 'reports', component: ReportsHomeComponent, canActivate: [ AuthGuard ] },
-    { path: 'backtest', component: BacktestHomeComponent, canActivate: [ AuthGuard ] }
+    { path: 'backtest', component: BacktestHomeComponent, canActivate: [ AuthGuard ] },
+    { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] }
     
   ] },
   
