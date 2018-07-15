@@ -1,5 +1,7 @@
 ## Getting Up And Running For Development
 
+* Go Version - 1.10.3
+
 * Make sure the GoPATH is setup. This is what I have set ```export GOPATH=$HOME/Development/golang:$HOME/Development```
 
 * In the case of ```$HOME/Development``` Make sure you add a symlink with src. ```ln -s /Users/spicer/Development/app.options.cafe /Users/spicer/Development/src/github/app.options.cafe```

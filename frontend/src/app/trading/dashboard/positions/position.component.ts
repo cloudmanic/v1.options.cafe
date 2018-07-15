@@ -128,11 +128,6 @@ export class PositionComponent implements OnInit
     // Find the short strike.
     var short_strike = null; 
 
-    if(typeof this.quotes[tradeGroup.Positions[0].Symbol.ShortName] == "undefined")
-    {
-      return 0.00;
-    }    
-
     for(let i = 0; i < tradeGroup.Positions.length; i++)
     {
       if(tradeGroup.Positions[i].Symbol.Type != "Option")
@@ -140,12 +135,21 @@ export class PositionComponent implements OnInit
         continue;
       }
 
+      if (typeof this.quotes[tradeGroup.Positions[i].Symbol.ShortName] == "undefined") 
+      {
+        return 0.00;
+      }       
+
       if(tradeGroup.Positions[i].Qty < 0)
       {
         short_strike = tradeGroup.Positions[i];
       }
     }
 
+    if(short_strike == null)
+    {
+       return 0.00;
+    }
 
     if (tradeGroup.Positions[0].Symbol.OptionType == 'Put')
     {

@@ -149,6 +149,8 @@ func (t *Api) GetHistoricalQuotes(symbol string, start time.Time, end time.Time,
 
 	// Make sure the api responded with a 200
 	if res.StatusCode != 200 {
+		body, _ := ioutil.ReadAll(res.Body)
+		fmt.Println(string(body))
 		return quotes, errors.New(fmt.Sprint("GetHistoricalQuotes API did not return 200, It returned ", res.StatusCode))
 	}
 

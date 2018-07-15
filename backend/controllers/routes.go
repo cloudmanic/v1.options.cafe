@@ -53,6 +53,7 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 
 		// Quotes
 		apiV1.GET("/quotes/historical", t.GetHistoricalQuotes)
+		apiV1.GET("/quotes/rank/:symb", t.GetRank)
 		apiV1.GET("/quotes/options/expirations/:symb", t.GetOptionsExpirations)
 		apiV1.GET("/quotes/options/chain/:symb/:expire", t.GetOptionsChainByExpiration)
 		apiV1.GET("/quotes/options/strikes/:symb/:expire", t.GetOptionsStikesBySymbolExpiration)

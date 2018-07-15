@@ -14,12 +14,79 @@ import (
 	"os"
 	"time"
 
+	"github.com/araddon/dateparse"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 )
+
+const (
+	day = 24 * time.Hour
+)
+
+// IVR response
+type IvrResponse struct {
+	Ivr30  float64 `json:"ivr_30"`
+	Ivr60  float64 `json:"ivr_60"`
+	Ivr90  float64 `json:"ivr_90"`
+	Ivr365 float64 `json:"ivr_365"`
+}
+
+//
+// Return the Rank of a the symbol being passed in.
+//
+func (t *Controller) GetRank(c *gin.Context) {
+
+	// Setup dates back
+	now := time.Now()
+	back365 := now.AddDate(-1, 0, 0)
+
+	// Setup the broker
+	broker := tradier.Api{
+		DB:     t.DB,
+		ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN"),
+	}
+
+	// Make call to get a current quote.
+	q, err := broker.GetQuotes([]string{c.Param("symb")})
+
+	if err != nil {
+		services.Warning(err)
+		t.RespondError(c, err, httpGenericErrMsg)
+		return
+	}
+
+	if len(q) <= 0 {
+		services.Warning(errors.New("No quote found."))
+		t.RespondError(c, err, httpGenericErrMsg)
+		return
+	}
+
+	// Set last quote
+	lastQuote := q[0].Last
+
+	// Make call to broker.
+	quotes, err2 := broker.GetHistoricalQuotes(c.Param("symb"), back365, now, "daily")
+
+	if err2 != nil {
+		services.Warning(err2)
+		t.RespondError(c, err2, httpGenericErrMsg)
+		return
+	}
+
+	if len(quotes) <= 0 {
+		services.Warning(errors.New("No historical data returned from Tradier API for GetIvr()."))
+		t.RespondError(c, err, httpGenericErrMsg)
+		return
+	}
+
+	// Return happy JSON
+	c.JSON(200, ComputeIVR(lastQuote, quotes))
+}
 
 //
 // Return a full option chain based on symbol and expire date.
@@ -236,6 +303,68 @@ func (t *Controller) GetHistoricalQuotes(c *gin.Context) {
 }
 
 // --------------- Helper Functions --------------- //
+
+//
+// Get IVR of a symbol.
+//
+func ComputeIVR(lastQuote float64, quotes []types.HistoryQuote) IvrResponse {
+	ivr := IvrResponse{}
+
+	var n365, n90, n60, n30 float64
+
+	for _, q := range quotes {
+
+		date, _ := dateparse.ParseAny(q.Date.Format("2006-01-02"))
+
+		daysSince := time.Now().Sub(date)
+
+		if daysSince > (90 * day) {
+			n365++
+
+			if q.Close < lastQuote {
+				ivr.Ivr365++
+			}
+		} else if daysSince > (60 * day) {
+			n365++
+			n90++
+
+			if q.Close < lastQuote {
+				ivr.Ivr365++
+				ivr.Ivr90++
+			}
+		} else if daysSince > (30 * day) {
+			n365++
+			n90++
+			n60++
+
+			if q.Close < lastQuote {
+				ivr.Ivr365++
+				ivr.Ivr90++
+				ivr.Ivr60++
+			}
+		} else {
+			n365++
+			n90++
+			n60++
+			n30++
+
+			if q.Close < lastQuote {
+				ivr.Ivr365++
+				ivr.Ivr90++
+				ivr.Ivr60++
+				ivr.Ivr30++
+			}
+		}
+
+	}
+
+	ivr.Ivr30 = helpers.Round(((ivr.Ivr30 / n30) * 100), 2)
+	ivr.Ivr60 = helpers.Round(((ivr.Ivr60 / n60) * 100), 2)
+	ivr.Ivr90 = helpers.Round(((ivr.Ivr90 / n90) * 100), 2)
+	ivr.Ivr365 = helpers.Round(((ivr.Ivr365 / n365) * 100), 2)
+
+	return ivr
+}
 
 //
 // Get access tradier access token.
