@@ -8,7 +8,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -60,8 +59,8 @@ func TestGetRank01(t *testing.T) {
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
-	fmt.Println(w.Body.String())
-
+	// Test result
+	st.Expect(t, w.Body.String(), `{"rank_30":0,"rank_60":10,"rank_90":6.45,"rank_365":51}`)
 }
 
 //

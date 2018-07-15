@@ -7,6 +7,7 @@
 import 'rxjs/Rx';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { Rank } from '../../models/rank';
 import { HistoricalQuote } from '../../models/historical-quote';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -19,6 +20,22 @@ export class QuotesService
   // Construct.
   //
   constructor(private http: HttpClient) { }
+
+  //
+  // Get rank of a symbol
+  //
+  getSymbolRank(symbol: string): Observable<Rank> {
+
+    // Setup request
+    let request = environment.app_server + '/api/v1/quotes/rank/' + symbol;
+
+    // Make API call.
+    return this.http.get<Rank>(request).map(
+      (data) => {
+        return new Rank(data["rank_30"], data["rank_60"], data["rank_90"], data["rank_365"])
+      });
+    
+  }
 
   //
   // Get historical quotes

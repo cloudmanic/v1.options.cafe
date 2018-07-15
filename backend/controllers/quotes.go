@@ -29,12 +29,12 @@ const (
 	day = 24 * time.Hour
 )
 
-// IVR response
-type IvrResponse struct {
-	Ivr30  float64 `json:"ivr_30"`
-	Ivr60  float64 `json:"ivr_60"`
-	Ivr90  float64 `json:"ivr_90"`
-	Ivr365 float64 `json:"ivr_365"`
+// Rank response
+type RankResponse struct {
+	Rank30  float64 `json:"rank_30"`
+	Rank60  float64 `json:"rank_60"`
+	Rank90  float64 `json:"rank_90"`
+	Rank365 float64 `json:"rank_365"`
 }
 
 //
@@ -44,13 +44,13 @@ func (t *Controller) GetRank(c *gin.Context) {
 
 	// Get from cache?
 	if c.Param("symb") == "vix" {
-		ivrResponse := IvrResponse{}
+		rankResponse := RankResponse{}
 
-		found, _ := cache.Get("oc-rank-vix", &ivrResponse)
+		found, _ := cache.Get("oc-rank-vix", &rankResponse)
 
 		// Return happy JSON
 		if found {
-			c.JSON(200, ivrResponse)
+			c.JSON(200, rankResponse)
 			return
 		}
 	}
@@ -99,15 +99,15 @@ func (t *Controller) GetRank(c *gin.Context) {
 	}
 
 	// Get the IVR response.
-	ivrResponse := ComputeIVR(lastQuote, quotes)
+	rankResponse := ComputeIVR(lastQuote, quotes)
 
 	// Store the response in cache.
 	if c.Param("symb") == "vix" {
-		cache.SetExpire("oc-rank-vix", (time.Minute * 10), ivrResponse)
+		cache.SetExpire("oc-rank-vix", (time.Minute * 10), rankResponse)
 	}
 
 	// Return happy JSON
-	c.JSON(200, ivrResponse)
+	c.JSON(200, rankResponse)
 }
 
 //
@@ -329,8 +329,8 @@ func (t *Controller) GetHistoricalQuotes(c *gin.Context) {
 //
 // Get IVR of a symbol.
 //
-func ComputeIVR(lastQuote float64, quotes []types.HistoryQuote) IvrResponse {
-	ivr := IvrResponse{}
+func ComputeIVR(lastQuote float64, quotes []types.HistoryQuote) RankResponse {
+	ivr := RankResponse{}
 
 	var n365, n90, n60, n30 float64
 
@@ -344,15 +344,15 @@ func ComputeIVR(lastQuote float64, quotes []types.HistoryQuote) IvrResponse {
 			n365++
 
 			if q.Close < lastQuote {
-				ivr.Ivr365++
+				ivr.Rank365++
 			}
 		} else if daysSince > (60 * day) {
 			n365++
 			n90++
 
 			if q.Close < lastQuote {
-				ivr.Ivr365++
-				ivr.Ivr90++
+				ivr.Rank365++
+				ivr.Rank90++
 			}
 		} else if daysSince > (30 * day) {
 			n365++
@@ -360,9 +360,9 @@ func ComputeIVR(lastQuote float64, quotes []types.HistoryQuote) IvrResponse {
 			n60++
 
 			if q.Close < lastQuote {
-				ivr.Ivr365++
-				ivr.Ivr90++
-				ivr.Ivr60++
+				ivr.Rank365++
+				ivr.Rank90++
+				ivr.Rank60++
 			}
 		} else {
 			n365++
@@ -371,19 +371,19 @@ func ComputeIVR(lastQuote float64, quotes []types.HistoryQuote) IvrResponse {
 			n30++
 
 			if q.Close < lastQuote {
-				ivr.Ivr365++
-				ivr.Ivr90++
-				ivr.Ivr60++
-				ivr.Ivr30++
+				ivr.Rank365++
+				ivr.Rank90++
+				ivr.Rank60++
+				ivr.Rank30++
 			}
 		}
 
 	}
 
-	ivr.Ivr30 = helpers.Round(((ivr.Ivr30 / n30) * 100), 2)
-	ivr.Ivr60 = helpers.Round(((ivr.Ivr60 / n60) * 100), 2)
-	ivr.Ivr90 = helpers.Round(((ivr.Ivr90 / n90) * 100), 2)
-	ivr.Ivr365 = helpers.Round(((ivr.Ivr365 / n365) * 100), 2)
+	ivr.Rank30 = helpers.Round(((ivr.Rank30 / n30) * 100), 2)
+	ivr.Rank60 = helpers.Round(((ivr.Rank60 / n60) * 100), 2)
+	ivr.Rank90 = helpers.Round(((ivr.Rank90 / n90) * 100), 2)
+	ivr.Rank365 = helpers.Round(((ivr.Rank365 / n365) * 100), 2)
 
 	return ivr
 }

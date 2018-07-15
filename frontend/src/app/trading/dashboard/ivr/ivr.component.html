@@ -1,4 +1,4 @@
-<h5 class="table__title">S&amp;P 500 IVR:</h5>
+<h5 class="table__title">VIX IVR:</h5>
 
 <div class="table__inner">
   <table>
@@ -8,26 +8,26 @@
       </td>
 
       <td>
-        <ins>30 DAY</ins>
+        <ins>60 DAY</ins>
       </td>
 
       <td>
-        <ins>30 DAY</ins>
+        <ins>90 DAY</ins>
       </td>
 
       <td>
-        <ins>30 DAY</ins>
+        <ins>365 DAY</ins>
       </td>
     </tr>
 
     <tr>
-      <td>92.5%</td>
+      <td>{{ rank?.Rank30 | number:'1.2-2' }}%</td>
 
-      <td>92.5%</td>
+      <td>{{ rank?.Rank60 | number:'1.2-2' }}%</td>
 
-      <td>92.5%</td>
+      <td>{{ rank?.Rank90 | number:'1.2-2' }}%</td>
 
-      <td>92.5%</td>
+      <td>{{ rank?.Rank365 | number:'1.2-2' }}%</td>
     </tr>
   </table>
 </div>

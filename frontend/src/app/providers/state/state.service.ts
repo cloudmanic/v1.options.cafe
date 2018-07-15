@@ -5,6 +5,7 @@
 //
 
 import { Injectable } from '@angular/core';
+import { Rank } from '../../models/rank';
 import { Broker } from '../../models/broker';
 import { Symbol } from '../../models/symbol';
 import { Watchlist } from '../../models/watchlist';
@@ -22,11 +23,12 @@ export class StateService
   private activeBrokerAccount: BrokerAccount = null;
 
   // Dashboard stuff
+  private dashboardVixRank: Rank;
   private dashboardChartRangeSelect: string = "today-1min-1";
   private dashboardChartData: HistoricalQuote[];
   private dashboardTradeGroups: TradeGroupsCont;
   private dashboardChartSymbol: Symbol = new Symbol().New(1, "SPDR S&P 500 ETF Trust", "SPY", "Equity", null, null, null, null);
-  
+
   // Trade Group stuff
   private tradeGroupPage: number = 1;
   private tradeGroupSearchTerm: string = "";
@@ -49,6 +51,20 @@ export class StateService
   //
   GetQuotes() {
     return this.quotes;
+  }
+
+  //
+  // Set a dashboard rank
+  //
+  SetDashboardRank(data: Rank) {
+    this.dashboardVixRank = data;
+  }
+
+  //
+  // Get dashboard rank
+  //
+  GetDashboardRank(): Rank {
+    return this.dashboardVixRank;
   }
 
   //
