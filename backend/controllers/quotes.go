@@ -17,6 +17,7 @@ import (
 	"github.com/araddon/dateparse"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
+	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
@@ -40,6 +41,19 @@ type IvrResponse struct {
 // Return the Rank of a the symbol being passed in.
 //
 func (t *Controller) GetRank(c *gin.Context) {
+
+	// Get from cache?
+	if c.Param("symb") == "vix" {
+		ivrResponse := IvrResponse{}
+
+		found, _ := cache.Get("oc-rank-vix", &ivrResponse)
+
+		// Return happy JSON
+		if found {
+			c.JSON(200, ivrResponse)
+			return
+		}
+	}
 
 	// Setup dates back
 	now := time.Now()
@@ -84,8 +98,16 @@ func (t *Controller) GetRank(c *gin.Context) {
 		return
 	}
 
+	// Get the IVR response.
+	ivrResponse := ComputeIVR(lastQuote, quotes)
+
+	// Store the response in cache.
+	if c.Param("symb") == "vix" {
+		cache.SetExpire("oc-rank-vix", (time.Minute * 10), ivrResponse)
+	}
+
 	// Return happy JSON
-	c.JSON(200, ComputeIVR(lastQuote, quotes))
+	c.JSON(200, ivrResponse)
 }
 
 //

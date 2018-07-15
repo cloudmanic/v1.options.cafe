@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"go/build"
 	"os"
+	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/go-redis/redis"
@@ -64,6 +65,28 @@ func Set(key string, value interface{}) {
 
 	// Store in redis
 	err = redisConnection.Set(key, b, 0).Err()
+
+	if err != nil {
+		services.Fatal(err)
+	}
+}
+
+//
+// Store a key value into memory that expires. We do not
+// return error as if Redis is not up we should
+// have a massive fail.
+//
+func SetExpire(key string, expire time.Duration, value interface{}) {
+
+	// Pack up into JSON
+	b, err := json.Marshal(&value)
+
+	if err != nil {
+		services.Fatal(err)
+	}
+
+	// Store in redis
+	err = redisConnection.Set(key, b, expire).Err()
 
 	if err != nil {
 		services.Fatal(err)
