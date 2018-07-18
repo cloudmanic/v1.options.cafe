@@ -122,7 +122,7 @@ func getPutCreditSpreadParms(filters Filter, lastQuote float64) (int, int, float
 	var widthIncrment float64 = 0.50
 	var minDaysToExpire int = 0
 	var maxDaysToExpire int = 10000
-	var minCredit float64 = 0.10
+	var minCredit float64 = 0.01
 	var spreadWidth float64 = 5.00
 	var minSellStrike float64 = 0.00
 

@@ -10,10 +10,14 @@ import (
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
+	"github.com/nbio/st"
 )
 
 //
 // RunPutCreditSpread - 01
+//
+// Note: This is too hard to mock as it makes many requests to Tradier.
+// This unit test is just for development.
 //
 func TestRunPutCreditSpread01(t *testing.T) {
 
@@ -29,9 +33,13 @@ func TestRunPutCreditSpread01(t *testing.T) {
 		},
 	}
 
-	result, _ := RunPutCreditSpread(filter)
+	// Run back test
+	result, err := RunPutCreditSpread(filter)
 
 	spew.Dump(result)
+
+	// Test result
+	st.Expect(t, err, nil)
 
 }
 
