@@ -13,28 +13,29 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
 
 //
 // Run a put credit spread screen
 //
-func RunPutCreditSpread(filters Filter) ([]Result, error) {
+func RunPutCreditSpread(screen models.Screener) ([]Result, error) {
 
 	result := []Result{}
 	today := time.Now()
 
 	// Make call to get current quote.
-	quote, err := GetQuote(filters.Symbol)
+	quote, err := GetQuote(screen.Symbol)
 
 	if err != nil {
 		return result, err
 	}
 
 	// Set params
-	minDaysToExpire, maxDaysToExpire, minCredit, spreadWidth, minSellStrike := getPutCreditSpreadParms(filters, quote.Last)
+	minDaysToExpire, maxDaysToExpire, minCredit, spreadWidth, minSellStrike := getPutCreditSpreadParms(screen, quote.Last)
 
 	// Get all possible expire dates.
-	expires, err := broker.GetOptionsExpirationsBySymbol(filters.Symbol)
+	expires, err := broker.GetOptionsExpirationsBySymbol(screen.Symbol)
 
 	if err != nil {
 		services.Warning(err)
@@ -59,7 +60,7 @@ func RunPutCreditSpread(filters Filter) ([]Result, error) {
 		}
 
 		// Get options Chain
-		chain, err := broker.GetOptionsChainByExpiration(filters.Symbol, row)
+		chain, err := broker.GetOptionsChainByExpiration(screen.Symbol, row)
 
 		if err != nil {
 			continue
@@ -117,7 +118,7 @@ func RunPutCreditSpread(filters Filter) ([]Result, error) {
 //
 // Set Parms we need.
 //
-func getPutCreditSpreadParms(filters Filter, lastQuote float64) (int, int, float64, float64, float64) {
+func getPutCreditSpreadParms(screen models.Screener, lastQuote float64) (int, int, float64, float64, float64) {
 
 	var widthIncrment float64 = 0.50
 	var minDaysToExpire int = 0
@@ -127,7 +128,7 @@ func getPutCreditSpreadParms(filters Filter, lastQuote float64) (int, int, float
 	var minSellStrike float64 = 0.00
 
 	// See if we have a min strike price to sell
-	percentAway, err := FindFilterItemValue("short-strike-percent-away", filters)
+	percentAway, err := FindFilterItemValue("short-strike-percent-away", screen)
 
 	if err == nil {
 
@@ -144,28 +145,28 @@ func getPutCreditSpreadParms(filters Filter, lastQuote float64) (int, int, float
 	}
 
 	// See if we have a spread width
-	sw, err := FindFilterItemValue("spread-width", filters)
+	sw, err := FindFilterItemValue("spread-width", screen)
 
 	if err == nil {
 		spreadWidth = sw.ValueNumber
 	}
 
 	// See if we have a min credit
-	mc, err := FindFilterItemValue("min-credit", filters)
+	mc, err := FindFilterItemValue("min-credit", screen)
 
 	if err == nil {
 		minCredit = mc.ValueNumber
 	}
 
 	// See if we have max days to expire
-	mde, err := FindFilterItemValue("max-days-to-expire", filters)
+	mde, err := FindFilterItemValue("max-days-to-expire", screen)
 
 	if err == nil {
 		maxDaysToExpire = int(mde.ValueNumber)
 	}
 
 	// See if we have min days to expire
-	minde, err := FindFilterItemValue("min-days-to-expire", filters)
+	minde, err := FindFilterItemValue("min-days-to-expire", screen)
 
 	if err == nil {
 		minDaysToExpire = int(minde.ValueNumber)

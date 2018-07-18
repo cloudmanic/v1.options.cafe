@@ -1,0 +1,67 @@
+//
+// Date: 7/18/2018
+// Author(s): Spicer Matthews (spicer@options.cafe)
+// Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
+//
+
+package models
+
+import (
+	"errors"
+	"time"
+)
+
+type Screener struct {
+	Id        uint           `gorm:"primary_key" json:"id"`
+	CreatedAt time.Time      `json:"-"`
+	UpdatedAt time.Time      `json:"-"`
+	UserId    uint           `sql:"not null;index:UserId" json:"user_id"`
+	Name      string         `sql:"not null" json:"name"`
+	Strategy  string         `json:"strategy"`
+	Symbol    string         `json:"symbol"`
+	Items     []ScreenerItem `json:"items"`
+}
+
+//
+// Get a Screeners by user id.
+//
+func (t *DB) GetScreenersByUserId(userId uint) ([]Screener, error) {
+
+	var u []Screener
+
+	if t.Where("user_id = ?", userId).Find(&u).RecordNotFound() {
+		return u, errors.New("[Models:GetScreenersByUserId] Records not found (#001).")
+	}
+
+	if len(u) <= 0 {
+		return u, errors.New("[Models:GetScreenersByUserId] Records not found (#002).")
+	}
+
+	// Loop through the screener and add the items
+	for key := range u {
+		t.Model(u[key]).Related(&u[key].Items)
+	}
+
+	// Return the Screeners.
+	return u, nil
+}
+
+//
+// Get a Screener by id and user id
+//
+func (t *DB) GetScreenerByIdAndUserId(id uint, userId uint) (Screener, error) {
+
+	var u Screener
+
+	if t.Where("user_id = ? AND id = ?", userId, id).First(&u).RecordNotFound() {
+		return u, errors.New("[Models:GetScreenerByIdAndUserId] Record not found")
+	}
+
+	// Add in Item Lookup
+	t.Model(u).Related(&u.Items) // Add in Items
+
+	// Return the Screener.
+	return u, nil
+}
+
+/* End File */

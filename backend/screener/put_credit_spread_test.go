@@ -9,6 +9,7 @@ package screener
 import (
 	"testing"
 
+	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/nbio/st"
 )
@@ -21,10 +22,10 @@ import (
 //
 func TestRunPutCreditSpread01(t *testing.T) {
 
-	filter := Filter{
+	screen := models.Screener{
 		Symbol:   "SPY",
 		Strategy: "put-credit-spread",
-		FilterItems: []FilterItems{
+		Items: []models.ScreenerItem{
 			{Key: "short-strike-percent-away", Operator: "=", ValueNumber: 2.5},
 			{Key: "spread-width", Operator: "=", ValueNumber: 2.00},
 			{Key: "min-credit", Operator: "=", ValueNumber: 0.18},
@@ -34,7 +35,7 @@ func TestRunPutCreditSpread01(t *testing.T) {
 	}
 
 	// Run back test
-	result, err := RunPutCreditSpread(filter)
+	result, err := RunPutCreditSpread(screen)
 
 	spew.Dump(result)
 

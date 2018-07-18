@@ -117,6 +117,10 @@ type Datastore interface {
 	// ActiveSymbol
 	GetActiveSymbolsByUser(userId uint) ([]ActiveSymbol, error)
 	CreateActiveSymbol(userId uint, symbol string) (ActiveSymbol, error)
+
+	// Screener
+	GetScreenersByUserId(userId uint) ([]Screener, error)
+	GetScreenerByIdAndUserId(id uint, userId uint) (Screener, error)
 }
 
 /* End File */

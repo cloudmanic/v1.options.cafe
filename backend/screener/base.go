@@ -12,40 +12,31 @@ import (
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
+	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
 
 var (
 	broker tradier.Api
 )
 
-type Filter struct {
-	Symbol      string
-	Strategy    string // put-credit-spread
-	FilterItems []FilterItems
-}
+// type Filter struct {
+// 	Symbol      string
+// 	Strategy    string // put-credit-spread
+// 	FilterItems []FilterItems
+// }
 
-type FilterItems struct {
-	Key         string
-	Operator    string
-	ValueNumber float64
-	ValueString string
-}
+// type FilterItems struct {
+// 	Key         string
+// 	Operator    string
+// 	ValueNumber float64
+// 	ValueString string
+// }
 
 type Result struct {
-	Credit      float64
-	MidPoint    float64
-	PrecentAway float64
-	Legs        []types.OptionsChainItem
-	//Wing1SellLegStrike string
-	//   'sell_leg' => $row2['strike'],
-	//   'buy_leg' => $buy_leg['strike'],
-	//   'expire' => $row,
-	//   'expire_df1' => date('n/j/y', strtotime($row)),
-	//   'credit' => number_format($credit, 2),
-	//   'midpoint' => number_format($mid_point, 2),
-	//   'precent_away' => number_format((1 - $row2['strike'] / $stock['last']) * 100, 2),
-	//   'occ_sell' => $row2['symbol'],
-	//   'occ_buy' => $buy_leg['symbol']
+	Credit      float64                  `json: "credit"`
+	MidPoint    float64                  `json: "midpoint"`
+	PrecentAway float64                  `json: "percent_away"`
+	Legs        []types.OptionsChainItem `json: "legs"`
 }
 
 //
@@ -84,9 +75,9 @@ func GetQuote(smb string) (types.Quote, error) {
 //
 // Search filter items for a particular value.
 //
-func FindFilterItemValue(item string, filter Filter) (FilterItems, error) {
+func FindFilterItemValue(item string, screen models.Screener) (models.ScreenerItem, error) {
 
-	for _, row := range filter.FilterItems {
+	for _, row := range screen.Items {
 
 		if row.Key == item {
 			return row, nil
@@ -95,7 +86,7 @@ func FindFilterItemValue(item string, filter Filter) (FilterItems, error) {
 	}
 
 	// Not found
-	return FilterItems{}, errors.New("Item not found.")
+	return models.ScreenerItem{}, errors.New("Item not found.")
 }
 
 //

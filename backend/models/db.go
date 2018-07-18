@@ -63,6 +63,8 @@ func NewDB() (*DB, error) {
 	db.AutoMigrate(&Watchlist{})
 	db.AutoMigrate(&WatchlistSymbol{})
 	db.AutoMigrate(&Position{})
+	db.AutoMigrate(&Screener{})
+	db.AutoMigrate(&ScreenerItem{})
 	db.AutoMigrate(&TradeGroup{})
 	db.AutoMigrate(&ActiveSymbol{})
 	db.AutoMigrate(&Application{})
@@ -161,6 +163,55 @@ func LoadTestingData(db *gorm.DB) {
 	db.Exec("TRUNCATE TABLE positions;")
 	db.Create(&Position{UserId: 1, TradeGroupId: 1, BrokerAccountId: 2, BrokerAccountRef: "123abc", Status: "Open", SymbolId: 4, Qty: 10, OrgQty: 10, CostBasis: 1000.00, AvgOpenPrice: 1.00, AvgClosePrice: 0.00, OrderIds: "1", OpenDate: ts, Note: "Test note #1"})
 	db.Create(&Position{UserId: 1, TradeGroupId: 1, BrokerAccountId: 2, BrokerAccountRef: "123abc", Status: "Open", SymbolId: 6, Qty: 10, OrgQty: 10, CostBasis: 1000.00, AvgOpenPrice: 1.00, AvgClosePrice: 0.00, OrderIds: "1", OpenDate: ts, Note: "Test note #2"})
+
+	// Screener
+	db.Exec("TRUNCATE TABLE screeners;")
+	db.Exec("TRUNCATE TABLE screener_items;")
+
+	// put-credit-spread screener test.
+	db.Create(&Screener{
+		UserId:   1,
+		Name:     "Spicer's Dope Strategy",
+		Symbol:   "SPY",
+		Strategy: "put-credit-spread",
+		Items: []ScreenerItem{
+			{UserId: 1, Key: "short-strike-percent-away", Operator: "=", ValueNumber: 2.5},
+			{UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
+			{UserId: 1, Key: "min-credit", Operator: "=", ValueNumber: 0.18},
+			{UserId: 1, Key: "max-days-to-expire", Operator: "=", ValueNumber: 45},
+			{UserId: 1, Key: "min-days-to-expire", Operator: "=", ValueNumber: 0},
+		},
+	})
+
+	// put-credit-spread screener test. - User 2
+	db.Create(&Screener{
+		UserId:   2,
+		Name:     "User 2's Dope Strategy",
+		Symbol:   "SPY",
+		Strategy: "put-credit-spread",
+		Items: []ScreenerItem{
+			{UserId: 2, Key: "short-strike-percent-away", Operator: "=", ValueNumber: 2.5},
+			{UserId: 2, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
+			{UserId: 2, Key: "min-credit", Operator: "=", ValueNumber: 0.18},
+			{UserId: 2, Key: "max-days-to-expire", Operator: "=", ValueNumber: 45},
+			{UserId: 2, Key: "min-days-to-expire", Operator: "=", ValueNumber: 0},
+		},
+	})
+
+	// put-credit-spread screener test.
+	db.Create(&Screener{
+		UserId:   1,
+		Name:     "Spicer's 2nd Dope Strategy",
+		Symbol:   "SPY",
+		Strategy: "iron-condor",
+		Items: []ScreenerItem{
+			{UserId: 1, Key: "short-strike-percent-away", Operator: "=", ValueNumber: 2.5},
+			{UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
+			{UserId: 1, Key: "min-credit", Operator: "=", ValueNumber: 0.18},
+			{UserId: 1, Key: "max-days-to-expire", Operator: "=", ValueNumber: 45},
+			{UserId: 1, Key: "min-days-to-expire", Operator: "=", ValueNumber: 0},
+		},
+	})
 
 	// Orders
 	db.Exec("TRUNCATE TABLE orders;")
