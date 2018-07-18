@@ -61,6 +61,7 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		// Screeners
 		apiV1.GET("/screeners", t.GetScreeners)
 		apiV1.GET("/screeners/:id", t.GetScreener)
+		apiV1.GET("/screeners/:id/results", t.GetScreenerResults)
 
 		// Status
 		apiV1.GET("/status/market", t.GetMarketStatus)

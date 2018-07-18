@@ -62,8 +62,8 @@ func (t *Controller) StartWebServer() {
 		s := &http.Server{
 			Addr:         ":7080",
 			Handler:      router,
-			ReadTimeout:  10 * time.Second,
-			WriteTimeout: 10 * time.Second,
+			ReadTimeout:  60 * time.Second,
+			WriteTimeout: 60 * time.Second,
 		}
 
 		log.Fatal(s.ListenAndServe())

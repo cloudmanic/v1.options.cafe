@@ -8,9 +8,59 @@ package controllers
 
 import (
 	"strconv"
+	"time"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
+	"github.com/cloudmanic/app.options.cafe/backend/screener"
 	"github.com/gin-gonic/gin"
 )
+
+//
+// Get screen results
+//
+func (t *Controller) GetScreenerResults(c *gin.Context) {
+
+	// Get the user id.
+	userId := c.MustGet("userId").(uint)
+
+	// Set as int
+	id, err := strconv.ParseInt(c.Param("id"), 10, 32)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Get the screener by id.
+	screen, err := t.DB.GetScreenerByIdAndUserId(uint(id), userId)
+
+	if t.RespondError(c, err, httpNoRecordFound) {
+		return
+	}
+
+	// See if we have this result in the cache.
+	cachedResult := []screener.Result{}
+
+	found, _ := cache.Get("oc-screener-result-"+strconv.Itoa(int(screen.Id)), &cachedResult)
+
+	// Return happy JSON
+	if found {
+		c.JSON(200, cachedResult)
+		return
+	}
+
+	// Run back test
+	result, err := screener.RunPutCreditSpread(screen)
+
+	if t.RespondError(c, err, httpNoRecordFound) {
+		return
+	}
+
+	// Store result in cache.
+	cache.SetExpire("oc-screener-result-"+strconv.Itoa(int(screen.Id)), (time.Minute * 5), result)
+
+	// Return happy JSON
+	c.JSON(200, result)
+}
 
 //
 // Get a screeners

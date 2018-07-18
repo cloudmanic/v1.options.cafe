@@ -18,6 +18,38 @@ import (
 )
 
 //
+// GetScreenerResults01
+//
+func TestGetScreenerResults01(t *testing.T) {
+
+	// // Start the db connection.
+	// db, _ := models.NewDB()
+
+	// // Create controller
+	// c := &Controller{DB: db}
+
+	// // Make a mock request.
+	// req, _ := http.NewRequest("GET", "/api/v1/screeners/1/results", nil)
+	// req.Header.Set("Accept", "application/json")
+
+	// // Setup GIN Router
+	// gin.SetMode("release")
+	// gin.DisableConsoleColor()
+	// r := gin.New()
+
+	// r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	// r.GET("/api/v1/screeners/:id/results", c.GetScreenerResults)
+
+	// // Setup writer.
+	// w := httptest.NewRecorder()
+	// r.ServeHTTP(w, req)
+
+	// fmt.Println(w.Body.String())
+
+}
+
+//
 // TestGetScreeners01
 //
 func TestGetScreeners01(t *testing.T) {
