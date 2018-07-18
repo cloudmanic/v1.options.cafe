@@ -7,7 +7,6 @@
 package screener
 
 import (
-	"errors"
 	"math"
 	"time"
 
@@ -80,7 +79,7 @@ func RunPutCreditSpread(filters Filter) ([]Result, error) {
 			}
 
 			// Find the strike that is x points away.
-			buyLeg, err := findByStrike(chain.Puts, (row2.Strike - spreadWidth))
+			buyLeg, err := FindByStrike(chain.Puts, (row2.Strike - spreadWidth))
 
 			if err != nil {
 				continue
@@ -174,22 +173,6 @@ func getPutCreditSpreadParms(filters Filter, lastQuote float64) (int, int, float
 
 	// Return values
 	return minDaysToExpire, maxDaysToExpire, minCredit, spreadWidth, minSellStrike
-}
-
-//
-// Find a strike price that is X number of strikes below.
-//
-func findByStrike(chain []types.OptionsChainItem, strike float64) (types.OptionsChainItem, error) {
-
-	for _, row := range chain {
-
-		if strike == row.Strike {
-			return row, nil
-		}
-
-	}
-
-	return types.OptionsChainItem{}, errors.New("No leg found.")
 }
 
 /* End File */

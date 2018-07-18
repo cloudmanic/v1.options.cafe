@@ -98,4 +98,20 @@ func FindFilterItemValue(item string, filter Filter) (FilterItems, error) {
 	return FilterItems{}, errors.New("Item not found.")
 }
 
+//
+// Find a strike price that is X number of strikes below.
+//
+func FindByStrike(chain []types.OptionsChainItem, strike float64) (types.OptionsChainItem, error) {
+
+	for _, row := range chain {
+
+		if strike == row.Strike {
+			return row, nil
+		}
+
+	}
+
+	return types.OptionsChainItem{}, errors.New("No leg found.")
+}
+
 /* End File */
