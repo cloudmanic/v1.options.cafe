@@ -174,4 +174,49 @@ func (t *Api) GetHistoricalQuotes(symbol string, start time.Time, end time.Time,
 
 }
 
+//
+// Get option expirations by date (this is not part of the interface)
+//
+func (t *Api) GetOptionsExpirationsBySymbol(symb string) ([]string, error) {
+
+	var result []string
+
+	// Create client
+	client := &http.Client{}
+
+	// Create request
+	req, err := http.NewRequest("GET", apiBaseUrl+"/markets/options/expirations?symbol="+symb, nil)
+
+	// Headers
+	req.Header.Set("Authorization", fmt.Sprint("Bearer ", t.ApiKey))
+	req.Header.Add("Accept", "application/json")
+
+	// Fetch Request
+	res, err := client.Do(req)
+
+	if err != nil {
+		return result, err
+	}
+
+	// Close Body
+	defer res.Body.Close()
+
+	// Read Response Body
+	json, _ := ioutil.ReadAll(res.Body)
+
+	// Make sure the api responded with a 200
+	if res.StatusCode != 200 {
+		return result, errors.New("Failed response from Tradier.")
+	}
+
+	// Loop through the dates
+	dates := gjson.Get(string(json), "expirations.date")
+	for _, row := range dates.Array() {
+		result = append(result, row.String())
+	}
+
+	// Return happy
+	return result, nil
+}
+
 /* End File */
