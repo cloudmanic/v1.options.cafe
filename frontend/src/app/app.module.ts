@@ -21,6 +21,7 @@ import { StateService } from './providers/state/state.service';
 // Providers - http
 import { OptionsChainService } from './providers/http/options-chain.service';
 import { TradeService } from './providers/http/trade.service';
+import { ScreenerService } from './providers/http/screener.service';
 import { QuotesService } from './providers/http/quotes.service';
 import { BrokerService } from './providers/http/broker.service';
 import { SymbolService } from './providers/http/symbol.service';
@@ -140,6 +141,7 @@ import { SubNavComponent } from './settings/sub-nav/sub-nav.component';
     StatusService,
     TradeService,
     OptionsChainService,
+    ScreenerService,
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }    
   ],
   

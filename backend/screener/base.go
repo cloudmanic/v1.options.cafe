@@ -19,24 +19,11 @@ var (
 	broker tradier.Api
 )
 
-// type Filter struct {
-// 	Symbol      string
-// 	Strategy    string // put-credit-spread
-// 	FilterItems []FilterItems
-// }
-
-// type FilterItems struct {
-// 	Key         string
-// 	Operator    string
-// 	ValueNumber float64
-// 	ValueString string
-// }
-
 type Result struct {
-	Credit      float64                  `json: "credit"`
-	MidPoint    float64                  `json: "midpoint"`
-	PrecentAway float64                  `json: "percent_away"`
-	Legs        []types.OptionsChainItem `json: "legs"`
+	Credit      float64                  `json:"credit"`
+	MidPoint    float64                  `json:"midpoint"`
+	PrecentAway float64                  `json:"percent_away"`
+	Legs        []types.OptionsChainItem `json:"legs"`
 }
 
 //

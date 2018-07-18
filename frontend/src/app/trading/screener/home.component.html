@@ -4,9 +4,42 @@
   <div class="shell shell--fluid">
   	<section class="section">
   		<div class="section__inner">
-  			<h1 class="title-bordered">
-  				<span>Screener Coming soon!</span>
-  			</h1><!-- /.title-bordered -->
+
+
+
+<ul>
+  <li *ngFor="let row of screeners;">
+    <h3>{{ row.Name }} - {{ row.Symbol }}</h3>
+    <table>
+      <tr *ngFor="let row2 of row.Items;">
+        <td>{{ row2.Key }}</td>
+        <td>{{ row2.Operator }}</td>
+        <td>{{ row2.ValueNumber }}</td>
+      </tr>
+    </table>
+
+    <table>
+      <tr *ngFor="let row2 of row.Results;" style="padding: 20px; border: 1px solid black;">
+        <td>{{ row2.Credit }}</td>
+        <td>{{ row2.MidPoint }}</td>
+        <td>{{ row2.PrecentAway }}</td>
+        <td>
+          <ul>
+            <li *ngFor="let row3 of row2.Legs;">
+              {{ row3.Description }}
+            </li>
+          </ul>
+        </td>
+      </tr>
+    </table>        
+
+  </li>
+
+</ul>
+
+
+
+
   		</div><!-- /.section__inner -->
   	</section><!-- /.section -->
   </div><!-- /.shell shell-fluid -->

@@ -18,6 +18,24 @@ export class ScreenerResult
   Legs: OptionsChainItem[];
 
   //
+  // Build from JSON list.
+  //
+  fromJsonList(json: Object[]): ScreenerResult[] {
+    let result = [];
+
+    if (!json) {
+      return result;
+    }
+
+    for (let i = 0; i < json.length; i++) {
+      result.push(new ScreenerResult().fromJson(json[i]));
+    }
+
+    // Return happy
+    return result;
+  }
+
+  //
   // Json to Object.
   //
   fromJson(json: Object): ScreenerResult 
