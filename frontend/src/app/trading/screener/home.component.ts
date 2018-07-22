@@ -8,8 +8,10 @@ import { Observable } from 'rxjs/Rx';
 import { Subject } from 'rxjs/Subject';
 import { Component, OnInit } from '@angular/core';
 import { Screener } from '../../models/screener';
+import { ScreenerResult } from '../../models/screener-result';
 import { StateService } from '../../providers/state/state.service';
 import { ScreenerService } from '../../providers/http/screener.service';
+import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../../providers/http/trade.service';
 
 @Component({
   selector: 'app-screener',
@@ -23,7 +25,7 @@ export class ScreenerComponent implements OnInit
   //
   // Constructor....
   //
-  constructor(private stateService: StateService, private screenerService: ScreenerService) { }
+  constructor(private stateService: StateService, private screenerService: ScreenerService, private tradeService: TradeService) { }
 
   //
   // OnInit....
@@ -67,13 +69,69 @@ export class ScreenerComponent implements OnInit
       {
         this.screenerService.getResults(this.screeners[i].Id).subscribe((res) => {
           this.screeners[i].Results = res;
-
-          console.log(this.screeners[i]);
         });
       }
-
-      //this.stateService.SetDashboardRank(this.rank);
+      
     });
+  }
+
+  //
+  // Place trade from result
+  //
+  trade(screen: Screener, result: ScreenerResult) {
+
+    // Just a double check
+    if(result.Legs.length <= 0)
+    {
+      return;
+    }
+
+    // Set values
+    let tradeDetails = new TradeDetails();
+    tradeDetails.Symbol = result.Legs[0].OptionUnderlying;
+    tradeDetails.Class = "multileg";
+    
+    if(result.Credit > 0) 
+    {
+      tradeDetails.OrderType = "credit";
+    } else 
+    {
+      tradeDetails.OrderType = "debit";
+    }
+
+    // TODO: Add configuration around this.
+    tradeDetails.Duration = "gtc";
+    
+    // TODO: Add configuration around this. (or just selectors midpoint vs ask).
+    tradeDetails.Price = result.MidPoint;
+
+    // Build legs
+    tradeDetails.Legs = [];
+
+    for (let i = 0; i < result.Legs.length; i++) 
+    {
+      let side = "sell_to_close";
+      
+      // TODO: Get this from settings.
+      let qty = 11;
+
+      // TODO this will need work based on the type of screener.
+      if (i == 1) 
+      {
+        side = "sell_to_open";
+        qty = qty * -1;
+      } else 
+      {
+        side = "buy_to_open"
+      }
+
+      tradeDetails.Legs.push(new TradeOptionLegs().createNew(result.Legs[i], result.Legs[i].OptionExpire, result.Legs[i].OptionType, result.Legs[i].OptionStrike, side, qty));
+    }
+
+    // Open builder to place trade.
+    this.tradeService.tradeEvent.emit(new TradeEvent().createNew("toggle-trade-builder", tradeDetails));
+
+
   }
 
 }

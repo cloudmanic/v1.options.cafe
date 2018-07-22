@@ -5,7 +5,7 @@
 //
 
 import * as moment from 'moment';
-import { OptionsChainItem } from './options-chain';
+import { Symbol } from './symbol';
 
 //
 // OptionsChain
@@ -15,7 +15,7 @@ export class ScreenerResult
   Credit: number;
   MidPoint: number;
   PrecentAway: number;
-  Legs: OptionsChainItem[];
+  Legs: Symbol[];
 
   //
   // Build from JSON list.
@@ -50,7 +50,7 @@ export class ScreenerResult
     // Add in the legs.
     for (let i = 0; i < json["legs"].length; i++)
     {
-      obj.Legs.push(new OptionsChainItem().fromJson(json["legs"][i]));
+      obj.Legs.push(new Symbol().fromJson(json["legs"][i]));
     }
 
     return obj;

@@ -49,7 +49,7 @@ func (t *Controller) GetScreenerResults(c *gin.Context) {
 	}
 
 	// Run back test
-	result, err := screener.RunPutCreditSpread(screen)
+	result, err := screener.RunPutCreditSpread(screen, t.DB)
 
 	if t.RespondError(c, err, httpNoRecordFound) {
 		return

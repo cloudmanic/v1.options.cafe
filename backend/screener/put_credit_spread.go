@@ -10,7 +10,6 @@ import (
 	"math"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
@@ -19,7 +18,7 @@ import (
 //
 // Run a put credit spread screen
 //
-func RunPutCreditSpread(screen models.Screener) ([]Result, error) {
+func RunPutCreditSpread(screen models.Screener, db models.Datastore) ([]Result, error) {
 
 	result := []Result{}
 	today := time.Now()
@@ -97,12 +96,26 @@ func RunPutCreditSpread(screen models.Screener) ([]Result, error) {
 			buyCost := row2.Ask - buyLeg.Bid
 			midPoint := (credit + buyCost) / 2
 
+			// Add in Symbol Object - Buy leg
+			symbBuyLeg, err := db.CreateNewSymbol(buyLeg.Symbol, buyLeg.Description, buyLeg.OptionType)
+
+			if err != nil {
+				continue
+			}
+
+			// Add in Symbol Object - Sell leg
+			symbSellLeg, err := db.CreateNewSymbol(row2.Symbol, row2.Description, row2.OptionType)
+
+			if err != nil {
+				continue
+			}
+
 			// We have a winner
 			result = append(result, Result{
 				Credit:      helpers.Round(credit, 2),
 				MidPoint:    helpers.Round(midPoint, 2),
 				PrecentAway: helpers.Round(((1 - row2.Strike/quote.Last) * 100), 2),
-				Legs:        []types.OptionsChainItem{buyLeg, row2},
+				Legs:        []models.Symbol{symbBuyLeg, symbSellLeg},
 			})
 
 		}

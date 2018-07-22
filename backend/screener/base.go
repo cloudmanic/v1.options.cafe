@@ -20,10 +20,10 @@ var (
 )
 
 type Result struct {
-	Credit      float64                  `json:"credit"`
-	MidPoint    float64                  `json:"midpoint"`
-	PrecentAway float64                  `json:"percent_away"`
-	Legs        []types.OptionsChainItem `json:"legs"`
+	Credit      float64         `json:"credit"`
+	MidPoint    float64         `json:"midpoint"`
+	PrecentAway float64         `json:"percent_away"`
+	Legs        []models.Symbol `json:"legs"`
 }
 
 //

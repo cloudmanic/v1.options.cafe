@@ -37,7 +37,7 @@ export class ScreenerService
   getResults(id: number): Observable<ScreenerResult[]> {
     return this.http.get<ScreenerResult[]>(environment.app_server + '/api/v1/screeners/' + id + '/results')
       .map((data) => { return new ScreenerResult().fromJsonList(data); });
-  }      
+  }     
 }
 
 /* End File */
