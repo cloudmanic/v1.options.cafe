@@ -7,13 +7,146 @@
 package controllers
 
 import (
+	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/cloudmanic/app.options.cafe/backend/screener"
 	"github.com/gin-gonic/gin"
 )
+
+// Supported screener keys
+var screenerItemKeys = []string{
+	"min-credit",
+	"spread-width",
+	"max-days-to-expire",
+	"min-days-to-expire",
+	"short-strike-percent-away",
+}
+
+// Supported screener operator
+var screenerItemOperators = []string{
+	"=",
+}
+
+//
+// Update a screener
+//
+func (t *Controller) UpdateScreener(c *gin.Context) {
+
+	// Setup Screener obj
+	o := models.Screener{}
+
+	// Here we parse the JSON sent in, assign it to a struct, set validation errors if any.
+	if t.ValidateRequest(c, &o) != nil {
+		return
+	}
+
+	// Make sure the UserId is correct.
+	o.UserId = c.MustGet("userId").(uint)
+
+	// Set as int
+	id, err := strconv.ParseInt(c.Param("id"), 10, 32)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Get the screener by id.
+	orgObj, err := t.DB.GetScreenerByIdAndUserId(uint(id), o.UserId)
+
+	if t.RespondError(c, err, httpNoRecordFound) {
+		return
+	}
+
+	// Set the create date.
+	o.CreatedAt = orgObj.CreatedAt
+
+	// This is hacky but allows us to reset items
+	t.DB.New().Where("screener_id = ?", orgObj.Id).Delete(models.ScreenerItem{})
+
+	// Add in UserId to items & Some extra validation for ScreenerItems
+	for key, row := range o.Items {
+		o.Items[key].UserId = o.UserId
+
+		// Validation - screenerItemKeys
+		found, _ := helpers.InArray(row.Key, screenerItemKeys)
+
+		if !found {
+			m := make(map[string]string)
+			m["items"] = "Unknown Key - " + row.Key + "."
+			c.JSON(http.StatusBadRequest, gin.H{"errors": m})
+			return
+		}
+
+		// Validation - screenerItemOperators
+		found2, _ := helpers.InArray(row.Operator, screenerItemOperators)
+
+		if !found2 {
+			m := make(map[string]string)
+			m["items"] = "Unknown operator - " + row.Operator + "."
+			c.JSON(http.StatusBadRequest, gin.H{"errors": m})
+			return
+		}
+
+	}
+
+	// Update Screen
+	t.DB.New().Save(&o)
+
+	// Return success.
+	c.JSON(http.StatusNoContent, nil)
+}
+
+//
+// Create new screener
+//
+func (t *Controller) CreateScreener(c *gin.Context) {
+
+	// Setup Screener obj
+	o := models.Screener{}
+
+	// Here we parse the JSON sent in, assign it to a struct, set validation errors if any.
+	if t.ValidateRequest(c, &o) != nil {
+		return
+	}
+
+	// Make sure the UserId is correct.
+	o.UserId = c.MustGet("userId").(uint)
+
+	// Add in UserId to items & Some extra validation for ScreenerItems
+	for key, row := range o.Items {
+		o.Items[key].UserId = o.UserId
+
+		// Validation - screenerItemKeys
+		found, _ := helpers.InArray(row.Key, screenerItemKeys)
+
+		if !found {
+			m := make(map[string]string)
+			m["items"] = "Unknown Key - " + row.Key + "."
+			c.JSON(http.StatusBadRequest, gin.H{"errors": m})
+			return
+		}
+
+		// Validation - screenerItemOperators
+		found2, _ := helpers.InArray(row.Operator, screenerItemOperators)
+
+		if !found2 {
+			m := make(map[string]string)
+			m["items"] = "Unknown operator - " + row.Operator + "."
+			c.JSON(http.StatusBadRequest, gin.H{"errors": m})
+			return
+		}
+
+	}
+
+	// Create Screen
+	err := t.DB.CreateNewRecord(&o, models.InsertParam{})
+	t.RespondCreated(c, o, err)
+}
 
 //
 // Get screen results

@@ -9,6 +9,8 @@ package models
 import (
 	"errors"
 	"time"
+
+	validation "github.com/go-ozzo/ozzo-validation"
 )
 
 type Screener struct {
@@ -20,6 +22,17 @@ type Screener struct {
 	Strategy  string         `json:"strategy"`
 	Symbol    string         `json:"symbol"`
 	Items     []ScreenerItem `json:"items"`
+}
+
+//
+// Validate for this model.
+//
+func (a Screener) Validate(db Datastore) error {
+	return validation.ValidateStruct(&a,
+		validation.Field(&a.Name, validation.Required.Error("The name field is required.")),
+		validation.Field(&a.Strategy, validation.Required.Error("The strategy field is required.")),
+		validation.Field(&a.Symbol, validation.Required.Error("The symbol field is required.")),
+	)
 }
 
 //

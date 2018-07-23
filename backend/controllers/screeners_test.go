@@ -7,6 +7,7 @@
 package controllers
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -16,6 +17,112 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/nbio/st"
 )
+
+//
+// UpdateScreener - 01
+//
+func TestUpdateScreener01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Post data
+	screenerPost := models.Screener{
+		UserId:   2,
+		Name:     "Super Cool Test Screener",
+		Strategy: "put-credit-spread",
+		Symbol:   "SPY",
+		Items: []models.ScreenerItem{
+			{Key: "spread-width", Operator: "=", ValueString: "", ValueNumber: 2.0},
+			{Key: "max-days-to-expire", Operator: "=", ValueString: "", ValueNumber: 45},
+			{Key: "short-strike-percent-away", Operator: "=", ValueString: "", ValueNumber: 5.0},
+		},
+	}
+
+	db.Create(&screenerPost)
+
+	// Add update.
+	screenerPost.Name = "Super Cool Test Screener - Update"
+
+	screenerPost.Items = []models.ScreenerItem{
+		{Key: "spread-width", Operator: "=", ValueString: "", ValueNumber: 2.0},
+		{Key: "max-days-to-expire", Operator: "=", ValueString: "", ValueNumber: 45},
+		{Key: "min-days-to-expire", Operator: "=", ValueString: "", ValueNumber: 5.0},
+	}
+
+	// Convert to JSON
+	postStr, _ := json.Marshal(screenerPost)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("PUT", "/api/v1/screeners/4", bytes.NewBuffer(postStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.PUT("/api/v1/screeners/:id", c.UpdateScreener)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Validate result
+	st.Expect(t, w.Code, 204)
+	//st.Expect(t, w.Body.String(), `{"id":4,"user_id":2,"name":"Super Cool Test Screener","strategy":"put-credit-spread","symbol":"SPY","items":[{"id":16,"screener_id":4,"user_id":2,"key":"spread-width","operator":"=","value_string":"","value_number":2},{"id":17,"screener_id":4,"user_id":2,"key":"max-days-to-expire","operator":"=","value_string":"","value_number":45},{"id":18,"screener_id":4,"user_id":2,"key":"short-strike-percent-away","operator":"=","value_string":"","value_number":5}]}`)
+}
+
+//
+// CreateScreener - 01
+//
+func TestCreateScreener01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Post data
+	screenerPost := models.Screener{
+		Name:     "Super Cool Test Screener",
+		Strategy: "put-credit-spread",
+		Symbol:   "SPY",
+		Items: []models.ScreenerItem{
+			{Key: "spread-width", Operator: "=", ValueString: "", ValueNumber: 2.0},
+			{Key: "max-days-to-expire", Operator: "=", ValueString: "", ValueNumber: 45},
+			{Key: "short-strike-percent-away", Operator: "=", ValueString: "", ValueNumber: 5.0},
+		},
+	}
+
+	postStr, _ := json.Marshal(screenerPost)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("POST", "/api/v1/screeners", bytes.NewBuffer(postStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.POST("/api/v1/screeners", c.CreateScreener)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Validate result
+	st.Expect(t, w.Body.String(), `{"id":4,"user_id":2,"name":"Super Cool Test Screener","strategy":"put-credit-spread","symbol":"SPY","items":[{"id":16,"screener_id":4,"user_id":2,"key":"spread-width","operator":"=","value_string":"","value_number":2},{"id":17,"screener_id":4,"user_id":2,"key":"max-days-to-expire","operator":"=","value_string":"","value_number":45},{"id":18,"screener_id":4,"user_id":2,"key":"short-strike-percent-away","operator":"=","value_string":"","value_number":5}]}`)
+}
 
 //
 // GetScreenerResults01
