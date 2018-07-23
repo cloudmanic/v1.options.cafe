@@ -19,6 +19,57 @@ import (
 )
 
 //
+// Delete a screener - 01
+//
+func TestDeleteScreener01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Post data
+	screenerPost := models.Screener{
+		UserId:   2,
+		Name:     "Super Cool Test Screener - Deleted",
+		Strategy: "put-credit-spread",
+		Symbol:   "SPY",
+		Items: []models.ScreenerItem{
+			{Key: "spread-width", Operator: "=", ValueString: "", ValueNumber: 2.0},
+			{Key: "max-days-to-expire", Operator: "=", ValueString: "", ValueNumber: 45},
+			{Key: "short-strike-percent-away", Operator: "=", ValueString: "", ValueNumber: 5.0},
+		},
+	}
+
+	db.Create(&screenerPost)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("DELETE", "/api/v1/screeners/4", nil)
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.DELETE("/api/v1/screeners/:id", c.DeleteScreener)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Make sure the screener is deleted
+	_, err := db.GetScreenerByIdAndUserId(uint(4), uint(2))
+
+	// Validate result
+	st.Expect(t, err.Error(), "[Models:GetScreenerByIdAndUserId] Record not found")
+	st.Expect(t, w.Code, 204)
+}
+
+//
 // UpdateScreener - 01
 //
 func TestUpdateScreener01(t *testing.T) {
@@ -75,7 +126,6 @@ func TestUpdateScreener01(t *testing.T) {
 
 	// Validate result
 	st.Expect(t, w.Code, 204)
-	//st.Expect(t, w.Body.String(), `{"id":4,"user_id":2,"name":"Super Cool Test Screener","strategy":"put-credit-spread","symbol":"SPY","items":[{"id":16,"screener_id":4,"user_id":2,"key":"spread-width","operator":"=","value_string":"","value_number":2},{"id":17,"screener_id":4,"user_id":2,"key":"max-days-to-expire","operator":"=","value_string":"","value_number":45},{"id":18,"screener_id":4,"user_id":2,"key":"short-strike-percent-away","operator":"=","value_string":"","value_number":5}]}`)
 }
 
 //

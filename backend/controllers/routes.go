@@ -62,6 +62,7 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		apiV1.GET("/screeners", t.GetScreeners)
 		apiV1.POST("/screeners", t.CreateScreener)
 		apiV1.PUT("/screeners/:id", t.UpdateScreener)
+		apiV1.DELETE("/screeners/:id", t.DeleteScreener)
 		apiV1.GET("/screeners/:id", t.GetScreener)
 		apiV1.GET("/screeners/:id/results", t.GetScreenerResults)
 
