@@ -59,6 +59,7 @@ func NewDB() (*DB, error) {
 	db.AutoMigrate(&Order{})
 	db.AutoMigrate(&Symbol{})
 	db.AutoMigrate(&Session{})
+	db.AutoMigrate(&Settings{})
 	db.AutoMigrate(&OrderLeg{})
 	db.AutoMigrate(&Watchlist{})
 	db.AutoMigrate(&WatchlistSymbol{})
@@ -87,6 +88,9 @@ func LoadTestingData(db *gorm.DB) {
 
 	// Shared vars we use.
 	ts := time.Date(2017, 10, 29, 17, 20, 01, 507451, time.UTC)
+
+	// Settings
+	db.Exec("TRUNCATE TABLE settings;")
 
 	// Users
 	db.Exec("TRUNCATE TABLE users;")

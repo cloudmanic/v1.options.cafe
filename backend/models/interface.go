@@ -34,6 +34,9 @@ type Datastore interface {
 	QueryWithNoFilterCount(model interface{}, params QueryParam) (int, error)
 	GetQueryMetaData(limitCount int, noLimitCount int, params QueryParam) QueryMetaData
 
+	// Settings
+	SettingsGetOrCreateByUserId(userId uint) Settings
+
 	// Broker
 	UpdateBroker(broker Broker) error
 	GetBrokerById(id uint) (Broker, error)

@@ -99,7 +99,7 @@ func (t *DB) CreateNewSymbol(short string, name string, sType string) (Symbol, e
 
 	}
 
-	// Return the user.
+	// Return the symbol.
 	return symb, nil
 
 }
