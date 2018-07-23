@@ -94,6 +94,9 @@ func (t *Controller) UpdateScreener(c *gin.Context) {
 		return
 	}
 
+	// Set id.
+	o.Id = orgObj.Id
+
 	// Set the create date.
 	o.CreatedAt = orgObj.CreatedAt
 
