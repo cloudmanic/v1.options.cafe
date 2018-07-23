@@ -101,29 +101,8 @@ func (t *Controller) UpdateScreener(c *gin.Context) {
 	t.DB.New().Where("screener_id = ?", orgObj.Id).Delete(models.ScreenerItem{})
 
 	// Add in UserId to items & Some extra validation for ScreenerItems
-	for key, row := range o.Items {
-		o.Items[key].UserId = o.UserId
-
-		// Validation - screenerItemKeys
-		found, _ := helpers.InArray(row.Key, screenerItemKeys)
-
-		if !found {
-			m := make(map[string]string)
-			m["items"] = "Unknown Key - " + row.Key + "."
-			c.JSON(http.StatusBadRequest, gin.H{"errors": m})
-			return
-		}
-
-		// Validation - screenerItemOperators
-		found2, _ := helpers.InArray(row.Operator, screenerItemOperators)
-
-		if !found2 {
-			m := make(map[string]string)
-			m["items"] = "Unknown operator - " + row.Operator + "."
-			c.JSON(http.StatusBadRequest, gin.H{"errors": m})
-			return
-		}
-
+	if !addUserIdAndValidateScreenerItems(&o, c) {
+		return
 	}
 
 	// Update Screen
@@ -150,29 +129,8 @@ func (t *Controller) CreateScreener(c *gin.Context) {
 	o.UserId = c.MustGet("userId").(uint)
 
 	// Add in UserId to items & Some extra validation for ScreenerItems
-	for key, row := range o.Items {
-		o.Items[key].UserId = o.UserId
-
-		// Validation - screenerItemKeys
-		found, _ := helpers.InArray(row.Key, screenerItemKeys)
-
-		if !found {
-			m := make(map[string]string)
-			m["items"] = "Unknown Key - " + row.Key + "."
-			c.JSON(http.StatusBadRequest, gin.H{"errors": m})
-			return
-		}
-
-		// Validation - screenerItemOperators
-		found2, _ := helpers.InArray(row.Operator, screenerItemOperators)
-
-		if !found2 {
-			m := make(map[string]string)
-			m["items"] = "Unknown operator - " + row.Operator + "."
-			c.JSON(http.StatusBadRequest, gin.H{"errors": m})
-			return
-		}
-
+	if !addUserIdAndValidateScreenerItems(&o, c) {
+		return
 	}
 
 	// Create Screen
@@ -270,6 +228,42 @@ func (t *Controller) GetScreener(c *gin.Context) {
 
 	// Return happy JSON
 	c.JSON(200, screener)
+}
+
+// ----------- Helper Function ------------- //
+
+//
+// Add in UserId to items & Some extra validation for ScreenerItems
+//
+func addUserIdAndValidateScreenerItems(o *models.Screener, c *gin.Context) bool {
+
+	for key, row := range o.Items {
+		o.Items[key].UserId = o.UserId
+
+		// Validation - screenerItemKeys
+		found, _ := helpers.InArray(row.Key, screenerItemKeys)
+
+		if !found {
+			m := make(map[string]string)
+			m["items"] = "Unknown Key - " + row.Key + "."
+			c.JSON(http.StatusBadRequest, gin.H{"errors": m})
+			return false
+		}
+
+		// Validation - screenerItemOperators
+		found2, _ := helpers.InArray(row.Operator, screenerItemOperators)
+
+		if !found2 {
+			m := make(map[string]string)
+			m["items"] = "Unknown operator - " + row.Operator + "."
+			c.JSON(http.StatusBadRequest, gin.H{"errors": m})
+			return false
+		}
+
+	}
+
+	// Return happy.
+	return true
 }
 
 /* End File */
