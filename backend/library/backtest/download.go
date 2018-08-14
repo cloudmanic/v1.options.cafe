@@ -20,7 +20,7 @@ import (
 	"os"
 	"strings"
 
-	"bitbucket.org/api.triwou.org/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/library/files"
 	"github.com/cloudmanic/app.options.cafe/backend/library/store/object"
 )
