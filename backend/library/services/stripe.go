@@ -30,10 +30,10 @@ func AddCustomer(first string, last string, email string, accountId int) (string
 	stripe.Key = os.Getenv("STRIPE_SECRET_KEY")
 
 	// Setup the customer object
-	customerParams := &stripe.CustomerParams{Email: email}
-	customerParams.AddMeta("FirstName", first)
-	customerParams.AddMeta("LastName", last)
-	customerParams.AddMeta("AccountId", strconv.Itoa(accountId))
+	customerParams := &stripe.CustomerParams{Email: &email}
+	customerParams.AddMetadata("FirstName", first)
+	customerParams.AddMetadata("LastName", last)
+	customerParams.AddMetadata("AccountId", strconv.Itoa(accountId))
 
 	// Create new customer.
 	customer, err := customer.New(customerParams)
@@ -62,7 +62,7 @@ func AddSubscription(custId string, plan string) (string, error) {
 	stripe.Key = os.Getenv("STRIPE_SECRET_KEY")
 
 	// Setup the customer object
-	subParams := &stripe.SubParams{Customer: custId, Plan: plan}
+	subParams := &stripe.SubscriptionParams{Customer: &custId, Plan: &plan}
 
 	// Create new subscription.
 	subscription, err := sub.New(subParams)

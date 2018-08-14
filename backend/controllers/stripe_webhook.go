@@ -44,14 +44,14 @@ func (t *Controller) DoStripeWebhook(c *gin.Context) {
 
 	// If there is no customer value there is nothing we need to do.
 	// As of now all the events we care about have a customer attached to them.
-	if len(event.GetObjValue("customer")) == 0 {
+	if len(event.GetObjectValue("customer")) == 0 {
 		services.Info("Stripe no customer data found (this is expected).")
 		c.JSON(200, gin.H{"status": "success"})
 		return
 	}
 
 	// Figure out what user this event is for.
-	user, err := t.DB.GetUserByStripeCustomer(event.GetObjValue("customer"))
+	user, err := t.DB.GetUserByStripeCustomer(event.GetObjectValue("customer"))
 
 	if t.RespondError(c, err, httpGenericErrMsg) {
 		return
