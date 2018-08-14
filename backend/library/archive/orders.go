@@ -6,7 +6,6 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/davecgh/go-spew/spew"
 )
 
 //
@@ -22,9 +21,6 @@ func StoreOrders(db models.Datastore, orders []types.Order, userId uint, brokerI
 
 		// This is how we handle parcel fills. A little hack.
 		if (row.Status == "canceled") && (row.ExecQuantity > 0) {
-
-			spew.Dump(row)
-
 			row.Status = "filled"
 		}
 
