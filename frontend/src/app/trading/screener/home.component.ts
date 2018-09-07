@@ -19,7 +19,7 @@ import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../../p
 })
 export class ScreenerComponent implements OnInit 
 {
-  screeners: Screener[]
+  screeners: Screener[] = [];
   destory: Subject<boolean> = new Subject<boolean>(); 
 
   //
@@ -67,12 +67,47 @@ export class ScreenerComponent implements OnInit
       // Load results.
       for (let i = 0; i < this.screeners.length; i++) 
       {
+        this.screeners[i].Results = [];
+
         this.screenerService.getResults(this.screeners[i].Id).subscribe((res) => {
           this.screeners[i].Results = res;
         });
       }
       
     });
+  }
+
+  //
+  // Get Spread string of a found result.
+  //
+  getSpread(result: ScreenerResult) : String
+  {
+    let exp = [];
+
+    if (result.Legs.length <= 0) 
+    {
+      return null;
+    }
+
+    for (let i = 0; i < result.Legs.length; i++)
+    {
+      exp.push(result.Legs[i].OptionStrike);
+    }
+
+    return exp.join("/");
+  }
+
+  //
+  // Get the expire string for a found result.
+  //
+  getExpire(result: ScreenerResult) : Date 
+  {
+    if (result.Legs.length <= 0)
+    {
+      return null;
+    }
+
+    return result.Legs[0].OptionExpire;
   }
 
   //

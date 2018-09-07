@@ -2,57 +2,125 @@
 
 <app-trade></app-trade>
 
+
+
+
+
 <div class="content__inner">
   <div class="shell shell--fluid">
-  	<section class="section">
-  		<div class="section__inner">
+
+    <div class="article"  *ngIf="screeners.length <= 0">
+      No Screener
+
+<!--       <div class="article__body article__body--septenary" >
+        <div class="article__contnet-def">
+          <h4>No results. </h4>
+          <h4>Try adjusting the screener filters.</h4>
+        </div>
+      </div> -->
+    </div>
+
+
+    <div class="article"  *ngFor="let row of screeners;">
+      <div class="article__head">
+        <h5>{{ row.Name }}</h5>
+
+        <div class="article__head-aside">
+          <div class="select select--primary">
+            <select name="select-1">
+              <option value="option-1" selected>SPREAD</option>
+
+              <option value="option-2">Spread</option>
+            </select>
+          </div>
+
+          <a href="#" class="btn-square">
+            <i class="ico-settings"></i>
+          </a>
+        </div><!-- /.article__head-aside -->
+      </div><!-- /.article__head -->
 
 
 
-<ul>
-  <li *ngFor="let row of screeners;">
-    <h3>{{ row.Name }} - {{ row.Symbol }}</h3>
-    <table>
-      <tr *ngFor="let row2 of row.Items;">
-        <td>{{ row2.Key }}</td>
-        <td>{{ row2.Operator }}</td>
-        <td>{{ row2.ValueNumber }}</td>
-      </tr>
-    </table>
+      <div class="article__body article__body--size2">
+        <div class="features features--small" *ngIf="row.Results.length > 0">
+          
+          <div class="feature feature--small" *ngFor="let row2 of row.Results;">
+            <div class="feature__inner">
+              <div class="feature__head">
+                <h6>{{ row.Symbol }}</h6>
 
-    <table>
-      <tr>
-        <th>Credit</th>
-        <th>Midpoint</th>
-        <th>Percent Away</th> 
-        <th>Spread</th>
-        <th>&nbsp;</th>                                
-      </tr>
-      <tr *ngFor="let row2 of row.Results;" style="padding: 20px; border: 1px solid black;">
-        <td>{{ row2.Credit }}</td>
-        <td>{{ row2.MidPoint }}</td>
-        <td>{{ row2.PrecentAway }}%</td>
-        <td>
-          <ul>
-            <li *ngFor="let row3 of row2.Legs;">
-              {{ row3.Name }}
-            </li>
-          </ul>
-        </td>
-        <td>
-          <a (click)="trade(row, row2)">Trade</a>
-        </td>
-      </tr>
-    </table>        
+                <!-- <i class="ico-check-circle feature__ico"></i> -->
+              </div>
 
-  </li>
+              <div class="feature__body">
+                <div class="table-simple table-simple--small">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>
+                          <ins>Expire</ins>
+                        </th>
 
-</ul>
+                        <th>
+                          <ins>Spread</ins>
+                        </th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      <tr>
+                        <td>{{ getExpire(row2) | date:'shortDate' }}</td>
+                        
+                        <td>{{ getSpread(row2) }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div><!-- /.table -->
+
+                <div class="table-simple table-simple--small table-simple--small-size1">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>
+                          <ins>% Away</ins>
+                        </th>
+
+                        <th>
+                          <ins>Credit</ins>
+                        </th>
+
+                        <th>
+                          <ins>Midpoint</ins>
+                        </th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      <tr>
+                        <td>{{ row2.PrecentAway | number:'1.2-2' }}%</td>
+                        
+                        <td>{{ row2.Credit | currency:'USD':'symbol':'1.2-2' }}</td>
+                        <td>{{ row2.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div><!-- /.table -->
+              </div><!-- /.feature__body -->
+
+              <div class="feature__actions">
+                <a class="btn btn--size4" (click)="trade(row, row2)">Place Trade</a>
+                <!-- <a href="#" class="btn btn--border-blue">View Your Position</a> -->
+              </div><!-- /.feature__actions -->
+            </div><!-- /.feature__inner -->
+          </div><!-- /.feature feature-/-small -->
+        </div>
 
 
 
 
-  		</div><!-- /.section__inner -->
-  	</section><!-- /.section -->
-  </div><!-- /.shell shell-fluid -->
-</div><!-- /.content__inner -->
+    </div><!-- /.article -->
+
+    
+  </div>
+</div>

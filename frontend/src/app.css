@@ -1,0 +1,31 @@
+/* ------------- Here is where non-htmlburger css goes. ------------------ */
+
+.clear { content: ''; clear: both; }
+
+.mt-3 { margin-top: 3px; }
+.mt-5 { margin-top: 5px; }
+.mt-20 { margin-top: 20px; }
+
+.ml-3 { margin-left: 3px; }
+.ml-5 { margin-left: 5px; }
+.ml-20 { margin-left: 20px; }
+
+/* Widths */
+.width-95 { width: 95px !important; }
+.width-135 { width: 135px !important; }
+
+/* Layout */
+.logo { background-image: url(images/logo-new.png); width: 58px !important; height: 50px !important; }
+
+/* Trade Builder */
+.trade-builder .trade-search { display: flex; }
+.trade-builder .trade-search .typeahead-cont { width: 100%; }
+.trade-builder .trade-search .typeahead-cont .field { width: 98%; }
+.trade-builder .table--stocks td:nth-child(n+3) { text-align: left; }
+.trade-builder .net-quote { display: flex; font-size: 14px; margin-top: 15px; text-align: center; }
+
+/* Hide GooveHq stuff */
+iframe.grv-widget-tag { display: none !important; }
+iframe.grv-widget-app { display: block !important; }
+
+input[type="submit"]:disabled { opacity: .3 }
