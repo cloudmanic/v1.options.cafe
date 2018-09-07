@@ -104,12 +104,11 @@ export class AuthLoginComponent implements OnInit {
         if (err.error instanceof Error) 
         {
           // A client-side or network error occurred. Handle it accordingly.
-          console.log('An error occurred:', err.error.message);
+          console.log('An error occurred:', err.error);
         } else 
         { 
           // Print error message
-          var json = JSON.parse(err.error); // Bug....Angular 4.4.4
-          this.errorMsg = json.error;
+          this.errorMsg = err.error.error;
         }
         
       }

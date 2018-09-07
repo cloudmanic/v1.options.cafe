@@ -5,7 +5,7 @@
 
 export const environment = {
   production: false,
-  client_id: "yeMjinwetGg8qn5",
+  client_id: "XL8TeRGBdsUvvM3",
   app_server: "http://127.0.0.1:7080",
   ws_server: "ws://127.0.0.1:7080"    
 };
