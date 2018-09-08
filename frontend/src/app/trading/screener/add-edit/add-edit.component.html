@@ -7,45 +7,80 @@
     <div class="section-secondary section-secondary--alt">
       <div class="articles">
         <div class="article article--teritary">
+          
           <div class="article__head">
-            <input type="text" class="field field--alt" placeholder="New Screen 1" />
+            <input type="text" class="field field--alt" placeholder="Screen Name..." [(ngModel)]="screen.Name" />
 
             <div class="article__head-aside">
               <a routerLink="/screener" class="link-alt">Cancel</a>
-
               <a href="#" class="btn btn--pink">Save</a>
-            </div><!-- /.article__head-aside -->
-          </div><!-- /.article__head -->
+            </div>
+          </div>
 
           <div class="article__body article__body--size3">
-            <div class="widget-screen">
-              <div class="widget__bar">
-                <div class="widget__col">
-                  <div class="select select--primary">
-                    <select name="field-1">
-                      <option value="option-1" selected>Strategy</option>
+            
 
-                      <option value="option-2">Option 2</option>
+            <div class="widget-screen">
+
+
+
+              <div class="widget__bar mb-20">
+
+                <div class="widget__col">
+                  <div class="select select--primary select-only-one">
+                    <select name="field-1">
+                      <option value="option-1" selected>Underlying Symbol</option>
                     </select>
                   </div>
-                </div><!-- /.widget__col -->
+                </div>
 
                 <div class="widget__col widget__col--size1">
-                  <div class="select select--primary select--primary-alt">
+                  <div class="select select--primary select--primary-alt select-only-one">
                     <select name="field-1">
                       <option value="option-1" selected>=</option>
-
-                      <option value="option-2">=</option>
                     </select>
                   </div>
-                </div><!-- /.widget__col -->
+                </div>
+
+                <div class="widget__col widget__col--size2">
+                  <div class="field-container">
+                    <input type="text" class="field" placeholder="Symbol..." [(ngModel)]="screen.Symbol" />
+                  </div>
+
+                  <div class="question">
+                    <a href="#" class="link-question">
+                      <i class="ico-question"></i>
+                    </a>
+                  </div>
+                </div>
+
+              </div>
+
+
+
+
+              <div class="widget__bar">
+
+                <div class="widget__col">
+                  <div class="select select--primary select-only-one">
+                    <select name="field-1">
+                      <option value="option-1" selected>Strategy</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="widget__col widget__col--size1">
+                  <div class="select select--primary select--primary-alt select-only-one">
+                    <select name="field-1">
+                      <option value="option-1" selected>=</option>
+                    </select>
+                  </div>
+                </div>
 
                 <div class="widget__col widget__col--size2">
                   <div class="select select--primary">
                     <select name="field-1">
                       <option value="option-1" selected>Put Credit Spread</option>
-
-                      <option value="option-2">Value 2</option>
                     </select>
                   </div>
 
@@ -53,45 +88,60 @@
                     <a href="#" class="link-question">
                       <i class="ico-question"></i>
                     </a>
-                  </div><!-- /.question -->
-                </div><!-- /.widget__col -->
-              </div><!-- /.widget__bar -->
-
-              <h5>And</h5>
-
-              <div class="widget__bar">
-                <div class="widget__col">
-                  <div class="select select--primary">
-                    <select name="field-1">
-                      <option value="option-1" selected>Underlying Stock</option>
-
-                      <option value="option-2">Option 2</option>
-                    </select>
                   </div>
-                </div><!-- /.widget__col -->
+                </div>
 
-                <div class="widget__col widget__col--size1">
-                  <div class="select select--primary select--primary-alt">
-                    <select name="field-1">
-                      <option value="option-1" selected>=</option>
+              </div>
 
-                      <option value="option-2">=</option>
-                    </select>
+
+              <div *ngFor="let row of screen.Items;">
+
+                <h5 class="and">And</h5>
+
+
+                <div class="widget__bar">
+
+                  <div class="widget__col">
+                    <div class="select select--primary">
+                      <select name="field-1">
+                        <option value="{{ row2.Value }}" *ngFor="let row2 of itemSetttings;">{{ row2.Name }}</option>
+                      </select>
+                    </div>
                   </div>
-                </div><!-- /.widget__col -->
 
-                <div class="widget__col widget__col--size2">
-                  <div class="field-container">
-                    <input type="text" class="field" placeholder="Search" />
-                  </div><!-- /.field-container -->
+                  <div class="widget__col widget__col--size1">
+                    <div class="select select--primary select--primary-alt">
+                      <select name="field-1">
+                        <option value="{{ row2 }}" *ngFor="let row2 of row.Settings.Operators;">{{ row2 }}</option>
+                      </select>
+                    </div>
+                  </div>
 
-                  <div class="question">
-                    <a href="#" class="link-question">
-                      <i class="ico-question"></i>
-                    </a>
-                  </div><!-- /.question -->
-                </div><!-- /.widget__col -->
-              </div><!-- /.widget__bar -->
+                  <div class="widget__col widget__col--size2">
+                    <div class="select select--primary" *ngIf="row.Settings.Type == 'select'">
+                      <select name="field-2">
+                        <option value="{{ row2 }}" *ngFor="let row2 of row.Settings.SelectValues;">{{ row2 }}</option>
+                      </select>
+                    </div>
+
+                    <div class="field-container" *ngIf="row.Settings.Type == 'input'">
+                      <input type="text" class="field" placeholder="Search" />
+                    </div>
+
+                    <div class="question">
+                      <a href="#" class="link-question">
+                        <i class="ico-question"></i>
+                      </a>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+
+
+
 
               <div class="widget__actions widget__actions--alt">
                 <a href="#" class="btn-add">
