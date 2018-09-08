@@ -1,6 +1,7 @@
 /* ------------- Here is where non-htmlburger css goes. ------------------ */
 
 .clear { content: ''; clear: both; }
+.error-text { color: #d64561; }
 
 .mt-3 { margin-top: 3px !important; }
 .mt-5 { margin-top: 5px !important; }
@@ -29,6 +30,8 @@
 .trade-builder .net-quote { display: flex; font-size: 14px; margin-top: 15px; text-align: center; }
 
 /* Screener */
+.article__head__screener { height: 54px; }
+.article__head__screener p { font-weight: 450; font-style: italic; margin-top: 8px; }
 .widget-screen .and { text-transform: uppercase; font-weight: 700; margin: 16px 0; font-size: 16px; padding: 0 10px; }
 
 /* Hide GooveHq stuff */

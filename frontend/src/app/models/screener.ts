@@ -55,7 +55,7 @@ export class Screener
     // Add in the legs.
     for (let i = 0; i < json["items"].length; i++)
     {
-      obj.Items.push(new ScreenerItem(0, 0, '', '', '', 0, new ScreenerItemSettings('', '', [], [])).fromJson(json["items"][i]));
+      obj.Items.push(new ScreenerItem(0, 0, '', '', '', 0, new ScreenerItemSettings('', '', [], [], [], 0)).fromJson(json["items"][i]));
     }
 
     return obj;
@@ -93,7 +93,7 @@ export class ScreenerItem
   // Json to Object.
   //
   fromJson(json: Object): ScreenerItem {
-    let obj = new ScreenerItem(0, 0, '', '', '', 0, new ScreenerItemSettings('', '', [], []));
+    let obj = new ScreenerItem(0, 0, '', '', '', 0, new ScreenerItemSettings('', '', [], [], [], 0));
 
     obj.Id = json["id"];
     obj.Key = json["key"];
@@ -114,15 +114,19 @@ export class ScreenerItemSettings {
   Type: string;
   Operators: string[];
   SelectValues: string[];
+  SelectValuesNumber: number[];
+  Step: number;
 
   //
   // Construct.
   //
-  constructor(name: string, type: string, operators: string[], selectValues: string[]) {
+  constructor(name: string, type: string, operators: string[], selectValuesNumber: number[], selectValues: string[], step: number) {
     this.Name = name;
     this.Type = type;
     this.Operators = operators;
     this.SelectValues = selectValues;
+    this.SelectValuesNumber = selectValuesNumber; 
+    this.Step = step
   }
 }
 

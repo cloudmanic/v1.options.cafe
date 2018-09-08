@@ -8,12 +8,15 @@
       <div class="articles">
         <div class="article article--teritary">
           
-          <div class="article__head">
-            <input type="text" class="field field--alt" placeholder="Screen Name..." [(ngModel)]="screen.Name" />
+          <div class="article__head article__head__screener">
+            <p *ngIf="runFirst">Change the filters below to find trade.</p>
+
+            <input type="text" class="field field--alt" placeholder="Screen Name..." [(ngModel)]="screen.Name" *ngIf="! runFirst" />
 
             <div class="article__head-aside">
               <a routerLink="/screener" class="link-alt">Cancel</a>
-              <a href="#" class="btn btn--pink">Save</a>
+              <a (click)="runScreen()" class="btn" *ngIf="runFirst">Run</a>
+              <a (click)="saveScreen()" class="btn btn--pink" *ngIf="! runFirst">Save</a>
             </div>
           </div>
 
@@ -22,14 +25,14 @@
 
             <div class="widget-screen">
 
-
+              <p class="error-text" *ngIf="symbolError">An underlying symbol is required.</p>
 
               <div class="widget__bar mb-20">
 
                 <div class="widget__col">
                   <div class="select select--primary select-only-one">
-                    <select name="field-1">
-                      <option value="option-1" selected>Underlying Symbol</option>
+                    <select [(ngModel)]="screen.Strategy">
+                      <option value="put-credit-spread" selected>Underlying Symbol</option>
                     </select>
                   </div>
                 </div>
@@ -43,8 +46,8 @@
                 </div>
 
                 <div class="widget__col widget__col--size2">
-                  <div class="field-container">
-                    <input type="text" class="field" placeholder="Symbol..." [(ngModel)]="screen.Symbol" />
+                  <div class="field-container" [ngClass]="{ 'form-error': symbolError}">
+                    <input type="text" class="field" placeholder="Symbol..." [ngClass]="{ 'field-error': symbolError}" [(ngModel)]="screen.Symbol" />
                   </div>
 
                   <div class="question">
@@ -103,29 +106,29 @@
 
                   <div class="widget__col">
                     <div class="select select--primary">
-                      <select name="field-1">
-                        <option value="{{ row2.Value }}" *ngFor="let row2 of itemSetttings;">{{ row2.Name }}</option>
+                      <select [(ngModel)]="row.Settings">
+                        <option [ngValue]="row2" *ngFor="let row2 of itemSetttings;">{{ row2.Name }}</option>
                       </select>
                     </div>
                   </div>
 
                   <div class="widget__col widget__col--size1">
                     <div class="select select--primary select--primary-alt">
-                      <select name="field-1">
+                      <select [(ngModel)]="row.Operator">
                         <option value="{{ row2 }}" *ngFor="let row2 of row.Settings.Operators;">{{ row2 }}</option>
                       </select>
                     </div>
                   </div>
 
                   <div class="widget__col widget__col--size2">
-                    <div class="select select--primary" *ngIf="row.Settings.Type == 'select'">
-                      <select name="field-2">
-                        <option value="{{ row2 }}" *ngFor="let row2 of row.Settings.SelectValues;">{{ row2 }}</option>
+                    <div class="select select--primary" *ngIf="row.Settings.Type == 'select-number'">
+                      <select [(ngModel)]="row.ValueNumber">
+                        <option value="{{ row2 }}" *ngFor="let row2 of row.Settings.SelectValuesNumber;">{{ row2 }}</option>
                       </select>
                     </div>
 
-                    <div class="field-container" *ngIf="row.Settings.Type == 'input'">
-                      <input type="text" class="field" placeholder="Search" />
+                    <div class="field-container" *ngIf="row.Settings.Type == 'input-number'">
+                      <input type="number" class="field" placeholder="" [(ngModel)]="row.ValueNumber" step="{{ row.Settings.Step }}" />
                     </div>
 
                     <div class="question">
@@ -144,10 +147,11 @@
 
 
               <div class="widget__actions widget__actions--alt">
-                <a href="#" class="btn-add">
+                <a (click)="addFilter()" class="btn-add">
                   <i class="ico-plus-alt"></i>
                 </a>
-              </div><!-- /.widget__actions -->
+              </div>
+
             </div><!-- /.widget-screen -->
           </div><!-- /.article__body -->
         </div><!-- /.article -->
