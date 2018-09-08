@@ -1,15 +1,15 @@
 <header class="header">
   <nav class="nav">
   	<ul>
-  		<li class="current">
+  		<li [ngClass]="{ 'current': (section == 'trading') }">
   			<a routerLink="/">Trading</a>
   		</li><!-- /.current -->
 
-  		<li>
+  		<li [ngClass]="{ 'current': (section == 'backtest') }">
   			<a routerLink="/backtest">Backtest</a>
   		</li>
 
-  		<li>
+  		<li [ngClass]="{ 'current': (section == 'reports') }">
   			<a routerLink="/reports">Reports</a>
   		</li>
   	</ul>

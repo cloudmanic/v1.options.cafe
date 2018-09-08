@@ -2,28 +2,34 @@
   
   <app-main-nav></app-main-nav>
 
-	<div class="bar mobile--hidden">
+	<div class="bar mobile--hidden" >
 		<div class="shell shell--fluid">
 			<div class="bar__inner">
 				<nav class="nav-centered">
 					<ul>
-						<li class="current">
+						<li [ngClass]="{ 'current': (subSection == 'dashboard') }">
 							<a routerLink="/">Dashboard</a>
 						</li><!-- /.current -->
 
-						<li>
+						<li [ngClass]="{ 'current': (subSection == 'screener') }">
 							<a routerLink="/screener">Screener</a>
 						</li>
 
-						<li>
+						<li [ngClass]="{ 'current': (subSection == 'trades') }">
 							<a routerLink="/trades">Trades</a>
 						</li>
 					</ul>
-				</nav><!-- /.nav-centered -->
+				</nav>
 
-				<a class="btn btn--pink" (click)="onTradeClick()">Trade</a>
-			</div><!-- /.bar__inner -->
-		</div><!-- /.shell shell-fluid -->
-	</div><!-- /.bar -->
+				<a class="btn btn--pink" (click)="onTradeClick()" *ngIf="(subSection == 'dashboard')">Trade</a>
+				
+				<a routerLink="/screener/add" class="btn btn--pink" *ngIf="(subSection == 'screener') && (action == 'list')">
+					<i class="ico-plus-alt"></i>
+					Add Screen
+				</a>
 
-</div><!-- /.header-wrapper -->
+			</div>
+		</div>
+	</div>
+
+</div>

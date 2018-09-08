@@ -4,6 +4,7 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import { ActivatedRoute } from '@angular/router';
 import { TradeService, TradeEvent, TradeDetails } from '../../providers/http/trade.service';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 
@@ -14,16 +15,32 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 
 export class SubnavComponent implements OnInit 
 {
+  routeData: any;
+  action: string = '';
+  subSection: string = 'dashboard';
+
   //
   // Construct.
   //
-  constructor(private tradeService: TradeService) { }
+  constructor(private route: ActivatedRoute, private tradeService: TradeService) { }
 
   //
   // OnInit
   //
   ngOnInit() 
   {
+    this.routeData = this.route.data.subscribe(v => {
+      this.action = v.action;
+      this.subSection = v.subSection;
+    });    
+  }
+
+  //
+  // OnDestory
+  //
+  ngOnDestroy() 
+  {
+    this.routeData.unsubscribe();
   }
 
   //

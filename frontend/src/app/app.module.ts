@@ -69,6 +69,7 @@ import { TradeMultiLegComponent } from './trade/trade-multi-leg/trade-multi-leg.
 import { DropdownSelectComponent } from './shared/dropdown-select/dropdown-select.component';
 import { SettingsComponent } from './settings/settings.component';
 import { SubNavComponent } from './settings/sub-nav/sub-nav.component';
+import { AddEditComponent as ScreenerAddEditComponent } from './trading/screener/add-edit/add-edit.component';
 
 @NgModule({
   declarations: [
@@ -119,6 +120,7 @@ import { SubNavComponent } from './settings/sub-nav/sub-nav.component';
     DropdownSelectComponent,
     SettingsComponent,
     SubNavComponent,
+    ScreenerAddEditComponent,
   ],
   
   imports: [
