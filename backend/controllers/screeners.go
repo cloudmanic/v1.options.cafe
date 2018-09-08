@@ -13,8 +13,10 @@ import (
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/cloudmanic/app.options.cafe/backend/screener"
+	"github.com/cnf/structhash"
 	"github.com/gin-gonic/gin"
 )
 
@@ -142,6 +144,51 @@ func (t *Controller) CreateScreener(c *gin.Context) {
 }
 
 //
+// Get a screeners
+//
+func (t *Controller) GetScreeners(c *gin.Context) {
+
+	// Get the user id.
+	userId := c.MustGet("userId").(uint)
+
+	// Get the screener by id.
+	screeners, err := t.DB.GetScreenersByUserId(userId)
+
+	if t.RespondError(c, err, httpNoRecordFound) {
+		return
+	}
+
+	// Return happy JSON
+	c.JSON(200, screeners)
+}
+
+//
+// Get a screener by id.
+//
+func (t *Controller) GetScreener(c *gin.Context) {
+
+	// Get the user id.
+	userId := c.MustGet("userId").(uint)
+
+	// Set as int
+	id, err := strconv.ParseInt(c.Param("id"), 10, 32)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Get the screener by id.
+	screener, err := t.DB.GetScreenerByIdAndUserId(uint(id), userId)
+
+	if t.RespondError(c, err, httpNoRecordFound) {
+		return
+	}
+
+	// Return happy JSON
+	c.JSON(200, screener)
+}
+
+//
 // Get screen results
 //
 func (t *Controller) GetScreenerResults(c *gin.Context) {
@@ -189,48 +236,49 @@ func (t *Controller) GetScreenerResults(c *gin.Context) {
 }
 
 //
-// Get a screeners
+// Get screen from filters
 //
-func (t *Controller) GetScreeners(c *gin.Context) {
+func (t *Controller) GetScreenerResultsFromFilters(c *gin.Context) {
 
-	// Get the user id.
-	userId := c.MustGet("userId").(uint)
+	// Setup Screener obj
+	screen := models.Screener{}
 
-	// Get the screener by id.
-	screeners, err := t.DB.GetScreenersByUserId(userId)
+	// Here we parse the JSON sent in, assign it to a struct, set validation errors if any.
+	if t.ValidateRequest(c, &screen) != nil {
+		return
+	}
+
+	// Take md5 of the status
+	hash, err := structhash.Hash(screen, 1)
+
+	if t.RespondError(c, err, httpNoRecordFound) {
+		services.Warning(err)
+		return
+	}
+
+	// See if we have this result in the cache.
+	cachedResult := []screener.Result{}
+
+	found, _ := cache.Get("oc-screener-result-"+hash, &cachedResult)
+
+	// Return happy JSON
+	if found {
+		c.JSON(200, cachedResult)
+		return
+	}
+
+	// Run back test
+	result, err := screener.RunPutCreditSpread(screen, t.DB)
 
 	if t.RespondError(c, err, httpNoRecordFound) {
 		return
 	}
 
-	// Return happy JSON
-	c.JSON(200, screeners)
-}
-
-//
-// Get a screener by id.
-//
-func (t *Controller) GetScreener(c *gin.Context) {
-
-	// Get the user id.
-	userId := c.MustGet("userId").(uint)
-
-	// Set as int
-	id, err := strconv.ParseInt(c.Param("id"), 10, 32)
-
-	if t.RespondError(c, err, httpGenericErrMsg) {
-		return
-	}
-
-	// Get the screener by id.
-	screener, err := t.DB.GetScreenerByIdAndUserId(uint(id), userId)
-
-	if t.RespondError(c, err, httpNoRecordFound) {
-		return
-	}
+	// Store result in cache.
+	cache.SetExpire("oc-screener-result-"+hash, (time.Minute * 5), result)
 
 	// Return happy JSON
-	c.JSON(200, screener)
+	c.JSON(200, result)
 }
 
 // ----------- Helper Function ------------- //

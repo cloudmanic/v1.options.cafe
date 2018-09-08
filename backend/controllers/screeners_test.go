@@ -9,6 +9,7 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -203,6 +204,53 @@ func TestGetScreenerResults01(t *testing.T) {
 	// r.ServeHTTP(w, req)
 
 	// fmt.Println(w.Body.String())
+
+}
+
+//
+// GetScreenerResultsFromFilters01
+//
+func TestGetScreenerResultsFromFilters01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Post data
+	screenerPost := models.Screener{
+		Name:     "One Time",
+		Strategy: "put-credit-spread",
+		Symbol:   "SPY",
+		Items: []models.ScreenerItem{
+			{Key: "min-credit", Operator: "=", ValueString: "", ValueNumber: 0.18},
+			{Key: "spread-width", Operator: "=", ValueString: "", ValueNumber: 2.0},
+			{Key: "max-days-to-expire", Operator: "=", ValueString: "", ValueNumber: 45},
+			{Key: "short-strike-percent-away", Operator: "=", ValueString: "", ValueNumber: 4},
+		},
+	}
+
+	postStr, _ := json.Marshal(screenerPost)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("POST", "/api/v1/screeners/results", bytes.NewBuffer(postStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.POST("/api/v1/screeners/results", c.GetScreenerResultsFromFilters)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	fmt.Println(w.Body.String())
 
 }
 
