@@ -42,7 +42,8 @@ export class ScreenerComponent implements OnInit
   //
   // OnDestroy
   //
-  ngOnDestroy() {
+  ngOnDestroy() 
+  {
     this.destory.next();
     this.destory.complete();
   } 

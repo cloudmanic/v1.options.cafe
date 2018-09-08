@@ -9,13 +9,14 @@
         <div class="article article--teritary">
           
           <div class="article__head article__head__screener">
-            <p *ngIf="runFirst">Change the filters below to find trade.</p>
+            <p *ngIf="runFirst && (! searching)">Change the filters below to find trade.</p>
+            <p class="searching-text" *ngIf="searching">Searching can take a few minutes...</p>
 
             <input type="text" class="field field--alt" placeholder="Screen Name..." [(ngModel)]="screen.Name" *ngIf="! runFirst" />
 
             <div class="article__head-aside">
-              <a routerLink="/screener" class="link-alt">Cancel</a>
-              <a (click)="runScreen()" class="btn" *ngIf="runFirst">Run</a>
+              <a routerLink="/screener" class="link-alt" *ngIf="! searching">Cancel</a>
+              <a (click)="runScreen()" class="btn" *ngIf="runFirst">{{ runText }}</a>
               <a (click)="saveScreen()" class="btn btn--pink" *ngIf="! runFirst">Save</a>
             </div>
           </div>
@@ -115,7 +116,7 @@
                   <div class="widget__col widget__col--size1">
                     <div class="select select--primary select--primary-alt">
                       <select [(ngModel)]="row.Operator">
-                        <option value="{{ row2 }}" *ngFor="let row2 of row.Settings.Operators;">{{ row2 }}</option>
+                        <option [ngValue]="row2" *ngFor="let row2 of row.Settings.Operators;">{{ row2 }}</option>
                       </select>
                     </div>
                   </div>
@@ -123,7 +124,7 @@
                   <div class="widget__col widget__col--size2">
                     <div class="select select--primary" *ngIf="row.Settings.Type == 'select-number'">
                       <select [(ngModel)]="row.ValueNumber">
-                        <option value="{{ row2 }}" *ngFor="let row2 of row.Settings.SelectValuesNumber;">{{ row2 }}</option>
+                        <option [ngValue]="row2" *ngFor="let row2 of row.Settings.SelectValuesNumber;">{{ row2 }}</option>
                       </select>
                     </div>
 
@@ -158,9 +159,10 @@
       </div><!-- /.articles -->
 
       <div class="widget-container">
-        <div class="widget-options widget-options--def">
+        <div class="widget-options widget-options--def" *ngIf="! searching">
           <div class="widget__body">
             <div class="table-simple table-simple--size3 js-table">
+
               <table>
                 <thead>
                   <tr>
@@ -195,292 +197,19 @@
                 </thead>
 
                 <tbody>
-                  <tr>
-                    <td>AAL</td>
+                  <tr *ngFor="let row of results;">
+                    <td>{{ row.Legs[0].OptionUnderlying }}</td>
                     
-                    <td>12/12/17</td>
+                    <td>{{ row.Legs[0].OptionExpire | date:'shortDate' }}</td>
                     
-                    <td>214 / 217</td>
+                    <td>{{ row.Legs[0].OptionStrike }} / {{ row.Legs[1].OptionStrike }}</td>
                     
-                    <td>4.10%</td>
+                    <td>{{ row.PrecentAway | number:'1.2-2' }}%</td>
                     
-                    <td>$0.19</td>
+                    <td>{{ row.Credit | currency:'USD':'symbol':'1.2-2' }}</td>
                     
-                    <td>$0.22</td>
+                    <td>{{ row.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
                     
-                    <td>
-                      <a href="#" class="btn-square">
-                        <i class="ico-triangle"></i>
-                      </a>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>
-                      <strong>AAPL</strong>
-                    </td>
-                    
-                    <td>
-                      <strong>12/12/17</strong>
-                    </td>
-                    
-                    <td>
-                      <strong>214 / 217</strong>
-                    </td>
-                    
-                    <td>
-                      <strong>4.10%</strong>
-                    </td>
-                    
-                    <td>
-                      <strong>$0.19</strong>
-                    </td>
-                    
-                    <td>
-                      <strong>$0.20</strong>
-                    </td>
-
-                    <td>
-                      <a href="#" class="btn-square">
-                        <i class="ico-triangle"></i>
-                      </a>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>ADBE</td>
-                    
-                    <td>12/12/17</td>
-                    
-                    <td>214 / 217</td>
-                    
-                    <td>4.10%</td>
-                    
-                    <td>$0.19</td>
-                    
-                    <td>$0.22</td>
-
-                    <td>
-                      <a href="#" class="btn-square">
-                        <i class="ico-triangle"></i>
-                      </a>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>ADI</td>
-                    
-                    <td>12/12/17</td>
-                    
-                    <td>214 / 217</td>
-                    
-                    <td>4.10%</td>
-                    
-                    <td>$0.19</td>
-                    
-                    <td>$0.22</td>
-
-                    <td>
-                      <a href="#" class="btn-square">
-                        <i class="ico-triangle"></i>
-                      </a>
-                    </td>
-                  </tr>
-
-
-                  <tr>
-                    <td>ADP</td>
-                    
-                    <td>12/12/17</td>
-                    
-                    <td>210 / 220</td>
-                    
-                    <td>4.10%</td>
-                    
-                    <td>$0.19</td>
-                    
-                    <td>$0.22</td>
-
-                    <td>
-                      <a href="#" class="btn-square">
-                        <i class="ico-triangle"></i>
-                      </a>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>ADSK</td>
-                    
-                    <td>12/12/17</td>
-                    
-                    <td>214 / 217</td>
-                    
-                    <td>4.10%</td>
-                    
-                    <td>$0.19</td>
-                    
-                    <td>$0.22</td>
-
-                    <td>
-                      <a href="#" class="btn-square">
-                        <i class="ico-triangle"></i>
-                      </a>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>AKAM</td>
-                    
-                    <td>12/12/17</td>
-                    
-                    <td>214 / 217</td>
-                    
-                    <td>4.10%</td>
-                    
-                    <td>$0.19</td>
-                    
-                    <td>$0.22</td>
-
-                    <td>
-                      <a href="#" class="btn-square">
-                        <i class="ico-triangle"></i>
-                      </a>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>AMAT</td>
-                    
-                    <td>12/12/17</td>
-                    
-                    <td>214 / 217</td>
-                    
-                    <td>4.10%</td>
-                    
-                    <td>$0.19</td>
-                    
-                    <td>$0.22</td>
-
-                    <td>
-                      <a href="#" class="btn-square">
-                        <i class="ico-triangle"></i>
-                      </a>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>AMGN</td>
-                    
-                    <td>12/12/17</td>
-                    
-                    <td>214 / 217</td>
-                    
-                    <td>4.10%</td>
-                    
-                    <td>$0.19</td>
-                    
-                    <td>$0.22</td>
-
-                    <td>
-                      <a href="#" class="btn-square">
-                        <i class="ico-triangle"></i>
-                      </a>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>AMZN</td>
-                    
-                    <td>12/12/17</td>
-                    
-                    <td>214 / 217</td>
-                    
-                    <td>4.10%</td>
-                    
-                    <td>$0.19</td>
-                    
-                    <td>$0.22</td>
-
-                    <td>
-                      <a href="#" class="btn-square">
-                        <i class="ico-triangle"></i>
-                      </a>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>AMZN</td>
-                    
-                    <td>12/12/17</td>
-                    
-                    <td>214 / 217</td>
-                    
-                    <td>4.10%</td>
-                    
-                    <td>$0.19</td>
-                    
-                    <td>$0.22</td>
-
-                    <td>
-                      <a href="#" class="btn-square">
-                        <i class="ico-triangle"></i>
-                      </a>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>AMZN</td>
-                    
-                    <td>12/12/17</td>
-                    
-                    <td>214 / 217</td>
-                    
-                    <td>4.10%</td>
-                    
-                    <td>$0.19</td>
-                    
-                    <td>$0.22</td>
-
-                    <td>
-                      <a href="#" class="btn-square">
-                        <i class="ico-triangle"></i>
-                      </a>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>AMZN</td>
-                    
-                    <td>12/12/17</td>
-                    
-                    <td>214 / 217</td>
-                    
-                    <td>4.10%</td>
-                    
-                    <td>$0.19</td>
-                    
-                    <td>$0.22</td>
-
-                    <td>
-                      <a href="#" class="btn-square">
-                        <i class="ico-triangle"></i>
-                      </a>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>AMZN</td>
-                    
-                    <td>12/12/17</td>
-                    
-                    <td>214 / 217</td>
-                    
-                    <td>4.10%</td>
-                    
-                    <td>$0.19</td>
-                    
-                    <td>$0.22</td>
-
                     <td>
                       <a href="#" class="btn-square">
                         <i class="ico-triangle"></i>
@@ -489,8 +218,18 @@
                   </tr>
                 </tbody>
               </table>
+
             </div><!-- /.table -->
           </div><!-- /.widget__body -->
+
+
+          <div class="widget__content-alt" *ngIf="(results.length <= 0) && (! searching)">
+            <h5>No results.</h5>
+
+            <h5>Try adjusting the screener filters.</h5>
+          </div>
+
+
         </div>
       </div><!-- /.widget-container -->
     </div><!-- /.section -->
