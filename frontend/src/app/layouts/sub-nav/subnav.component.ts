@@ -17,6 +17,7 @@ export class SubnavComponent implements OnInit
 {
   routeData: any;
   action: string = '';
+  section: string = 'trading';
   subSection: string = 'dashboard';
 
   //
@@ -30,7 +31,8 @@ export class SubnavComponent implements OnInit
   ngOnInit() 
   {
     this.routeData = this.route.data.subscribe(v => {
-      this.action = v.action;
+      this.action = v.action;      
+      this.section = v.section;
       this.subSection = v.subSection;
     });    
   }

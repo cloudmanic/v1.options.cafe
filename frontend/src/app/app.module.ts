@@ -31,6 +31,7 @@ import { TradeGroupService } from './providers/http/trade-group.service';
 import { WebsocketService } from './providers/http/websocket.service';
 
 // Layout
+import { SubnavComponent } from './layouts/sub-nav/subnav.component';
 import { SidebarComponent } from './layouts/sidebar/sidebar.component';
 import { MainNavComponent } from './layouts/main-nav/main-nav.component';
 import { LayoutCoreComponent } from './layouts/core/core.component';
@@ -53,7 +54,6 @@ import { ReportsHomeComponent } from './reports/home/home.component';
 
 // Trading
 import { IvrComponent } from './trading/dashboard/ivr/ivr.component';
-import { SubnavComponent } from './trading/sub-nav/subnav.component';
 import { TradesComponent } from './trading/trades/home.component';
 import { WatchlistComponent } from './trading/dashboard/watchlist/watchlist.component';
 import { ScreenerComponent } from './trading/screener/home.component';

@@ -17,6 +17,7 @@ import { Component, OnInit } from '@angular/core';
 
 export class MainNavComponent implements OnInit 
 {
+  routeData: any;  
   section: string = 'trading';
 
   //

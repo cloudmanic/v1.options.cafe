@@ -2,8 +2,10 @@
   
   <app-main-nav></app-main-nav>
 
-	<div class="bar mobile--hidden" >
-		<div class="shell shell--fluid">
+	<div class="bar mobile--hidden">
+
+		<div class="shell shell--fluid" *ngIf="section == 'trading'">
+			
 			<div class="bar__inner">
 				<nav class="nav-centered">
 					<ul>
@@ -22,6 +24,8 @@
 				</nav>
 
 				<a class="btn btn--pink" (click)="onTradeClick()" *ngIf="(subSection == 'dashboard')">Trade</a>
+
+				<!-- <a routerLink="/screener" class="btn btn--border-blue" *ngIf="(subSection == 'screener') && (action == 'add-edit')">Cancel</a> -->
 				
 				<a routerLink="/screener/add" class="btn btn--pink" *ngIf="(subSection == 'screener') && (action == 'list')">
 					<i class="ico-plus-alt"></i>
@@ -30,6 +34,7 @@
 
 			</div>
 		</div>
+	
 	</div>
 
 </div>
