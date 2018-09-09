@@ -76,9 +76,9 @@ export class AddEditComponent implements OnInit
       // Screen
       this.screen.Items = [];
       this.screen.Items.push(new ScreenerItem(0, 0, 'spread-width', '=', '', 2.0, this.itemSetttings[0]));
-      this.screen.Items.push(new ScreenerItem(0, 0, 'min-credit', '=', '', 0.18, this.itemSetttings[1]));
-      this.screen.Items.push(new ScreenerItem(0, 0, 'max-days-to-expire', '=', '', 45, this.itemSetttings[2]));
-      this.screen.Items.push(new ScreenerItem(0, 0, 'short-strike-percent-away', '>', '', 4.0, this.itemSetttings[3]));
+      // this.screen.Items.push(new ScreenerItem(0, 0, 'min-credit', '=', '', 0.18, this.itemSetttings[1]));
+      // this.screen.Items.push(new ScreenerItem(0, 0, 'max-days-to-expire', '=', '', 45, this.itemSetttings[2]));
+      // this.screen.Items.push(new ScreenerItem(0, 0, 'short-strike-percent-away', '>', '', 4.0, this.itemSetttings[3]));
 
       // Run screen on load
       this.runScreen();      
@@ -87,8 +87,6 @@ export class AddEditComponent implements OnInit
       // Make AJAX call to get this screener by ID.
       this.screenerService.getById(this.editId).subscribe((res) => {
         this.screen = res;
-
-        console.log(this.screen);
 
         for(let i = 0; i < this.screen.Items.length; i++)
         {
@@ -211,10 +209,21 @@ export class AddEditComponent implements OnInit
     this.runFirst = true;
 
     // Send API call to server to get the results for this screen.
-    this.screenerService.submitScreen(this.screen).subscribe((res) => {
-      this.stateService.SetScreens(null);
-      this.router.navigate(['/screener'], { queryParams: { new: res.Id } });
-    });
+    if(this.editId) 
+    {
+      // Update screen.
+      this.screenerService.submitUpdate(this.screen).subscribe((res) => {
+        this.stateService.SetScreens(null);
+        this.router.navigate(['/screener'], { queryParams: { update: this.screen.Id, title: this.screen.Name } });
+      });
+    } else 
+    {
+      // Create new screen.
+      this.screenerService.submitScreen(this.screen).subscribe((res) => {
+        this.stateService.SetScreens(null);
+        this.router.navigate(['/screener'], { queryParams: { new: res.Id } });
+      });
+    }
 
     return true;
   }

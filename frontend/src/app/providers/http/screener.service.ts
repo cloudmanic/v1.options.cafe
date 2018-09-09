@@ -80,6 +80,31 @@ export class ScreenerService
   }
 
   //
+  // Update screener.
+  //
+  submitUpdate(screen: Screener): Observable<boolean> {
+    let body = {
+      id: screen.Id,
+      name: screen.Name,
+      strategy: screen.Strategy,
+      symbol: screen.Symbol,
+      items: []
+    }
+
+    for (let i = 0; i < screen.Items.length; i++) 
+    {
+      body.items.push({
+        key: screen.Items[i].Key,
+        operator: screen.Items[i].Operator,
+        value_number: screen.Items[i].ValueNumber,
+        value_string: screen.Items[i].ValueString
+      });
+    }
+
+    return this.http.put<boolean>(environment.app_server + '/api/v1/screeners/' + screen.Id, body).map((data) => { return true });
+  } 
+
+  //
   // Submit screen not saved in system.
   //
   submitScreenForResults(screen: Screener): Observable<ScreenerResult[]> {
