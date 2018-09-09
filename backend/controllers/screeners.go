@@ -115,6 +115,9 @@ func (t *Controller) UpdateScreener(c *gin.Context) {
 	// Update Screen
 	t.DB.New().Save(&o)
 
+	// Clear any cache
+	cache.Delete("oc-screener-result-" + strconv.Itoa(int(orgObj.Id)))
+
 	// Return success.
 	c.JSON(http.StatusNoContent, nil)
 }

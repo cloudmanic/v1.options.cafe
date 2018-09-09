@@ -50,6 +50,21 @@ func init() {
 }
 
 //
+// Delete a stored key. We do not
+// return error as if Redis is not up we should
+// have a massive fail.
+//
+func Delete(key string) {
+
+	// Delete in redis
+	err := redisConnection.Del(key).Err()
+
+	if err != nil {
+		services.Fatal(err)
+	}
+}
+
+//
 // Store a key value into memory. We do not
 // return error as if Redis is not up we should
 // have a massive fail.
