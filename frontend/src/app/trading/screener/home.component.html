@@ -40,7 +40,7 @@
 
 
       <div class="article__body article__body--size2">
-        <div class="features features--small" *ngIf="row.Results.length > 0">
+        <div class="features features--small" *ngIf="row.Results && (row.Results.length > 0)">
           
           <div class="feature feature--small" *ngFor="let row2 of row.Results;">
             <div class="feature__inner">
