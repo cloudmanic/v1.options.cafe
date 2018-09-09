@@ -4,10 +4,12 @@
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import { Observable } from 'rxjs/Rx';
 import { Injectable } from '@angular/core';
 import { Rank } from '../../models/rank';
 import { Broker } from '../../models/broker';
 import { Symbol } from '../../models/symbol';
+import { Screener } from '../../models/screener';
 import { Watchlist } from '../../models/watchlist';
 import { HistoricalQuote } from '../../models/historical-quote';
 import { TradeGroup, TradeGroupsCont } from '../../models/trade-group';
@@ -35,9 +37,26 @@ export class StateService
   private tradeGroupTradeSelect: string = "All";
   private activeTradeGroupList: TradeGroup[];
 
+  // Screener
+  private screenerScreens: Screener[];
+
   // Emitters - Pushers
   public SiteSuccess = new EventEmitter<string>();
   public BrokerChange = new EventEmitter<number>();
+
+  //
+  // Set Screens
+  //
+  SetScreens(data: Screener[]) {
+    this.screenerScreens = data;
+  }
+
+  //
+  // Get Screens
+  //
+  GetScreens() {
+    return this.screenerScreens;
+  }
 
   //
   // Set a quote
@@ -228,7 +247,7 @@ export class StateService
   //
   GetActiveBrokerAccount() : BrokerAccount {
     return this.activeBrokerAccount
-  }  
+  } 
 }
 
 /* End File */

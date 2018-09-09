@@ -32,11 +32,14 @@ export class ScreenerComponent implements OnInit
   //
   ngOnInit() 
   {
+    // Get Data from cache
+    this.screeners = this.stateService.GetScreens();  
+
     // Load page data.
-    this.getData();
+    this.getScreeners();
 
     // Reload the data every 1min after a 1 min delay to start
-    Observable.timer((1000 * 60), (1000 * 60)).takeUntil(this.destory).subscribe(x => { this.getData(); });    
+    Observable.timer((1000 * 60), (1000 * 60)).takeUntil(this.destory).subscribe(x => { this.getScreeners(); });    
   }
 
   //
@@ -47,14 +50,6 @@ export class ScreenerComponent implements OnInit
     this.destory.next();
     this.destory.complete();
   } 
-
-  //
-  // Get data
-  //
-  getData() 
-  {
-    this.getScreeners();
-  }
 
   //
   // Get screeners.
@@ -74,7 +69,9 @@ export class ScreenerComponent implements OnInit
           this.screeners[i].Results = res;
         });
       }
-      
+
+      // Store in site cache.
+      this.stateService.SetScreens(this.screeners);
     });
   }
 
