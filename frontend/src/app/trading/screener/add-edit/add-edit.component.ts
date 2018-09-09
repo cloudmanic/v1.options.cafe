@@ -6,7 +6,7 @@
 
 
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { StateService } from '../../../providers/state/state.service';
 import { ScreenerService } from '../../../providers/http/screener.service';
 import { Screener, ScreenerItem, ScreenerItemSettings } from '../../../models/screener';
@@ -20,11 +20,13 @@ import { ScreenerResult } from '../../../models/screener-result';
 
 export class AddEditComponent implements OnInit 
 {
+  editId: number;
   runText: string = "Run";
   searching: boolean = false;
   runFirst: boolean = true;
   nameError: boolean = false;
   symbolError: boolean = false;
+  showDeleteScreener: boolean = false;
   results: ScreenerResult[] = [];
   screen: Screener = new Screener();
   itemSetttings: ScreenerItemSettings[] = [];
@@ -33,17 +35,15 @@ export class AddEditComponent implements OnInit
   //
   // Construct.
   //
-  constructor(private stateService: StateService, private router: Router, private screenerService: ScreenerService) { }
+  constructor(private stateService: StateService, private router: Router, private route: ActivatedRoute, private screenerService: ScreenerService) { }
 
   //
   // Ng Init
   //
   ngOnInit() 
   {
-    // Default Values
-    this.screen.Name = '';
-    this.screen.Symbol = 'spy';
-    this.screen.Strategy = 'put-credit-spread';
+    // Is this an edit action?
+    this.editId = this.route.snapshot.params['id'];
 
     // Setup widths
     let widths: number[] = [];
@@ -66,16 +66,45 @@ export class AddEditComponent implements OnInit
     this.itemSetttings.push(new ScreenerItemSettings('Max Days To Expire', 'max-days-to-expire', 'select-number', ['='], days, [], 1.0));
     this.itemSetttings.push(new ScreenerItemSettings('Short Strike % Away', 'short-strike-percent-away', 'input-number', ['>'], [], [], 0.1));
 
+    // Default Values
+    if(! this.editId) 
+    {
+      this.screen.Name = '';
+      this.screen.Symbol = 'spy';
+      this.screen.Strategy = 'put-credit-spread';
 
-    // Screen
-    this.screen.Items = [];
-    this.screen.Items.push(new ScreenerItem(0, 0, 'spread-width', '=', '', 2.0, this.itemSetttings[0]));
-    this.screen.Items.push(new ScreenerItem(0, 0, 'min-credit', '=', '', 0.18, this.itemSetttings[1]));
-    this.screen.Items.push(new ScreenerItem(0, 0, 'max-days-to-expire', '=', '', 45, this.itemSetttings[2]));
-    this.screen.Items.push(new ScreenerItem(0, 0, 'short-strike-percent-away', '>', '', 4.0, this.itemSetttings[3]));
+      // Screen
+      this.screen.Items = [];
+      this.screen.Items.push(new ScreenerItem(0, 0, 'spread-width', '=', '', 2.0, this.itemSetttings[0]));
+      this.screen.Items.push(new ScreenerItem(0, 0, 'min-credit', '=', '', 0.18, this.itemSetttings[1]));
+      this.screen.Items.push(new ScreenerItem(0, 0, 'max-days-to-expire', '=', '', 45, this.itemSetttings[2]));
+      this.screen.Items.push(new ScreenerItem(0, 0, 'short-strike-percent-away', '>', '', 4.0, this.itemSetttings[3]));
 
-    // Run screen on load
-    this.runScreen();
+      // Run screen on load
+      this.runScreen();      
+    } else 
+    {
+      // Make AJAX call to get this screener by ID.
+      this.screenerService.getById(this.editId).subscribe((res) => {
+        this.screen = res;
+
+        console.log(this.screen);
+
+        for(let i = 0; i < this.screen.Items.length; i++)
+        {
+          for (let r = 0; r < this.itemSetttings.length; r++)
+          {
+            if (this.screen.Items[i].Key == this.itemSetttings[r].Key)
+            {
+              this.screen.Items[i].Settings = this.itemSetttings[r];
+            }
+          } 
+        }
+
+        this.runScreen();
+      });
+    }
+
   }
 
   //
@@ -188,6 +217,27 @@ export class AddEditComponent implements OnInit
     });
 
     return true;
+  }
+
+  //
+  // Delete Screen
+  //
+  deleteScreen()
+  {
+    this.showDeleteScreener = true;
+  }
+
+  //
+  // On Delete Screener
+  //
+  onDeleteScreen()
+  {
+    // Send API call to server to delete this screen.
+    this.screenerService.deleteById(this.screen.Id).subscribe((res) => {
+      this.showDeleteScreener = false;
+      this.stateService.SetScreens(null);
+      this.router.navigate(['/screener'], { queryParams: { deleted: this.screen.Name } });
+    });
   }
 }
 

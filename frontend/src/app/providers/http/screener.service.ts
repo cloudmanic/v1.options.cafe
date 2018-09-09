@@ -32,6 +32,21 @@ export class ScreenerService
   } 
 
   //
+  // Get screener by id.
+  //
+  getById(id: number): Observable<Screener> {
+    return this.http.get<Screener>(environment.app_server + '/api/v1/screeners/' + id)
+      .map((data) => { return new Screener().fromJson(data); });
+  } 
+
+  //
+  // Delete screener by id.
+  //
+  deleteById(id: number): Observable<boolean> {
+    return this.http.delete<boolean>(environment.app_server + '/api/v1/screeners/' + id).map((data) => { return true });    
+  }
+
+  //
   // Get screener results.
   //
   getResults(id: number): Observable<ScreenerResult[]> {

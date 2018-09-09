@@ -49,6 +49,7 @@ const appRoutes: Routes = [
     { path: 'trades', component: TradesComponent, canActivate: [AuthGuard], data: { section: 'trading', subSection: 'trades', action: '' } },    
     { path: 'screener', component: ScreenerComponent, canActivate: [AuthGuard], data: { section: 'trading', subSection: 'screener', action: 'list' } },
     { path: 'screener/add', component: ScreenerAddEditComponent, canActivate: [AuthGuard], data: { section: 'trading', subSection: 'screener', action: 'add-edit' } },
+    { path: 'screener/edit/:id', component: ScreenerAddEditComponent, canActivate: [AuthGuard], data: { section: 'trading', subSection: 'screener', action: 'add-edit' } },
 
     // Reports
     { path: 'reports', component: ReportsHomeComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'dashboard', action: '' } },

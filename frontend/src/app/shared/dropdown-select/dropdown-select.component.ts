@@ -34,7 +34,8 @@ export class DropdownSelectComponent implements OnInit
   onDocClick(event) {
 
     // Remove active buttons
-    if (!this._eref.nativeElement.contains(event.target)) {
+    if (!this._eref.nativeElement.contains(event.target)) 
+    {
       this.active = false;
     }
   }

@@ -30,10 +30,12 @@
 .trade-builder .net-quote { display: flex; font-size: 14px; margin-top: 15px; text-align: center; }
 
 /* Screener */
+.article__head .dropdown { min-width: unset !important; }
 .article__head__screener { height: 54px; }
 .article__head__screener p { font-weight: 450; font-style: italic; margin-top: 8px; }
 .article__head__screener .searching-text { font-weight: 350; }
 .widget-screen .and { text-transform: uppercase; font-weight: 700; margin: 16px 0; font-size: 16px; padding: 0 10px; }
+.widget__actions .delete-btn { display: inline-block; float: right; margin-top: 20px; color: #ce4260; font-weight: 500; } 
 
 /* Hide GooveHq stuff */
 iframe.grv-widget-tag { display: none !important; }

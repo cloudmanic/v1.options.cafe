@@ -20,7 +20,7 @@ import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../../p
 export class ScreenerComponent implements OnInit 
 {
   screeners: Screener[] = [];
-  destory: Subject<boolean> = new Subject<boolean>(); 
+  destory: Subject<boolean> = new Subject<boolean>();
 
   //
   // Constructor....
@@ -32,6 +32,7 @@ export class ScreenerComponent implements OnInit
   //
   ngOnInit() 
   {
+    // Default start timer
     let startTimer: number = (1000 * 10);
 
     // Get Data from cache
@@ -55,7 +56,7 @@ export class ScreenerComponent implements OnInit
   {
     this.destory.next();
     this.destory.complete();
-  } 
+  }  
 
   //
   // Get screeners.

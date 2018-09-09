@@ -2,6 +2,36 @@
 
 <app-trade></app-trade>
 
+<!-- ********************* Delete Screener *********************  -->
+<app-dialog [(visible)]="showDeleteScreener">
+
+  <div class="popup">
+    <div class="shell shell--xxsmall">
+      <div class="form form--menage">
+
+        <form (ngSubmit)="onDeleteScreen()">
+          <section class="form__section">
+            <div class="form__head">
+              <h6 class="form__title">Are you sure you want to delete this screen?</h6>
+            </div> 
+
+            <div class="form__actions">
+              <div class="form__actions__inner">
+                <a (click)="showDeleteScreener = !showDeleteScreener" class="link-action link-action--small popup--close">Cancel</a>  
+
+                <input type="submit" value="Delete" class="btn btn--red form__btn" />
+              </div>
+            </div>
+          </section>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</app-dialog>
+<!-- ******************************************  -->
+
 <div class="content__inner">
   <div class="shell shell--size6">
     <div class="section-secondary section-secondary--alt">
@@ -15,7 +45,7 @@
             <input type="text" class="field field--alt" placeholder="Screen Name..." [(ngModel)]="screen.Name" *ngIf="! runFirst" [ngClass]="{ 'field-error': nameError}" />
 
             <div class="article__head-aside">
-              <a routerLink="/screener" class="link-alt" *ngIf="! searching">Cancel</a>
+              <a routerLink="/screener" class="link-alt" *ngIf="(! searching)">Cancel</a>
               <a (click)="runScreen()" class="btn" *ngIf="runFirst">{{ runText }}</a>
               <a (click)="saveScreen()" class="btn btn--pink" *ngIf="! runFirst">Save</a>
             </div>
@@ -152,6 +182,8 @@
                 <a (click)="addFilter()" class="btn-add">
                   <i class="ico-plus-alt"></i>
                 </a>
+
+                <a (click)="deleteScreen()" class="link-alt delete-btn" *ngIf="(! searching) && editId">Delete Screen</a>
               </div>
 
             </div><!-- /.widget-screen -->
