@@ -97,14 +97,14 @@ func RunPutCreditSpread(screen models.Screener, db models.Datastore) ([]Result, 
 			midPoint := (credit + buyCost) / 2
 
 			// Add in Symbol Object - Buy leg
-			symbBuyLeg, err := db.CreateNewSymbol(buyLeg.Symbol, buyLeg.Description, buyLeg.OptionType)
+			symbBuyLeg, err := db.CreateNewSymbol(buyLeg.Symbol, buyLeg.Description, "Option")
 
 			if err != nil {
 				continue
 			}
 
 			// Add in Symbol Object - Sell leg
-			symbSellLeg, err := db.CreateNewSymbol(row2.Symbol, row2.Description, row2.OptionType)
+			symbSellLeg, err := db.CreateNewSymbol(row2.Symbol, row2.Description, "Option")
 
 			if err != nil {
 				continue

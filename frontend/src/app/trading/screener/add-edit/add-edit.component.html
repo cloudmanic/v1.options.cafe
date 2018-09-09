@@ -8,11 +8,11 @@
       <div class="articles">
         <div class="article article--teritary">
           
-          <div class="article__head article__head__screener">
+          <div class="article__head article__head__screener" [ngClass]="{ 'form-error': nameError}">
             <p *ngIf="runFirst && (! searching)">Change the filters below to find trade.</p>
             <p class="searching-text" *ngIf="searching">Searching can take a few minutes...</p>
 
-            <input type="text" class="field field--alt" placeholder="Screen Name..." [(ngModel)]="screen.Name" *ngIf="! runFirst" />
+            <input type="text" class="field field--alt" placeholder="Screen Name..." [(ngModel)]="screen.Name" *ngIf="! runFirst" [ngClass]="{ 'field-error': nameError}" />
 
             <div class="article__head-aside">
               <a routerLink="/screener" class="link-alt" *ngIf="! searching">Cancel</a>
@@ -26,6 +26,7 @@
 
             <div class="widget-screen">
 
+              <p class="error-text" *ngIf="nameError">A screener name is required.</p>
               <p class="error-text" *ngIf="symbolError">An underlying symbol is required.</p>
 
               <div class="widget__bar mb-20">
@@ -48,7 +49,7 @@
 
                 <div class="widget__col widget__col--size2">
                   <div class="field-container" [ngClass]="{ 'form-error': symbolError}">
-                    <input type="text" class="field" placeholder="Symbol..." [ngClass]="{ 'field-error': symbolError}" [(ngModel)]="screen.Symbol" />
+                    <input type="text" class="field" placeholder="Symbol..." [ngClass]="{ 'field-error': symbolError}" [(ngModel)]="screen.Symbol" (keyup)="filterChange()" />
                   </div>
 
                   <div class="question">
@@ -107,7 +108,7 @@
 
                   <div class="widget__col">
                     <div class="select select--primary">
-                      <select [(ngModel)]="row.Settings">
+                      <select [(ngModel)]="row.Settings" (change)="filterChange()">
                         <option [ngValue]="row2" *ngFor="let row2 of itemSetttings;">{{ row2.Name }}</option>
                       </select>
                     </div>
@@ -115,7 +116,7 @@
 
                   <div class="widget__col widget__col--size1">
                     <div class="select select--primary select--primary-alt">
-                      <select [(ngModel)]="row.Operator">
+                      <select [(ngModel)]="row.Operator" (change)="filterChange()">
                         <option [ngValue]="row2" *ngFor="let row2 of row.Settings.Operators;">{{ row2 }}</option>
                       </select>
                     </div>
@@ -123,13 +124,13 @@
 
                   <div class="widget__col widget__col--size2">
                     <div class="select select--primary" *ngIf="row.Settings.Type == 'select-number'">
-                      <select [(ngModel)]="row.ValueNumber">
+                      <select [(ngModel)]="row.ValueNumber" (change)="filterChange()">
                         <option [ngValue]="row2" *ngFor="let row2 of row.Settings.SelectValuesNumber;">{{ row2 }}</option>
                       </select>
                     </div>
 
                     <div class="field-container" *ngIf="row.Settings.Type == 'input-number'">
-                      <input type="number" class="field" placeholder="" [(ngModel)]="row.ValueNumber" step="{{ row.Settings.Step }}" />
+                      <input type="number" class="field" placeholder="" [(ngModel)]="row.ValueNumber" (keyup)="filterChange()" step="{{ row.Settings.Step }}" />
                     </div>
 
                     <div class="question">

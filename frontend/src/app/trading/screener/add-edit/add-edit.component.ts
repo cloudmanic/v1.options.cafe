@@ -6,6 +6,8 @@
 
 
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { StateService } from '../../../providers/state/state.service';
 import { ScreenerService } from '../../../providers/http/screener.service';
 import { Screener, ScreenerItem, ScreenerItemSettings } from '../../../models/screener';
 import { ScreenerResult } from '../../../models/screener-result';
@@ -21,6 +23,7 @@ export class AddEditComponent implements OnInit
   runText: string = "Run";
   searching: boolean = false;
   runFirst: boolean = true;
+  nameError: boolean = false;
   symbolError: boolean = false;
   results: ScreenerResult[] = [];
   screen: Screener = new Screener();
@@ -30,7 +33,7 @@ export class AddEditComponent implements OnInit
   //
   // Construct.
   //
-  constructor(private screenerService: ScreenerService) { }
+  constructor(private stateService: StateService, private router: Router, private screenerService: ScreenerService) { }
 
   //
   // Ng Init
@@ -84,6 +87,15 @@ export class AddEditComponent implements OnInit
   }
 
   //
+  // Filter change.
+  //
+  filterChange()
+  {
+    this.runFirst = true;
+    this.nameError = false;
+  }
+
+  //
   // Validate screen
   //
   validateScreen() : boolean
@@ -126,6 +138,7 @@ export class AddEditComponent implements OnInit
 
     // Set the state before searching.
     this.results = [];
+    this.nameError = false;
     this.searching = true;
     this.runText = "Searching...";
 
@@ -156,7 +169,23 @@ export class AddEditComponent implements OnInit
       return false;
     }
 
+    // Must have a name for the screener
+    if(this.screen.Name.length <= 0)
+    {
+      this.nameError = true;    
+      return false;
+    } else
+    {
+      this.nameError = false;
+    }
+
     this.runFirst = true;
+
+    // Send API call to server to get the results for this screen.
+    this.screenerService.submitScreen(this.screen).subscribe((res) => {
+      this.stateService.SetScreens(null);
+      this.router.navigate(['/screener'], { queryParams: { new: res.Id } });
+    });
 
     return true;
   }

@@ -32,6 +32,8 @@ var screenerItemKeys = []string{
 // Supported screener operator
 var screenerItemOperators = []string{
 	"=",
+	">",
+	"<",
 }
 
 //
