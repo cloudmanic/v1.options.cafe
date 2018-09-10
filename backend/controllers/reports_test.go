@@ -73,6 +73,47 @@ func LoadAndGetTestData() {
 }
 
 //
+// TestReportsGetTradeGroupYears01
+//
+func TestReportsGetTradeGroupYears01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Load test data
+	LoadAndGetTestData()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Make a mock request.
+	req, _ := http.NewRequest("GET", "/api/v1/reports/3/tradegroup/years", nil)
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.GET("/api/v1/reports/:brokerAccount/tradegroup/years", c.ReportsGetTradeGroupYears)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Grab result and convert to strut
+	var result []int
+	err := json.Unmarshal([]byte(w.Body.String()), &result)
+
+	// Parse json that returned.
+	st.Expect(t, err, nil)
+	st.Expect(t, w.Code, 200)
+	st.Expect(t, w.Body.String(), `[2017,2016]`)
+}
+
+//
 // TestReportsGetAccountYearlySummary01
 //
 func TestReportsGetAccountYearlySummary01(t *testing.T) {

@@ -28,6 +28,32 @@ type YearlySummary struct {
 }
 
 //
+// Return a list of years we have trade groups for.
+//
+func GetYearsWithTradeGroups(db models.Datastore, brokerAccount models.BrokerAccount) []int {
+
+	var years []int
+
+	type Result struct {
+		Year int
+	}
+
+	var results []Result
+
+	// Set select string
+	queryStr := "SELECT YEAR(closed_date) AS year FROM trade_groups WHERE broker_account_id = ? GROUP BY year ORDER BY year desc"
+
+	// Run query.
+	db.New().Raw(queryStr, brokerAccount.Id).Scan(&results)
+
+	for _, row := range results {
+		years = append(years, row.Year)
+	}
+
+	return years
+}
+
+//
 // Get a yearly summary based on account, year
 //
 func GetYearlySummaryByAccountYear(db models.Datastore, brokerAccount models.BrokerAccount, year int) YearlySummary {

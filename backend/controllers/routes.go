@@ -71,6 +71,7 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		apiV1.POST("/screeners/results", t.GetScreenerResultsFromFilters)
 
 		// Reports
+		apiV1.GET("/reports/:brokerAccount/tradegroup/years", t.ReportsGetTradeGroupYears)
 		apiV1.GET("/reports/:brokerAccount/summary/yearly/:year", t.ReportsGetAccountYearlySummary)
 
 		// Status

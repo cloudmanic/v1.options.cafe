@@ -14,6 +14,31 @@ import (
 )
 
 //
+// Return a list of years that have trade groups
+//
+func (t *Controller) ReportsGetTradeGroupYears(c *gin.Context) {
+
+	// Make sure the UserId is correct.
+	userId := c.MustGet("userId").(uint)
+
+	// Set as int - brokerAccountId
+	brokerAccountId, err := strconv.ParseInt(c.Param("brokerAccount"), 10, 32)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Get broker account
+	brokerAccount, err := t.DB.GetBrokerAccountByIdUserId(uint(brokerAccountId), userId)
+
+	// Get list of years
+	years := reports.GetYearsWithTradeGroups(t.DB, brokerAccount)
+
+	// Return happy JSON
+	c.JSON(200, years)
+}
+
+//
 // Get a yearly summary based on account, year
 //
 func (t *Controller) ReportsGetAccountYearlySummary(c *gin.Context) {

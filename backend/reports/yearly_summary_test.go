@@ -118,4 +118,24 @@ func TestGetYearlySummaryByAccountYear01(t *testing.T) {
 	st.Expect(t, summary2017.AvgPercentGain, 3.3)
 }
 
+//
+// Test getting a list of trade group years.
+//
+func TestGetYearsWithTradeGroups01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+	defer db.Close()
+
+	// Get test data
+	brokerAccount := LoadAndGetTestData()
+
+	// Run function we are testing. - 2016
+	years := GetYearsWithTradeGroups(db, brokerAccount)
+
+	// Verify the data was return as expected
+	st.Expect(t, years[0], 2017)
+	st.Expect(t, years[1], 2016)
+}
+
 /* End File */
