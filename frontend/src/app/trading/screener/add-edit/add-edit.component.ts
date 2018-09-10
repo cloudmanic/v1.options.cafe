@@ -26,6 +26,7 @@ export class AddEditComponent implements OnInit
   runFirst: boolean = true;
   nameError: boolean = false;
   symbolError: boolean = false;
+  newLoad: boolean = true;
   showDeleteScreener: boolean = false;
   results: ScreenerResult[] = [];
   screen: Screener = new Screener();
@@ -64,7 +65,7 @@ export class AddEditComponent implements OnInit
     this.itemSetttings.push(new ScreenerItemSettings('Spread Width', 'spread-width', 'select-number', ['=', '>'], widths, [], 0));
     this.itemSetttings.push(new ScreenerItemSettings('Open Credit', 'min-credit', 'input-number', ['=', '>'], [], [], 0.1));
     this.itemSetttings.push(new ScreenerItemSettings('Max Days To Expire', 'max-days-to-expire', 'select-number', ['='], days, [], 1.0));
-    this.itemSetttings.push(new ScreenerItemSettings('Short Strike % Away', 'short-strike-percent-away', 'input-number', ['>'], [], [], 0.1));
+    this.itemSetttings.push(new ScreenerItemSettings('Short Strike % Away', 'short-strike-percent-away', 'input-number', ['=', '>'], [], [], 0.1));
 
     // Default Values
     if(! this.editId) 
@@ -81,7 +82,7 @@ export class AddEditComponent implements OnInit
       // this.screen.Items.push(new ScreenerItem(0, 0, 'short-strike-percent-away', '>', '', 4.0, this.itemSetttings[3]));
 
       // Run screen on load
-      this.runScreen();      
+      //this.runScreen();      
     } else 
     {
       // Make AJAX call to get this screener by ID.
@@ -165,6 +166,7 @@ export class AddEditComponent implements OnInit
 
     // Set the state before searching.
     this.results = [];
+    this.newLoad = false;
     this.nameError = false;
     this.searching = true;
     this.runText = "Searching...";

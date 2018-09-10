@@ -32,6 +32,7 @@
 </app-dialog>
 <!-- ******************************************  -->
 
+
 <div class="content__inner">
   <div class="shell shell--size6">
     <div class="section-secondary section-secondary--alt">
@@ -186,13 +187,130 @@
                 <a (click)="deleteScreen()" class="link-alt delete-btn" *ngIf="(! searching) && editId">Delete Screen</a>
               </div>
 
+
+
+              <div class="widget__bar-alt" *ngIf="newLoad">
+                <h6 class="title-arrow title-arrow--double">Get started by making selections in the drop down menus</h6>
+              </div>
+
+
+
             </div><!-- /.widget-screen -->
           </div><!-- /.article__body -->
         </div><!-- /.article -->
       </div><!-- /.articles -->
 
+
+
+
       <div class="widget-container">
-        <div class="widget-options widget-options--def" *ngIf="! searching">
+
+
+
+        <div class="widget-options widget-options--alt screen-preview-first-run" *ngIf="newLoad">
+          <h4>Find your next trade with our screener!</h4>
+
+          <div class="widget__body">
+            <div class="table-simple table-simple--size2 js-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="darker">
+                      <ins>Symbol</ins>
+                    </th>
+
+                    <th>
+                      <ins>Expire</ins>
+                    </th>
+
+                    <th>
+                      <ins>Spread</ins>
+                    </th>
+
+                    <th>
+                      <ins>% Away</ins>
+                    </th>
+
+                    <th>
+                      <ins>Credit</ins>
+                    </th>
+
+                    <th>
+                      <ins>Midpoint</ins>
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr>
+                    <td>AAPL</td>
+                    
+                    <td>11/3/17</td>
+                    
+                    <td>198 / 202</td>
+                    
+                    <td>6.22%</td>
+                    
+                    <td>$0.22</td>
+                    
+                    <td>$0.23</td>
+                  </tr>
+
+                  <tr class="active">
+                    <td>AAPL</td>
+                    
+                    <td>10/05/17</td>
+                    
+                    <td>190 / 240</td>
+                    
+                    <td>4.10%</td>
+                    
+                    <td>$0.19</td>
+                    
+                    <td>$0.20</td>
+                  </tr>
+
+                  <tr>
+                    <td>AAPL</td>
+                    
+                    <td>9/24/17</td>
+                    
+                    <td>211 / 217</td>
+                    
+                    <td>2.98%</td>
+                    
+                    <td>$0.11</td>
+                    
+                    <td>$0.18</td>
+                  </tr>
+
+                  <tr>
+                    <td>AAPL</td>
+                    
+                    <td>9/22/17</td>
+                    
+                    <td>208 / 214</td>
+                    
+                    <td>3.05%</td>
+                    
+                    <td>$0.13</td>
+                    
+                    <td>$0.19</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div><!-- /.table -->
+          </div><!-- /.widget__body -->
+        </div>
+
+
+
+
+
+
+
+
+        <div class="widget-options widget-options--def" *ngIf="(! searching) && (! newLoad)">
           <div class="widget__body">
             <div class="table-simple table-simple--size3 js-table">
 

@@ -6,6 +6,8 @@
 
 import { Observable } from 'rxjs/Rx';
 import { Subject } from 'rxjs/Subject';
+import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Screener } from '../../models/screener';
 import { ScreenerResult } from '../../models/screener-result';
@@ -25,7 +27,7 @@ export class ScreenerComponent implements OnInit
   //
   // Constructor....
   //
-  constructor(private stateService: StateService, private screenerService: ScreenerService, private tradeService: TradeService) { }
+  constructor(private stateService: StateService, private screenerService: ScreenerService, private tradeService: TradeService, private router: Router) { }
 
   //
   // OnInit....
@@ -64,20 +66,46 @@ export class ScreenerComponent implements OnInit
   getScreeners()
   {
     // Make api call to get screeners
-    this.screenerService.get().subscribe((res) => {
-      this.screeners = res;
+    this.screenerService.get().subscribe(
 
-      // Load results.
-      for (let i = 0; i < this.screeners.length; i++) 
-      {
-        this.screenerService.getResults(this.screeners[i].Id).subscribe((res) => {
-          this.screeners[i].Results = res;
-        });
+      (res) => {
+        this.screeners = res;
+
+        // Make sure we have at least one screener
+        if(this.screeners.length <= 0)
+        {
+          this.router.navigate(['/screener/add']);
+          return;
+        }
+
+        // Load results.
+        for (let i = 0; i < this.screeners.length; i++) 
+        {
+          this.screenerService.getResults(this.screeners[i].Id).subscribe((res) => {
+            this.screeners[i].Results = res;
+          });
+        }
+
+        // Store in site cache.
+        this.stateService.SetScreens(this.screeners);
+      }, 
+
+      // Error
+      (err: HttpErrorResponse) => {
+
+        if (err.error instanceof Error) 
+        {
+          // A client-side or network error occurred. Handle it accordingly.
+          console.log('An error occurred:', err.error);
+        } else 
+        {
+          if (err.error.error == 'No Record Found.')
+          {
+            this.router.navigate(['/screener/add'], { queryParams: { action: 'first-run' } });
+          }
+        }
       }
-
-      // Store in site cache.
-      this.stateService.SetScreens(this.screeners);
-    });
+    );
   }
 
   //

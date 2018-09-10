@@ -30,6 +30,7 @@
 .trade-builder .net-quote { display: flex; font-size: 14px; margin-top: 15px; text-align: center; }
 
 /* Screener */
+.screen-preview-first-run { width: 513px; }
 .article__head .dropdown { min-width: unset !important; }
 .article__head__screener { height: 54px; }
 .article__head__screener p { font-weight: 450; font-style: italic; margin-top: 8px; }
