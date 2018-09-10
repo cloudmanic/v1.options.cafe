@@ -45,6 +45,75 @@
 
           <ng-container *ngFor="let row of orders; let k = index">
 
+            <!-- Equity Order -->
+            <tr *ngIf="row.Class == 'equity'" [ngClass]="{ 'table__row--bordered': (k != 0) }">
+              <td><strong>{{ quotes[row.Symbol]?.description }}</strong></td>  
+            
+              <td>{{ quotes[row.Symbol]?.last | currency:'USD':'symbol':'1.2-2' }}</td> 
+            
+              <td>{{ row.Quantity }}</td> 
+            
+              <td>{{ row.Duration }}</td> 
+            
+              <td>{{ row.Type }}</td> 
+            
+              <td>
+                <span [hidden]="row.Type != 'stop_limit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</span>
+                <span [hidden]="row.Type != 'stop'">{{ row.StopPrice | currency:'USD':'symbol':'1.2-2' }}</span>
+                <span [hidden]="row.Type != 'limit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</span> 
+                <span [hidden]="row.Type != 'market'">---</span>              
+              </td> 
+            
+              <td>
+                <span [hidden]="row.Status != 'filled'">{{ row.AvgFillPrice | currency:'USD':'symbol':'1.2-2' }}</span>
+                <span [hidden]="row.Status != 'open'">---</span>
+                <span [hidden]="row.Status != 'canceled'">---</span>
+                <span [hidden]="row.Status != 'expired'">---</span>
+                <span [hidden]="row.Status != 'rejected'">---</span>
+                <span [hidden]="row.Status != 'pending'">---</span> 
+                <span [hidden]="row.Status != 'partially_filled'">---</span>
+              </td>         
+            
+              <td>
+                <span [hidden]="row.Status != 'filled'"><strong class="title-green">{{ row.Status }}</strong></span>
+                <span [hidden]="row.Status != 'open'"><strong class="title-grey">{{ row.Status }}</strong></span>
+                <span [hidden]="row.Status != 'canceled'"><strong class="title-grey">{{ row.Status }}</strong></span>
+                <span [hidden]="row.Status != 'expired'"><strong class="title-grey">{{ row.Status }}</strong></span>
+                <span [hidden]="row.Status != 'rejected'"><strong class="title-red">{{ row.Status }}</strong></span>
+                <span [hidden]="row.Status != 'pending'"><strong class="title-grey">{{ row.Status }}</strong></span> 
+                <span [hidden]="row.Status != 'partially_filled'"><strong class="title-grey">{{ row.Status }}</strong></span>
+              </td>
+
+              <td rowspan="1">
+                <div class="dropdown select">
+                  <div class="dropdown__head dropdown--trigger"></div>
+
+                  <div class="dropdown__body">
+                    <ul class="list-actions">
+                      <li>
+                        <a href="#">Position Details</a>
+                      </li>
+
+                    <li>
+                        <a href="#">Close Trade @ $0.03</a>
+                      </li>
+
+                    <li>
+                        <a href="#">Close Trade @ Market</a>
+                      </li>
+
+                    <li>
+                        <a href="#">Close Trade @ Limit</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </td>
+
+            </tr>
+
+
+
             <!-- Option Order -->
             <tr *ngIf="row.Class == 'option'" [ngClass]="{ 'table__row--bordered': (k != 0) }">
               <td><strong>{{ quotes[row.OptionSymbol]?.description }}</strong></td>  

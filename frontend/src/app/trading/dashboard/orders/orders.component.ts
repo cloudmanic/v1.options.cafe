@@ -40,6 +40,9 @@ export class OrdersComponent implements OnInit {
     // Setup Dropdown actions
     this.setupDropdownActions();
 
+    // Set orders
+    this.orders = this.stateService.GetActiveOrders();
+
     // Get Data from cache
     this.quotes = this.stateService.GetQuotes();
             
@@ -58,8 +61,8 @@ export class OrdersComponent implements OnInit {
       this.manageChangeDetection(data);
     });     
 
-    // This is useful for when the change detection was not caught (say laptop sleeping)
-    Observable.timer((1000 * 60), (1000 * 60)).takeUntil(this.destory).subscribe(x => { this.getOrders(); });       
+    // This is useful for when the change detection was not caught (say laptop sleeping) Also make an ajax call 2 seconds after page load.
+    Observable.timer((1000 * 2), (1000 * 60)).takeUntil(this.destory).subscribe(x => { this.getOrders(); });       
   }
 
   //
@@ -136,6 +139,9 @@ export class OrdersComponent implements OnInit {
     
     // Set order data
     this.orders = rt;
+
+    // Add orders to state manager
+    this.stateService.SetActiveOrders(this.orders);
   }
 }
 
