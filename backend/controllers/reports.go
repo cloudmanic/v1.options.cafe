@@ -7,8 +7,9 @@
 package controllers
 
 import (
-	"net/http"
+	"strconv"
 
+	"github.com/cloudmanic/app.options.cafe/backend/reports"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,30 +19,30 @@ import (
 func (t *Controller) ReportsGetAccountYearlySummary(c *gin.Context) {
 
 	// Make sure the UserId is correct.
-	//userId := c.MustGet("userId").(uint)
+	userId := c.MustGet("userId").(uint)
 
-	// // Set as int
-	// id, err := strconv.ParseInt(c.Param("id"), 10, 32)
+	// Set as int - Year
+	year, err := strconv.ParseInt(c.Param("year"), 10, 32)
 
-	// if t.RespondError(c, err, httpGenericErrMsg) {
-	// 	return
-	// }
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
 
-	// // Get the screener by id.
-	// orgObj, err := t.DB.GetScreenerByIdAndUserId(uint(id), userId)
+	// Set as int - brokerAccountId
+	brokerAccountId, err := strconv.ParseInt(c.Param("brokerAccount"), 10, 32)
 
-	// if t.RespondError(c, err, httpNoRecordFound) {
-	// 	return
-	// }
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
 
-	// // Delete items.
-	// t.DB.New().Where("screener_id = ?", orgObj.Id).Delete(models.ScreenerItem{})
+	// Get broker account
+	brokerAccount, err := t.DB.GetBrokerAccountByIdUserId(uint(brokerAccountId), userId)
 
-	// // Delete record
-	// t.DB.New().Delete(&orgObj)
+	// Get summary from database
+	summary := reports.GetYearlySummaryByAccountYear(t.DB, brokerAccount, int(year))
 
 	// Return happy JSON
-	c.JSON(http.StatusNoContent, gin.H{})
+	c.JSON(200, summary)
 }
 
 /* End File */
