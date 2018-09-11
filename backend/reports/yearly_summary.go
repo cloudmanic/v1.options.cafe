@@ -32,7 +32,7 @@ type YearlySummary struct {
 //
 func GetYearsWithTradeGroups(db models.Datastore, brokerAccount models.BrokerAccount) []int {
 
-	var years []int
+	years := []int{}
 
 	type Result struct {
 		Year int
@@ -73,12 +73,15 @@ func GetYearlySummaryByAccountYear(db models.Datastore, brokerAccount models.Bro
 
 	// Post query processing
 	summary.Year = year
-	summary.WinPercent = helpers.Round((float64(summary.WinCount)/float64(summary.TotalTrades))*100, 2)
-	summary.LossPercent = helpers.Round((float64(summary.LossCount)/float64(summary.TotalTrades))*100, 2)
-	summary.SharpeRatio = helpers.Round((summary.AvgPercentGain-riskFreeRate)/summary.PercentGainStd, 2)
-	summary.ProfitStd = helpers.Round(summary.ProfitStd, 2)
-	summary.AvgRisked = helpers.Round(summary.AvgRisked, 2)
-	summary.PercentGainStd = helpers.Round(summary.PercentGainStd, 2)
+
+	if summary.TotalTrades > 0 {
+		summary.WinPercent = helpers.Round((float64(summary.WinCount)/float64(summary.TotalTrades))*100, 2)
+		summary.LossPercent = helpers.Round((float64(summary.LossCount)/float64(summary.TotalTrades))*100, 2)
+		summary.SharpeRatio = helpers.Round((summary.AvgPercentGain-riskFreeRate)/summary.PercentGainStd, 2)
+		summary.ProfitStd = helpers.Round(summary.ProfitStd, 2)
+		summary.AvgRisked = helpers.Round(summary.AvgRisked, 2)
+		summary.PercentGainStd = helpers.Round(summary.PercentGainStd, 2)
+	}
 
 	return summary
 }

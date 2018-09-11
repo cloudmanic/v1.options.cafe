@@ -45,6 +45,8 @@ export class AccountSummaryComponent implements OnInit
   {
     // Subscribe to changes in the selected broker.
     this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
+      this.summaryByYearSelected = new Date().getFullYear();
+      this.stateService.SetReportsSummaryByYearSelectedYear(this.summaryByYearSelected);
       this.getAccountSummary();
       this.getTradeGroupYears();
     });
