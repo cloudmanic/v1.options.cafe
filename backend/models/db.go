@@ -50,8 +50,8 @@ func NewDB() (*DB, error) {
 	}
 
 	// Enable
-	//db.LogMode(true)
-	//db.SetLogger(log.New(os.Stdout, "\r\n", 0))
+	// db.LogMode(true)
+	// db.SetLogger(log.New(os.Stdout, "\r\n", 0))
 
 	// Migrate the schemas (one per table).
 	db.AutoMigrate(&User{})
@@ -61,6 +61,7 @@ func NewDB() (*DB, error) {
 	db.AutoMigrate(&Session{})
 	db.AutoMigrate(&Settings{})
 	db.AutoMigrate(&OrderLeg{})
+	db.AutoMigrate(&BrokerEvent{})
 	db.AutoMigrate(&Watchlist{})
 	db.AutoMigrate(&WatchlistSymbol{})
 	db.AutoMigrate(&Position{})

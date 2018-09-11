@@ -3,9 +3,39 @@ package tradier
 import (
 	"crypto/md5"
 	"encoding/hex"
+
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/tidwall/gjson"
 )
+
+//
+// Get all history events for a broker.
+//
+func (t *Api) GetAllHistory() ([]types.History, error) {
+
+	var history []types.History
+
+	// Get the user profile
+	user, err := t.GetUserProfile()
+
+	if err != nil {
+		return history, err
+	}
+
+	// Loop through the different accounts and get all orders.
+	for _, row := range user.Accounts {
+
+		tmp, _ := t.GetHistoryByAccountId(row.AccountNumber)
+
+		for _, row2 := range tmp {
+			history = append(history, row2)
+		}
+
+	}
+
+	// Return happy
+	return history, nil
+}
 
 //
 // Get History by Account Id
@@ -35,7 +65,7 @@ func (t *Api) GetHistoryByAccountId(accountId string) ([]types.History, error) {
 	if vo.Exists() {
 
 		// Add to balances array
-		history = append(history, t.addJsonToEvent(gjson.Get(jsonRt, "history.event").String()))
+		history = append(history, t.addJsonToEvent(gjson.Get(jsonRt, "history.event").String(), accountId))
 
 	} else // More than one historical event
 	{
@@ -46,7 +76,7 @@ func (t *Api) GetHistoryByAccountId(accountId string) ([]types.History, error) {
 		vo.ForEach(func(key, value gjson.Result) bool {
 
 			// Add to balances array
-			history = append(history, t.addJsonToEvent(value.String()))
+			history = append(history, t.addJsonToEvent(value.String(), accountId))
 
 			// keep iterating
 			return true
@@ -63,14 +93,15 @@ func (t *Api) GetHistoryByAccountId(accountId string) ([]types.History, error) {
 //
 // Take a json string and turn it into a history object.
 //
-func (t *Api) addJsonToEvent(eventJson string) types.History {
+func (t *Api) addJsonToEvent(eventJson string, accountId string) types.History {
 
 	hasher := md5.New()
 	hasher.Write([]byte(eventJson))
 
 	// Return History event.
 	return types.History{
-		BrokerId:    hex.EncodeToString(hasher.Sum(nil)),
+		Id:          hex.EncodeToString(hasher.Sum(nil)),
+		BrokerId:    accountId,
 		Type:        gjson.Get(eventJson, "type").String(),
 		Date:        gjson.Get(eventJson, "date").String(),
 		Amount:      gjson.Get(eventJson, "amount").Float(),

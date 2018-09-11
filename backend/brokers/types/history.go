@@ -1,16 +1,17 @@
 package types
 
 type History struct {
-  BrokerId string
-  Type string
-  Date string  
-  Amount float64
-  Symbol string
-  Commission float64
-  Description string
-  Price float64
-  Quantity int64
-  TradeType string
+	Id          string
+	BrokerId    string
+	Type        string
+	Date        string
+	Amount      float64
+	Symbol      string
+	Commission  float64
+	Description string
+	Price       float64
+	Quantity    int64
+	TradeType   string
 }
 
 /*

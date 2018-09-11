@@ -10,6 +10,7 @@ import (
 type Api interface {
 	GetBrokerConfig() *types.BrokerConfig
 	GetBalances() ([]types.Balance, error)
+	GetAllHistory() ([]types.History, error)
 	GetHistoryByAccountId(string) ([]types.History, error)
 	SubmitOrder(accountId string, order types.Order) (types.OrderSubmit, error)
 	PreviewOrder(accountId string, order types.Order) (types.OrderPreview, error)
