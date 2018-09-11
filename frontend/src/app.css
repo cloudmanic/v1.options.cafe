@@ -38,6 +38,9 @@
 .widget-screen .and { text-transform: uppercase; font-weight: 700; margin: 16px 0; font-size: 16px; padding: 0 10px; }
 .widget__actions .delete-btn { display: inline-block; float: right; margin-top: 20px; color: #ce4260; font-weight: 500; } 
 
+/* Reports */
+.article .article__head .article__btn { z-index: 1000 }
+
 /* Hide GooveHq stuff */
 iframe.grv-widget-tag { display: none !important; }
 iframe.grv-widget-app { display: block !important; }

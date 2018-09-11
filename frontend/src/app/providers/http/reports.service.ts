@@ -22,6 +22,14 @@ export class ReportsService
   constructor(private http: HttpClient) { }
 
   //
+  // Return a list of years we have trade groups for.
+  //
+  getTradeGroupYears(brokerAccount: number): Observable<number[]> {
+    return this.http.get<number[]>(environment.app_server + '/api/v1/reports/' + brokerAccount + '/tradegroup/years')
+      .map((data) => { return data; });
+  } 
+
+  //
   // Get a summary of a broker account by year.
   //
   getSummaryByYear(brokerAccount: number, year: number): Observable<SummaryYearly> 

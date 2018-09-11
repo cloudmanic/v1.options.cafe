@@ -9,9 +9,7 @@
       <div class="article__head">
         <h5>{{ summaryByYearSelected }} Year to Date</h5>  
 
-        <a href="#" class="btn-square article__btn">
-          <i class="ico-triangle"></i>
-        </a>
+        <app-dropdown-select [actions]="summaryActions" [data]="tradeGroupYears" class="article__btn"></app-dropdown-select>
       </div><!-- /.article__head -->
 
       <div class="article__body article__body--quaternary">
