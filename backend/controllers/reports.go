@@ -9,7 +9,7 @@ package controllers
 import (
 	"strconv"
 
-	"github.com/cloudmanic/app.options.cafe/backend/reports"
+	"github.com/cloudmanic/app.options.cafe/backend/library/reports"
 	"github.com/gin-gonic/gin"
 )
 
