@@ -87,7 +87,8 @@ func (t *Api) PreviewOrder(accountId string, order types.Order) (types.OrderPrev
 //
 func (t *Api) GetAllOrders() ([]types.Order, error) {
 
-	var orders []types.Order
+	page := 1
+	orders := []types.Order{}
 
 	// Get the user profile
 	user, err := t.GetUserProfile()
@@ -96,13 +97,35 @@ func (t *Api) GetAllOrders() ([]types.Order, error) {
 		return orders, err
 	}
 
-	// Loop through the different acconts and get all orders.
+	// Loop through the different accounts and get all orders.
 	for _, row := range user.Accounts {
 
-		err := t.processOrderDataForGetAllOrders(row.AccountNumber, &orders)
+		page = 1
 
-		if err != nil {
-			services.BetterError(err)
+		// Here we loop through the orders getting the orders 1000 orders at a time.
+		for {
+
+			var tmp []types.Order
+
+			err := t.processOrderDataForGetAllOrders(row.AccountNumber, &tmp, page, 1000)
+
+			if err != nil {
+				services.BetterError(err)
+			}
+
+			// Add orders into master var.
+			for _, row := range tmp {
+				orders = append(orders, row)
+			}
+
+			// If we got no results break
+			if len(tmp) <= 0 {
+				break
+			}
+
+			// Increase page.
+			page++
+
 		}
 
 	}
@@ -305,15 +328,20 @@ func (t *Api) orderParseOneAccount(body string, t_orders *[]types.TradierOrder) 
 //
 // Process order data for GetAllOrders
 //
-func (t *Api) processOrderDataForGetAllOrders(accountNumber string, orders *[]types.Order) error {
+func (t *Api) processOrderDataForGetAllOrders(accountNumber string, orders *[]types.Order, page int, limit int) error {
 
 	var t_orders []types.TradierOrder
 
 	// Get the JSON
-	jsonRt, err := t.SendGetRequest("/accounts/" + accountNumber + "/orders?filter=all")
+	jsonRt, err := t.SendGetRequest("/accounts/" + accountNumber + "/orders?filter=all&limit=" + strconv.Itoa(limit) + "&page=" + strconv.Itoa(page))
 
 	if err != nil {
 		return err
+	}
+
+	// See if we got zero results.
+	if jsonRt == `{"orders":"null"}` {
+		return nil
 	}
 
 	// Do we have more than one order
