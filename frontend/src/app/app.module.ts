@@ -26,6 +26,7 @@ import { QuotesService } from './providers/http/quotes.service';
 import { BrokerService } from './providers/http/broker.service';
 import { SymbolService } from './providers/http/symbol.service';
 import { StatusService } from './providers/http/status.service';
+import { ReportsService } from './providers/http/reports.service';
 import { WatchlistService } from './providers/http/watchlist.service';
 import { TradeGroupService } from './providers/http/trade-group.service';
 import { WebsocketService } from './providers/http/websocket.service';
@@ -49,8 +50,7 @@ import { BacktestSubnavComponent } from './backtest/sub-nav/subnav.component';
 import { BacktestHomeComponent } from './backtest/home/home.component';
 
 // Reports
-import { ReportsSubnavComponent } from './reports/sub-nav/subnav.component';
-import { ReportsHomeComponent } from './reports/home/home.component';
+import { AccountSummaryComponent } from './reports/account-summary/account-summary.component';
 
 // Trading
 import { IvrComponent } from './trading/dashboard/ivr/ivr.component';
@@ -99,8 +99,7 @@ import { AddEditComponent as ScreenerAddEditComponent } from './trading/screener
     BacktestHomeComponent,
 
     // Reports
-    ReportsSubnavComponent,
-    ReportsHomeComponent,
+    AccountSummaryComponent,
     
     // Trading
     IvrComponent,
@@ -144,6 +143,7 @@ import { AddEditComponent as ScreenerAddEditComponent } from './trading/screener
     TradeService,
     OptionsChainService,
     ScreenerService,
+    ReportsService,
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }    
   ],
   

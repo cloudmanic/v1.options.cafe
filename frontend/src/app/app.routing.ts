@@ -21,7 +21,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { BacktestHomeComponent } from './backtest/home/home.component';
 
 // Reports
-import { ReportsHomeComponent } from './reports/home/home.component';
+import { AccountSummaryComponent } from './reports/account-summary/account-summary.component';
 
 // Trading
 import { TradesComponent } from './trading/trades/home.component';
@@ -52,7 +52,7 @@ const appRoutes: Routes = [
     { path: 'screener/edit/:id', component: ScreenerAddEditComponent, canActivate: [AuthGuard], data: { section: 'trading', subSection: 'screener', action: 'add-edit' } },
 
     // Reports
-    { path: 'reports', component: ReportsHomeComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'dashboard', action: '' } },
+    { path: 'reports/account-summary', component: AccountSummaryComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'account-summary', action: '' } },
 
     // Backtest 
     { path: 'backtest', component: BacktestHomeComponent, canActivate: [AuthGuard], data: { section: 'backtest', subSection: 'dashboard', action: '' } },

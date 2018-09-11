@@ -1,0 +1,296 @@
+<app-layout-sub-nav></app-layout-sub-nav>
+
+
+<div class="content__inner">
+  <div class="shell shell--fluid">
+
+
+    <div class="article">
+      <div class="article__head">
+        <h5>{{ summaryByYearSelected }} Year to Date</h5>  
+
+        <a href="#" class="btn-square article__btn">
+          <i class="ico-triangle"></i>
+        </a>
+      </div><!-- /.article__head -->
+
+      <div class="article__body article__body--quaternary">
+        <ul class="list-stats">
+          <li>
+            <h6>Profit & Loss</h6>
+
+            <h3>{{ summaryByYear?.Profit | currency:'USD':'symbol':'1.0-0' }}</h3>
+          </li>
+
+          <li>
+            <h6>Number Of Trades</h6>
+
+            <h3>{{ summaryByYear?.TotalTrades | number:'1.0-2' }}</h3>
+          </li>
+
+          <li>
+            <h6>Winning Trades</h6>
+
+            <h3>{{ summaryByYear?.WinPercent | number:'1.2-2' }}%</h3>
+          </li>
+
+          <li>
+            <h6>Losing Trades</h6>
+
+            <h3>{{ summaryByYear?.LossPercent | number:'1.2-2' }}%</h3>
+          </li>
+
+          <li>
+            <h6>Commissions</h6>
+
+            <h3>{{ summaryByYear?.Commission | currency:'USD':'symbol':'1.0-0' }}</h3>
+          </li>
+
+          <li>
+            <h6>Sharpe Ratio</h6>
+
+            <h3>{{ summaryByYear?.SharpeRatio | number:'1.2-2' }}</h3>
+          </li>
+        </ul><!-- /.list-stats -->
+      </div><!-- /.article__body -->
+    </div><!-- /.article -->
+
+
+
+
+
+<!--     <div class="article article--size1">
+      <div class="article__head">
+        <h5>Profit and Loss</h5>  
+
+        <ul class="list-actions-alt article__list">
+          <li class="active">
+            <a href="#" class="btn-square">
+              <i class="ico-chart-1"></i>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="btn-square">
+              <i class="ico-chart-2"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="article__body article__body--senary">
+        <div class="report">
+          <img src="css/images/temp/report3.jpg" alt="" />
+        </div>
+      </div>
+    </div> -->
+
+
+
+
+<!--     <div class="articles">
+      <div class="cols-primary cols-primary--alt">
+        <div class="col col--size3">
+          <div class="article">
+            <div class="article__head article__head">
+              <h5>Recent Activity</h5>
+            </div>
+
+            <div class="article__body article__body--size1">
+              <div class="table-small">
+                <div class="table__body">
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <span>11/10/2017</span>
+                        </td>
+
+                        <td>
+                          <p>Opened SPY 250 / 252 Credit Spread @ $0.36</p>
+                        </td>
+                      </tr>
+                      
+                      <tr>
+                        <td>
+                          <span>11/4/2017</span>
+                        </td>
+
+                        <td>
+                          <p>Received a dividend from BAC for $45.12</p>
+                        </td>
+                      </tr>
+                      
+                      <tr>
+                        <td>
+                          <span>10/30/2017</span>
+                        </td>
+
+                        <td>
+                          <p>Deposited $10,000 into your Tradier account</p>
+                        </td>
+                      </tr>
+                      
+                      <tr>
+                        <td>
+                          <span>10/27/2017</span>
+                        </td>
+
+                        <td>
+                          <p>Opened SPY 250 / 252 Credit Spread @ $0.36</p>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="table__foot">
+                  <a href="#" class="link-alt">View More</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+
+        <div class="col col--size4">
+          <div class="cols-primary cols-primary--inner">
+            <div class="col">
+              <div class="article article--size1">
+                <div class="article__head">
+                  <h5>Yearly Returns</h5>
+                </div>
+
+                <div class="article__body article__body--size1">
+                  <div class="table-small table-small--primary">
+                    <div class="table__body">
+                      <table>
+                        <tbody>
+                          <tr>
+                            <td>
+                              <span>2019</span>
+                            </td>
+
+                            <td>
+                              <strong>Future Earnings</strong>
+                            </td>
+                          </tr>
+                          
+                          <tr>
+                            <td>
+                              <span>2018</span>
+                            </td>
+
+                            <td>
+                              <strong>Future Earnings</strong>
+                            </td>
+                          </tr>
+                          
+                          <tr>
+                            <td>
+                              <span>2017</span>
+                            </td>
+
+                            <td>
+                              <strong class="green">$453,232</strong>
+                            </td>
+                          </tr>
+                          
+                          <tr>
+                            <td>
+                              <span>2016</span>
+                            </td>
+
+                            <td>
+                              <strong class="red">-$453,232</strong>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+            <div class="col">
+              <div class="article article--size1">
+                <div class="article__head">
+                  <h5>Quarterly Returns</h5>
+                </div>
+
+                <div class="article__body article__body--size1">
+                  <div class="table-small table-small--primary">
+                    <div class="table__body">
+                      <table>
+                        <tbody>
+                          <tr>
+                            <td>
+                              <span>Q3 2017</span>
+                            </td>
+
+                            <td>
+                              <strong>Future Earnings</strong>
+                            </td>
+                          </tr>
+                          
+                          <tr>
+                            <td>
+                              <span>Q2 2017</span>
+                            </td>
+
+                            <td>
+                              <strong>Future Earnings</strong>
+                            </td>
+                          </tr>
+                          
+                          <tr>
+                            <td>
+                              <span>Q1 2017</span>
+                            </td>
+
+                            <td>
+                              <strong class="red">-$821.00</strong>
+                            </td>
+                          </tr>
+                          
+                          <tr>
+                            <td>
+                              <span>Q4 2016</span>
+                            </td>
+
+                            <td>
+                              <strong class="green">$17,232</strong>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div> -->
+
+
+  </div><!-- /.shell shell-large -->
+</div><!-- /.content__inner -->

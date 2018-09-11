@@ -12,6 +12,7 @@ import { Broker } from '../../models/broker';
 import { Symbol } from '../../models/symbol';
 import { Screener } from '../../models/screener';
 import { Watchlist } from '../../models/watchlist';
+import { SummaryYearly } from '../../models/reports';
 import { HistoricalQuote } from '../../models/historical-quote';
 import { TradeGroup, TradeGroupsCont } from '../../models/trade-group';
 import { BrokerAccount } from '../../models/broker-account';
@@ -44,9 +45,41 @@ export class StateService
   // Screener
   private screenerScreens: Screener[];
 
+  // Reports
+  private reportsSummaryByYear: SummaryYearly;
+  private reportsSummaryByYearSelected: number = new Date().getFullYear();
+
   // Emitters - Pushers
   public SiteSuccess = new EventEmitter<string>();
   public BrokerChange = new EventEmitter<number>();
+
+  //
+  // Set ReportsSummaryByYear
+  //
+  SetReportsSummaryByYear(data: SummaryYearly) {
+    this.reportsSummaryByYear = data;
+  }
+
+  //
+  // Get ReportsSummaryByYear
+  //
+  GetReportsSummaryByYear() {
+    return this.reportsSummaryByYear;
+  }
+
+  //
+  // Set ReportsSummaryByYear - selected year
+  //
+  SetReportsSummaryByYearSelectedYear(data: number) {
+    this.reportsSummaryByYearSelected = data;
+  }
+
+  //
+  // Get ReportsSummaryByYear - selected year
+  //
+  GetReportsSummaryByYearSelectedYear() {
+    return this.reportsSummaryByYearSelected;
+  }
 
   //
   // Set Orders

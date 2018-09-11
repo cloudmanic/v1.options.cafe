@@ -9,7 +9,7 @@ import { TradeService, TradeEvent, TradeDetails } from '../../providers/http/tra
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 
 @Component({
-  selector: 'app-trading-sub-nav',
+  selector: 'app-layout-sub-nav',
   templateUrl: './subnav.component.html'
 })
 

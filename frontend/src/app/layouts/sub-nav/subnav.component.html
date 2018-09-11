@@ -35,6 +35,35 @@
 			</div>
 		</div>
 	
+
+
+
+
+		<div class="shell shell--fluid" *ngIf="section == 'reports'">
+			
+			<div class="bar__inner">
+				<nav class="nav-centered">
+					<ul>
+						<li [ngClass]="{ 'current': (subSection == 'account-summary') }">
+							<a routerLink="/reports/account-summary">Account Summary</a>
+						</li><!-- /.current -->
+
+						<li [ngClass]="{ 'current': (subSection == 'screener') }">
+							<a routerLink="/reports/account-history">Account History</a>
+						</li>
+
+						<li [ngClass]="{ 'current': (subSection == 'trades') }">
+							<a routerLink="/reports/custom">Custom Reports</a>
+						</li>
+					</ul>
+				</nav>
+
+			</div>
+		</div>
+
+
+
+
 	</div>
 
 </div>

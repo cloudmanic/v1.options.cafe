@@ -151,7 +151,7 @@ func TestReportsGetAccountYearlySummary01(t *testing.T) {
 	// Parse json that returned.
 	st.Expect(t, err, nil)
 	st.Expect(t, w.Code, 200)
-	st.Expect(t, w.Body.String(), `{"Year":2017,"TotalTrades":18,"LossCount":4,"WinCount":14,"Profit":571.2,"Commission":296.8,"WinPercent":77.78,"LossPercent":22.22,"ProfitStd":337.7,"PercentGainStd":12.43,"SharpeRatio":0.1,"AvgRisked":2078.83,"AvgPercentGain":3.3}`)
+	st.Expect(t, w.Body.String(), `{"year":2017,"total_trades":18,"loss_count":4,"win_count":14,"profit":571.2,"commission":296.8,"win_percent":77.78,"loss_percent":22.22,"profit_std":337.7,"precent_gain_std":12.43,"sharpe_ratio":0.1,"avg_risked":2078.83,"avg_percent_gain":3.3}`)
 }
 
 /* End File */

@@ -12,19 +12,19 @@ import (
 )
 
 type YearlySummary struct {
-	Year           int
-	TotalTrades    int
-	LossCount      int
-	WinCount       int
-	Profit         float64
-	Commission     float64
-	WinPercent     float64
-	LossPercent    float64
-	ProfitStd      float64
-	PercentGainStd float64
-	SharpeRatio    float64
-	AvgRisked      float64
-	AvgPercentGain float64
+	Year           int     `json:"year"`
+	TotalTrades    int     `json:"total_trades"`
+	LossCount      int     `json:"loss_count"`
+	WinCount       int     `json:"win_count"`
+	Profit         float64 `json:"profit"`
+	Commission     float64 `json:"commission"`
+	WinPercent     float64 `json:"win_percent"`
+	LossPercent    float64 `json:"loss_percent"`
+	ProfitStd      float64 `json:"profit_std"`
+	PercentGainStd float64 `json:"precent_gain_std"`
+	SharpeRatio    float64 `json:"sharpe_ratio"`
+	AvgRisked      float64 `json:"avg_risked"`
+	AvgPercentGain float64 `json:"avg_percent_gain"`
 }
 
 //
