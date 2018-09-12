@@ -54,6 +54,9 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		// Trade Groups
 		apiV1.GET("/tradegroups", t.GetTradeGroups)
 
+		// Broker events.
+		apiV1.GET("/broker-events/:brokerAccount", t.GetBrokerEvents)
+
 		// Quotes
 		apiV1.GET("/quotes/historical", t.GetHistoricalQuotes)
 		apiV1.GET("/quotes/rank/:symb", t.GetRank)

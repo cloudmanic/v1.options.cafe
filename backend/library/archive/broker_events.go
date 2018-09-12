@@ -2,7 +2,7 @@
 // Date: 2018-09-11
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-09-11
+// Last Modified: 2018-09-12
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -21,7 +21,7 @@ import (
 //
 // Pass in all historical events and store them in our database.
 //
-func StoreHistory(db models.Datastore, history []types.History, userId uint, brokerId uint) error {
+func StoreBrokerEvents(db models.Datastore, history []types.History, userId uint, brokerId uint) error {
 
 	// Loop through the history and process
 	for _, row := range history {

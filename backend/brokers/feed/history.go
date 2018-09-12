@@ -49,7 +49,7 @@ func (t *Base) GetHistory() error {
 	}
 
 	// Store the history in our database
-	err = archive.StoreHistory(t.DB, history, t.User.Id, t.BrokerId)
+	err = archive.StoreBrokerEvents(t.DB, history, t.User.Id, t.BrokerId)
 
 	// Return Happy
 	return nil
