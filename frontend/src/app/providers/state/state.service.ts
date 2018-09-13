@@ -12,6 +12,7 @@ import { Broker } from '../../models/broker';
 import { Symbol } from '../../models/symbol';
 import { Screener } from '../../models/screener';
 import { Watchlist } from '../../models/watchlist';
+import { BrokerEvent } from '../../models/broker-event';
 import { SummaryYearly } from '../../models/reports';
 import { HistoricalQuote } from '../../models/historical-quote';
 import { TradeGroup, TradeGroupsCont } from '../../models/trade-group';
@@ -49,9 +50,42 @@ export class StateService
   private reportsSummaryByYear: SummaryYearly;
   private reportsSummaryByYearSelected: number = new Date().getFullYear();
 
+  // Account History
+  private accountHistoryPage: number = 1;
+  private accountHistoryList: BrokerEvent[];
+
   // Emitters - Pushers
   public SiteSuccess = new EventEmitter<string>();
   public BrokerChange = new EventEmitter<number>();
+
+
+  //
+  // Set accountHistoryList
+  //
+  SetAccountHistoryList(data: BrokerEvent[]) {
+    this.accountHistoryList = data;
+  }
+
+  //
+  // Get accountHistoryList
+  //
+  GetAccountHistoryList() {
+    return this.accountHistoryList;
+  }
+
+  //
+  // Set accountHistoryList Page
+  //
+  SetAccountHistoryPage(data: number) {
+    this.accountHistoryPage = data;
+  }
+
+  //
+  // Get accountHistoryList Page
+  //
+  GetAccountHistoryPage() {
+    return this.accountHistoryPage;
+  }
 
   //
   // Set ReportsSummaryByYear

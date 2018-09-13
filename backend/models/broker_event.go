@@ -13,10 +13,10 @@ import (
 )
 
 type BrokerEvent struct {
-	Id              uint `gorm:"primary_key"`
-	UserId          uint `sql:"not null;index:UserId" json:"_"`
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
+	Id              uint      `gorm:"primary_key" json:"id"`
+	UserId          uint      `sql:"not null;index:UserId" json:"_"`
+	CreatedAt       time.Time `json:"_"`
+	UpdatedAt       time.Time `json:"_"`
 	BrokerAccountId uint      `sql:"not null;index:BrokerAccountId" json:"_"`
 	BrokerId        string    `json:"_"`
 	Type            string    `sql:"not null;type:ENUM('Ach', 'Trade', 'Option', 'Interest', 'Journal', 'Dividend', 'Adjustment', 'Other');default:'Other'" json:"type"`

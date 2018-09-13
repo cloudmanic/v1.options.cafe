@@ -1,0 +1,91 @@
+<app-layout-sub-nav></app-layout-sub-nav>
+
+
+<div class="content__inner">
+  <div class="shell shell--size4">
+    <div class="article">
+      <div class="article__head">
+        <h5>History</h5> 
+
+<!--         <a href="#" class="btn btn--border btn--size3 article__btn">
+          <i class="ico-download"></i>
+          
+          PDF
+        </a> -->
+      </div>
+
+      <div class="article__body article__body--primary">
+        <div class="table-simple table-simple--primary js-table">
+          <div class="table__body">
+
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    <ins>Date</ins>
+                  </th>
+
+                  <th>
+                    <ins>Type</ins>
+                  </th>
+
+                  <th>
+                    <ins>Description</ins>
+                  </th>
+
+                  <th>
+                    <ins>Quantity</ins>
+                  </th>
+
+                  <th>
+                    <ins>Commission</ins>
+                  </th>
+
+                  <th>
+                    <ins>Amout</ins>
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+
+                <tr *ngFor="let row of events;">
+                  <td>
+                    <span>{{ row.Date | date:'shortDate' }}</span>
+                  </td>
+
+                  <td>
+                    <p>{{ row.Type }}</p>
+                  </td>
+
+                  <td>
+                    <p *ngIf="row.Description.length">{{ row.Description }}</p>
+                    <p *ngIf="! row.Description.length">–</p>
+                  </td>
+
+                  <td>
+                    <strong *ngIf="row.Quantity != 0">{{ row.Quantity }}</strong>
+                    <strong *ngIf="row.Quantity == 0">–</strong>
+                  </td>
+
+                  <td>
+                    <strong>{{ row.Commission | currency:'USD':'symbol':'1.2-2' }}</strong>
+                  </td>
+
+                  <td>
+                    <strong [ngClass]="{'red': row.Amount < 0, 'green': row.Amount > 0}">{{ row.Amount | currency:'USD':'symbol':'1.2-2' }}</strong>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <app-paging [limit]="limit" [count]="count" [page]="page" [noLimitCount]="noLimitCount" (pageClick)="onPagingClick($event)"></app-paging>
+
+
+  </div>
+</div>

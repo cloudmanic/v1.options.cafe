@@ -30,6 +30,7 @@ import { ReportsService } from './providers/http/reports.service';
 import { WatchlistService } from './providers/http/watchlist.service';
 import { TradeGroupService } from './providers/http/trade-group.service';
 import { WebsocketService } from './providers/http/websocket.service';
+import { BrokerEventsService } from './providers/http/broker-events.service';
 
 // Layout
 import { SubnavComponent } from './layouts/sub-nav/subnav.component';
@@ -50,6 +51,7 @@ import { BacktestSubnavComponent } from './backtest/sub-nav/subnav.component';
 import { BacktestHomeComponent } from './backtest/home/home.component';
 
 // Reports
+import { AccountHistoryComponent } from './reports/account-history/account-history.component';
 import { AccountSummaryComponent } from './reports/account-summary/account-summary.component';
 
 // Trading
@@ -120,6 +122,7 @@ import { AddEditComponent as ScreenerAddEditComponent } from './trading/screener
     SettingsComponent,
     SubNavComponent,
     ScreenerAddEditComponent,
+    AccountHistoryComponent,
   ],
   
   imports: [
@@ -144,6 +147,7 @@ import { AddEditComponent as ScreenerAddEditComponent } from './trading/screener
     OptionsChainService,
     ScreenerService,
     ReportsService,
+    BrokerEventsService,
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }    
   ],
   

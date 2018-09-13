@@ -98,6 +98,34 @@ func (t *Api) addJsonToEvent(eventJson string, accountId string) types.History {
 	hasher := md5.New()
 	hasher.Write([]byte(eventJson))
 
+	// Get description
+	qty := gjson.Get(eventJson, "trade.quantity").Int()
+	description := gjson.Get(eventJson, "trade.description").String()
+
+	// See if this is a journal
+	if gjson.Get(eventJson, "type").String() == "journal" {
+		qty = 0
+		description = gjson.Get(eventJson, "journal.description").String()
+	}
+
+	// See if this is a dividend
+	if gjson.Get(eventJson, "type").String() == "dividend" {
+		qty = gjson.Get(eventJson, "dividend.quantity").Int()
+		description = gjson.Get(eventJson, "dividend.description").String()
+	}
+
+	// See if this is a interest
+	if gjson.Get(eventJson, "type").String() == "interest" {
+		qty = gjson.Get(eventJson, "interest.quantity").Int()
+		description = gjson.Get(eventJson, "interest.description").String()
+	}
+
+	// See if this is a interest
+	if gjson.Get(eventJson, "type").String() == "ach" {
+		qty = gjson.Get(eventJson, "ach.quantity").Int()
+		description = gjson.Get(eventJson, "ach.description").String()
+	}
+
 	// Return History event.
 	return types.History{
 		Id:          hex.EncodeToString(hasher.Sum(nil)),
@@ -107,9 +135,9 @@ func (t *Api) addJsonToEvent(eventJson string, accountId string) types.History {
 		Amount:      gjson.Get(eventJson, "amount").Float(),
 		Symbol:      gjson.Get(eventJson, "trade.symbol").String(),
 		Commission:  gjson.Get(eventJson, "trade.commission").Float(),
-		Description: gjson.Get(eventJson, "trade.description").String(),
+		Description: description,
 		Price:       gjson.Get(eventJson, "trade.price").Float(),
-		Quantity:    gjson.Get(eventJson, "trade.quantity").Int(),
+		Quantity:    qty,
 		TradeType:   gjson.Get(eventJson, "trade.trade_type").String(),
 	}
 

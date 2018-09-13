@@ -90,7 +90,7 @@ func TestGetBrokerEvents01(t *testing.T) {
 	// Parse json that returned.
 	st.Expect(t, err, nil)
 	st.Expect(t, w.Code, 200)
-	st.Expect(t, w.Body.String(), `[{"Id":1,"CreatedAt":"2017-10-29T10:20:01-07:00","UpdatedAt":"2017-10-29T10:20:01-07:00","type":"Trade","date":"2017-10-29T10:20:01-07:00","amount":0,"symbol":"spy","commission":5,"description":"test 123","price":13.33,"quantity":122,"trade_type":"Equity"},{"Id":2,"CreatedAt":"2017-10-29T10:20:01-07:00","UpdatedAt":"2017-10-29T10:20:01-07:00","type":"Trade","date":"2017-10-29T10:20:01-07:00","amount":0,"symbol":"spy","commission":5,"description":"test ttt","price":23.33,"quantity":17,"trade_type":"Option"},{"Id":3,"CreatedAt":"2017-10-29T10:20:01-07:00","UpdatedAt":"2017-10-29T10:20:01-07:00","type":"Trade","date":"2017-10-29T10:20:01-07:00","amount":0,"symbol":"spy","commission":5,"description":"test 888","price":223.33,"quantity":18,"trade_type":"Equity"}]`)
+	st.Expect(t, w.Body.String(), `[{"id":1,"type":"Trade","date":"2017-10-29T10:20:01-07:00","amount":0,"symbol":"spy","commission":5,"description":"test 123","price":13.33,"quantity":122,"trade_type":"Equity"},{"id":2,"type":"Trade","date":"2017-10-29T10:20:01-07:00","amount":0,"symbol":"spy","commission":5,"description":"test ttt","price":23.33,"quantity":17,"trade_type":"Option"},{"id":3,"type":"Trade","date":"2017-10-29T10:20:01-07:00","amount":0,"symbol":"spy","commission":5,"description":"test 888","price":223.33,"quantity":18,"trade_type":"Equity"}]`)
 }
 
 /* End File */

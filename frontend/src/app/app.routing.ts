@@ -21,6 +21,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { BacktestHomeComponent } from './backtest/home/home.component';
 
 // Reports
+import { AccountHistoryComponent } from './reports/account-history/account-history.component';
 import { AccountSummaryComponent } from './reports/account-summary/account-summary.component';
 
 // Trading
@@ -53,6 +54,7 @@ const appRoutes: Routes = [
 
     // Reports
     { path: 'reports/account-summary', component: AccountSummaryComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'account-summary', action: '' } },
+    { path: 'reports/account-history', component: AccountHistoryComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'account-history', action: '' } },
 
     // Backtest 
     { path: 'backtest', component: BacktestHomeComponent, canActivate: [AuthGuard], data: { section: 'backtest', subSection: 'dashboard', action: '' } },
