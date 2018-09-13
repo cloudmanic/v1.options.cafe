@@ -99,6 +99,7 @@ func (t *Api) addJsonToEvent(eventJson string, accountId string) types.History {
 	hasher.Write([]byte(eventJson))
 
 	// Get description
+	eventType := gjson.Get(eventJson, "type").String()
 	qty := gjson.Get(eventJson, "trade.quantity").Int()
 	description := gjson.Get(eventJson, "trade.description").String()
 
@@ -126,11 +127,37 @@ func (t *Api) addJsonToEvent(eventJson string, accountId string) types.History {
 		description = gjson.Get(eventJson, "ach.description").String()
 	}
 
+	// See if this is a DIVADJ
+	if gjson.Get(eventJson, "type").String() == "DIVADJ" {
+		eventType = "dividend"
+		qty = gjson.Get(eventJson, "adjustment.quantity").Int()
+		description = gjson.Get(eventJson, "adjustment.description").String()
+	}
+
+	// See if this is a position adjustments
+	if gjson.Get(eventJson, "type").String() == "position adjustments" {
+		qty = gjson.Get(eventJson, "adjustment.quantity").Int()
+		description = gjson.Get(eventJson, "adjustment.description").String()
+	}
+
+	// See if this is a DIVPAY
+	if gjson.Get(eventJson, "type").String() == "DIVPAY" {
+		eventType = "dividend"
+		qty = gjson.Get(eventJson, "adjustment.quantity").Int()
+		description = gjson.Get(eventJson, "adjustment.description").String()
+	}
+
+	// See if this is a adjustment
+	if gjson.Get(eventJson, "type").String() == "adjustment" {
+		qty = gjson.Get(eventJson, "adjustment.quantity").Int()
+		description = gjson.Get(eventJson, "adjustment.description").String()
+	}
+
 	// Return History event.
 	return types.History{
 		Id:          hex.EncodeToString(hasher.Sum(nil)),
 		BrokerId:    accountId,
-		Type:        gjson.Get(eventJson, "type").String(),
+		Type:        eventType,
 		Date:        gjson.Get(eventJson, "date").String(),
 		Amount:      gjson.Get(eventJson, "amount").Float(),
 		Symbol:      gjson.Get(eventJson, "trade.symbol").String(),
