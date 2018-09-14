@@ -20,6 +20,15 @@ func (t *Base) DoAccessTokenRefresh() {
 
 	for {
 
+		// Do we break out ?
+		t.MuPolling.Lock()
+		breakOut := t.Polling
+		t.MuPolling.Unlock()
+
+		if !breakOut {
+			break
+		}
+
 		err = t.AccessTokenRefresh()
 
 		if err != nil {
@@ -30,6 +39,8 @@ func (t *Base) DoAccessTokenRefresh() {
 		time.Sleep(time.Second * 60)
 
 	}
+
+	services.Info("Stopping DoAccessTokenRefresh() : " + t.User.Email)
 }
 
 //

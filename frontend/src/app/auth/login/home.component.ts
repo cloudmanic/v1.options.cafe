@@ -48,7 +48,8 @@ export class AuthLoginComponent implements OnInit {
     // Remove local storage
     localStorage.removeItem('user_id');    
     localStorage.removeItem('access_token');
-    localStorage.removeItem('active_account');    
+    localStorage.removeItem('active_account');
+    localStorage.removeItem('active_watchlist');    
     
     // subscribe to router event
     this.activatedRoute.queryParams.subscribe((params: Params) => {

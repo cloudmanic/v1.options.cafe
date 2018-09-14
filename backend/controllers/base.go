@@ -15,6 +15,7 @@ import (
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/users"
 	"github.com/cloudmanic/app.options.cafe/backend/websocket"
 	"github.com/gin-gonic/gin"
 	env "github.com/jpfuentes2/go-env"
@@ -26,6 +27,7 @@ const httpGenericErrMsg = "Please contact support at help@options.cafe."
 
 type Controller struct {
 	DB                  models.Datastore
+	UserActionChan      chan users.UserFeedAction
 	WebsocketController *websocket.Controller
 }
 

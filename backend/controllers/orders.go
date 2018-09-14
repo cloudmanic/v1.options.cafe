@@ -111,10 +111,20 @@ func orderBuildRequest(t *Controller, c *gin.Context) (types.Order, tradier.Api,
 		return types.Order{}, tradier.Api{}, models.BrokerAccount{}, err
 	}
 
-	// Setup the broker
-	brokerCont := tradier.Api{
-		DB:     t.DB,
-		ApiKey: apiKey,
+	var brokerCont tradier.Api
+
+	// Figure out which broker connection to setup.
+	switch broker.Name {
+
+	case "Tradier":
+		brokerCont = tradier.Api{ApiKey: apiKey, DB: t.DB, Sandbox: false}
+
+	case "Tradier Sandbox":
+		brokerCont = tradier.Api{ApiKey: apiKey, DB: t.DB, Sandbox: true}
+
+	default:
+		services.Critical("Order: Unknown Broker : " + broker.Name)
+
 	}
 
 	// Return happy

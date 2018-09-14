@@ -27,6 +27,15 @@ func (t *Base) DoGetDetailedQuotes() {
 
 	for {
 
+		// Do we break out ?
+		t.MuPolling.Lock()
+		breakOut := t.Polling
+		t.MuPolling.Unlock()
+
+		if !breakOut {
+			break
+		}
+
 		// Load up our DetailedQuotes
 		err := t.GetActiveSymbolsDetailedQuotes()
 
@@ -39,6 +48,7 @@ func (t *Base) DoGetDetailedQuotes() {
 
 	}
 
+	services.Info("Stopping DoGetDetailedQuotes() : " + t.User.Email)
 }
 
 //

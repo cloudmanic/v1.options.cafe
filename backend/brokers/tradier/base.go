@@ -16,11 +16,13 @@ import (
 )
 
 const (
-	apiBaseUrl = "https://api.tradier.com/v1"
+	apiBaseUrl  = "https://api.tradier.com/v1"
+	sandBaseUrl = "https://sandbox.tradier.com/v1"
 )
 
 type Api struct {
-	DB models.Datastore
+	DB      models.Datastore
+	Sandbox bool
 
 	muActiveSymbols sync.Mutex
 	activeSymbols   string
@@ -58,8 +60,15 @@ func (t *Api) SendPostRequest(urlStr string, params url.Values) (string, error) 
 	// Setup http client
 	client := &http.Client{}
 
+	// Get url to api
+	apiUrl := apiBaseUrl
+
+	if t.Sandbox {
+		apiUrl = sandBaseUrl
+	}
+
 	// Setup api request
-	req, _ := http.NewRequest("POST", apiBaseUrl+urlStr, bytes.NewBufferString(params.Encode()))
+	req, _ := http.NewRequest("POST", apiUrl+urlStr, bytes.NewBufferString(params.Encode()))
 	req.Header.Set("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
 	req.Header.Set("Authorization", fmt.Sprint("Bearer ", t.ApiKey))
@@ -82,7 +91,7 @@ func (t *Api) SendPostRequest(urlStr string, params url.Values) (string, error) 
 
 	// Make sure the api responded with a 200
 	if res.StatusCode != 200 {
-		return "", errors.New(fmt.Sprint("API did not return 200, It returned (", urlStr, ")", res.StatusCode, " ", string(body)))
+		return "", errors.New(fmt.Sprint("API did not return 200, It returned (", apiUrl+urlStr, ")", res.StatusCode, " ", string(body)))
 	}
 
 	// Return happy.
@@ -97,8 +106,15 @@ func (t *Api) SendGetRequest(urlStr string) (string, error) {
 	// Setup http client
 	client := &http.Client{}
 
+	// Get url to api
+	apiUrl := apiBaseUrl
+
+	if t.Sandbox {
+		apiUrl = sandBaseUrl
+	}
+
 	// Setup api request
-	req, _ := http.NewRequest("GET", apiBaseUrl+urlStr, nil)
+	req, _ := http.NewRequest("GET", apiUrl+urlStr, nil)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Authorization", fmt.Sprint("Bearer ", t.ApiKey))
 
@@ -120,7 +136,7 @@ func (t *Api) SendGetRequest(urlStr string) (string, error) {
 
 	// Make sure the api responded with a 200
 	if res.StatusCode != 200 {
-		return "", errors.New(fmt.Sprint("API did not return 200, It returned (", urlStr, ")", res.StatusCode, " ", string(body)))
+		return "", errors.New(fmt.Sprint("API did not return 200, It returned (", apiUrl+urlStr, ")", res.StatusCode, " ", string(body)))
 	}
 
 	// Return happy.

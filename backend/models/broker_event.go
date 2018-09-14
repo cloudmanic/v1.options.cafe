@@ -2,7 +2,7 @@
 // Date: 2018-09-11
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-09-12
+// Last Modified: 2018-09-14
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -20,7 +20,7 @@ type BrokerEvent struct {
 	BrokerAccountId uint      `sql:"not null;index:BrokerAccountId" json:"_"`
 	BrokerId        string    `json:"_"`
 	Type            string    `sql:"not null;type:ENUM('Ach', 'Trade', 'Option', 'Interest', 'Journal', 'Dividend', 'Adjustment', 'Other');default:'Other'" json:"type"`
-	Date            time.Time `json:"date"`
+	Date            Date      `gorm:"type:date" json:"date"`
 	Amount          float64   `json:"amount"`
 	Symbol          string    `json:"symbol"`
 	Commission      float64   `json:"commission"`

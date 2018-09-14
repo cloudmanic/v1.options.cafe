@@ -72,8 +72,15 @@ func (t *Api) GetTimeSalesQuotes(symbol string, start time.Time, end time.Time, 
 	// Setup http client
 	client := &http.Client{}
 
+  // Get url to api
+  apiUrl := apiBaseUrl
+
+  if t.Sandbox {
+    apiUrl = sandBaseUrl
+  }
+
 	// Setup api request
-	req, _ := http.NewRequest("GET", apiBaseUrl+"/markets/timesales", nil)
+	req, _ := http.NewRequest("GET", apiUrl+"/markets/timesales", nil)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Authorization", fmt.Sprint("Bearer ", t.ApiKey))
 

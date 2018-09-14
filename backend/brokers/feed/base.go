@@ -1,6 +1,8 @@
 package feed
 
 import (
+	"sync"
+
 	"github.com/cloudmanic/app.options.cafe/backend/brokers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
@@ -13,6 +15,8 @@ type Base struct {
 	DB          models.Datastore
 	BrokerId    uint
 	WsWriteChan chan websocket.SendStruct
+	Polling     bool
+	MuPolling   sync.Mutex
 }
 
 type SendStruct struct {

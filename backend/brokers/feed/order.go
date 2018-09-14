@@ -27,6 +27,16 @@ func (t *Base) DoOrdersTicker() {
 	var firstDone bool = false
 
 	for {
+
+		// Do we break out ?
+		t.MuPolling.Lock()
+		breakOut := t.Polling
+		t.MuPolling.Unlock()
+
+		if !breakOut {
+			break
+		}
+
 		// Load up all orders
 		_, err = t.GetAllOrders()
 
@@ -45,6 +55,8 @@ func (t *Base) DoOrdersTicker() {
 		// Sleep for 24 hours
 		time.Sleep(time.Hour * 24)
 	}
+
+	services.Info("Stopping DoOrdersTicker() : " + t.User.Email)
 }
 
 //
@@ -54,6 +66,16 @@ func (t *Base) DoOrdersActiveTicker() {
 	var hash string = ""
 
 	for {
+
+		// Do we break out ?
+		t.MuPolling.Lock()
+		breakOut := t.Polling
+		t.MuPolling.Unlock()
+
+		if !breakOut {
+			break
+		}
+
 		// Load up orders
 		lastHash, err := t.GetOrders()
 
@@ -73,6 +95,8 @@ func (t *Base) DoOrdersActiveTicker() {
 		// Sleep for 3 second.
 		time.Sleep(time.Second * 3)
 	}
+
+	services.Info("Stopping DoOrdersActiveTicker() : " + t.User.Email)
 }
 
 //

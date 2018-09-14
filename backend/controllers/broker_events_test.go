@@ -46,10 +46,10 @@ func LoadAndGetBrokerEventsTestData() {
 
 	// Load test Event data,
 	ts := time.Date(2017, 10, 29, 17, 20, 01, 507451, time.UTC)
-	db.Create(&models.BrokerEvent{UserId: 1, CreatedAt: ts, UpdatedAt: ts, BrokerAccountId: 3, BrokerId: "46dcdd5817b760661a353308b81c5aac", Type: "Trade", Date: ts, Symbol: "spy", Commission: 5.00, Description: "test 123", Price: 13.33, Quantity: 122, TradeType: "Equity"})
-	db.Create(&models.BrokerEvent{UserId: 1, CreatedAt: ts, UpdatedAt: ts, BrokerAccountId: 3, BrokerId: "46dcdd5817b76066ff35d3308b81c5aac", Type: "Trade", Date: ts, Symbol: "spy", Commission: 5.00, Description: "test abc", Price: 32.33, Quantity: 1, TradeType: "Interest"})
-	db.Create(&models.BrokerEvent{UserId: 1, CreatedAt: ts, UpdatedAt: ts, BrokerAccountId: 3, BrokerId: "46dcdd5817b76066234353308b81c5aac", Type: "Trade", Date: ts, Symbol: "spy", Commission: 5.00, Description: "test ttt", Price: 23.33, Quantity: 17, TradeType: "Option"})
-	db.Create(&models.BrokerEvent{UserId: 1, CreatedAt: ts, UpdatedAt: ts, BrokerAccountId: 3, BrokerId: "46dcdd5817b76066113153308b81c5aac", Type: "Trade", Date: ts, Symbol: "spy", Commission: 5.00, Description: "test 888", Price: 223.33, Quantity: 18, TradeType: "Equity"})
+	db.Create(&models.BrokerEvent{UserId: 1, CreatedAt: ts, UpdatedAt: ts, BrokerAccountId: 3, BrokerId: "46dcdd5817b760661a353308b81c5aac", Type: "Trade", Date: models.Date{ts}, Symbol: "spy", Commission: 5.00, Description: "test 123", Price: 13.33, Quantity: 122, TradeType: "Equity"})
+	db.Create(&models.BrokerEvent{UserId: 1, CreatedAt: ts, UpdatedAt: ts, BrokerAccountId: 3, BrokerId: "46dcdd5817b76066ff35d3308b81c5aac", Type: "Trade", Date: models.Date{ts}, Symbol: "spy", Commission: 5.00, Description: "test abc", Price: 32.33, Quantity: 1, TradeType: "Interest"})
+	db.Create(&models.BrokerEvent{UserId: 1, CreatedAt: ts, UpdatedAt: ts, BrokerAccountId: 3, BrokerId: "46dcdd5817b76066234353308b81c5aac", Type: "Trade", Date: models.Date{ts}, Symbol: "spy", Commission: 5.00, Description: "test ttt", Price: 23.33, Quantity: 17, TradeType: "Option"})
+	db.Create(&models.BrokerEvent{UserId: 1, CreatedAt: ts, UpdatedAt: ts, BrokerAccountId: 3, BrokerId: "46dcdd5817b76066113153308b81c5aac", Type: "Trade", Date: models.Date{ts}, Symbol: "spy", Commission: 5.00, Description: "test 888", Price: 223.33, Quantity: 18, TradeType: "Equity"})
 }
 
 //
@@ -90,7 +90,7 @@ func TestGetBrokerEvents01(t *testing.T) {
 	// Parse json that returned.
 	st.Expect(t, err, nil)
 	st.Expect(t, w.Code, 200)
-	st.Expect(t, w.Body.String(), `[{"id":1,"type":"Trade","date":"2017-10-29T10:20:01-07:00","amount":0,"symbol":"spy","commission":5,"description":"test 123","price":13.33,"quantity":122,"trade_type":"Equity"},{"id":2,"type":"Trade","date":"2017-10-29T10:20:01-07:00","amount":0,"symbol":"spy","commission":5,"description":"test ttt","price":23.33,"quantity":17,"trade_type":"Option"},{"id":3,"type":"Trade","date":"2017-10-29T10:20:01-07:00","amount":0,"symbol":"spy","commission":5,"description":"test 888","price":223.33,"quantity":18,"trade_type":"Equity"}]`)
+	st.Expect(t, w.Body.String(), `[{"id":1,"type":"Trade","date":"2017-10-29","amount":0,"symbol":"spy","commission":5,"description":"test 123","price":13.33,"quantity":122,"trade_type":"Equity"},{"id":2,"type":"Trade","date":"2017-10-29","amount":0,"symbol":"spy","commission":5,"description":"test ttt","price":23.33,"quantity":17,"trade_type":"Option"},{"id":3,"type":"Trade","date":"2017-10-29","amount":0,"symbol":"spy","commission":5,"description":"test 888","price":223.33,"quantity":18,"trade_type":"Equity"}]`)
 }
 
 /* End File */

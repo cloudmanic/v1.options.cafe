@@ -23,6 +23,15 @@ func (t *Base) DoUserProfileTicker() {
 
 	for {
 
+		// Do we break out ?
+		t.MuPolling.Lock()
+		breakOut := t.Polling
+		t.MuPolling.Unlock()
+
+		if !breakOut {
+			break
+		}
+
 		err = t.GetUserProfile()
 
 		if err != nil {
@@ -33,6 +42,8 @@ func (t *Base) DoUserProfileTicker() {
 		time.Sleep(time.Second * 20)
 
 	}
+
+	services.Info("Stopping DoUserProfileTicker() : " + t.User.Email)
 }
 
 //

@@ -72,6 +72,7 @@ func NewDB() (*DB, error) {
 	db.AutoMigrate(&Application{})
 	db.AutoMigrate(&BrokerAccount{})
 	db.AutoMigrate(&ForgotPassword{})
+	db.AutoMigrate(&BalanceHistory{})
 
 	// Is this a testing run? If so load testing data.
 	if flag.Lookup("test.v") != nil {

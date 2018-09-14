@@ -47,8 +47,15 @@ func (t *Api) GetQuotes(symbols []string) ([]types.Quote, error) {
 	// Setup http client
 	client := &http.Client{}
 
+  // Get url to api
+  apiUrl := apiBaseUrl
+
+  if t.Sandbox {
+    apiUrl = sandBaseUrl
+  }
+
 	// Setup api request
-	req, _ := http.NewRequest("GET", apiBaseUrl+"/markets/quotes", nil)
+	req, _ := http.NewRequest("GET", apiUrl+"/markets/quotes", nil)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Authorization", fmt.Sprint("Bearer ", t.ApiKey))
 

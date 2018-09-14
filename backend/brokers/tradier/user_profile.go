@@ -19,8 +19,15 @@ func (t *Api) GetUserProfile() (types.UserProfile, error) {
 	// Setup http client
 	client := &http.Client{}
 
+  // Get url to api
+  apiUrl := apiBaseUrl
+
+  if t.Sandbox {
+    apiUrl = sandBaseUrl
+  }
+
 	// Setup api request
-	req, _ := http.NewRequest("GET", apiBaseUrl+"/user/profile", nil)
+	req, _ := http.NewRequest("GET", apiUrl+"/user/profile", nil)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Authorization", fmt.Sprint("Bearer ", t.ApiKey))
 

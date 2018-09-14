@@ -3,6 +3,7 @@
 APP_ENV=production
 APP_NAME=app.options.cafe
 SITE_URL=https://app.options.cafe
+BACKEND_URL=https://app.options.cafe
 CACHE_DIR=/cache
 HTTP_LOG_REQUESTS=true
 ENCRYPTION_KEY={{ ENCRYPTION_KEY }}

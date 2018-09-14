@@ -171,7 +171,7 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 	}
 
 	// Create new broker entry.
-	_, err2 := t.DB.CreateNewBroker("Tradier", user, tr.Token, tr.RefreshToken, time.Now().Add(time.Duration(tr.ExpiresSec)*time.Second).UTC())
+	broker, err2 := t.DB.CreateNewBroker("Tradier", user, tr.Token, tr.RefreshToken, time.Now().Add(time.Duration(tr.ExpiresSec)*time.Second).UTC())
 
 	if err2 != nil {
 		services.BetterError(err2)
@@ -182,8 +182,18 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 	// Log
 	services.Info("Tradier authorization completed for " + user.Email)
 
+	// Build key to avoid users restarting users
+	str := strconv.Itoa(int(user.Id)) + ":" + strconv.Itoa(int(broker.Id))
+	hash, err := helpers.Encrypt(str)
+
+	if err != nil {
+		services.BetterError(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
+		return
+	}
+
 	// Return success redirect
-	c.Redirect(302, os.Getenv("SITE_URL"))
+	c.Redirect(302, os.Getenv("BACKEND_URL")+"/broker-feed/start?user_id="+strconv.Itoa(int(user.Id))+"&broker_id="+strconv.Itoa(int(broker.Id))+"&key="+hash)
 }
 
 //

@@ -2,7 +2,7 @@
 // Date: 2018-09-11
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-09-12
+// Last Modified: 2018-09-14
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -68,7 +68,7 @@ func StoreBrokerEvents(db models.Datastore, history []types.History, userId uint
 			BrokerAccountId: brokerAccount.Id,
 			BrokerId:        row.Id,
 			Type:            eventType,
-			Date:            helpers.ParseDateNoError(row.Date),
+			Date:            models.Date{helpers.ParseDateNoError(row.Date)},
 			Amount:          row.Amount,
 			Symbol:          row.Symbol,
 			Commission:      row.Commission,

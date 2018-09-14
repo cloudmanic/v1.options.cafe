@@ -46,6 +46,9 @@ func main() {
 	// Setup shared channels
 	WsWriteChan := make(chan websocket.SendStruct, 1000)
 
+	// Actions for users feed channel
+	userActionChan := make(chan users.UserFeedAction, 1000)
+
 	// Setup the notification channel
 	notify.SetWebsocketChannel(WsWriteChan)
 
@@ -53,6 +56,7 @@ func main() {
 	u := &users.Base{
 		DB:          db,
 		Users:       make(map[uint]*users.UserFeed),
+		ActionChan:  userActionChan,
 		WsWriteChan: WsWriteChan,
 	}
 
@@ -63,7 +67,7 @@ func main() {
 	w := websocket.NewController(db, WsWriteChan)
 
 	// Startup controller & websockets
-	c := &controllers.Controller{DB: db, WebsocketController: w}
+	c := &controllers.Controller{DB: db, WebsocketController: w, UserActionChan: userActionChan}
 
 	// Start market status feed
 	go w.StartMarketStatusFeed()

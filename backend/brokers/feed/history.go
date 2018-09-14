@@ -22,6 +22,15 @@ func (t *Base) DoGetHistoryTicker() {
 
 	for {
 
+		// Do we break out ?
+		t.MuPolling.Lock()
+		breakOut := t.Polling
+		t.MuPolling.Unlock()
+
+		if !breakOut {
+			break
+		}
+
 		// Get history from tradier
 		err = t.GetHistory()
 
@@ -29,9 +38,11 @@ func (t *Base) DoGetHistoryTicker() {
 			services.Warning(err)
 		}
 
-		// Sleep for 24 hours
-		time.Sleep(time.Hour * 24)
+		// Sleep for 12 hours
+		time.Sleep(time.Hour * 12)
 	}
+
+	services.Info("Stopping DoGetHistoryTicker() : " + t.User.Email)
 }
 
 //
