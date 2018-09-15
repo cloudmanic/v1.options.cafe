@@ -93,6 +93,20 @@ func (t *Controller) GetBalances(c *gin.Context) {
 		}
 	}
 
+	// // Figure out which broker connection to setup.
+	// switch broker.Name {
+
+	// case "Tradier":
+	// 	brokerCont = tradier.Api{ApiKey: apiKey, DB: t.DB, Sandbox: false}
+
+	// case "Tradier Sandbox":
+	// 	brokerCont = tradier.Api{ApiKey: apiKey, DB: t.DB, Sandbox: true}
+
+	// default:
+	// 	services.Critical("Order: Unknown Broker : " + broker.Name)
+
+	// }
+
 	// Setup the broker
 	broker := tradier.Api{
 		DB:     t.DB,
