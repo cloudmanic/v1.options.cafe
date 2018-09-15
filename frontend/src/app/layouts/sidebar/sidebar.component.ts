@@ -139,6 +139,8 @@ export class SidebarComponent implements OnInit {
         activeAccountId = this.stateService.GetStoredActiveAccountId();
       }
 
+      this.brokerAccountList = [];
+
       // Loop through all the brokers and set our active broker. And make a list.
       for (var k = 0; k < this.brokerList.length; k++) 
       {

@@ -4,8 +4,9 @@
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-import { Observable } from 'rxjs/Rx';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Rank } from '../../models/rank';
 import { Order } from '../../models/order';
 import { Broker } from '../../models/broker';
@@ -58,6 +59,65 @@ export class StateService
   public SiteSuccess = new EventEmitter<string>();
   public BrokerChange = new EventEmitter<number>();
 
+
+  //
+  // Constructor.
+  //
+  constructor(private http: HttpClient, private router: Router) 
+  {
+    this.PingServer();
+  } 
+
+  //
+  // Ping to make sure our access token is still good.
+  // If not redirect back to login. Also the server
+  // uses this as an opportunity to collect some stats.
+  //
+  PingServer()
+  {
+
+    // Ajax call to ping server every 10 seconds
+    setInterval(() => {
+
+      this.http.get(environment.app_server + '/api/v1/ping').subscribe(
+        // Success
+        data => {
+
+          if(data.status == "logout")
+          {
+            this.router.navigate(['/logout']);
+          }
+
+        },
+
+        // Error
+        (err: HttpErrorResponse) => {
+
+          if (err.error instanceof Error) 
+          {
+            // A client-side or network error occurred. Handle it accordingly.
+            console.log('An error occurred:', err.error);
+          } else 
+          {
+            // Log error
+            console.log(err.error.error);
+
+            // Access token mostly not good. 
+            // If the error is blank it often means the 
+            // server is down.
+            if(err.error.error && (err.error.error.length > 0)) 
+            {
+              this.router.navigate(['/logout']);
+            }
+          }
+
+        }
+
+      );
+
+    }, 10000);
+
+  }
 
   //
   // Set accountHistoryList

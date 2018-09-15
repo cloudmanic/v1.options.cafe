@@ -23,6 +23,9 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 
 	apiV1.Use(t.AuthMiddleware())
 	{
+		// Ping
+		apiV1.GET("/ping", t.PingFromServer)
+
 		// Settings
 		apiV1.GET("/settings", t.GetSettings)
 
