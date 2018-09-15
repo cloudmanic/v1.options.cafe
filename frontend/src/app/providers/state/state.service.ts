@@ -83,7 +83,7 @@ export class StateService
         // Success
         data => {
 
-          if(data.status == "logout")
+          if(data["status"] == "logout")
           {
             this.router.navigate(['/logout']);
           }
