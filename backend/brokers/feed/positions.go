@@ -9,11 +9,15 @@ package feed
 import (
 	"time"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/archive"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 )
 
 //
 // Ticker - Positions : 1 hour
+//
+// NOTE: This is started in DoOrdersTicker() as we want to start it after
+// historical positions are sucked in.
 //
 func (t *Base) DoPositionsTicker() {
 
@@ -57,8 +61,19 @@ func (t *Base) GetPositions() error {
 	}
 
 	// Loop through and add any positions to the active_symbols table.
+	// Also see if we need to create a trade group
 	for _, row := range positions {
+
+		// Set active symbol
 		t.DB.CreateActiveSymbol(t.User.Id, row.Symbol)
+
+		// Create a trade group if need be
+		err = archive.PastCreateTradeGroupFromPosition(t.DB, t.User.Id, t.BrokerId, row)
+
+		if err != nil {
+			services.BetterError(err)
+			continue
+		}
 	}
 
 	// Return Happy

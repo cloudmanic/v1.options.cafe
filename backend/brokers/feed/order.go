@@ -47,8 +47,12 @@ func (t *Base) DoOrdersTicker() {
 		// Start the every 3 second ticker.
 		// We do this because we want the archive
 		// Action to run first to avoid race conditions.
+		//
+		// We also start the positions ticker here as we
+		// want that to start after we archive all orders.
 		if !firstDone {
 			go t.DoOrdersActiveTicker()
+			go t.DoPositionsTicker()
 			firstDone = true
 		}
 

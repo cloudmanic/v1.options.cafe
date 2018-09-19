@@ -64,6 +64,7 @@ type Datastore interface {
 
 	// Symbols
 	GetAllSymbols() []Symbol
+	GetSymbolByShortName(short string) (Symbol, error)
 	ValidateSymbolId(value interface{}) error
 	SearchSymbols(query string, sType string) ([]Symbol, error)
 	CreateNewOptionSymbol(short string) (Symbol, error)

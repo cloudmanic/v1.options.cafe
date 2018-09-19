@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
@@ -68,6 +69,79 @@ func StorePositions(db models.Datastore, userId uint, brokerId uint) error {
 	}
 
 	// Return happy
+	return nil
+}
+
+//
+// Create a trade group from a position.
+// Since we only import orders post 2017 from Tradier
+// we could have a position that get added before 2017 and not closed
+// this is how we catch that and create a trade group for it.
+// We are not doing any trade classifying.
+//
+func PastCreateTradeGroupFromPosition(db models.Datastore, userId uint, brokerId uint, pos types.Position) error {
+
+	// Get the symbol we are after (or create if it is not in the system)
+	symbol, err := db.GetSymbolByShortName(pos.Symbol)
+
+	if err != nil {
+		return err
+	}
+
+	// Get the broker account id.
+	brokerAccount, err := db.GetBrokerAccountByBrokerAccountNumber(brokerId, pos.AccountId)
+
+	if err != nil {
+		return err
+	}
+
+	// Check to see if we already have an open position
+	_, err2 := db.GetPositionByUserSymbolStatusAccount(userId, symbol.Id, "Open", brokerAccount.Id)
+
+	if (err2 != nil) && (err2.Error() == "Record not found") {
+
+		// Create trade group
+		tg := models.TradeGroup{
+			UserId:           userId,
+			Name:             "Past " + symbol.Type + " Trade",
+			BrokerAccountId:  brokerAccount.Id,
+			BrokerAccountRef: pos.AccountId,
+			Status:           "Open",
+			Type:             symbol.Type,
+			Risked:           pos.CostBasis,
+			Note:             "Order opened before 2018, so no order history imported. Please verify details of this trade.",
+			Commission:       brokerAccount.StockCommission,
+			OpenDate:         helpers.ParseDateNoError(pos.OpenDate),
+		}
+
+		err = db.CreateTradeGroup(&tg)
+
+		if err != nil {
+			return err
+		}
+
+		// Create position
+		newPos := models.Position{
+			UserId:           userId,
+			TradeGroupId:     tg.Id,
+			BrokerAccountId:  brokerAccount.Id,
+			BrokerAccountRef: pos.AccountId,
+			Status:           "Open",
+			SymbolId:         symbol.Id,
+			Qty:              int(pos.Quantity),
+			OrgQty:           int(pos.Quantity),
+			CostBasis:        pos.CostBasis,
+			AvgOpenPrice:     (pos.CostBasis / pos.Quantity),
+			OpenDate:         helpers.ParseDateNoError(pos.OpenDate),
+		}
+
+		db.CreatePosition(&newPos)
+
+		// Log success
+		services.Info("New Past TradeGroup created for user " + strconv.Itoa(int(userId)) + " TradeGroup Id: " + strconv.Itoa(int(tg.Id)))		
+	}
+
+	// Return Happy
 	return nil
 }
 

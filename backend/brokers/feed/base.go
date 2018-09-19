@@ -42,7 +42,6 @@ func (t *Base) Start() {
 
 	// Setup tickers for broker polling.
 	go t.DoOrdersTicker()
-	go t.DoPositionsTicker()
 	go t.DoGetHistoryTicker()
 	go t.DoUserProfileTicker()
 	go t.DoGetDetailedQuotes()

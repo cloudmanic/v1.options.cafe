@@ -43,6 +43,21 @@ func (t *DB) ValidateSymbolId(value interface{}) error {
 }
 
 //
+// Get a symbol by short name
+//
+func (t *DB) GetSymbolByShortName(short string) (Symbol, error) {
+
+	var symb Symbol
+
+	if t.Where("short_name = ?", short).First(&symb).RecordNotFound() {
+		return symb, errors.New("Unknown symbol.")
+	}
+
+	// Return happy.
+	return symb, nil
+}
+
+//
 // Special function just to create a new options symbol.
 // We pass in a option string such as "SPY180209P00276000"
 // We then build the full name of the option.
