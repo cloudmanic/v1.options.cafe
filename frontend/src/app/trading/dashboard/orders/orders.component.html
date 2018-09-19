@@ -2,7 +2,17 @@
   <h5 class="box__title">Orders</h5>
 </div>
 
-<div class="box__body">
+
+<div class="box__body" *ngIf="! orders.length">
+  <div class="box__inner box__inner--empty">
+    <h4>No orders.</h4>
+
+    <h4>Let's get to work?</h4>
+  </div>
+</div>
+
+
+<div class="box__body" *ngIf="orders.length">
   
   <div class="box__inner">
     
