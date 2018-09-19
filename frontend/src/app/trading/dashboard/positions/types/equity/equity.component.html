@@ -43,7 +43,7 @@
 
           <tr *ngFor="let row of tradeGroups; let key = index;">
             <td>
-              <b>{{ row.Positions[0].Symbol.ShortName }}</b> <br />
+              <strong>{{ row.Positions[0].Symbol.ShortName }}</strong> <br />
               <small>{{ row.Positions[0].Symbol.Name }}</small>
             </td>
 
@@ -60,7 +60,7 @@
             </td>
 
             <td>
-              <strong>{{ quotes[row.Positions[0].Symbol.ShortName].last | currency:'USD':'symbol':'1.2-2' }}</strong>
+              <strong>{{ quotes[row.Positions[0].Symbol.ShortName]?.last | currency:'USD':'symbol':'1.2-2' }}</strong>
             </td>
 
             <td>

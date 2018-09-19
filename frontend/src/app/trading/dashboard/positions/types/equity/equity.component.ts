@@ -7,6 +7,7 @@
 import { Order } from '../../../../../models/order';
 import { TradeGroup } from '../../../../../models/trade-group';
 import { Position } from '../../../../../models/position';
+import { WebsocketService } from '../../../../../providers/http/websocket.service';
 import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../../../../../providers/http/trade.service';
 import { DropdownAction } from '../../../../../shared/dropdown-select/dropdown-select.component';
 import { Component, OnInit, Input, Output, OnChanges, EventEmitter } from '@angular/core';
@@ -23,9 +24,20 @@ export class EquityComponent implements OnInit {
   @Input() orders: Order[];
   @Input() tradeGroups: TradeGroup[]; 
 
-  constructor() { }
+  //
+  // Constructor....
+  //
+  constructor(private websocketService: WebsocketService) { }
 
-  ngOnInit() {
+  //
+  // OnInit....
+  //
+  ngOnInit() 
+  {
+    // // Subscribe to data updates from the quotes - Market Quotes
+    // this.websocketService.quotePushData.subscribe(data => {
+    //   this.quotes[data.symbol] = data;
+    // }); 
   }
 
 }

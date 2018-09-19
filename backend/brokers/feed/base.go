@@ -34,8 +34,15 @@ func (t *Base) Start() {
 
 	services.Info("Starting Polling....")
 
+	_, err := t.Api.GetPositions()
+
+	if err != nil {
+		services.Warning(err)
+	}
+
 	// Setup tickers for broker polling.
 	go t.DoOrdersTicker()
+	go t.DoPositionsTicker()
 	go t.DoGetHistoryTicker()
 	go t.DoUserProfileTicker()
 	go t.DoGetDetailedQuotes()

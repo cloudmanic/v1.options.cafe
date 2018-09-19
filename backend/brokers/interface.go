@@ -15,6 +15,7 @@ type Api interface {
 	SubmitOrder(accountId string, order types.Order) (types.OrderSubmit, error)
 	PreviewOrder(accountId string, order types.Order) (types.OrderPreview, error)
 	GetOrders() ([]types.Order, error)
+	GetPositions() ([]types.Position, error)
 	GetAllOrders() ([]types.Order, error)
 	GetQuotes([]string) ([]types.Quote, error)
 	GetUserProfile() (types.UserProfile, error)
