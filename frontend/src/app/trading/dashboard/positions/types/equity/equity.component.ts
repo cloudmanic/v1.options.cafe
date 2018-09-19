@@ -40,6 +40,89 @@ export class EquityComponent implements OnInit {
     // }); 
   }
 
+
+  //
+  // Get average price paid.
+  //
+  getAvgPricePaid(pos: Position): number 
+  {
+    return pos.CostBasis / pos.Qty;
+  }
+
+  //
+  // Total account percent gain.
+  //
+  getTotalPercentGain(): number 
+  {
+    return (((this.getTotalGains() + this.getTotalCostBasis()) - this.getTotalCostBasis()) / this.getTotalCostBasis()) * 100
+  }
+
+  //
+  // Get total daily gain.
+  //
+  getTotalDailyGain() : number 
+  {
+    let total: number = 0.00;
+
+    for (let i = 0; i < this.tradeGroups.length; i++) {
+      total = total + this.getDailyGain(this.tradeGroups[i].Positions[0]);
+    }
+
+    return total;    
+  }
+
+  //
+  // Get daily Gain
+  //
+  getDailyGain(pos: Position): number 
+  {
+    if (!this.quotes[pos.Symbol.ShortName]) {
+      return 0.00
+    }
+
+    return this.quotes[pos.Symbol.ShortName].change * pos.Qty
+  }
+
+  // 
+  // Get total cost basis
+  //
+  getTotalCostBasis() : number
+  {
+    let total: number = 0.00;
+
+    for(let i = 0; i < this.tradeGroups.length; i++)
+    {
+      total = total + this.tradeGroups[i].Positions[0].CostBasis;
+    }
+
+    return total;
+  }
+
+  // 
+  // Get total gains
+  //
+  getTotalGains(): number {
+    let total: number = 0.00;
+
+    for (let i = 0; i < this.tradeGroups.length; i++) {
+      total = total + this.getTotalGainOfPos(this.tradeGroups[i].Positions[0]);
+    }
+
+    return total;
+  }
+
+  //
+  // Get total gain.
+  //
+  getTotalGainOfPos(pos: Position): number 
+  {
+    if(! this.quotes[pos.Symbol.ShortName])
+    {
+      return 0.00
+    }
+
+    return (this.quotes[pos.Symbol.ShortName].last * pos.Qty) - pos.CostBasis
+  }  
 }
 
 /* End File */

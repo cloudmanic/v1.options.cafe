@@ -56,7 +56,7 @@
             </td>
 
             <td>
-              <strong>$119.45</strong>
+              <strong>{{ getAvgPricePaid(row.Positions[0]) | currency:'USD':'symbol':'1.2-2' }}</strong>
             </td>
 
             <td>
@@ -64,15 +64,23 @@
             </td>
 
             <td>
-              <strong class="title-red">-$36.45 (-7.34%)</strong>
+              <strong [ngClass]="{'title-red': (quotes[row.Positions[0].Symbol.ShortName]?.change < 0), 'title-green': (quotes[row.Positions[0].Symbol.ShortName]?.change > 0)}">
+                {{ quotes[row.Positions[0].Symbol.ShortName]?.change | currency:'USD':'symbol':'1.2-2' }} 
+                ({{ quotes[row.Positions[0].Symbol.ShortName]?.change_percentage | number:'1.2-2' }}%)
+              </strong>
             </td>
 
             <td>
-              <strong class="title-red">-$3.55</strong>
+              <strong [ngClass]="{'title-red': (quotes[row.Positions[0].Symbol.ShortName]?.change < 0), 'title-green': (quotes[row.Positions[0].Symbol.ShortName]?.change > 0)}">
+                {{ getDailyGain(row.Positions[0]) | currency:'USD':'symbol':'1.2-2' }} 
+              </strong>
             </td>
 
             <td>
-              <strong class="title-red">-$453.32 (-8.34%)</strong>
+              <strong [ngClass]="{'title-red': (((quotes[row.Positions[0].Symbol.ShortName]?.last * row.Positions[0].Qty) - row.Positions[0].CostBasis) < 0), 'title-green': (((quotes[row.Positions[0].Symbol.ShortName]?.last * row.Positions[0].Qty) - row.Positions[0].CostBasis) > 0)}">
+                {{ getTotalGainOfPos(row.Positions[0]) | currency:'USD':'symbol':'1.2-2' }}
+                ({{ ((((quotes[row.Positions[0].Symbol.ShortName]?.last * row.Positions[0].Qty) - row.Positions[0].CostBasis)) / row.Positions[0].CostBasis) * 100 | number:'1.2-2' }}%)
+              </strong>
             </td>
 
             <td>
@@ -111,7 +119,7 @@
             <td></td>
 
             <td>
-              <strong>$132,347.83</strong>
+              <strong>{{ getTotalCostBasis() | currency:'USD':'symbol':'1.2-2' }}</strong>
             </td>
 
             <td></td>
@@ -121,11 +129,11 @@
             <td></td>
 
             <td>
-              <strong class="title-red">-$132.83</strong>
+              <strong class="title-red">{{ getTotalDailyGain() | currency:'USD':'symbol':'1.2-2' }}</strong>
             </td>
 
             <td>
-              <strong class="title-green">-$11,324.83 (-112.43%)</strong>
+              <strong class="title-green">{{ getTotalGains() | currency:'USD':'symbol':'1.2-2' }} ({{ getTotalPercentGain() | number:'1.2-2' }}%)</strong>
             </td>
           </tr>
         </table>
