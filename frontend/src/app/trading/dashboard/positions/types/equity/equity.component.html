@@ -1,0 +1,135 @@
+<div class="box__head box__head--relative">
+  <h5 class="box__title">Stocks</h5>
+</div>
+
+<div class="box__body box__body--small">
+  <div class="box__inner">
+    <div class="table table--large table--medium">
+      <div class="table__inner">
+        <table>
+          <tr>
+            <td>
+              <ins>Symbol</ins>
+            </td>
+
+            <td>
+              <ins>Quantity</ins>
+            </td>
+
+            <td>
+              <ins>Cost Basis</ins>
+            </td>
+
+            <td>
+              <ins>Ave Price</ins>
+            </td>
+
+            <td>
+              <ins>Current Price</ins>
+            </td>
+
+            <td>
+              <ins>Daily Change (%)</ins>
+            </td>
+
+            <td>
+              <ins>Daily G/L</ins>
+            </td>
+
+            <td>
+              <ins>Total G/L (%)</ins>
+            </td>
+          </tr>
+
+          <tr *ngFor="let row of tradeGroups; let key = index;">
+            <td>
+              <b>{{ row.Positions[0].Symbol.ShortName }}</b> <br />
+              <small>{{ row.Positions[0].Symbol.Name }}</small>
+            </td>
+
+            <td>
+              <strong>{{ row.Positions[0].Qty }}</strong>
+            </td>
+
+            <td>
+              <strong>{{ row.Positions[0].CostBasis | currency:'USD':'symbol':'1.2-2' }}</strong>
+            </td>
+
+            <td>
+              <strong>$119.45</strong>
+            </td>
+
+            <td>
+              <strong>{{ quotes[row.Positions[0].Symbol.ShortName].last | currency:'USD':'symbol':'1.2-2' }}</strong>
+            </td>
+
+            <td>
+              <strong class="title-red">-$36.45 (-7.34%)</strong>
+            </td>
+
+            <td>
+              <strong class="title-red">-$3.55</strong>
+            </td>
+
+            <td>
+              <strong class="title-red">-$453.32 (-8.34%)</strong>
+            </td>
+
+            <td>
+              <div class="dropdown select">
+                <div class="dropdown__head dropdown--trigger"></div><!-- /.dropdown__head dropdown-trigger -->
+
+                <div class="dropdown__body">
+                  <ul class="list-actions">
+                    <li>
+                      <a href="#">Position Details</a>
+                    </li>
+
+                    <li>
+                      <a href="#">Close Trade @ $0.03</a>
+                    </li>
+
+                    <li>
+                      <a href="#">Close Trade @ Market</a>
+                    </li>
+
+                    <li>
+                      <a href="#">Close Trade @ Limit</a>
+                    </li>
+                  </ul><!-- /.list-actions -->
+                </div><!-- /.dropdown__body -->
+              </div><!-- /.dropdown select -->
+            </td>
+          </tr>
+
+        
+          <tr>
+            <td>
+              <small>Totals</small>
+            </td>
+
+            <td></td>
+
+            <td>
+              <strong>$132,347.83</strong>
+            </td>
+
+            <td></td>
+
+            <td></td>
+
+            <td></td>
+
+            <td>
+              <strong class="title-red">-$132.83</strong>
+            </td>
+
+            <td>
+              <strong class="title-green">-$11,324.83 (-112.43%)</strong>
+            </td>
+          </tr>
+        </table>
+      </div><!-- /.table__inner -->
+    </div><!-- /.table table-large table-medium -->
+  </div><!-- /.box__inner -->
+</div><!-- /.box__body box__body--small -->

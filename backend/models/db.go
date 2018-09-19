@@ -224,6 +224,7 @@ func LoadTestingData(db *gorm.DB) {
 
 	// Orders
 	db.Exec("TRUNCATE TABLE orders;")
+
 	db.Exec(`INSERT INTO orders (id, user_id, created_at, updated_at, broker_account_id, broker_ref, broker_account_ref, type, symbol_id, option_symbol_id, side, qty, status, duration, price, avg_fill_price, exec_quantity, last_fill_price, last_fill_quantity, remaining_quantity, create_date, transaction_date, class, num_legs, position_reviewed) VALUES 
 	(1,1,'2018-02-17 00:13:53','2018-02-17 00:13:54',2,'734801','ABC123ZY','limit',1,11,'buy_to_open',1,'filled','day',2.40,2.39,1.00,2.39,1.00,0.00,'2018-01-16 11:54:50','2018-01-16 11:54:51','option',0,'No'),
 	(2,1,'2018-02-17 00:13:53','2018-02-17 00:13:54',2,'735196','ABC123ZY','limit',1,11,'sell_to_close',-1,'filled','gtc',3.39,3.62,1.00,3.62,1.00,0.00,'2018-01-16 15:29:51','2018-02-05 06:30:03','option',0,'No'),

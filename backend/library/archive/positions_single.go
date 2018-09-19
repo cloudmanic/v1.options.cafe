@@ -19,7 +19,7 @@ import (
 //
 // Do single option order
 //
-func doSingleOptionOrder(db models.Datastore, userId uint, brokerId uint) error {
+func DoSingleOptionOrder(db models.Datastore, userId uint, brokerId uint) error {
 
 	// Query and get all orders we have not reviewed before.
 	orders, err := db.GetOrdersByUserClassStatusReviewed(userId, "option", "filled", "No")

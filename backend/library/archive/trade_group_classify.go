@@ -22,7 +22,7 @@ func GetAmountRiskedInTrade(positions *[]models.Position) (float64, float64) {
 	// Based on the trade type we call different functions
 	switch tradeType {
 
-	case "Stock":
+	case "Equity":
 		return trade_types.GetSingleStockRiskProfile(positions)
 
 	case "Option":
@@ -49,7 +49,7 @@ func ClassifyTradeGroup(positions *[]models.Position) string {
 
 	// single stock trade
 	if trade_types.IsSingleStock(positions) {
-		return "Stock"
+		return "Equity"
 	}
 
 	// single option trade

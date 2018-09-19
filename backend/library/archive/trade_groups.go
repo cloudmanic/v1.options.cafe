@@ -33,13 +33,14 @@ func DoTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 	// Get the broker account.
 	var brokerAccount = models.BrokerAccount{}
 
-	err := db.Query(&brokerAccount, models.QueryParam{Wheres: []models.KeyValue{
-		{Key: "id", ValueInt: int(order.BrokerAccountId)},
-		{Key: "user_id", ValueInt: int(userId)},
-	}})
+	err := db.Query(&brokerAccount, models.QueryParam{
+		Wheres: []models.KeyValue{
+			{Key: "id", ValueInt: int(order.BrokerAccountId)},
+			{Key: "user_id", ValueInt: int(userId)},
+		}})
 
 	if err != nil {
-		return nil
+		return err
 	}
 
 	// See if we have a trade group of any of the positions

@@ -19,7 +19,7 @@ import (
 //
 // Do multi leg orders - Just when you open a position.
 //
-func doMultiLegOrders(db models.Datastore, userId uint, brokerId uint) error {
+func DoMultiLegOrders(db models.Datastore, userId uint, brokerId uint) error {
 
 	// Query and get all orders we have not reviewed before.
 	orders, err := db.GetOrdersByUserClassStatusReviewed(userId, "multileg", "filled", "No")
@@ -63,8 +63,8 @@ func doMultiLegOrders(db models.Datastore, userId uint, brokerId uint) error {
 				loopErr = err
 
 			default:
-				services.Critical("doMultiLegOrders() : Unknown Side")
-				loopErr = errors.New("doMultiLegOrders() : Unknown Side")
+				services.Critical("DoMultiLegOrders() : Unknown Side")
+				loopErr = errors.New("DoMultiLegOrders() : Unknown Side")
 			}
 
 		}

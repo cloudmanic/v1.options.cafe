@@ -121,6 +121,7 @@ export class TradeGroup {
 export class TradeGroupsCont 
 {
   constructor(
+    public Equity: TradeGroup[],
     public Option: TradeGroup[],
     public PutCreditSpread: TradeGroup[],
     public CallCreditSpread: TradeGroup[], 

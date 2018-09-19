@@ -25,15 +25,22 @@ func StorePositions(db models.Datastore, userId uint, brokerId uint) error {
 	// Just easier to do this since we often comment stuff out for testing
 	var err error
 
+	// Process Equity Orders
+	err = DoEquityOrder(db, userId)
+
+	if err != nil {
+		return err
+	}
+
 	// Process multi leg orders
-	err = doMultiLegOrders(db, userId, brokerId)
+	err = DoMultiLegOrders(db, userId, brokerId)
 
 	if err != nil {
 		return err
 	}
 
 	// Process single option order
-	err = doSingleOptionOrder(db, userId, brokerId)
+	err = DoSingleOptionOrder(db, userId, brokerId)
 
 	if err != nil {
 		return err

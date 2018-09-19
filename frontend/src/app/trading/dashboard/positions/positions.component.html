@@ -1,3 +1,7 @@
+<li class="box--bordered" *ngIf="tradeGroups?.Equity.length">
+  <app-trading-position-type-equity [quotes]="quotes" [orders]="orders" [tradeGroups]="tradeGroups?.Equity"></app-trading-position-type-equity>
+</li>
+
 <li class="box--bordered" *ngIf="tradeGroups?.Option.length">
   <app-trading-position [quotes]="quotes" [orders]="orders" [title]="'Options'" [tradeGroups]="tradeGroups?.Option"></app-trading-position>
 </li>

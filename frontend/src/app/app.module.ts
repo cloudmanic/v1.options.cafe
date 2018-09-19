@@ -72,6 +72,7 @@ import { DropdownSelectComponent } from './shared/dropdown-select/dropdown-selec
 import { SettingsComponent } from './settings/settings.component';
 import { SubNavComponent } from './settings/sub-nav/sub-nav.component';
 import { AddEditComponent as ScreenerAddEditComponent } from './trading/screener/add-edit/add-edit.component';
+import { EquityComponent } from './trading/dashboard/positions/types/equity/equity.component';
 
 @NgModule({
   declarations: [
@@ -123,6 +124,7 @@ import { AddEditComponent as ScreenerAddEditComponent } from './trading/screener
     SubNavComponent,
     ScreenerAddEditComponent,
     AccountHistoryComponent,
+    EquityComponent,
   ],
   
   imports: [
