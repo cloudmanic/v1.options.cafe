@@ -42,6 +42,33 @@ export class EquityComponent implements OnInit {
 
 
   //
+  // Get market value
+  //
+  getMarketValue(pos: Position): number
+  {
+    if (!this.quotes[pos.Symbol.ShortName]) {
+      return 0.00
+    }
+
+    return this.quotes[pos.Symbol.ShortName].last * pos.Qty    
+  }
+
+  //
+  // Get total market value.
+  //
+  getTotalMarketValue(): number
+  {
+    let total: number = 0.00;
+
+    for (let i = 0; i < this.tradeGroups.length; i++) 
+    {
+      total = total + this.getMarketValue(this.tradeGroups[i].Positions[0]);
+    }
+
+    return total;     
+  }
+
+  //
   // Get average price paid.
   //
   getAvgPricePaid(pos: Position): number 
@@ -64,7 +91,8 @@ export class EquityComponent implements OnInit {
   {
     let total: number = 0.00;
 
-    for (let i = 0; i < this.tradeGroups.length; i++) {
+    for (let i = 0; i < this.tradeGroups.length; i++) 
+    {
       total = total + this.getDailyGain(this.tradeGroups[i].Positions[0]);
     }
 

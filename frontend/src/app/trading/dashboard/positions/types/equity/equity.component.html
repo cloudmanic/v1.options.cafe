@@ -39,6 +39,10 @@
             <td>
               <ins>Total G/L (%)</ins>
             </td>
+
+            <td>
+              <ins>Market Value</ins>
+            </td>            
           </tr>
 
           <tr *ngFor="let row of tradeGroups; let key = index;">
@@ -82,6 +86,12 @@
                 ({{ ((((quotes[row.Positions[0].Symbol.ShortName]?.last * row.Positions[0].Qty) - row.Positions[0].CostBasis)) / row.Positions[0].CostBasis) * 100 | number:'1.2-2' }}%)
               </strong>
             </td>
+
+            <td>
+              <strong>
+                {{ getMarketValue(row.Positions[0]) | currency:'USD':'symbol':'1.2-2' }} 
+              </strong>
+            </td>            
 
             <td>
               <div class="dropdown select">
@@ -129,12 +139,20 @@
             <td></td>
 
             <td>
-              <strong class="title-red">{{ getTotalDailyGain() | currency:'USD':'symbol':'1.2-2' }}</strong>
+              <strong [ngClass]="{'title-red': (getTotalDailyGain() < 0), 'title-green': (getTotalDailyGain() > 0)}">
+                {{ getTotalDailyGain() | currency:'USD':'symbol':'1.2-2' }}
+              </strong>
             </td>
 
             <td>
-              <strong class="title-green">{{ getTotalGains() | currency:'USD':'symbol':'1.2-2' }} ({{ getTotalPercentGain() | number:'1.2-2' }}%)</strong>
+              <strong [ngClass]="{'title-red': (getTotalGains() < 0), 'title-green': (getTotalGains() > 0)}">
+                {{ getTotalGains() | currency:'USD':'symbol':'1.2-2' }} ({{ getTotalPercentGain() | number:'1.2-2' }}%)
+              </strong>
             </td>
+
+            <td>
+              <strong>{{ getTotalMarketValue() | currency:'USD':'symbol':'1.2-2' }}</strong>
+            </td>            
           </tr>
         </table>
       </div><!-- /.table__inner -->
