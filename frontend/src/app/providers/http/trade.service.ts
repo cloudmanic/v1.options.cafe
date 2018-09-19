@@ -57,6 +57,8 @@ export class TradeService
   {
     let body = {
       broker_account_id: parseInt(brokerAccountId),
+      side: trade.Side,
+      qty: trade.Qty,
       class: trade.Class,
       symbol: trade.Symbol,
       duration: trade.Duration,
@@ -65,13 +67,16 @@ export class TradeService
       legs: []
     }
 
-    for(let i = 0; i < trade.Legs.length; i++)
+    if(trade.Legs) 
     {
-      body.legs.push(new TradeOptionLegsPost().createNew(
-        trade.Legs[i].Side, 
-        Number(trade.Legs[i].Qty), 
-        trade.Legs[i].Symbol.ShortName
-      ));
+      for (let i = 0; i < trade.Legs.length; i++) 
+      {
+        body.legs.push(new TradeOptionLegsPost().createNew(
+          trade.Legs[i].Side,
+          Number(trade.Legs[i].Qty),
+          trade.Legs[i].Symbol.ShortName
+        ));
+      }
     }
 
     return this.http.post<OrderPreview>(environment.app_server + '/api/v1/orders/preview', body)
@@ -219,9 +224,11 @@ export class TradeDetails
 {
   Class: string; // equity, option, multileg, combo
   Symbol: string;
-  OrderType: string; // market, debit, credit, even
+  Side: string; // buy, sell, buy_to_cover, sell_short
+  OrderType: string; // market, debit, credit, even, limit, stop, stop_limit
   Duration: string; // day, gtc
   Price: number;
+  Qty: number;
   Legs: TradeOptionLegs[];
 }
 

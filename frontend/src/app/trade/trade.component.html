@@ -32,7 +32,7 @@
 
         <div class="tabs__body">
           <div class="tab" [ngClass]="{'current': (tradeDetails.Class == 'equity') }">
-            Equity
+            <app-trade-equity [showTradeBuilder]="showTradeBuilder" [quotes]="quotes" [tradeDetails]="tradeDetails"></app-trade-equity>
           </div>
 
           <div class="tab" [ngClass]="{'current': (tradeDetails.Class == 'option') }">

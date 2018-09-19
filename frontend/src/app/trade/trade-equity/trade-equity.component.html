@@ -1,0 +1,187 @@
+<div class="tab__flex">
+  <div class="tab__inner">
+    <div class="search">
+
+      <form (submit)="onSearchSubmit()">
+        <div class="dropdown dropdown--search trade-search">
+          <app-typeahead-symbols (selected)="onSearchTypeAheadClick($event)" searchTerm="{{ typeAheadSymbol?.ShortName }}" clearAfterSelect="false" class="typeahead-cont"></app-typeahead-symbols>
+          <input type="submit" value="Search" class="btn search__btn" />
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+
+
+
+  <div class="tab__inner" *ngIf="symbol">
+    <div class="table--stocks">
+      <table>
+
+        <tr>
+          <td>{{ symbol?.Name }}</td>
+
+          <td></td>
+
+          <td>
+            <strong [ngClass]="{'title-red': (quotes[symbol.ShortName]?.change_percentage < 0), 'title-green': (quotes[symbol.ShortName]?.change_percentage > 0)}">{{ quotes[symbol.ShortName]?.change | currency:'USD':'symbol':'1.2-2' }}</strong>
+          </td>
+
+          <td>
+            <strong [ngClass]="{'title-red': (quotes[symbol.ShortName]?.change_percentage < 0), 'title-green': (quotes[symbol.ShortName]?.change_percentage > 0)}">({{ quotes[symbol.ShortName]?.change_percentage | number:'1.2-2' }}%)</strong>
+          </td>
+        </tr>
+
+        <tr>
+          <td>{{ symbol?.ShortName }}</td>
+
+          <td>
+            BID <strong>{{ quotes[symbol.ShortName]?.bid | currency:'USD':'symbol':'1.2-2' }}</strong>
+          </td>
+
+          <td>
+            ASK <strong>{{ quotes[symbol.ShortName]?.ask | currency:'USD':'symbol':'1.2-2' }}</strong>
+          </td>
+        </tr>
+
+      </table>
+    </div><!-- /.table-stocks -->
+  </div><!-- /.tab__inner -->
+</div><!-- /.tab__flex -->
+
+
+
+
+
+
+
+<div class="form form--search">
+  <form action="?" method="post">
+    <div class="form__body">
+      <div class="form__row">
+
+        <div class="form__col form__col--size1">
+          <label for="field-search-side" class="hidden">Side</label>
+
+          <div class="form__controls">
+            <div class="select">
+              <select name="Side" id="field-side" [(ngModel)]="tradeDetails.Side">
+                <option value="buy">Buy</option>
+                <option value="buy_to_cover">Buy to Cover</option>
+                <option value="sell">Sell</option>
+                <option value="sell_short">Sell Short</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+
+
+        <div class="form__col form__col--size2">
+          <label for="field-search-quantity" class="hidden">Quantity</label>
+
+          <div class="form__controls">
+            <input type="text" class="field" name="Qty" id="field-search-quantity" value="12" placeholder="Quantity" [(ngModel)]="tradeDetails.Qty" />
+          </div>
+        </div>
+
+
+        <div class="form__col form__col--size1">
+          <label for="field-search-order-type" class="hidden">Order Type</label>
+
+          <div class="form__controls">
+            <div class="select">
+              <select name="OrderType" id="field-search-order-type" [(ngModel)]="tradeDetails.OrderType">
+                <option value="market">Market</option>                
+                <option value="limit">Limit</option>                
+                <option value="stop">Stop</option>
+                <option value="stop_limit">Stop Limit</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        
+
+        <div class="form__col form__col--size3">
+          <label for="field-search-period" class="hidden">Day</label>
+
+          <div class="form__controls">
+            <div class="select">
+              <select name="Duration" id="field-search-period" [(ngModel)]="tradeDetails.Duration">
+                <option value="day">Today</option>
+                <option value="gtc">GTC</option>                               
+              </select>
+            </div>
+          </div>
+        </div>
+
+
+      </div><!-- /.form__row -->
+    </div><!-- /.form__body -->
+
+    <div class="form__actions--flex">
+      <div class="table-preview form__aside" *ngIf="orderPreview">
+
+        <div class="banner banner--medium banner--error" *ngIf="orderPreview.Error">
+          <h6 class="banner__title">
+            <strong>{{ orderPreview.Error }}</strong>
+          </h6>
+        </div> 
+
+
+        <table *ngIf="! orderPreview.Error">
+          <tr>
+            <th>Trade Preview</th>
+
+            <td>
+              <p>
+                COMMISSION <br />
+
+                <strong>{{ orderPreview.Commission | currency:'USD':'symbol':'1.2-2' }}</strong>
+              </p>
+            </td>
+
+            <td *ngIf="orderPreview.OrderCost < 0">
+              <p>
+                ORDER PROCEEDS <br />
+
+                <strong>{{ (orderPreview.OrderCost * -1) | currency:'USD':'symbol':'1.2-2' }}</strong>
+              </p>
+            </td>
+
+            <td *ngIf="orderPreview.OrderCost > 0">
+              <p>
+                ORDER COST <br />
+
+                <strong>{{ orderPreview.OrderCost | currency:'USD':'symbol':'1.2-2' }}</strong>
+              </p>
+            </td>
+
+            <td>
+              <p>
+                EST. TOTAL COST <br />
+
+                <strong>{{ orderPreview.Cost | currency:'USD':'symbol':'1.2-2' }}</strong>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </div><!-- /.table-preview form__aside -->
+
+
+      <div class="form__actions__inner" *ngIf="orderPreview">
+        <input type="reset" value="Reset" class="link-action" (click)="restTrade()" />
+        <input type="submit" value="Preview" class="btn form__btn" (click)="previewTrade()" />
+        <input type="submit" value="Submit" class="btn btn--pink form__btn" *ngIf="! orderPreview.Error" (click)="submitTrade()" />
+      </div>
+
+      <div class="form__actions__inner" *ngIf="! orderPreview">
+        <input type="reset" value="Reset" class="link-action" (click)="restTrade()" />
+        <input type="submit" value="Preview" class="btn form__btn" (click)="previewTrade()" />
+      </div>
+
+    </div><!-- /.form__actions-flex -->
+  </form>
+</div><!-- /.form form-search -->
