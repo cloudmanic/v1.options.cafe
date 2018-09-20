@@ -54,6 +54,11 @@ import { BacktestHomeComponent } from './backtest/home/home.component';
 import { AccountHistoryComponent } from './reports/account-history/account-history.component';
 import { AccountSummaryComponent } from './reports/account-summary/account-summary.component';
 
+// Settings
+import { BrokersComponent } from './settings/brokers/brokers.component';
+import { TradingComponent } from './settings/trading/trading.component';
+import { AccountComponent } from './settings/account/account.component';
+
 // Trading
 import { IvrComponent } from './trading/dashboard/ivr/ivr.component';
 import { TradesComponent } from './trading/trades/home.component';
@@ -69,8 +74,6 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
 import { TradeComponent } from './trade/trade.component';
 import { TradeMultiLegComponent } from './trade/trade-multi-leg/trade-multi-leg.component';
 import { DropdownSelectComponent } from './shared/dropdown-select/dropdown-select.component';
-import { SettingsComponent } from './settings/settings.component';
-import { SubNavComponent } from './settings/sub-nav/sub-nav.component';
 import { AddEditComponent as ScreenerAddEditComponent } from './trading/screener/add-edit/add-edit.component';
 import { EquityComponent } from './trading/dashboard/positions/types/equity/equity.component';
 import { TradeEquityComponent } from './trade/trade-equity/trade-equity.component';
@@ -121,12 +124,13 @@ import { TradeEquityComponent } from './trade/trade-equity/trade-equity.componen
     TradeComponent,
     TradeMultiLegComponent,
     DropdownSelectComponent,
-    SettingsComponent,
-    SubNavComponent,
     ScreenerAddEditComponent,
     AccountHistoryComponent,
     EquityComponent,
     TradeEquityComponent,
+    BrokersComponent,
+    AccountComponent,
+    TradingComponent,
   ],
   
   imports: [

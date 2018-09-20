@@ -64,6 +64,30 @@
 
 
 
+		<div class="shell shell--fluid" *ngIf="section == 'settings'">
+			
+			<div class="bar__inner">
+				<nav class="nav-centered">
+					<ul>
+						<li [ngClass]="{ 'current': (subSection == 'account') }">
+							<a routerLink="/settings/account">Account</a>
+						</li><!-- /.current -->
+
+						<li [ngClass]="{ 'current': (subSection == 'trading') }">
+							<a routerLink="/settings/trading">Trading</a>
+						</li>
+
+						<li [ngClass]="{ 'current': (subSection == 'brokers') }">
+							<a routerLink="/settings/brokers">Brokers</a>
+						</li>
+					</ul>
+				</nav>
+
+			</div>
+		</div>
+
+
+
 	</div>
 
 </div>

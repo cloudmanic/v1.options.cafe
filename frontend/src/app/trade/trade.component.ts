@@ -31,7 +31,7 @@ export class TradeComponent implements OnInit
 
     // Default values
     this.tradeDetails.Symbol = "";
-    this.tradeDetails.Qty = "";
+    this.tradeDetails.Qty = 1;
     this.tradeDetails.Side = "buy";
     this.tradeDetails.Class = "equity";
     this.tradeDetails.Duration = "day";
@@ -74,7 +74,7 @@ export class TradeComponent implements OnInit
     // Set default if need be.
     if(this.tradeDetails.Class == undefined) 
     {
-      this.tradeDetails.Qty = "";      
+      this.tradeDetails.Qty = 1;      
       this.tradeDetails.Side = "buy";      
       this.tradeDetails.Class = "equity";
       this.tradeDetails.Duration = "day";

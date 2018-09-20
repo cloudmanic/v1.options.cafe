@@ -15,7 +15,9 @@ import { AuthForgotPasswordComponent } from './auth/forgot-password/home.compone
 import { LayoutCoreComponent } from './layouts/core/core.component';
 
 // Setting
-import { SettingsComponent } from './settings/settings.component';
+import { AccountComponent } from './settings/account/account.component';
+import { TradingComponent } from './settings/trading/trading.component';
+import { BrokersComponent } from './settings/brokers/brokers.component';
 
 // Backtest
 import { BacktestHomeComponent } from './backtest/home/home.component';
@@ -60,7 +62,9 @@ const appRoutes: Routes = [
     { path: 'backtest', component: BacktestHomeComponent, canActivate: [AuthGuard], data: { section: 'backtest', subSection: 'dashboard', action: '' } },
 
     // Settings
-    { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard], data: { section: 'settings', subSection: 'dashboard', action: '' } }
+    { path: 'settings/account', component: AccountComponent, canActivate: [AuthGuard], data: { section: 'settings', subSection: 'account', action: '' } },
+    { path: 'settings/trading', component: TradingComponent, canActivate: [AuthGuard], data: { section: 'settings', subSection: 'trading', action: '' } },
+    { path: 'settings/brokers', component: BrokersComponent, canActivate: [AuthGuard], data: { section: 'settings', subSection: 'brokers', action: '' } }
     
   ] },
   
