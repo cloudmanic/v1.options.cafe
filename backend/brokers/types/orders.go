@@ -34,6 +34,7 @@ type Order struct {
 	Status            string     `json:"status"`
 	Duration          string     `json:"duration"`
 	Price             float64    `json:"price"`
+	Stop              float64    `json:"stop"`
 	AvgFillPrice      float64    `json:"avg_fill_price"`
 	ExecQuantity      float64    `json:"exec_quantity"`
 	LastFillPrice     float64    `json:"last_fill_price"`

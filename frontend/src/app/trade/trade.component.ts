@@ -21,7 +21,7 @@ import { WebsocketService } from '../providers/http/websocket.service';
 export class TradeComponent implements OnInit 
 {
   quotes = {}
-  showTradeBuilder: boolean = true;
+  showTradeBuilder: boolean = false;
   tradeDetails: TradeDetails = new TradeDetails();
 
   //
@@ -30,8 +30,8 @@ export class TradeComponent implements OnInit
   constructor(private websocketService: WebsocketService, private tradeService: TradeService, private optionsChainService: OptionsChainService, private symbolService: SymbolService) {
 
     // Default values
-    this.tradeDetails.Symbol = "T";
-    this.tradeDetails.Qty = 1;
+    this.tradeDetails.Symbol = "";
+    this.tradeDetails.Qty = "";
     this.tradeDetails.Side = "buy";
     this.tradeDetails.Class = "equity";
     this.tradeDetails.Duration = "day";
@@ -74,7 +74,9 @@ export class TradeComponent implements OnInit
     // Set default if need be.
     if(this.tradeDetails.Class == undefined) 
     {
-      this.tradeDetails.Class = "multileg";
+      this.tradeDetails.Qty = "";      
+      this.tradeDetails.Side = "buy";      
+      this.tradeDetails.Class = "equity";
       this.tradeDetails.Duration = "day";
       this.tradeDetails.OrderType = "market";
     }

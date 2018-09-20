@@ -29,21 +29,27 @@ export class TradeService
   {
     let body = {
       broker_account_id: parseInt(brokerAccountId),
+      side: trade.Side,
+      quantity: Number(trade.Qty),      
       class: trade.Class,
       symbol: trade.Symbol,
       duration: trade.Duration,
       type: trade.OrderType,
       price: Number(trade.Price),
+      stop: Number(trade.Stop),
       legs: []
     }
 
-    for (let i = 0; i < trade.Legs.length; i++) 
+    if(trade.Legs) 
     {
-      body.legs.push(new TradeOptionLegsPost().createNew(
-        trade.Legs[i].Side,
-        Number(trade.Legs[i].Qty),
-        trade.Legs[i].Symbol.ShortName
-      ));
+      for (let i = 0; i < trade.Legs.length; i++) 
+      {
+        body.legs.push(new TradeOptionLegsPost().createNew(
+          trade.Legs[i].Side,
+          Number(trade.Legs[i].Qty),
+          trade.Legs[i].Symbol.ShortName
+        ));
+      }
     }
 
     return this.http.post<OrderSubmit>(environment.app_server + '/api/v1/orders', body)
@@ -58,12 +64,13 @@ export class TradeService
     let body = {
       broker_account_id: parseInt(brokerAccountId),
       side: trade.Side,
-      qty: trade.Qty,
+      quantity: Number(trade.Qty),
       class: trade.Class,
       symbol: trade.Symbol,
       duration: trade.Duration,
       type: trade.OrderType,
       price: Number(trade.Price),
+      stop: Number(trade.Stop),
       legs: []
     }
 
@@ -228,6 +235,7 @@ export class TradeDetails
   OrderType: string; // market, debit, credit, even, limit, stop, stop_limit
   Duration: string; // day, gtc
   Price: number;
+  Stop: number;
   Qty: number;
   Legs: TradeOptionLegs[];
 }

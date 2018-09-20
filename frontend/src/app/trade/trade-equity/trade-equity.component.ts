@@ -52,10 +52,66 @@ export class TradeEquityComponent implements OnInit
   }
 
   //
+  // Submit Trade
+  //
+  submitTrade() {
+    // Ajax call to submit trade.
+    this.tradeService.submitTrade(this.tradeDetails, this.stateService.GetStoredActiveAccountId()).subscribe(
+
+      // Success (as in no server errors)
+      data => {
+        if (data.Status == "ok") 
+        {
+          this.restTrade();
+
+          // Close trade window
+          let event = new TradeEvent();
+          event.Action = "trade-success";
+          this.tradeService.tradeEvent.emit(event);
+
+          // Show success notice
+          this.stateService.SiteSuccess.emit("Order Submitted: Your order number is #" + data.Id);
+        } else 
+        {
+          alert(data.Error);
+        }
+      },
+
+      // Error
+      (err: HttpErrorResponse) => {
+
+        if (err.error instanceof Error) {
+          alert(err.error.message);
+        } else {
+          alert(err.error.error);
+        }
+
+      }
+
+    );
+  }  
+
+  //
   // Preview Trade
   //
   previewTrade() 
   {
+    // Do some basic error checking - Search
+    if (!this.tradeDetails.Symbol) 
+    {
+      this.orderPreview = new OrderPreview();
+      this.orderPreview.Error = "A symbol is required. Please search for one.";
+      return;
+    }
+
+    // Do some basic error checking - QTY
+    if(this.tradeDetails.Qty <= 0) 
+    {
+      this.orderPreview = new OrderPreview();
+      this.orderPreview.Error = "Quantity is required.";
+      return;
+    }
+
     // Ajax call to preview trade.
     this.tradeService.previewTrade(this.tradeDetails, this.stateService.GetStoredActiveAccountId()).subscribe(
 
@@ -96,6 +152,9 @@ export class TradeEquityComponent implements OnInit
     // Reset symbol
     this.symbol = null;
     this.typeAheadSymbol = null;
+
+    // Reset preview
+    this.orderPreview = new OrderPreview();
   }  
 
   //

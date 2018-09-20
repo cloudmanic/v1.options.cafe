@@ -156,6 +156,70 @@ func TestPreviewOrder02(t *testing.T) {
 }
 
 //
+// Test - PreviewOrder 03 - equity trade
+//
+func TestPreviewOrder03(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Flush pending mocks after test execution
+	defer gock.Off()
+
+	// Setup mock request.
+	gock.New("https://api.tradier.com/v1").
+		Post("/accounts/abc1235423/orders").
+		Reply(200).
+		BodyString(`{"order":{"status":"ok","commission":3.49000000,"cost":36.860000000000,"fees":0,"symbol":"T","quantity":1.00,"side":"buy","type":"market","duration":"day","result":true,"price":0.00,"order_cost":33.370000000000,"margin_change":0,"request_date":"2018-09-20T02:07:21.490","extended_hours":false,"class":"equity","strategy":"equity"}}`)
+
+	// Post data
+	order := types.Order{
+		BrokerAccountId: 1,
+		Class:           "equity",
+		Symbol:          "T",
+		Duration:        "day",
+		Type:            "market",
+		Quantity:        1,
+		Side:            "buy",
+	}
+
+	// Encode json
+	jsonText, _ := json.Marshal(order)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("POST", "/api/v1/orders/preview", bytes.NewBuffer(jsonText))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.POST("/api/v1/orders/preview", c.PreviewOrder)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Grab result and convert to strut
+	result := types.OrderPreview{}
+	err := json.Unmarshal([]byte(w.Body.String()), &result)
+
+	// Test result
+	st.Expect(t, err, nil)
+	st.Expect(t, result.Status, "ok")
+	st.Expect(t, result.Cost, 36.86)
+	st.Expect(t, result.Type, "market")
+	st.Expect(t, result.Strategy, "equity")
+	st.Expect(t, result.Commission, 3.49)
+}
+
+//
 // Test - SubmitOrder 01
 //
 func TestSubmitOrder01(t *testing.T) {

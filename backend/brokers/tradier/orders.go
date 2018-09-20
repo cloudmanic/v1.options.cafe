@@ -472,6 +472,9 @@ func prepOrder(order types.Order) url.Values {
 	params.Set("symbol", order.Symbol)
 	params.Set("duration", order.Duration)
 	params.Set("class", order.Class)
+	params.Set("side", order.Side)
+	params.Set("stop", strconv.FormatFloat(order.Stop, 'f', 2, 64))
+	params.Set("quantity", strconv.FormatFloat(order.Quantity, 'f', 2, 64))
 
 	// Multi Leg?
 	for key, row := range order.Legs {

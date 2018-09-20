@@ -101,7 +101,8 @@ export class TradeMultiLegComponent implements OnInit
   //
   // Preview Trade
   //
-  previewTrade() {
+  previewTrade() 
+  {
     // Ajax call to preview trade.
     this.tradeService.previewTrade(this.tradeDetails, this.stateService.GetStoredActiveAccountId()).subscribe(
 
@@ -203,7 +204,13 @@ export class TradeMultiLegComponent implements OnInit
   //
   // Load chain for all legs (normally called at the start when we pass in a full trade)
   //
-  loadChainForAllLegs() {
+  loadChainForAllLegs() 
+  {
+    if(! this.tradeDetails.Legs)
+    {
+      return; 
+    }
+
     for (let i = 0; i < this.tradeDetails.Legs.length; i++) 
     {
       this.onExpireChange(this.tradeDetails.Legs[i], i);

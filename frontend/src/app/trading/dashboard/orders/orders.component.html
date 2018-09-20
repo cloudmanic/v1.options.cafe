@@ -25,6 +25,10 @@
             </td>     
 
             <td>
+              <ins>Side</ins>
+            </td> 
+
+            <td>
               <ins>Last</ins>
             </td>     
 
@@ -58,41 +62,49 @@
             <!-- Equity Order -->
             <tr *ngIf="row.Class == 'equity'" [ngClass]="{ 'table__row--bordered': (k != 0) }">
               <td><strong>{{ quotes[row.Symbol]?.description }}</strong></td>  
+
+              <!-- Side -->
+              <td *ngIf="row.Side == 'buy'">Buy</td> 
+              <td *ngIf="row.Side == 'sell'">Sell</td> 
+              <td *ngIf="row.Side == 'sell_short'">Sell Short</td>                           
+              <td *ngIf="row.Side == 'buy_to_cover'">Buy To Cover</td> 
             
+              <!-- Last -->  
               <td>{{ quotes[row.Symbol]?.last | currency:'USD':'symbol':'1.2-2' }}</td> 
-            
-              <td>{{ row.Quantity }}</td> 
-            
+
+              <!-- Quantity -->
+              <td *ngIf="row.Side == 'buy'">{{ row.Quantity }}</td> 
+              <td *ngIf="row.Side == 'sell_short'">{{ row.Quantity * -1 }}</td>             
+
+              <!-- Duration --> 
               <td>{{ row.Duration }}</td> 
             
+              <!-- Type --> 
               <td>{{ row.Type }}</td> 
+  
+              <!-- Price -->            
+              <td *ngIf="row.Type == 'stop_limit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</td>
+              <td *ngIf="row.Type == 'stop'">{{ row.StopPrice | currency:'USD':'symbol':'1.2-2' }}</td>
+              <td *ngIf="row.Type == 'limit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</td> 
+              <td *ngIf="row.Type == 'market'">---</td>              
             
-              <td>
-                <span [hidden]="row.Type != 'stop_limit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</span>
-                <span [hidden]="row.Type != 'stop'">{{ row.StopPrice | currency:'USD':'symbol':'1.2-2' }}</span>
-                <span [hidden]="row.Type != 'limit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</span> 
-                <span [hidden]="row.Type != 'market'">---</span>              
-              </td> 
+              <!-- Filled -->
+              <td *ngIf="row.Status == 'filled'">{{ row.AvgFillPrice | currency:'USD':'symbol':'1.2-2' }}</td>
+              <td *ngIf="row.Status == 'open'">---</td>
+              <td *ngIf="row.Status == 'canceled'">---</td>
+              <td *ngIf="row.Status == 'expired'">---</td>
+              <td *ngIf="row.Status == 'rejected'">---</td>
+              <td *ngIf="row.Status == 'pending'">---</td> 
+              <td *ngIf="row.Status == 'partially_filled'">---</td>        
             
-              <td>
-                <span [hidden]="row.Status != 'filled'">{{ row.AvgFillPrice | currency:'USD':'symbol':'1.2-2' }}</span>
-                <span [hidden]="row.Status != 'open'">---</span>
-                <span [hidden]="row.Status != 'canceled'">---</span>
-                <span [hidden]="row.Status != 'expired'">---</span>
-                <span [hidden]="row.Status != 'rejected'">---</span>
-                <span [hidden]="row.Status != 'pending'">---</span> 
-                <span [hidden]="row.Status != 'partially_filled'">---</span>
-              </td>         
-            
-              <td>
-                <span [hidden]="row.Status != 'filled'"><strong class="title-green">{{ row.Status }}</strong></span>
-                <span [hidden]="row.Status != 'open'"><strong class="title-grey">{{ row.Status }}</strong></span>
-                <span [hidden]="row.Status != 'canceled'"><strong class="title-grey">{{ row.Status }}</strong></span>
-                <span [hidden]="row.Status != 'expired'"><strong class="title-grey">{{ row.Status }}</strong></span>
-                <span [hidden]="row.Status != 'rejected'"><strong class="title-red">{{ row.Status }}</strong></span>
-                <span [hidden]="row.Status != 'pending'"><strong class="title-grey">{{ row.Status }}</strong></span> 
-                <span [hidden]="row.Status != 'partially_filled'"><strong class="title-grey">{{ row.Status }}</strong></span>
-              </td>
+              <!-- Status -->
+              <td *ngIf="row.Status == 'filled'" class="title-green">{{ row.Status }}</td>
+              <td *ngIf="row.Status == 'open'" class="title-grey">{{ row.Status }}</td>
+              <td *ngIf="row.Status == 'canceled'" class="title-grey">{{ row.Status }}</td>
+              <td *ngIf="row.Status == 'expired'" class="title-grey">{{ row.Status }}</td>
+              <td *ngIf="row.Status == 'rejected'" class="title-red">{{ row.Status }}</td>
+              <td *ngIf="row.Status == 'pending'" class="title-grey">{{ row.Status }}</td> 
+              <td *ngIf="row.Status == 'partially_filled'" class="title-grey">{{ row.Status }}</td>
 
               <td rowspan="1">
                 <div class="dropdown select">

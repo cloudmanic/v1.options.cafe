@@ -82,7 +82,7 @@
           <label for="field-search-quantity" class="hidden">Quantity</label>
 
           <div class="form__controls">
-            <input type="text" class="field" name="Qty" id="field-search-quantity" value="12" placeholder="Quantity" [(ngModel)]="tradeDetails.Qty" />
+            <input type="text" class="field" name="Qty" id="field-search-quantity" placeholder="Quantity" [(ngModel)]="tradeDetails.Qty" />
           </div>
         </div>
 
@@ -101,6 +101,22 @@
             </div>
           </div>
         </div>
+
+        <div class="form__col form__col--size2" *ngIf="(tradeDetails.OrderType == 'stop') || (tradeDetails.OrderType == 'stop_limit')">
+          <label for="field-search-limit" class="hidden">Stop</label>
+
+          <div class="form__controls">
+            <input type="text" class="field" name="Stop" id="field-search-limit" placeholder="Stop" [(ngModel)]="tradeDetails.Stop" />
+          </div>
+        </div> 
+
+        <div class="form__col form__col--size2" *ngIf="(tradeDetails.OrderType == 'limit') || (tradeDetails.OrderType == 'stop_limit')">
+          <label for="field-search-limit" class="hidden">Limit</label>
+
+          <div class="form__controls">
+            <input type="text" class="field" name="Price" id="field-search-limit" placeholder="Limit" [(ngModel)]="tradeDetails.Price" />
+          </div>
+        </div>        
 
         
 
