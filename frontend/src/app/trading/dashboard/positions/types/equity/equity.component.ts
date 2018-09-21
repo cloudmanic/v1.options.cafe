@@ -20,6 +20,7 @@ import { Component, OnInit, Input, Output, OnChanges, EventEmitter } from '@angu
 
 export class EquityComponent implements OnInit {
 
+  @Input() title: string = "";
   @Input() quotes = {};
   @Input() orders: Order[];
   @Input() tradeGroups: TradeGroup[]; 

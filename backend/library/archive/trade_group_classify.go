@@ -52,6 +52,11 @@ func ClassifyTradeGroup(positions *[]models.Position) string {
 		return "Equity"
 	}
 
+	// single short stock trade
+	if trade_types.IsSingleShortStock(positions) {
+		return "Short Equity"
+	}
+
 	// single option trade
 	if trade_types.IsSingleOption(positions) {
 		return "Option"

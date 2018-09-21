@@ -1,5 +1,9 @@
 <li class="box--bordered" *ngIf="tradeGroups?.Equity.length">
-  <app-trading-position-type-equity [quotes]="quotes" [orders]="orders" [tradeGroups]="tradeGroups?.Equity"></app-trading-position-type-equity>
+  <app-trading-position-type-equity [quotes]="quotes" [title]="'Stocks'" [orders]="orders" [tradeGroups]="tradeGroups?.Equity"></app-trading-position-type-equity>
+</li>
+
+<li class="box--bordered" *ngIf="tradeGroups?.ShortEquity.length">
+  <app-trading-position-type-equity [quotes]="quotes" [title]="'Short Stocks'" [orders]="orders" [tradeGroups]="tradeGroups?.ShortEquity"></app-trading-position-type-equity>
 </li>
 
 <li class="box--bordered" *ngIf="tradeGroups?.Option.length">

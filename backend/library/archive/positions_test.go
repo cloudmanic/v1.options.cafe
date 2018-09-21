@@ -58,7 +58,7 @@ func TestReviewCurrentPositionsForExpiredOptions01(t *testing.T) {
 
 	// Verify the data was return as expected
 	st.Expect(t, err, nil)
-	st.Expect(t, len(results), 2)
+	st.Expect(t, len(results), 3)
 	st.Expect(t, results[1].Id, uint(3))
 	st.Expect(t, results[1].CostBasis, -1000.00)
 	st.Expect(t, results[1].Profit, 1000.00)

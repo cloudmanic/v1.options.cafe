@@ -1,5 +1,5 @@
 //
-// Date: 2/9/2018
+// Date: 9/20/2018
 // Author(s): Spicer Matthews (spicer@options.cafe)
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
@@ -14,22 +14,15 @@ import (
 //
 // Calculate max loss of the trade. Return -1 for unlimited risk
 //
-func GetSingleStockRiskProfile(positions *[]models.Position) (float64, float64) {
-	var cost float64 = 0.00
-
-	// Loop through the different positions and get some summary data
-	for _, row := range *positions {
-		cost += row.CostBasis
-	}
-
-	// Is this short or not.
-	return cost, 0.00
+func GetSingleShortStockRiskProfile(positions *[]models.Position) (float64, float64) {
+	// Unlimited risk & gain
+	return -1.00, 0.00
 }
 
 //
 // Detect if this trade is single stock trade
 //
-func IsSingleStock(positions *[]models.Position) bool {
+func IsSingleShortStock(positions *[]models.Position) bool {
 
 	// Most only be 1 leg
 	if len(*positions) != 1 {
@@ -39,12 +32,12 @@ func IsSingleStock(positions *[]models.Position) bool {
 	// Parse the option symbol
 	for _, row := range *positions {
 
-		// Make sure there are no short positions
-		if row.OrgQty < 0 {
+		// Make sure there are no long positions
+		if row.OrgQty > 0 {
 			return false
 		}
 
-		// Get option if it is one.
+		// Check to see if this is an option
 		_, err := helpers.OptionParse(row.Symbol.ShortName)
 
 		// If we can't parse the option we assume it is a stock

@@ -89,7 +89,7 @@ export class PositionsComponent implements OnInit {
     this.tradeGroupService.get(Number(this.stateService.GetStoredActiveAccountId()), 100, 1, 'open_date', 'asc', '', 'Open').subscribe((res) => {
 
       // Reset the trade groups
-      this.tradeGroups = new TradeGroupsCont([], [], [], [], [], [], [], []);
+      this.tradeGroups = new TradeGroupsCont([], [], [], [], [], [], [], [], []);
 
       // Loop through and classify positions
       for(let i = 0; i <= res.Data.length; i++)

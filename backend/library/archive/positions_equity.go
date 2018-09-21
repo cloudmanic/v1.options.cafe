@@ -82,9 +82,15 @@ func doOpenEquityOrder(order models.Order, db models.Datastore, userId uint) (mo
 		cost_basis = (float64(order.ExecQuantity) * order.AvgFillPrice)
 	}
 
-	// Is this a short trade closing?
+	// Is this a trade closing?
 	if order.Side == "sell" {
 		qty = (int(order.ExecQuantity) * -1)
+	}
+
+	// Is this a short trade closing?
+	if order.Side == "sell_short" {
+		qty = (int(order.ExecQuantity) * -1)
+		cost_basis = (float64(order.ExecQuantity) * order.AvgFillPrice * -1)
 	}
 
 	// We found so we are just adding to a current position.

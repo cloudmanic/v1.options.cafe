@@ -28,7 +28,7 @@
               <ins>Side</ins>
             </td> 
 
-            <td>
+            <td class="hidden-lg">
               <ins>Last</ins>
             </td>     
 
@@ -64,23 +64,26 @@
               <td><strong>{{ quotes[row.Symbol]?.description }}</strong></td>  
 
               <!-- Side -->
-              <td *ngIf="row.Side == 'buy'">Buy</td> 
-              <td *ngIf="row.Side == 'sell'">Sell</td> 
-              <td *ngIf="row.Side == 'sell_short'">Sell Short</td>                           
-              <td *ngIf="row.Side == 'buy_to_cover'">Buy To Cover</td> 
+              <td *ngIf="row.Side == 'buy'">buy</td> 
+              <td *ngIf="row.Side == 'sell'">sell</td> 
+              <td *ngIf="row.Side == 'sell_short'">sell short</td>                           
+              <td *ngIf="row.Side == 'buy_to_cover'">buy to cover</td> 
             
               <!-- Last -->  
-              <td>{{ quotes[row.Symbol]?.last | currency:'USD':'symbol':'1.2-2' }}</td> 
+              <td class="hidden-lg">{{ quotes[row.Symbol]?.last | currency:'USD':'symbol':'1.2-2' }}</td> 
 
               <!-- Quantity -->
               <td *ngIf="row.Side == 'buy'">{{ row.Quantity }}</td> 
-              <td *ngIf="row.Side == 'sell_short'">{{ row.Quantity * -1 }}</td>             
+              <td *ngIf="row.Side == 'sell_short'">{{ row.Quantity * -1 }}</td> 
+              <td *ngIf="row.Side == 'sell'">{{ row.Quantity }}</td>
+              <td *ngIf="row.Side == 'buy_to_cover'">{{ row.Quantity }}</td>             
 
               <!-- Duration --> 
               <td>{{ row.Duration }}</td> 
             
               <!-- Type --> 
-              <td>{{ row.Type }}</td> 
+              <td *ngIf="row.Type != 'stop_limit'">{{ row.Type }}</td>
+              <td *ngIf="row.Type == 'stop_limit'">stop limit</td> 
   
               <!-- Price -->            
               <td *ngIf="row.Type == 'stop_limit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</td>
@@ -133,6 +136,12 @@
               </td>
 
             </tr>
+
+
+
+
+
+
 
 
 

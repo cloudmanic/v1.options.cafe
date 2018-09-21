@@ -1,5 +1,5 @@
 //
-// Date: 2/9/2018
+// Date: 9/20/2018
 // Author(s): Spicer Matthews (spicer@options.cafe)
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
@@ -16,42 +16,42 @@ import (
 //
 // Test get mass loss for Single Stock - Long
 //
-func TestGetSingleStockRiskProfile01(t *testing.T) {
+func TestGetSingleShortStockRiskProfile01(t *testing.T) {
 
 	// Test one stock
 	positions := &[]models.Position{
 		{
-			Symbol:       models.Symbol{ShortName: "SPY"},
-			OrgQty:       9,
-			CostBasis:    2034.12,
-			AvgOpenPrice: 226.12,
+			Symbol:       models.Symbol{ShortName: "IBM"},
+			OrgQty:       -10,
+			CostBasis:    -1495.80,
+			AvgOpenPrice: 149.58,
 		},
 	}
 
 	// Get max loss
-	loss, _ := GetSingleStockRiskProfile(positions)
+	loss, _ := GetSingleShortStockRiskProfile(positions)
 
 	// Verify the data was return as expected
-	st.Expect(t, loss, 2034.12)
+	st.Expect(t, loss, -1.00)
 }
 
 //
 // Test trade classification - Single stock trade
 //
-func TestIsSingleStock01(t *testing.T) {
+func TestIsSingleShortStock01(t *testing.T) {
 
 	// Test put credit spread
 	positions := &[]models.Position{
 		{
-			Symbol:       models.Symbol{ShortName: "SPY"},
-			OrgQty:       9,
-			CostBasis:    2034.00,
-			AvgOpenPrice: 226.12,
+			Symbol:       models.Symbol{ShortName: "IBM"},
+			OrgQty:       -10,
+			CostBasis:    -1495.80,
+			AvgOpenPrice: 149.58,
 		},
 	}
 
 	// Get the classification of this trade group
-	class := IsSingleStock(positions)
+	class := IsSingleShortStock(positions)
 
 	// Verify the data was return as expected
 	st.Expect(t, class, true)
@@ -61,7 +61,7 @@ func TestIsSingleStock01(t *testing.T) {
 //
 // Test trade classification - Single stock trade
 //
-func TestIsSingleStock02(t *testing.T) {
+func TestIsSingleShortStock02(t *testing.T) {
 
 	// Test put credit spread
 	positions := &[]models.Position{
@@ -74,7 +74,7 @@ func TestIsSingleStock02(t *testing.T) {
 	}
 
 	// Get the classification of this trade group
-	class := IsSingleStock(positions)
+	class := IsSingleShortStock(positions)
 
 	// Verify the data was return as expected
 	st.Expect(t, class, false)
@@ -82,22 +82,22 @@ func TestIsSingleStock02(t *testing.T) {
 }
 
 //
-// Test trade classification - Single short stock trade
+// Test trade classification - Single long stock trade
 //
-func TestIsSingleStock03(t *testing.T) {
+func TestIsSingleShortStock03(t *testing.T) {
 
 	// Test put credit spread
 	positions := &[]models.Position{
 		{
 			Symbol:       models.Symbol{ShortName: "IBM"},
-			OrgQty:       -9,
-			CostBasis:    -2034.00,
-			AvgOpenPrice: 2.26,
+			OrgQty:       10,
+			CostBasis:    1495.80,
+			AvgOpenPrice: 149.58,
 		},
 	}
 
 	// Get the classification of this trade group
-	class := IsSingleStock(positions)
+	class := IsSingleShortStock(positions)
 
 	// Verify the data was return as expected
 	st.Expect(t, class, false)

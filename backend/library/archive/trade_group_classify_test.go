@@ -134,7 +134,30 @@ func TestClassifyTradeGroupSingleStock01(t *testing.T) {
 	class := ClassifyTradeGroup(positions)
 
 	// Verify the data was return as expected
-	st.Expect(t, class, "Stock")
+	st.Expect(t, class, "Equity")
+
+}
+
+//
+// Test trade classification - Single short stock trade
+//
+func TestClassifyTradeGroupSingleShortStock01(t *testing.T) {
+
+	// Test put credit spread
+	positions := &[]models.Position{
+		{
+			Symbol:       models.Symbol{ShortName: "SPY"},
+			OrgQty:       -9,
+			CostBasis:    -2034.00,
+			AvgOpenPrice: 226.12,
+		},
+	}
+
+	// Get the classification of this trade group
+	class := ClassifyTradeGroup(positions)
+
+	// Verify the data was return as expected
+	st.Expect(t, class, "Short Equity")
 
 }
 
