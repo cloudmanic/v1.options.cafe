@@ -15,15 +15,20 @@
 .ml-5 { margin-left: 5px !important; }
 .ml-20 { margin-left: 20px !important; }
 
-/* A less wide watchlist for smaller monitors  */
-@media (min-width: 767px) {
-  .section .section__aside { width: 200px; }
-  .section .section__content { width: calc(100% - 220px); }
-}
-
 /* Widths */
 .width-95 { width: 95px !important; }
 .width-135 { width: 135px !important; }
+
+/* A less wide watchlist for smaller monitors  */
+@media (min-width: 767px) {
+  .section .section__aside { width: 210px; }
+  .section .section__content { width: calc(100% - 230px); }
+}
+
+/* Make sure the screen is wide enough of don't show (we really do not support mobile) */
+@media (min-width: 1450px) {
+  .min-width-content-body { min-width: 1250px; }
+}
 
 /* Layout */
 .logo { background-image: url(images/logo-new.png); width: 58px !important; height: 50px !important; }

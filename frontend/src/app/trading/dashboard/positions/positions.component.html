@@ -1,11 +1,3 @@
-<li class="box--bordered" *ngIf="tradeGroups?.Equity.length">
-  <app-trading-position-type-equity [quotes]="quotes" [title]="'Stocks'" [orders]="orders" [tradeGroups]="tradeGroups?.Equity"></app-trading-position-type-equity>
-</li>
-
-<li class="box--bordered" *ngIf="tradeGroups?.ShortEquity.length">
-  <app-trading-position-type-equity [quotes]="quotes" [title]="'Short Stocks'" [orders]="orders" [tradeGroups]="tradeGroups?.ShortEquity"></app-trading-position-type-equity>
-</li>
-
 <li class="box--bordered" *ngIf="tradeGroups?.Option.length">
   <app-trading-position [quotes]="quotes" [orders]="orders" [title]="'Options'" [tradeGroups]="tradeGroups?.Option"></app-trading-position>
 </li>
@@ -24,4 +16,12 @@
 
 <li class="box--bordered" *ngIf="tradeGroups?.PutDebitSpread.length">
   <app-trading-position [quotes]="quotes" [orders]="orders" [title]="'Put Debit Spreads'" [tradeGroups]="tradeGroups?.PutDebitSpread"></app-trading-position>
+</li>
+
+<li class="box--bordered" *ngIf="tradeGroups?.Equity.length">
+  <app-trading-position-type-equity [quotes]="quotes" [title]="'Stocks'" [orders]="orders" [tradeGroups]="tradeGroups?.Equity"></app-trading-position-type-equity>
+</li>
+
+<li class="box--bordered" *ngIf="tradeGroups?.ShortEquity.length">
+  <app-trading-position-type-equity [quotes]="quotes" [title]="'Short Stocks'" [orders]="orders" [tradeGroups]="tradeGroups?.ShortEquity"></app-trading-position-type-equity>
 </li>
