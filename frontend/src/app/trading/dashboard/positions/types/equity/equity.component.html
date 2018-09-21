@@ -20,7 +20,7 @@
               <ins>Cost Basis</ins>
             </td>
 
-            <td class="hidden-lg">
+            <td>
               <ins>Ave Price</ins>
             </td>
 
@@ -28,11 +28,11 @@
               <ins>Current Price</ins>
             </td>
 
-            <td class="hidden-lg">
+            <td>
               <ins>Daily Change (%)</ins>
             </td>
 
-            <td class="hidden-lg">
+            <td>
               <ins>Daily G/L</ins>
             </td>
 
@@ -59,7 +59,7 @@
               <strong>{{ row.Positions[0].CostBasis | currency:'USD':'symbol':'1.2-2' }}</strong>
             </td>
 
-            <td class="hidden-lg">
+            <td>
               <strong>{{ getAvgPricePaid(row.Positions[0]) | currency:'USD':'symbol':'1.2-2' }}</strong>
             </td>
 
@@ -67,14 +67,14 @@
               <strong>{{ quotes[row.Positions[0].Symbol.ShortName]?.last | currency:'USD':'symbol':'1.2-2' }}</strong>
             </td>
 
-            <td class="hidden-lg">
+            <td>
               <strong [ngClass]="{'title-red': (quotes[row.Positions[0].Symbol.ShortName]?.change < 0), 'title-green': (quotes[row.Positions[0].Symbol.ShortName]?.change > 0)}">
                 {{ quotes[row.Positions[0].Symbol.ShortName]?.change | currency:'USD':'symbol':'1.2-2' }} 
                 ({{ quotes[row.Positions[0].Symbol.ShortName]?.change_percentage | number:'1.2-2' }}%)
               </strong>
             </td>
 
-            <td class="hidden-lg">
+            <td>
               <strong [ngClass]="{'title-red': (quotes[row.Positions[0].Symbol.ShortName]?.change < 0), 'title-green': (quotes[row.Positions[0].Symbol.ShortName]?.change > 0)}">
                 {{ getDailyGain(row.Positions[0]) | currency:'USD':'symbol':'1.2-2' }} 
               </strong>
@@ -132,13 +132,13 @@
               <strong>{{ getTotalCostBasis() | currency:'USD':'symbol':'1.2-2' }}</strong>
             </td>
 
-            <td class="hidden-lg"></td>
-
-            <td class="hidden-lg"></td>
+            <td></td>
 
             <td></td>
 
-            <td class="hidden-lg">
+            <td></td>
+
+            <td>
               <strong [ngClass]="{'title-red': (getTotalDailyGain() < 0), 'title-green': (getTotalDailyGain() > 0)}">
                 {{ getTotalDailyGain() | currency:'USD':'symbol':'1.2-2' }}
               </strong>
