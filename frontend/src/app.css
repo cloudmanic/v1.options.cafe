@@ -43,6 +43,11 @@
   .nav-centered li + li { margin-left: 56px; }
 }
 
+/* Updates to sidebar - made sidebar less wide */
+.sidebar { width: 195px; }
+.content { padding: 125px 0 160px 195px; }
+.header-wrapper { left: 195px; width: calc(100vw - 195px); }
+
 /* Layout */
 .logo { background-image: url(images/logo-new.png); width: 58px !important; height: 50px !important; }
 
