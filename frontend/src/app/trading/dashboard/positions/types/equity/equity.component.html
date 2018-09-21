@@ -46,8 +46,10 @@
           </tr>
 
           <tr *ngFor="let row of tradeGroups; let key = index;">
-            <td>
-              <strong>{{ row.Positions[0].Symbol.ShortName }}</strong> <br />
+            <td style="max-width: 100px;">
+              <strong>{{ row.Positions[0].Symbol.ShortName }}</strong> 
+
+              <br />
               <small>{{ row.Positions[0].Symbol.Name }}</small>
             </td>
 
