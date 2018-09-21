@@ -30,6 +30,19 @@
   .min-width-content-body { min-width: 1250px; }
 }
 
+/* Tablet Portrait - Sub NAV */
+@media (max-width: 1023px) {
+  .nav-centered li + li { margin-left: 56px; }
+}
+
+/* Mobile - Sub NAV */
+@media (max-width: 767px) {
+  .nav-centered { text-align: center; }
+
+  .nav-centered li { display: inline-block; vertical-align: middle; }
+  .nav-centered li + li { margin-left: 56px; }
+}
+
 /* Layout */
 .logo { background-image: url(images/logo-new.png); width: 58px !important; height: 50px !important; }
 
