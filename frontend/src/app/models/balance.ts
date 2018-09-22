@@ -16,6 +16,20 @@ export class Balance {
     public OptionBuyingPower: number, 
     public StockBuyingPower: number, 
   ){}
+
+  //
+  // Json to Object.
+  //
+  public static fromJson(json: Object): Broker 
+  {
+    return new Balance(
+      json['account_number'],
+      json['account_value'],
+      json['total_cash'],
+      json['option_buying_power'],
+      json['stock_buying_power']
+    );
+  }
   
   //
   // Build build the data for emitting to the app. 

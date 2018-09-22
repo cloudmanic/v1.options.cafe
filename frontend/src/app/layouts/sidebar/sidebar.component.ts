@@ -108,8 +108,8 @@ export class SidebarComponent implements OnInit {
     }
 
     // Get balance data
-    this.brokerService.getBalances(this.selectedAccount.BrokerId).subscribe((data) => {    
-      this.doBalanaces(data);
+    this.brokerService.getAccountBalance(this.selectedAccount.BrokerId, this.selectedAccount.Id).subscribe((data) => {    
+      this.balance = data;
     });
   }
 

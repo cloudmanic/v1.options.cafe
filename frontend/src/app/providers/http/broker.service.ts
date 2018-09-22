@@ -42,6 +42,16 @@ export class BrokerService
   }
 
   //
+  // Get broker account balance
+  //
+  getAccountBalance(brokerId: number, brokerAccountId: number): Observable<Balance> {
+    return this.http.get<Balance>(environment.app_server + '/api/v1/brokers/' + brokerId + '/accounts/' + brokerAccountId + '/balance').map(
+      (data) => {
+        return Balance.fromJson(data);
+      });
+  }
+
+  //
   // Get broker orders
   //
   getOrders(brokerId: number) : Observable<Order[]> {
