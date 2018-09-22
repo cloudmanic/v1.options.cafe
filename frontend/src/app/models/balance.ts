@@ -20,7 +20,7 @@ export class Balance {
   //
   // Json to Object.
   //
-  public static fromJson(json: Object): Broker 
+  public static fromJson(json: Object): Balance 
   {
     return new Balance(
       json['account_number'],
