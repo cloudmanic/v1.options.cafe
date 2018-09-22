@@ -7,6 +7,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm }   from '@angular/forms';
 import { Router } from '@angular/router';
+import { BrokerService } from '../../providers/http/broker.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -18,7 +19,7 @@ export class AuthBrokerSelectComponent implements OnInit {
 
   broker: string = "tradier"
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private brokerService: BrokerService) { }
 
   //
   // On Init
@@ -42,16 +43,22 @@ export class AuthBrokerSelectComponent implements OnInit {
   //
   // Login submit.
   //
-  onSubmit(form: NgForm) {
+  onSubmit(form: NgForm) 
+  {
     
-    // Switch based on broker selected
-    switch(form.value["field-broker"])
-    {
-      case 'tradier':
-        window.location.href = environment.app_server + '/tradier/authorize?user=' + localStorage.getItem('user_id');
-      break;
-    }
-    
+    // Ajax call to add broker.
+    this.brokerService.create("Tradier", "Tradier Account").subscribe((res) => {
+
+      // Switch based on broker selected - Redirect to login to broker and get access token.
+      switch (form.value["field-broker"]) 
+      {
+        case 'tradier':
+          window.location.href = environment.app_server + '/tradier/authorize?user=' + localStorage.getItem('user_id') + '&broker_id=' + res.Id;
+        break;
+      }
+
+    }); 
+
   }
   
 }

@@ -46,7 +46,9 @@ export class AuthLoginComponent implements OnInit {
     }
 
     // Remove local storage
-    localStorage.removeItem('user_id');    
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('redirect');
+    localStorage.removeItem('broker_new_id');    
     localStorage.removeItem('access_token');
     localStorage.removeItem('active_account');
     localStorage.removeItem('active_watchlist');    

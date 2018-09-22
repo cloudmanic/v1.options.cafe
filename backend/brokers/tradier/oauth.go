@@ -70,11 +70,35 @@ func (t *TradierAuth) DoAuthCode(c *gin.Context) {
 		return
 	}
 
+	// Make sure we have a broker_id.
+	brokerId := c.Query("broker_id")
+
+	if brokerId == "" {
+		services.BetterError(errors.New("Tradier - DoAuthCode - No broker id provided."))
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
+		return
+	}
+
+	if brokerId == "" {
+		services.BetterError(errors.New("Tradier - DoAuthCode - No broker id provided."))
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
+		return
+	}
+
+	// Make sure this is a valid broker_id.
+	broker := models.Broker{}
+
+	if t.DB.New().Where("user_id = ? AND name = ? AND id = ?", user.Id, "Tradier", brokerId).Find(&broker).RecordNotFound() {
+		services.BetterError(errors.New("Tradier - DoAuthCode - No broker found."))
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
+		return
+	}
+
 	// Log
 	services.Info("Tradier authorization starting for " + user.Email)
 
 	// Redirect to tradier to auth
-	var url = apiBaseUrl + "/oauth/authorize?client_id=" + os.Getenv("TRADIER_CONSUMER_KEY") + "&scope=read,write,market,trade,stream&state=" + strconv.Itoa(int((user.Id)))
+	var url = apiBaseUrl + "/oauth/authorize?client_id=" + os.Getenv("TRADIER_CONSUMER_KEY") + "&scope=read,write,market,trade,stream&state=" + strconv.Itoa(int((broker.Id)))
 	c.Redirect(302, url)
 }
 
@@ -97,6 +121,15 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 
 	if state == "" {
 		services.BetterError(errors.New("Tradier - DoAuthCallback - No auth code provided. (#2)"))
+		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
+		return
+	}
+
+	// Get broker from state
+	broker := models.Broker{}
+
+	if t.DB.New().Where("name = ? AND id = ?", "Tradier", state).Find(&broker).RecordNotFound() {
+		services.BetterError(errors.New("Tradier - DoAuthCallback - No broker found."))
 		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
@@ -161,8 +194,7 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 	}
 
 	// Make sure this is a valid user.
-	u, _ := strconv.ParseUint(state, 10, 32)
-	user, err := t.DB.GetUserById(uint(u))
+	user, err := t.DB.GetUserById(broker.UserId)
 
 	if err != nil {
 		services.BetterError(err)
@@ -170,21 +202,21 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 		return
 	}
 
-	// See if we already have a broker. Create or update.
-	broker := models.Broker{}
+	// // See if we already have a broker. Create or update.
+	// broker := models.Broker{}
 
-	if t.DB.New().Debug().Where("user_id = ? AND name = ? AND status = ?", user.Id, "Tradier", "Disabled").Find(&broker).RecordNotFound() {
+	// if t.DB.New().Where("user_id = ? AND name = ? AND status = ?", user.Id, "Tradier", "Disabled").Find(&broker).RecordNotFound() {
 
-		brk, err2 := t.DB.CreateNewBroker("Tradier", user, tr.Token, tr.RefreshToken, time.Now().Add(time.Duration(tr.ExpiresSec)*time.Second).UTC())
+	// 	brk, err2 := t.DB.CreateNewBroker("Tradier", user, tr.Token, tr.RefreshToken, time.Now().Add(time.Duration(tr.ExpiresSec)*time.Second).UTC())
 
-		if err2 != nil {
-			services.BetterError(err2)
-			c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
-			return
-		}
+	// 	if err2 != nil {
+	// 		services.BetterError(err2)
+	// 		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
+	// 		return
+	// 	}
 
-		broker = brk
-	}
+	// 	broker = brk
+	// }
 
 	// Update Broker
 	broker.Status = "Active"

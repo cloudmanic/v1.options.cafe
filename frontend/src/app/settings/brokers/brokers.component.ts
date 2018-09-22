@@ -31,6 +31,9 @@ export class BrokersComponent implements OnInit
   //
   constructor(private brokerService: BrokerService) 
   { 
+    // TODO: Do some sort of notice with this.`
+    localStorage.removeItem('broker_new_id');
+
     // Load data.
     this.getBrokers();
   }
@@ -57,11 +60,15 @@ export class BrokersComponent implements OnInit
     // Ajax call to add broker.
     this.brokerService.create(this.addBrokerType, this.addBrokerDisplayName).subscribe((res) => {
 
+      // Set redirect for after auth with brpker
+      localStorage.setItem('redirect', '/settings/brokers');
+      localStorage.setItem('broker_new_id', String(res.Id));
+
       // Switch based on broker selected - Redirect to login to broker and get access token.
       switch (this.addBrokerType) 
       {
         case 'Tradier':
-          window.location.href = environment.app_server + '/tradier/authorize?user=' + localStorage.getItem('user_id');
+          window.location.href = environment.app_server + '/tradier/authorize?user=' + localStorage.getItem('user_id') + '&broker_id=' + res.Id;
         break;
       }
 
