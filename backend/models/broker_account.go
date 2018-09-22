@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	validation "github.com/go-ozzo/ozzo-validation"
 )
 
 type BrokerAccount struct {
@@ -27,6 +28,17 @@ type BrokerAccount struct {
 	OptionSingleMin   float64   `sql:"type:DECIMAL(12,2)" json:"option_single_min"`
 	OptionMultiLegMin float64   `sql:"type:DECIMAL(12,2)" json:"option_multi_leg_min"`
 	OptionBase        float64   `sql:"type:DECIMAL(12,2)" json:"option_base"`
+}
+
+//
+// Validate for this model.
+//
+func (a BrokerAccount) Validate(db Datastore) error {
+	return validation.ValidateStruct(&a,
+		validation.Field(&a.Name, validation.Required.Error("The name field is required.")),
+		// validation.Field(&a.Strategy, validation.Required.Error("The strategy field is required.")),
+		// validation.Field(&a.Symbol, validation.Required.Error("The symbol field is required.")),
+	)
 }
 
 //
