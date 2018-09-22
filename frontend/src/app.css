@@ -2,6 +2,11 @@
 
 .clear { content: ''; clear: both; }
 .error-text { color: #d64561; }
+.link { text-decoration: none; }
+.red { color: #ce4260; }
+
+.font-14 { font-size: 14px; }
+.font-16 { font-size: 16px; }
 
 .mt-3 { margin-top: 3px !important; }
 .mt-5 { margin-top: 5px !important; }
@@ -9,6 +14,7 @@
 
 .mb-3 { margin-bottom: 3px !important; }
 .mb-5 { margin-bottom: 5px !important; }
+.mb-10 { margin-bottom: 10px !important; }
 .mb-20 { margin-bottom: 20px !important; }
 
 .ml-3 { margin-left: 3px !important; }
@@ -69,6 +75,9 @@
 
 /* Reports */
 .article .article__head .article__btn { z-index: 1000 }
+
+/* Settings */
+.list-infos h5 { max-width: 175px; }
 
 /* Hide GooveHq stuff */
 iframe.grv-widget-tag { display: none !important; }

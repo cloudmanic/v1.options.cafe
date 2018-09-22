@@ -62,6 +62,9 @@ func (t *Controller) UpdateBrokerAccount(c *gin.Context) {
 	// Set id.
 	o.Id = orgObj.Id
 
+	// Maintain broker id.
+	o.BrokerId = orgObj.BrokerId
+
 	// We override account number. That is not something a user should change.
 	o.AccountNumber = orgObj.AccountNumber
 

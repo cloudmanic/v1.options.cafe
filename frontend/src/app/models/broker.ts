@@ -10,18 +10,22 @@ export class Broker {
 
   public Id: number;
   public Name: string;
+  public Status: string;
   public BrokerAccounts: BrokerAccount[];
+  public SettingsActiveBrokerAccount: BrokerAccount;
   
   //
   // Construct.
   //
   constructor(
     Id: number,
-    Name: string,      
-    BrokerAccounts: BrokerAccount[]
+    Name: string,
+    Status: string,      
+    BrokerAccounts: BrokerAccount[],
   ){
     this.Id = Id;
-    this.Name = Name;    
+    this.Name = Name;
+    this.Status = Status;    
     this.BrokerAccounts = BrokerAccounts;
   }
 
@@ -59,8 +63,9 @@ export class Broker {
       }
 
       result.push(new Broker(
-        data[i].id, 
-        data[i].name,       
+        data[i].id,
+        data[i].name,         
+        data[i].status,       
         accounts
        ));
     }

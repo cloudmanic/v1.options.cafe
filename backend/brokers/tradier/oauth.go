@@ -170,14 +170,29 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 		return
 	}
 
-	// Create new broker entry.
-	broker, err2 := t.DB.CreateNewBroker("Tradier", user, tr.Token, tr.RefreshToken, time.Now().Add(time.Duration(tr.ExpiresSec)*time.Second).UTC())
+	// See if we already have a broker. Create or update.
+	broker := models.Broker{}
 
-	if err2 != nil {
-		services.BetterError(err2)
-		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
-		return
+	if t.DB.New().Debug().Where("user_id = ? AND name = ? AND status = ?", user.Id, "Tradier", "Disabled").Find(&broker).RecordNotFound() {
+
+		brk, err2 := t.DB.CreateNewBroker("Tradier", user, tr.Token, tr.RefreshToken, time.Now().Add(time.Duration(tr.ExpiresSec)*time.Second).UTC())
+
+		if err2 != nil {
+			services.BetterError(err2)
+			c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
+			return
+		}
+
+		broker = brk
 	}
+
+	// Update Broker
+	broker.Status = "Active"
+	broker.AccessToken = tr.Token
+	broker.RefreshToken = tr.RefreshToken
+	broker.DisplayName = "Tradier Account"
+	broker.TokenExpirationDate = time.Now().Add(time.Duration(tr.ExpiresSec) * time.Second).UTC()
+	t.DB.UpdateBroker(broker)
 
 	// Log
 	services.Info("Tradier authorization completed for " + user.Email)

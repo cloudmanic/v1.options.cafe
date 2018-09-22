@@ -8,222 +8,105 @@
           <h6>Brokers</h6>
 
           <a href="#" class="btn btn--pink">Add Broker</a>
-        </div><!-- /.article__head -->
+        </div>
 
         <div class="article__body article__body--secondary">
           <div class="article__content">
-            <p>
-              Nam eget felis tristique, semper ligula in, aliquam ante. Nulla facilisi. Ut convallis mi augue, eu sollicitudin risus vulputate at. Fusce dolor elit, lacinia vitae nibh quis, ullamcorper eleifend ligula. Nam eget felis tristique, semper ligula in, aliquam ante. Nulla facilisi. Ut convallis mi augue, eu sollicitudin risus vulputate at. Fusce dolor elit, lacinia vitae nibh quis, ullamcorper eleifend ligula. 
-            </p>
-          </div><!-- /.article__content -->
+            <p>Options Cafe works with outside brokers to place trades on your behave. Below you can manage the brokers you have linked with your Options Cafe account.</p>
+          </div>
 
           <div class="features">
-            <div class="feature">
-              <div class="feature__inner">
+
+
+            <div class="feature" *ngFor="let row of brokers">
+
+              <!-- Active -->
+              <div class="feature__inner" *ngIf="row.Status == 'Active'">
+
                 <div class="feature__head">
-                  <a href="#" class="logo-tradier feature__logo"></a>
+                  <a href="#" class="{{ getLogoClass(row) }} feature__logo"></a>
 
                   <a href="#" class="btn-square">
                     <i class="ico-settings"></i>
                   </a>
-                </div><!-- /.feature__head -->
+                </div>
 
+                
                 <div class="feature__body">
                   <div class="feature__head-alt">
-                    <h5>Tradier</h5>
-
-                    <h5>Main Account</h5>
-                  </div><!-- /.feature__head-alt -->
+                    <h5>{{ row.Name }}</h5>
+                  </div>
 
                   <ul class="list-infos">
-                    <li>
-                      <h5>Stock Commission</h5>
 
-                      <h6>$4.95/Trade</h6>
+                    <li>
+                      <h5>Accounts</h5>
+
+                      <span *ngFor="let row2 of row.BrokerAccounts">
+                        <h6 *ngIf="row2.Id == row.SettingsActiveBrokerAccount.Id" class="red font-14 mb-10">{{ row2.Name }} - {{ row2.AccountNumber }}</h6>
+
+                        <h6 *ngIf="row2.Id != row.SettingsActiveBrokerAccount.Id" class="mb-10">
+                          <a class="link" (click)="brokerAccountClick(row, row2)">{{ row2.Name }} - {{ row2.AccountNumber }}</a> 
+                        </h6>
+                      </span>
+
                     </li>
 
                     <li>
-                      <h5>Option Commission</h5>
+                      <h5>Stock Commission</h5>
 
-                      <h6>$4.95/Trade</h6>
+                      <h6>{{ row.SettingsActiveBrokerAccount.StockCommission | currency:'USD':'symbol':'1.2-2' }}/Trade</h6>
+                    </li>
+
+                    <li>
+                      <h5>Option Base Commission</h5>
+
+                      <h6>{{ row.SettingsActiveBrokerAccount.OptionBase | currency:'USD':'symbol':'1.2-2' }}/Trade</h6>
                     </li>
 
                     <li>
                       <h5>Contract Commission</h5>
 
-                      <h6>$0.35/Contract</h6>
+                      <h6>{{ row.SettingsActiveBrokerAccount.OptionCommission | currency:'USD':'symbol':'1.2-2' }}/Contract</h6>
                     </li>
 
                     <li>
                       <h5>Min. Stock Commission</h5>
 
-                      <h6>$4.95/Trade</h6>
+                      <h6>{{ row.SettingsActiveBrokerAccount.StockMin | currency:'USD':'symbol':'1.2-2' }}/Trade</h6>
                     </li>
 
                     <li>
                       <h5>Min. Option Commission</h5>
 
-                      <h6>$0.35/Contract</h6>
+                      <h6>{{ row.SettingsActiveBrokerAccount.OptionSingleMin | currency:'USD':'symbol':'1.2-2' }}/Contract</h6>
                     </li>
 
-                    <li>
-                      <h5>Accounts</h5>
+                   <li>
+                      <h5>Min. Multi Leg Commission</h5>
 
-                      <h6>32596418529632154879</h6>
-                      
-                      <h6>52963215487932596418</h6>
-                      
-                      <h6>32596418529632154879</h6>
-                      
-                      <h6>52963215487932596418</h6>
-                      
-                      <h6>52963215487932596418</h6>
+                      <h6>{{ row.SettingsActiveBrokerAccount.OptionMultiLegMin | currency:'USD':'symbol':'1.2-2' }}/Contract</h6>
                     </li>
-                  </ul><!-- /.list-infos -->
-                </div><!-- /.feature__body -->
-              </div><!-- /.feature__inner -->
-            </div><!-- /.feature -->
+                  </ul>
 
-            <div class="feature">
-              <div class="feature__inner">
+                </div>
+              </div>
+
+
+              <!-- Disabled -->
+              <div class="feature__inner" *ngIf="row.Status == 'Disabled'">
                 <div class="feature__head">
-                  <a href="#" class="logo-small feature__logo"></a>
+                  <a href="#" class="{{ getLogoClass(row) }} feature__logo"></a>
 
                   <a href="#" class="btn-square">
                     <i class="ico-settings"></i>
                   </a>
-                </div><!-- /.feature__head -->
+                </div>
 
                 <div class="feature__body">
                   <div class="feature__head-alt">
-                    <h5>Paper Trader</h5>
-
-                    <h5>Main Account</h5>
-                  </div><!-- /.feature__head-alt -->
-
-                  <ul class="list-infos">
-                    <li>
-                      <h5>Stock Commission</h5>
-
-                      <h6>$4.95/Trade</h6>
-                    </li>
-
-                    <li>
-                      <h5>Option Commission</h5>
-
-                      <h6>$4.95/Trade</h6>
-                    </li>
-
-                    <li>
-                      <h5>Contract Commission</h5>
-
-                      <h6>$0.35/Contract</h6>
-                    </li>
-
-                    <li>
-                      <h5>Min. Stock Commission</h5>
-
-                      <h6>$4.95/Trade</h6>
-                    </li>
-
-                    <li>
-                      <h5>Min. Option Commission</h5>
-
-                      <h6>$0.35/Contract</h6>
-                    </li>
-
-                    <li>
-                      <h5>Accounts</h5>
-
-                      <h6>32596418529632154879</h6>
-                      
-                      <h6>52963215487932596418</h6>
-                      
-                      <h6>32596418529632154879</h6>
-                      
-                      <h6>52963215487932596418</h6>
-                    </li>
-                  </ul><!-- /.list-infos -->
-                </div><!-- /.feature__body -->
-              </div><!-- /.feature__inner -->
-            </div><!-- /.feature -->
-
-            <div class="feature">
-              <div class="feature__inner">
-                <div class="feature__head">
-                  <a href="#" class="logo-tradier feature__logo"></a>
-
-                  <a href="#" class="btn-square">
-                    <i class="ico-settings"></i>
-                  </a>
-                </div><!-- /.feature__head -->
-
-                <div class="feature__body">
-                  <div class="feature__head-alt">
-                    <h5>Tradier</h5>
-
-                    <h5>Mom’s Account</h5>
-                  </div><!-- /.feature__head-alt -->
-
-                  <ul class="list-infos">
-                    <li>
-                      <h5>Stock Commission</h5>
-
-                      <h6>$4.95/Trade</h6>
-                    </li>
-
-                    <li>
-                      <h5>Option Commission</h5>
-
-                      <h6>$4.95/Trade</h6>
-                    </li>
-
-                    <li>
-                      <h5>Contract Commission</h5>
-
-                      <h6>$0.35/Contract</h6>
-                    </li>
-
-                    <li>
-                      <h5>Min. Stock Commission</h5>
-
-                      <h6>$4.95/Trade</h6>
-                    </li>
-
-                    <li>
-                      <h5>Min. Option Commission</h5>
-
-                      <h6>$0.35/Contract</h6>
-                    </li>
-
-                    <li>
-                      <h5>Accounts</h5>
-
-                      <h6>32596418529632154879</h6>
-                      
-                      <h6>52963215487932596418</h6>
-                    </li>
-                  </ul><!-- /.list-infos -->
-                </div><!-- /.feature__body -->
-              </div><!-- /.feature__inner -->
-            </div><!-- /.feature -->
-
-            <div class="feature">
-              <div class="feature__inner">
-                <div class="feature__head">
-                  <a href="#" class="logo-ally feature__logo"></a>
-
-                  <a href="#" class="btn-square">
-                    <i class="ico-settings"></i>
-                  </a>
-                </div><!-- /.feature__head -->
-
-                <div class="feature__body">
-                  <div class="feature__head-alt">
-                    <h5>Ally Invest</h5>
-
-                    <h5>Main Account</h5>
-                  </div><!-- /.feature__head-alt -->
+                    <h5>{{ row.Name }}</h5>
+                  </div>
 
                   <div class="feature__content">
                     <h5>Lost link to broker</h5>
@@ -236,200 +119,13 @@
                     <i class="ico-broken"></i>
 
                     <a href="#" class="btn btn--pink">Relink Broker</a>
-                  </div><!-- /.feature__content -->
-                </div><!-- /.feature__body -->
-              </div><!-- /.feature__inner -->
-            </div><!-- /.feature -->
+                  </div>
+                </div>
+              </div>
 
-            <div class="feature">
-              <div class="feature__inner">
-                <div class="feature__head">
-                  <a href="#" class="logo-tradier feature__logo"></a>
+            </div>
 
-                  <a href="#" class="btn-square">
-                    <i class="ico-settings"></i>
-                  </a>
-                </div><!-- /.feature__head -->
 
-                <div class="feature__body">
-                  <div class="feature__head-alt">
-                    <h5>Tradier</h5>
-
-                    <h5>Main Account</h5>
-                  </div><!-- /.feature__head-alt -->
-
-                  <ul class="list-infos">
-                    <li>
-                      <h5>Stock Commission</h5>
-
-                      <h6>$4.95/Trade</h6>
-                    </li>
-
-                    <li>
-                      <h5>Option Commission</h5>
-
-                      <h6>$4.95/Trade</h6>
-                    </li>
-
-                    <li>
-                      <h5>Contract Commission</h5>
-
-                      <h6>$0.35/Contract</h6>
-                    </li>
-
-                    <li>
-                      <h5>Min. Stock Commission</h5>
-
-                      <h6>$4.95/Trade</h6>
-                    </li>
-
-                    <li>
-                      <h5>Min. Option Commission</h5>
-
-                      <h6>$0.35/Contract</h6>
-                    </li>
-
-                    <li>
-                      <h5>Accounts</h5>
-
-                      <h6>32596418529632154879</h6>
-                      
-                      <h6>52963215487932596418</h6>
-                      
-                      <h6>32596418529632154879</h6>
-                      
-                      <h6>52963215487932596418</h6>
-
-                      <h6>52963215487932596418</h6>
-                    </li>
-                  </ul><!-- /.list-infos -->
-                </div><!-- /.feature__body -->
-              </div><!-- /.feature__inner -->
-            </div><!-- /.feature -->
-
-            <div class="feature">
-              <div class="feature__inner">
-                <div class="feature__head">
-                  <a href="#" class="logo-small feature__logo"></a>
-
-                  <a href="#" class="btn-square">
-                    <i class="ico-settings"></i>
-                  </a>
-                </div><!-- /.feature__head -->
-
-                <div class="feature__body">
-                  <div class="feature__head-alt">
-                    <h5>Tradier</h5>
-
-                    <h5>Mom’s Account</h5>
-                  </div><!-- /.feature__head-alt -->
-
-                  <ul class="list-infos">
-                    <li>
-                      <h5>Stock Commission</h5>
-
-                      <h6>$4.95/Trade</h6>
-                    </li>
-
-                    <li>
-                      <h5>Option Commission</h5>
-
-                      <h6>$4.95/Trade</h6>
-                    </li>
-
-                    <li>
-                      <h5>Contract Commission</h5>
-
-                      <h6>$0.35/Contract</h6>
-                    </li>
-
-                    <li>
-                      <h5>Min. Stock Commission</h5>
-
-                      <h6>$4.95/Trade</h6>
-                    </li>
-
-                    <li>
-                      <h5>Min. Option Commission</h5>
-
-                      <h6>$0.35/Contract</h6>
-                    </li>
-
-                    <li>
-                      <h5>Accounts</h5>
-
-                      <h6>32596418529632154879</h6>
-                      
-                      <h6>52963215487932596418</h6>
-                      
-                      <h6>32596418529632154879</h6>
-                      
-                      <h6>52963215487932596418</h6>
-                    </li>
-                  </ul><!-- /.list-infos -->
-                </div><!-- /.feature__body -->
-              </div><!-- /.feature__inner -->
-            </div><!-- /.feature -->
-
-            <div class="feature">
-              <div class="feature__inner">
-                <div class="feature__head">
-                  <a href="#" class="logo-tradier feature__logo"></a>
-
-                  <a href="#" class="btn-square">
-                    <i class="ico-settings"></i>
-                  </a>
-                </div><!-- /.feature__head -->
-
-                <div class="feature__body">
-                  <div class="feature__head-alt">
-                    <h5>Tradier</h5>
-
-                    <h5>Mom’s Account</h5>
-                  </div><!-- /.feature__head-alt -->
-
-                  <ul class="list-infos">
-                    <li>
-                      <h5>Stock Commission</h5>
-
-                      <h6>$4.95/Trade</h6>
-                    </li>
-
-                    <li>
-                      <h5>Option Commission</h5>
-
-                      <h6>$4.95/Trade</h6>
-                    </li>
-
-                    <li>
-                      <h5>Contract Commission</h5>
-
-                      <h6>$0.35/Contract</h6>
-                    </li>
-
-                    <li>
-                      <h5>Min. Stock Commission</h5>
-
-                      <h6>$4.95/Trade</h6>
-                    </li>
-
-                    <li>
-                      <h5>Min. Option Commission</h5>
-
-                      <h6>$0.35/Contract</h6>
-                    </li>
-
-                    <li>
-                      <h5>Accounts</h5>
-
-                      <h6>32596418529632154879</h6>
-                      
-                      <h6>52963215487932596418</h6>
-                    </li>
-                  </ul><!-- /.list-infos -->
-                </div><!-- /.feature__body -->
-              </div><!-- /.feature__inner -->
-            </div><!-- /.feature -->
           </div><!-- /.features -->
         </div><!-- /.article__body -->
       </div><!-- /.article -->
