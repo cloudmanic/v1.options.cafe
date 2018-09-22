@@ -8,6 +8,7 @@ import { Component, OnInit } from '@angular/core';
 import { Broker } from '../../models/broker';
 import { BrokerAccount } from '../../models/broker-account';
 import { BrokerService } from '../../providers/http/broker.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-brokers',
@@ -18,6 +19,12 @@ import { BrokerService } from '../../providers/http/broker.service';
 export class BrokersComponent implements OnInit 
 {
   brokers: Broker[] = []
+  showAddEditBroker: boolean = false;
+
+  // Add Broker Stuff
+  addBrokerType: string = "Tradier";
+  addBrokerError: string = "";
+  addBrokerDisplayName: string = "";
 
   //
   // Construct.
@@ -32,6 +39,52 @@ export class BrokersComponent implements OnInit
   // NgInit
   //
   ngOnInit() {}
+
+  //
+  // Add broker
+  //
+  addBroker()
+  {
+    if(this.addBrokerDisplayName.length <= 0)
+    {
+      this.addBrokerError = "A broker display name is required.";
+      return;
+    } else
+    {
+      this.addBrokerError = "";
+    }
+
+    // Ajax call to add broker.
+    this.brokerService.create(this.addBrokerType, this.addBrokerDisplayName).subscribe((res) => {
+
+      // Switch based on broker selected - Redirect to login to broker and get access token.
+      switch (this.addBrokerType) 
+      {
+        case 'Tradier':
+          window.location.href = environment.app_server + '/tradier/authorize?user=' + localStorage.getItem('user_id');
+        break;
+      }
+
+    });    
+  }
+
+  //
+  // Show add broker
+  //
+  showAddBrokerPopup()
+  {
+    this.addBrokerError = "";
+    this.addBrokerDisplayName = "";
+    this.showAddEditBroker = true;
+  }
+
+  //
+  // Close add broker
+  //
+  closeShowAddEditBroker() 
+  {
+    this.showAddEditBroker = false;    
+  }
 
   //
   // Get brokers.

@@ -131,6 +131,7 @@ func (t *Controller) GetBalances(c *gin.Context) {
 		UserId: c.MustGet("userId").(uint),
 		Wheres: []models.KeyValue{
 			{Key: "name", Value: "Tradier"},
+			{Key: "Status", Value: "Active"},
 		},
 	})
 

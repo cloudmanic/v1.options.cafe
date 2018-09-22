@@ -227,6 +227,11 @@ func (t *Api) DoRefreshAccessTokenIfNeeded(user models.User) error {
 	// Loop through and deal with each tradier broker in the db.
 	for i := range brokers {
 
+		// Skip over disabled brokers
+		if brokers[i].Status == "Disabled" {
+			continue
+		}
+
 		// Is it time to refresh
 		if time.Now().UTC().Add(1 * time.Hour).After(brokers[i].TokenExpirationDate.UTC()) {
 

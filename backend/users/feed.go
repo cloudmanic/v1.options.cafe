@@ -122,6 +122,11 @@ func (t *Base) DoUserFeed(user models.User) {
 	// Loop through the different brokers for this user
 	for _, row := range t.Users[user.Id].Profile.Brokers {
 
+		// Skip over disabled brokers
+		if row.Status == "Disabled" {
+			continue
+		}
+
 		// Need an access token to continue
 		if len(row.AccessToken) <= 0 {
 			services.Critical("User Connection (Brokers) No Access Token Found : " + user.Email + " (" + row.Name + ")")

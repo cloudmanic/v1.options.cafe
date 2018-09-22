@@ -48,7 +48,20 @@ export class BrokerService
     return this.http.get<Order[]>(environment.app_server + '/api/v1/brokers/' + brokerId + '/orders').map(
       (data) => { return Order.buildForEmit(data); 
     });
-  }    
+  }
+
+  //
+  // Create a new broker
+  //
+  create(name: string, display_name: string): Observable<Broker> {
+    let body = {
+      name: name,
+      display_name: display_name
+    }
+
+    return this.http.post<Broker>(environment.app_server + '/api/v1/brokers', body)
+      .map((data) => { return Broker.fromJson(data); });
+  }      
 }
 
 /* End File */

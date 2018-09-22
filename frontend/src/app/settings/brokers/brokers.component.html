@@ -7,7 +7,7 @@
         <div class="article__head">
           <h6>Brokers</h6>
 
-          <a href="#" class="btn btn--pink">Add Broker</a>
+          <a (click)="showAddBrokerPopup()" class="btn btn--pink">Add Broker</a>
         </div>
 
         <div class="article__body article__body--secondary">
@@ -34,7 +34,7 @@
                 
                 <div class="feature__body">
                   <div class="feature__head-alt">
-                    <h5>{{ row.Name }}</h5>
+                    <h5>{{ row.DisplayName }}</h5>
                   </div>
 
                   <ul class="list-infos">
@@ -105,7 +105,7 @@
 
                 <div class="feature__body">
                   <div class="feature__head-alt">
-                    <h5>{{ row.Name }}</h5>
+                    <h5>{{ row.DisplayName }}</h5>
                   </div>
 
                   <div class="feature__content">
@@ -132,3 +132,62 @@
     </div><!-- /.articles -->
   </div><!-- /.shell shell-large -->
 </div><!-- /.content__inner -->
+
+
+
+
+
+<!-- ********************* Add / Edit Broker *********************  -->
+<app-dialog [(visible)]="showAddEditBroker">
+
+  <div class="popup-alt">
+    <div class="popup__inner popup__inner--size2">
+        <div class="article">
+            <div class="article__head">
+                <h6>Add Broker</h6>
+            </div>
+
+            <div class="article__body article__body--primary">
+                <div class="form-info form-info--primary form-error">
+                    <form (submit)="addBroker()">
+                        <div class="form__body form__body--primary">
+                          <a class="logo-tradier form__logo"></a>
+
+<!--                             <div class="form__row">
+                                <label for="f_broker">Broker</label>
+
+                                <div class="form__controls">
+                                    <div class="select select--primary">
+                                        <select name="f_broker" id="f_broker">
+                                            <option value="option-1" selected >Tradier</option>
+
+                                            <option value="option-2" >Broker</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div> -->
+
+                            <div class="form__row">
+                              <label for="f_display">Display Name</label>
+
+                              <div class="form__controls">
+                                <input type="text" class="field form__field form__field--size1" name="addBrokerDisplayName" id="f_display" placeholder="Main Account" [(ngModel)]="addBrokerDisplayName" />
+                              </div>
+                            </div>
+
+                            <div class="form__hint" *ngIf="addBrokerError.length > 0">{{ addBrokerError }}</div>
+                        </div>
+
+                        <div class="form__actions form__actions--primary">
+                          <a (click)="closeShowAddEditBroker()" class="link-alt">Cancel</a>
+                          <a (click)="addBroker()" class="btn btn--pink btn--size2">Add Broker</a>
+                        </div>
+
+                    </form>
+                </div><!-- /.form -->
+            </div><!-- /.article__body -->
+        </div><!-- /.article -->
+    </div><!-- /.popup__inner -->
+  </div><!-- /.popup -->
+
+</app-dialog>

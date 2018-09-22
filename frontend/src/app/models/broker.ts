@@ -11,6 +11,7 @@ export class Broker {
   public Id: number;
   public Name: string;
   public Status: string;
+  public DisplayName: string;
   public BrokerAccounts: BrokerAccount[];
   public SettingsActiveBrokerAccount: BrokerAccount;
   
@@ -20,13 +21,24 @@ export class Broker {
   constructor(
     Id: number,
     Name: string,
-    Status: string,      
+    DisplayName: string,    
+    Status: string,   
     BrokerAccounts: BrokerAccount[],
   ){
     this.Id = Id;
     this.Name = Name;
+    this.DisplayName = DisplayName;
     this.Status = Status;    
     this.BrokerAccounts = BrokerAccounts;
+  }
+
+  //
+  // Json to Object.
+  //
+  public static fromJson(json: Object): Broker 
+  {
+    let o = new Broker(json["id"], json["name"], json["display_name"], json["status"], []);
+    return o;
   }
 
   //
@@ -64,7 +76,8 @@ export class Broker {
 
       result.push(new Broker(
         data[i].id,
-        data[i].name,         
+        data[i].name,
+        data[i].display_name,         
         data[i].status,       
         accounts
        ));
