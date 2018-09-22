@@ -1,5 +1,5 @@
 <!-- ********************* Watchlist Static State *********************  -->
-<aside class="section__aside box--bordered mobile--hidden" [hidden]="watchlistEditState">
+<aside class="section__aside box--bordered" [hidden]="watchlistEditState">
 										
   <div class="box__head box__head--relative">
     <h5 class="box__title">{{ watchlist?.Name }}</h5>
@@ -24,10 +24,6 @@
               {{ row.Name }}
             </a>
           </li>
-        </ul>
-
-
-    		<ul class="list-actions list-actions--padded">
 
           <li>
             <p>
@@ -37,22 +33,23 @@
             </p>
           </li>
 
-    			<li>
-    				<a (click)="onEditWatchList()">Edit Watchlist</a>
-    			</li>
+          <li>
+            <a (click)="onEditWatchList()">Edit Watchlist</a>
+          </li>
   
-    			<li>
-    				<a (click)="showAddWatchlist = !showAddWatchlist"  class="popup--trigger">Add Watchlist</a>
-    			</li>
+          <li>
+            <a (click)="showAddWatchlist = !showAddWatchlist"  class="popup--trigger">Add Watchlist</a>
+          </li>
   
-    			<li>
-    				<a (click)="showRenameWatchlist = !showRenameWatchlist" class="popup--trigger">Rename Watchlist</a>
-    			</li>
+          <li>
+            <a (click)="showRenameWatchlist = !showRenameWatchlist" class="popup--trigger">Rename Watchlist</a>
+          </li>
 
-    			<li>
-    				<a (click)="showDeleteWatchlist = !showDeleteWatchlist" class="popup--trigger">Delete Watchlist</a>
-    			</li>
-    		</ul>
+          <li>
+            <a (click)="showDeleteWatchlist = !showDeleteWatchlist" class="popup--trigger">Delete Watchlist</a>
+          </li>
+
+        </ul>
 
     	</div>
     </div>
