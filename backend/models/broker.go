@@ -14,10 +14,12 @@ type Broker struct {
 	UpdatedAt           time.Time       `json:"-"`
 	UserId              uint            `gorm:"index" sql:"not null;index:UserId" json:"-"`
 	Name                string          `sql:"not null;type:ENUM('Tradier', 'Tradier Sandbox', 'Tradeking', 'Etrade', 'Interactive Brokers'); default:'Tradier'" json:"name"`
+	DisplayName         string          `sql:"not null" json:"display_name"`
 	AccessToken         string          `sql:"not null" json:"-"`
 	RefreshToken        string          `sql:"not null" json:"-"`
 	TokenExpirationDate time.Time       `json:"-"`
 	BrokerAccounts      []BrokerAccount `json:"broker_accounts"`
+	Status              string          `sql:"not null;type:ENUM('Active', 'Disabled'); default:'Disabled'" json:"status"`
 }
 
 //

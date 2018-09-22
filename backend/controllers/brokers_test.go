@@ -7,10 +7,12 @@
 package controllers
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
@@ -29,6 +31,19 @@ func TestGetBrokers01(t *testing.T) {
 
 	// Create controller
 	c := &Controller{DB: db}
+
+	// Shared vars we use.
+	ts := time.Date(2017, 10, 29, 17, 20, 01, 507451, time.UTC)
+
+	// Install test data.
+	db.Exec("TRUNCATE TABLE brokers;")
+	db.Create(&models.Broker{Name: "Tradier", UserId: 1, AccessToken: "CLOwLO2cMnx-N_bPEexiVo9z9oRR80nPI9ycxQw3KQ-WQ4OP3D44gIbfLScAZ9pv", RefreshToken: "abc", TokenExpirationDate: ts, Status: "Active"})
+	db.Create(&models.Broker{Name: "Tradeking", UserId: 1, AccessToken: "456", RefreshToken: "xyz", TokenExpirationDate: ts, Status: "Active"})
+	db.Create(&models.Broker{Name: "Etrade", UserId: 1, AccessToken: "789", RefreshToken: "mno", TokenExpirationDate: ts, Status: "Active"})
+
+	db.Exec("TRUNCATE TABLE broker_accounts;")
+	db.Create(&models.BrokerAccount{UserId: 1, BrokerId: 1, Name: "Test Account 1", AccountNumber: "YYY123ZY", StockCommission: 5.00, StockMin: 0.00, OptionCommission: 0.35, OptionSingleMin: 5.00, OptionMultiLegMin: 7.00, OptionBase: 0.00})
+	db.Create(&models.BrokerAccount{UserId: 1, BrokerId: 1, Name: "Test Account 2", AccountNumber: "ABC123ZY", StockCommission: 5.00, StockMin: 0.00, OptionCommission: 0.35, OptionSingleMin: 5.00, OptionMultiLegMin: 7.00, OptionBase: 0.00})
 
 	// Make a mock request.
 	req, _ := http.NewRequest("GET", "/api/v1/brokers", nil)
@@ -69,6 +84,194 @@ func TestGetBrokers01(t *testing.T) {
 	st.Expect(t, result[0].BrokerAccounts[1].BrokerId, uint(1))
 	st.Expect(t, result[0].BrokerAccounts[0].AccountNumber, "YYY123ZY")
 	st.Expect(t, result[0].BrokerAccounts[1].AccountNumber, "ABC123ZY")
+}
+
+//
+// Test - CreateBroker - 01 - Success
+//
+func TestCreateBroker01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Shared vars we use.
+	ts := time.Date(2017, 10, 29, 17, 20, 01, 507451, time.UTC)
+
+	// Install test data.
+	db.Exec("TRUNCATE TABLE brokers;")
+	db.Create(&models.Broker{Name: "Tradier", UserId: 1, AccessToken: "CLOwLO2cMnx-N_bPEexiVo9z9oRR80nPI9ycxQw3KQ-WQ4OP3D44gIbfLScAZ9pv", RefreshToken: "abc", TokenExpirationDate: ts, Status: "Active"})
+
+	// Body data // We send in limited data as all other broker data is added through the auth process.
+	var bodyStr = []byte(`{"name":"Tradier", "display_name":"Unit Test Broker#1"}`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("POST", "/api/v1/brokers", bytes.NewBuffer(bodyStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.POST("/api/v1/brokers", c.CreateBroker)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Grab result and convert to strut
+	result := models.Broker{}
+	err := json.Unmarshal([]byte(w.Body.String()), &result)
+
+	// Parse json that returned.
+	st.Expect(t, err, nil)
+	st.Expect(t, w.Body.String(), `{"id":2,"name":"Tradier","display_name":"Unit Test Broker#1","broker_accounts":null,"status":"Disabled"}`)
+}
+
+//
+// Test - CreateBroker 02 - Fail
+//
+func TestCreateBroker02(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Shared vars we use.
+	ts := time.Date(2017, 10, 29, 17, 20, 01, 507451, time.UTC)
+
+	// Install test data.
+	db.Exec("TRUNCATE TABLE brokers;")
+	db.Create(&models.Broker{Name: "Tradier", UserId: 1, AccessToken: "CLOwLO2cMnx-N_bPEexiVo9z9oRR80nPI9ycxQw3KQ-WQ4OP3D44gIbfLScAZ9pv", RefreshToken: "abc", TokenExpirationDate: ts, Status: "Active"})
+
+	// Body data // We send in limited data as all other broker data is added through the auth process.
+	var bodyStr = []byte(`{"name":"Bad Broker", "display_name":"Unit Test Broker#1"}`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("POST", "/api/v1/brokers", bytes.NewBuffer(bodyStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.POST("/api/v1/brokers", c.CreateBroker)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Grab result and convert to strut
+	result := models.Broker{}
+	err := json.Unmarshal([]byte(w.Body.String()), &result)
+
+	// Parse json that returned.
+	st.Expect(t, err, nil)
+	st.Expect(t, w.Body.String(), `{"error":"Broker name not valid."}`)
+}
+
+//
+// Test - CreateBroker 03 - Fail
+//
+func TestCreateBroker03(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Shared vars we use.
+	ts := time.Date(2017, 10, 29, 17, 20, 01, 507451, time.UTC)
+
+	// Install test data.
+	db.Exec("TRUNCATE TABLE brokers;")
+	db.Create(&models.Broker{Name: "Tradier", UserId: 1, AccessToken: "CLOwLO2cMnx-N_bPEexiVo9z9oRR80nPI9ycxQw3KQ-WQ4OP3D44gIbfLScAZ9pv", RefreshToken: "abc", TokenExpirationDate: ts, Status: "Active"})
+
+	// Body data // We send in limited data as all other broker data is added through the auth process.
+	var bodyStr = []byte(`{"name":"", "display_name":""}`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("POST", "/api/v1/brokers", bytes.NewBuffer(bodyStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.POST("/api/v1/brokers", c.CreateBroker)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Grab result and convert to strut
+	result := models.Broker{}
+	err := json.Unmarshal([]byte(w.Body.String()), &result)
+
+	// Parse json that returned.
+	st.Expect(t, err, nil)
+	st.Expect(t, w.Body.String(), `{"error":"Name field can not be empty."}`)
+}
+
+//
+// Test - CreateBroker 04 - Fail
+//
+func TestCreateBroker04(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Shared vars we use.
+	ts := time.Date(2017, 10, 29, 17, 20, 01, 507451, time.UTC)
+
+	// Install test data.
+	db.Exec("TRUNCATE TABLE brokers;")
+	db.Create(&models.Broker{Name: "Tradier", UserId: 1, AccessToken: "CLOwLO2cMnx-N_bPEexiVo9z9oRR80nPI9ycxQw3KQ-WQ4OP3D44gIbfLScAZ9pv", RefreshToken: "abc", TokenExpirationDate: ts, Status: "Active"})
+
+	// Body data // We send in limited data as all other broker data is added through the auth process.
+	var bodyStr = []byte(`{"name":"Tradier", "display_name":""}`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("POST", "/api/v1/brokers", bytes.NewBuffer(bodyStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.POST("/api/v1/brokers", c.CreateBroker)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Grab result and convert to strut
+	result := models.Broker{}
+	err := json.Unmarshal([]byte(w.Body.String()), &result)
+
+	// Parse json that returned.
+	st.Expect(t, err, nil)
+	st.Expect(t, w.Body.String(), `{"error":"Display Name field can not be empty."}`)
 }
 
 //

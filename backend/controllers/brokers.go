@@ -8,6 +8,8 @@ package controllers
 
 import (
 	"flag"
+	"io/ioutil"
+	"net/http"
 	"strconv"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
@@ -16,6 +18,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
+	"github.com/tidwall/gjson"
 )
 
 //
@@ -39,6 +42,60 @@ func (t *Controller) GetBrokers(c *gin.Context) {
 
 	// Return happy JSON
 	c.JSON(200, results)
+}
+
+//
+// Create new broker. We default to disabled. The broker
+// is enabled when the oauth handshake happens.
+//
+func (t *Controller) CreateBroker(c *gin.Context) {
+
+	// Get User Id
+	userId := c.MustGet("userId").(uint)
+
+	// Setup Broker obj
+	o := models.Broker{UserId: userId}
+
+	// Parse json body
+	body, err := ioutil.ReadAll(c.Request.Body)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Get inputs. We do it this way as we do not want to accept any other input for security reasons.
+	name := gjson.Get(string(body), "name").String()
+	displayName := gjson.Get(string(body), "display_name").String()
+
+	// Validate name
+	if len(name) <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Name field can not be empty."})
+		return
+	}
+
+	// For now we only support tradier
+	h := []string{"Tradier"}
+	found, _ := helpers.InArray(name, h)
+
+	if !found {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Broker name not valid."})
+		return
+	}
+
+	// Validate display name
+	if len(displayName) <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Display Name field can not be empty."})
+		return
+	}
+
+	// Load up data
+	o.Name = name
+	o.Status = "Disabled"
+	o.DisplayName = displayName
+
+	// Create Screen
+	err = t.DB.CreateNewRecord(&o, models.InsertParam{})
+	t.RespondCreated(c, o, err)
 }
 
 //
