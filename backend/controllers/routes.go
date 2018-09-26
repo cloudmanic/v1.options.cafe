@@ -93,6 +93,10 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 
 	// ------------ Non-Auth Routes ------ //
 
+	// Google login Routes
+	r.GET("/oauth/google", t.DoGoogleAuthLogin)
+	r.GET("/oauth/google/callback", t.DoGoogleCallback)
+
 	// oAuth Routes
 	r.POST("/oauth/token", t.DoOauthToken)
 	r.GET("/oauth/logout", t.DoLogOut)

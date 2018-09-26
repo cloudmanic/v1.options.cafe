@@ -29,6 +29,7 @@ export class AuthLoginComponent implements OnInit {
   successMsg = "";
   submitBtn = "Login";
   returnUrl: "/";
+  googleLoginState: boolean = false;
 
   constructor(private http: HttpClient, private router: Router, private activatedRoute: ActivatedRoute) { }
 
@@ -61,11 +62,25 @@ export class AuthLoginComponent implements OnInit {
     // get return url from route parameters or default to '/'
     this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '/';    
   }
+
+  //
+  // Do Google login.
+  //
+  googleLogin()
+  {
+    this.googleLoginState = true;
+    window.location.href = environment.app_server + '/oauth/google';
+  }
   
   //
   // Login submit.
   //
   onSubmit(form: NgForm) {
+
+    if(this.googleLoginState)
+    {
+      return;
+    }
 
     // Clear post error.
     this.errorMsg = "";

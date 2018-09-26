@@ -12,7 +12,7 @@
       	<p class="title-green" *ngIf="successMsg">{{ successMsg }}</p>
       	
             <div class="form__row">
-                <button class="btn btn-google-login" title="Use Google Account">
+                <button class="btn btn-google-login" title="Sign in with Google" (click)="googleLogin()">
                     <span class="oauth-icon">
                         <svg class="icon-svg icon-svg--google icon--" width="26" height="26" viewbox="0 0 32 32" preserveAspectRatio="xMinYMin">
                             <use xlink:href="/images/svg/icons.svg#icon--google"></use>
