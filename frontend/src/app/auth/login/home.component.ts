@@ -67,7 +67,7 @@ export class AuthLoginComponent implements OnInit {
       // See if we have a google_auth_success for a successful google login.
       if(params['google_auth_success']) 
       {
-        this.processPostGoogleLogin(params['google_auth_success']);
+        this.processPostGoogleLogin();
       }
 
       // See if our google login failed to login.
@@ -84,7 +84,7 @@ export class AuthLoginComponent implements OnInit {
   //
   // Process post Google login.
   //
-  processPostGoogleLogin(secret: string)
+  processPostGoogleLogin()
   {
     let sessionKey = localStorage.getItem('google_auth_session_key');
     let sessionSecret = localStorage.getItem('google_auth_session_secret');
@@ -95,7 +95,7 @@ export class AuthLoginComponent implements OnInit {
 
 
     // Make the the HTTP request:
-    this.http.post<LoginResponse>(environment.app_server + '/oauth/google/token', { session_key: sessionKey, auth_secret: secret, session_secret: sessionSecret, grant_type: "password", client_id: environment.client_id }).subscribe(
+    this.http.post<LoginResponse>(environment.app_server + '/oauth/google/token', { session_key: sessionKey, session_secret: sessionSecret, grant_type: "password", client_id: environment.client_id }).subscribe(
 
       // Success
       data => {

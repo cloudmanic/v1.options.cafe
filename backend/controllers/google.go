@@ -31,7 +31,6 @@ var googleConf *oauth2.Config
 
 type GoogleSessionStore struct {
 	UserId        uint   `json:"user_id"`
-	AuthSecret    string `json:"auth_secret"`
 	SessionSecret string `json:"session_secret"`
 }
 
@@ -69,7 +68,7 @@ func (t *Controller) DoStartGoogleLoginSession(c *gin.Context) {
 	sessionSecret := randToken()
 
 	// Build json to store
-	jsonStore := `{"session_secret":"` + sessionSecret + `","auth_secret":"","user_id":0}`
+	jsonStore := `{"session_secret":"` + sessionSecret + `","user_id":0}`
 
 	// Encrypt the string we are storing.
 	hash, _ := helpers.Encrypt(jsonStore)
@@ -207,13 +206,9 @@ func (t *Controller) DoGoogleCallback(c *gin.Context) {
 	// JSON to vars
 	sessionSecret := gjson.Get(jsonRt, "session_secret").String()
 
-	// Shared.
-	googleShared := randToken()
-
-	// Build json to store
+	// Build json to store by adding in user id
 	jsonStore, _ := json.Marshal(GoogleSessionStore{
 		UserId:        user.Id,
-		AuthSecret:    googleShared,
 		SessionSecret: sessionSecret,
 	})
 
@@ -229,7 +224,7 @@ func (t *Controller) DoGoogleCallback(c *gin.Context) {
 	cache.SetExpire("google_auth_session_"+googleAuthSessionKey, (time.Minute * 1), hash)
 
 	// Redirect back to main site
-	c.Redirect(302, os.Getenv("SITE_URL")+"/login?google_auth_success="+googleShared)
+	c.Redirect(302, os.Getenv("SITE_URL")+"/login?google_auth_success=true")
 }
 
 //
@@ -242,7 +237,6 @@ func (t *Controller) DoGetAccessTokenAfterGoogleAuth(c *gin.Context) {
 
 	// Set shared key
 	sessionKey := gjson.Get(string(body), "session_key").String()
-	authSecret := gjson.Get(string(body), "auth_secret").String()
 	sessionSecret := gjson.Get(string(body), "session_secret").String()
 	clientId := gjson.Get(string(body), "client_id").String()
 	grantType := gjson.Get(string(body), "grant_type").String()
@@ -281,14 +275,7 @@ func (t *Controller) DoGetAccessTokenAfterGoogleAuth(c *gin.Context) {
 
 	// Set shared key
 	storedUserId := gjson.Get(json, "user_id").Int()
-	storedAuthSecret := gjson.Get(json, "auth_secret").String()
 	storedSessionSecret := gjson.Get(json, "session_secret").String()
-
-	// Make sure we posted in the correct information
-	if storedAuthSecret != authSecret {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid auth secret."))
-		return
-	}
 
 	if storedSessionSecret != sessionSecret {
 		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid session secret."))
