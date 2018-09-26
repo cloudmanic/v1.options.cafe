@@ -20,7 +20,6 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/realip"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 	"golang.org/x/oauth2"
@@ -30,6 +29,7 @@ import (
 var googleConf *oauth2.Config
 
 type GoogleSessionStore struct {
+	Type          string
 	UserId        uint   `json:"user_id"`
 	SessionSecret string `json:"session_secret"`
 }
@@ -68,7 +68,7 @@ func (t *Controller) DoStartGoogleLoginSession(c *gin.Context) {
 	sessionSecret := randToken()
 
 	// Build json to store
-	jsonStore := `{"session_secret":"` + sessionSecret + `","user_id":0}`
+	jsonStore := `{"session_secret":"` + sessionSecret + `","user_id":0,"type":"login"}`
 
 	// Encrypt the string we are storing.
 	hash, _ := helpers.Encrypt(jsonStore)
@@ -107,15 +107,8 @@ func (t *Controller) DoGoogleAuthLogin(c *gin.Context) {
 		return
 	}
 
-	// Set state for oauth purposes
-	state := randToken()
-	session := sessions.Default(c)
-	session.Set("state", state)
-	session.Set("google_auth_session_key", sessionKey)
-	session.Save()
-
 	// Redirect to google to login.
-	c.Redirect(302, googleConf.AuthCodeURL(state))
+	c.Redirect(302, googleConf.AuthCodeURL(sessionKey))
 }
 
 //
@@ -124,21 +117,35 @@ func (t *Controller) DoGoogleAuthLogin(c *gin.Context) {
 func (t *Controller) DoGoogleCallback(c *gin.Context) {
 
 	// Handle the exchange code to initiate a transport.
-	session := sessions.Default(c)
-	retrievedState := session.Get("state")
-	googleAuthSessionKey := session.Get("google_auth_session_key").(string)
+	sessionKey := c.Query("state")
 
-	if retrievedState != c.Query("state") {
-		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Invalid session state: %s", retrievedState))
+	// Make sure this is a valid session key
+	var temp interface{}
+	found, err := cache.Get("google_auth_session_"+sessionKey, &temp)
+
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	if len(googleAuthSessionKey) <= 0 {
-		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("No google auth session key not found."))
+	if !found {
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid session key: %s", sessionKey))
 		return
 	}
 
-	// Exchange the code for an access token.
+	// Decrypt json blob
+	jsonRt, err := helpers.Decrypt(temp.(string))
+
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	// JSON to vars
+	sessionType := gjson.Get(jsonRt, "type").String()
+	sessionSecret := gjson.Get(jsonRt, "session_secret").String()
+
+	// Now connect to google to get a token. Exchange the code for an access token.
 	tok, err := googleConf.Exchange(oauth2.NoContext, c.Query("code"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -181,35 +188,11 @@ func (t *Controller) DoGoogleCallback(c *gin.Context) {
 		return
 	}
 
-	// Get the google auth session.
-	var temp interface{}
-	found, err := cache.Get("google_auth_session_"+googleAuthSessionKey, &temp)
-
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
-	if !found {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid session key: %s", c.Query("session_key")))
-		return
-	}
-
-	// Decrypt json blob
-	jsonRt, err := helpers.Decrypt(temp.(string))
-
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
-	// JSON to vars
-	sessionSecret := gjson.Get(jsonRt, "session_secret").String()
-
 	// Build json to store by adding in user id
 	jsonStore, _ := json.Marshal(GoogleSessionStore{
 		UserId:        user.Id,
 		SessionSecret: sessionSecret,
+		Type:          sessionType,
 	})
 
 	// Encrypt the string we are storing.
@@ -221,7 +204,7 @@ func (t *Controller) DoGoogleCallback(c *gin.Context) {
 	}
 
 	// Store session key in redis.
-	cache.SetExpire("google_auth_session_"+googleAuthSessionKey, (time.Minute * 1), hash)
+	cache.SetExpire("google_auth_session_"+sessionKey, (time.Minute * 1), hash)
 
 	// Redirect back to main site
 	c.Redirect(302, os.Getenv("SITE_URL")+"/login?google_auth_success=true")

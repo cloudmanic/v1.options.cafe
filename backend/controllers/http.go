@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/acme/autocert"
 )
@@ -33,10 +32,6 @@ func (t *Controller) StartWebServer() {
 
 	// Set Router
 	router := gin.New()
-
-	// Setup sessions
-	store, _ := sessions.NewRedisStore(10, "tcp", os.Getenv("REDIS_HOST"), "", []byte(os.Getenv("ENCRYPTION_KEY")))
-	router.Use(sessions.Sessions("OCSession", store))
 
 	// Logger - Global middleware
 	if os.Getenv("HTTP_LOG_REQUESTS") == "true" {
