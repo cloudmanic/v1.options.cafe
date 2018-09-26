@@ -9,6 +9,7 @@ package controllers
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -17,6 +18,8 @@ import (
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/realip"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
@@ -25,6 +28,12 @@ import (
 )
 
 var googleConf *oauth2.Config
+
+type GoogleSessionStore struct {
+	UserId        uint   `json:"user_id"`
+	AuthSecret    string `json:"auth_secret"`
+	SessionSecret string `json:"session_secret"`
+}
 
 //
 // Init.
@@ -45,23 +54,65 @@ func init() {
 }
 
 //
+// Start a Google login session. We return a shared key.
+// This shared key is good for 1 min and will help authenticate
+// a front-end app.
+//
+func (t *Controller) DoStartGoogleLoginSession(c *gin.Context) {
+
+	// Posted data.
+	body, _ := ioutil.ReadAll(c.Request.Body)
+	defer c.Request.Body.Close()
+
+	// Set shared key
+	sessionKey := gjson.Get(string(body), "session_key").String()
+	sessionSecret := randToken()
+
+	// Build json to store
+	jsonStore := `{"session_secret":"` + sessionSecret + `","auth_secret":"","user_id":0}`
+
+	// Encrypt the string we are storing.
+	hash, _ := helpers.Encrypt(jsonStore)
+
+	// Store session key in redis.
+	cache.SetExpire("google_auth_session_"+sessionKey, (time.Minute * 1), hash)
+
+	// Return success json.
+	c.JSON(200, gin.H{"session_secret": sessionSecret})
+}
+
+//
 // Do Google Auth login
 //
 func (t *Controller) DoGoogleAuthLogin(c *gin.Context) {
 
 	// Make sure we pass in a shared key to be used later to allow access to an access token
-	sharedKey := c.Query("shared")
+	sessionKey := c.Query("session_key")
 
-	if len(sharedKey) <= 0 {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid shared key: %s", c.Query("shared")))
+	if len(sessionKey) <= 0 {
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid session key: %s", c.Query("session_key")))
 		return
 	}
 
-	// Set state
+	// Make sure this is a valid session key
+	var temp interface{}
+	found, err := cache.Get("google_auth_session_"+sessionKey, &temp)
+
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	if !found {
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid session key: %s", c.Query("session_key")))
+		return
+	}
+
+	// Set state for oauth purposes
 	state := randToken()
 	session := sessions.Default(c)
 	session.Set("state", state)
-	session.Set("google_auth_shared_key", sharedKey)
+	session.Set("google_auth_session_key", sessionKey)
 	session.Save()
 
 	// Redirect to google to login.
@@ -70,28 +121,21 @@ func (t *Controller) DoGoogleAuthLogin(c *gin.Context) {
 
 //
 // Deal with the call back from Google with the code.
-// If success we create a shared secret between the front-end
-// and the backkend. When we started this process the front end pased in
-// googleAuthSharedKey as a shared key. This key is stored in the browser's
-// local storage. Upon success auth with google we create a new random key.
-// we put these two keys together as a MD5 hash and store in redis. We then redirect
-// back to the browser with the server's shared key. The server then sends back both shared
-// keys to obtain an access token.
 //
 func (t *Controller) DoGoogleCallback(c *gin.Context) {
 
 	// Handle the exchange code to initiate a transport.
 	session := sessions.Default(c)
 	retrievedState := session.Get("state")
-	googleAuthSharedKey := session.Get("google_auth_shared_key").(string)
+	googleAuthSessionKey := session.Get("google_auth_session_key").(string)
 
 	if retrievedState != c.Query("state") {
 		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Invalid session state: %s", retrievedState))
 		return
 	}
 
-	if len(googleAuthSharedKey) <= 0 {
-		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("No google auth shared key found"))
+	if len(googleAuthSessionKey) <= 0 {
+		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("No google auth session key not found."))
 		return
 	}
 
@@ -123,31 +167,152 @@ func (t *Controller) DoGoogleCallback(c *gin.Context) {
 
 	// Get data google returned.
 	subId := gjson.Get(string(data), "sub").String()
-	email := gjson.Get(string(data), "email").String()
-	firstName := gjson.Get(string(data), "given_name").String()
-	lastName := gjson.Get(string(data), "family_name").String()
+	// email := gjson.Get(string(data), "email").String()
+	// firstName := gjson.Get(string(data), "given_name").String()
+	// lastName := gjson.Get(string(data), "family_name").String()
 
-	fmt.Println(subId, email, firstName, lastName)
+	// fmt.Println(subId, email, firstName, lastName)
 
-	// Shared.
-	googleShared := randToken()
+	// Get user from db
+	user, err := t.DB.GetUserByGoogleSubId(subId)
 
-	// Encrypt the string we are storing.
-	hash, err := helpers.Encrypt(googleAuthSharedKey + ":" + googleShared)
+	if err != nil {
+		// Redirect back as user was not found.
+		c.Redirect(302, os.Getenv("SITE_URL")+"/login?google_auth_failed=user-not-found")
+		return
+	}
+
+	// Get the google auth session.
+	var temp interface{}
+	found, err := cache.Get("google_auth_session_"+googleAuthSessionKey, &temp)
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	// Create md5 hash of the string
-	md5Hash := helpers.GetMd5(googleAuthSharedKey + ":" + googleShared)
+	if !found {
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid session key: %s", c.Query("session_key")))
+		return
+	}
 
-	// Store another shared secret to help give google auth an access token.
-	cache.SetExpire("google_auth_shared_key_"+md5Hash, (time.Minute * 1), hash)
+	// Decrypt json blob
+	jsonRt, err := helpers.Decrypt(temp.(string))
+
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	// JSON to vars
+	sessionSecret := gjson.Get(jsonRt, "session_secret").String()
+
+	// Shared.
+	googleShared := randToken()
+
+	// Build json to store
+	jsonStore, _ := json.Marshal(GoogleSessionStore{
+		UserId:        user.Id,
+		AuthSecret:    googleShared,
+		SessionSecret: sessionSecret,
+	})
+
+	// Encrypt the string we are storing.
+	hash, err := helpers.Encrypt(string(jsonStore))
+
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	// Store session key in redis.
+	cache.SetExpire("google_auth_session_"+googleAuthSessionKey, (time.Minute * 1), hash)
 
 	// Redirect back to main site
-	c.Redirect(302, os.Getenv("SITE_URL")+"?google_auth_success="+googleShared)
+	c.Redirect(302, os.Getenv("SITE_URL")+"/login?google_auth_success="+googleShared)
+}
+
+//
+// Get an access token after a google auth.
+//
+func (t *Controller) DoGetAccessTokenAfterGoogleAuth(c *gin.Context) {
+
+	// Posted data.
+	body, _ := ioutil.ReadAll(c.Request.Body)
+
+	// Set shared key
+	sessionKey := gjson.Get(string(body), "session_key").String()
+	authSecret := gjson.Get(string(body), "auth_secret").String()
+	sessionSecret := gjson.Get(string(body), "session_secret").String()
+	clientId := gjson.Get(string(body), "client_id").String()
+	grantType := gjson.Get(string(body), "grant_type").String()
+
+	defer c.Request.Body.Close()
+
+	// First we validate the grant type and client id. Make sure this is a known application.
+	app, err := t.DB.ValidateClientIdGrantType(clientId, grantType)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid client_id or grant type."})
+		return
+	}
+
+	// Get the google auth session from Redis
+	var temp interface{}
+	found, err := cache.Get("google_auth_session_"+sessionKey, &temp)
+
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	if !found {
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid session key: %s", c.Query("session_key")))
+		return
+	}
+
+	// Decrypt json blob
+	json, err := helpers.Decrypt(temp.(string))
+
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	// Set shared key
+	storedUserId := gjson.Get(json, "user_id").Int()
+	storedAuthSecret := gjson.Get(json, "auth_secret").String()
+	storedSessionSecret := gjson.Get(json, "session_secret").String()
+
+	// Make sure we posted in the correct information
+	if storedAuthSecret != authSecret {
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid auth secret."))
+		return
+	}
+
+	if storedSessionSecret != sessionSecret {
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid session secret."))
+		return
+	}
+
+	// Clear cache
+	cache.SetExpire("google_auth_session_"+sessionKey, (time.Second * 1), "")
+
+	// --- If we made it this far we can issue an access token.
+
+	// Login user in by id
+	user, err := t.DB.LoginUserById(uint(storedUserId), app.Id, c.Request.UserAgent(), realip.RealIP(c.Request))
+
+	if err != nil {
+		services.BetterError(err)
+
+		// Respond with error
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Sorry, we could not find your account."})
+		return
+	}
+
+	// Return success json.
+	c.JSON(200, gin.H{"access_token": user.Session.AccessToken, "user_id": user.Id, "broker_count": len(user.Brokers), "token_type": "bearer"})
 }
 
 //

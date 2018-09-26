@@ -31,6 +31,7 @@ type User struct {
 	Brokers            []Broker
 	StripeCustomer     string `sql:"not null" json:"-"`
 	StripeSubscription string `sql:"not null" json:"-"`
+	GoogleSubId        string `sql:"not null" json:"-"`
 }
 
 //
@@ -48,7 +49,26 @@ func (t *DB) GetUserById(id uint) (User, error) {
 
 	var u User
 
-	if t.Where("Id = ?", id).First(&u).RecordNotFound() {
+	if t.Where("id = ?", id).First(&u).RecordNotFound() {
+		return u, errors.New("Record not found")
+	}
+
+	// Add in brokers
+	t.Model(u).Related(&u.Brokers)
+
+	// Return the user.
+	return u, nil
+
+}
+
+//
+// Get a user by Google Sub.
+//
+func (t *DB) GetUserByGoogleSubId(sub string) (User, error) {
+
+	var u User
+
+	if t.Where("google_sub_id = ?", sub).First(&u).RecordNotFound() {
 		return u, errors.New("Record not found")
 	}
 
@@ -129,6 +149,36 @@ func (t *DB) GetAllActiveUsers() []User {
 
 	return users
 
+}
+
+//
+// Login a user by ID
+//
+func (t *DB) LoginUserById(id uint, appId uint, userAgent string, ipAddress string) (User, error) {
+
+	var user User
+
+	// See if we already have this user.
+	user, err := t.GetUserById(id)
+
+	if err != nil {
+		return user, errors.New("Sorry, we were unable to find our account.")
+	}
+
+	// Create a session so we get an access_token (if we passed in an appId)
+	if appId > 0 {
+		session, err := t.CreateSession(user.Id, appId, userAgent, ipAddress)
+
+		if err != nil {
+			services.Error(err, "LoginUserById - Unable to create session in CreateSession()")
+			return User{}, err
+		}
+
+		// Add the session to the user object.
+		user.Session = session
+	}
+
+	return user, nil
 }
 
 //

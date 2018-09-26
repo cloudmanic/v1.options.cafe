@@ -80,10 +80,12 @@ type Datastore interface {
 	GetUserById(id uint) (User, error)
 	ValidatePassword(password string) error
 	GetUserByEmail(email string) (User, error)
+	GetUserByGoogleSubId(sub string) (User, error)
 	ResetUserPassword(id uint, password string) error
 	ValidateUserLogin(email string, password string) error
 	GetUserByStripeCustomer(customerId string) (User, error)
 	ValidateCreateUser(first string, last string, email string, password string) error
+	LoginUserById(id uint, appId uint, userAgent string, ipAddress string) (User, error)
 	LoginUserByEmailPass(email string, password string, appId uint, userAgent string, ipAddress string) (User, error)
 	CreateUser(first string, last string, email string, password string, appId uint, userAgent string, ipAddress string) (User, error)
 

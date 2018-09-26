@@ -18,6 +18,10 @@ interface LoginResponse {
   broker_count: number
 }
 
+interface GoogleSessionResponse {
+  session_secret: string
+}
+
 @Component({
   selector: 'app-auth-login',
   templateUrl: './home.component.html'
@@ -56,7 +60,21 @@ export class AuthLoginComponent implements OnInit {
     
     // subscribe to router event
     this.activatedRoute.queryParams.subscribe((params: Params) => {
+
+      // Success
       this.successMsg = params['success'];
+
+      // See if we have a google_auth_success for a successful google login.
+      if(params['google_auth_success']) 
+      {
+        this.processPostGoogleLogin(params['google_auth_success']);
+      }
+
+      // See if our google login failed to login.
+      if(params['google_auth_failed']) 
+      {
+        this.errorMsg = "Looks like you haven’t linked up that Google account yet.";
+      }
     });
     
     // get return url from route parameters or default to '/'
@@ -64,15 +82,71 @@ export class AuthLoginComponent implements OnInit {
   }
 
   //
+  // Process post Google login.
+  //
+  processPostGoogleLogin(secret: string)
+  {
+    let sessionKey = localStorage.getItem('google_auth_session_key');
+    let sessionSecret = localStorage.getItem('google_auth_session_secret');
+
+    // Remove keys we do not need.
+    localStorage.removeItem('google_auth_session_key');
+    localStorage.removeItem('google_auth_session_secret');
+
+
+    // Make the the HTTP request:
+    this.http.post<LoginResponse>(environment.app_server + '/oauth/google/token', { session_key: sessionKey, auth_secret: secret, session_secret: sessionSecret, grant_type: "password", client_id: environment.client_id }).subscribe(
+
+      // Success
+      data => {
+        // Store access token in local storage. 
+        localStorage.setItem('user_id', data.user_id.toString());
+        localStorage.setItem('access_token', data.access_token);
+
+        // See if we have a broker or not.
+        if (data.broker_count == 0) {
+          this.router.navigate(['/broker-select']);
+        } else {
+          this.router.navigate([this.returnUrl]);
+        }
+      },
+
+      // Error
+      (err: HttpErrorResponse) => {
+        this.errorMsg = "Unable to login via your Google account.";
+        console.log('An error occurred:', err);
+      }
+
+    );
+  }
+
+  //
   // Do Google login.
   //
   googleLogin()
   {
-    let random = this.getRandomString();
-    localStorage.setItem('google_auth_secret', random);
-
     this.googleLoginState = true;
-    window.location.href = environment.app_server + '/oauth/google?shared=' + random;
+    let sessionKey = this.getRandomString();
+    localStorage.setItem('google_auth_session_key', sessionKey);    
+
+    // Make the the HTTP request:
+    this.http.post<GoogleSessionResponse>(environment.app_server + '/oauth/google/session', { session_key: sessionKey }).subscribe(
+
+      // Success
+      data => {
+        // Store session secret. 
+        localStorage.setItem('google_auth_session_secret', data.session_secret.toString());
+
+        // Redirect to start the Google login
+        window.location.href = environment.app_server + '/oauth/google?session_key=' + sessionKey;
+      },
+
+      // Error
+      (err: HttpErrorResponse) => {
+        console.log('An error occurred:', err);
+      }
+
+    );
   }
   
   //

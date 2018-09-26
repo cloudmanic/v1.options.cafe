@@ -96,6 +96,8 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 	// Google login Routes
 	r.GET("/oauth/google", t.DoGoogleAuthLogin)
 	r.GET("/oauth/google/callback", t.DoGoogleCallback)
+	r.POST("/oauth/google/session", t.DoStartGoogleLoginSession)
+	r.POST("/oauth/google/token", t.DoGetAccessTokenAfterGoogleAuth)
 
 	// oAuth Routes
 	r.POST("/oauth/token", t.DoOauthToken)
