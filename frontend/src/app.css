@@ -25,6 +25,17 @@
 .width-95 { width: 95px !important; }
 .width-135 { width: 135px !important; }
 
+/* Google Button */
+.btn-google-login { display: flex; justify-content: center; font-size: 16px; height: 50px; border: 1px solid #d0d1d1; background-color: #fff; color: #3e4145; text-transform: unset; width: 100%; margin: 10px 0px; font-size: 18px; }
+.btn-google-login:hover { background-color: #f2f2f2; border: 1px solid #D0D2D3; }
+.btn-google-login .btn-text { display: inline-block; margin-left: 10px; margin-top: 4px; }
+
+/* Login Break */
+.break { text-align: center; z-index: 0; position: relative; }
+.break:before { content: ''; position: absolute; top: 50%; left: 0; right: 0; border-bottom: 1px solid #d0d1d1; z-index: -1; }
+.break__content { display: inline-block; padding: 0 0.5em; background: #fff; font-size: 17px; font-weight: 300;}
+
+
 /* A less wide watchlist for smaller monitors  */
 @media (min-width: 767px) {
   .section .section__aside { width: 210px; }
