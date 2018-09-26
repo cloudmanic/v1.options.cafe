@@ -68,8 +68,11 @@ export class AuthLoginComponent implements OnInit {
   //
   googleLogin()
   {
+    let random = this.getRandomString();
+    localStorage.setItem('google_auth_secret', random);
+
     this.googleLoginState = true;
-    window.location.href = environment.app_server + '/oauth/google';
+    window.location.href = environment.app_server + '/oauth/google?shared=' + random;
   }
   
   //
@@ -133,6 +136,22 @@ export class AuthLoginComponent implements OnInit {
         
     );   
   
+  }
+
+  //
+  // Make a random string to manage the google access token request.
+  //
+  getRandomString()
+  {
+    let text = "";
+    let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (var i = 0; i < 20; i++)
+    {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));   
+    }
+
+    return text;
   }
 
 }

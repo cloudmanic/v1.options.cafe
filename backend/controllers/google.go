@@ -13,7 +13,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"time"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
@@ -46,9 +49,19 @@ func init() {
 //
 func (t *Controller) DoGoogleAuthLogin(c *gin.Context) {
 
+	// Make sure we pass in a shared key to be used later to allow access to an access token
+	sharedKey := c.Query("shared")
+
+	if len(sharedKey) <= 0 {
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid shared key: %s", c.Query("shared")))
+		return
+	}
+
+	// Set state
 	state := randToken()
 	session := sessions.Default(c)
 	session.Set("state", state)
+	session.Set("google_auth_shared_key", sharedKey)
 	session.Save()
 
 	// Redirect to google to login.
@@ -57,15 +70,28 @@ func (t *Controller) DoGoogleAuthLogin(c *gin.Context) {
 
 //
 // Deal with the call back from Google with the code.
+// If success we create a shared secret between the front-end
+// and the backkend. When we started this process the front end pased in
+// googleAuthSharedKey as a shared key. This key is stored in the browser's
+// local storage. Upon success auth with google we create a new random key.
+// we put these two keys together as a MD5 hash and store in redis. We then redirect
+// back to the browser with the server's shared key. The server then sends back both shared
+// keys to obtain an access token.
 //
 func (t *Controller) DoGoogleCallback(c *gin.Context) {
 
 	// Handle the exchange code to initiate a transport.
 	session := sessions.Default(c)
 	retrievedState := session.Get("state")
+	googleAuthSharedKey := session.Get("google_auth_shared_key").(string)
 
 	if retrievedState != c.Query("state") {
 		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Invalid session state: %s", retrievedState))
+		return
+	}
+
+	if len(googleAuthSharedKey) <= 0 {
+		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("No google auth shared key found"))
 		return
 	}
 
@@ -103,8 +129,25 @@ func (t *Controller) DoGoogleCallback(c *gin.Context) {
 
 	fmt.Println(subId, email, firstName, lastName)
 
-  // Redirect back to main site
-  c.Redirect(302, os.Getenv("SITE_URL"))
+	// Shared.
+	googleShared := randToken()
+
+	// Encrypt the string we are storing.
+	hash, err := helpers.Encrypt(googleAuthSharedKey + ":" + googleShared)
+
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	// Create md5 hash of the string
+	md5Hash := helpers.GetMd5(googleAuthSharedKey + ":" + googleShared)
+
+	// Store another shared secret to help give google auth an access token.
+	cache.SetExpire("google_auth_shared_key_"+md5Hash, (time.Minute * 1), hash)
+
+	// Redirect back to main site
+	c.Redirect(302, os.Getenv("SITE_URL")+"?google_auth_success="+googleShared)
 }
 
 //
