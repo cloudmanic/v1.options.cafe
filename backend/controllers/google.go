@@ -20,7 +20,6 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/realip"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 	"golang.org/x/oauth2"
@@ -295,8 +294,6 @@ func (t *Controller) DoGetAccessTokenAfterGoogleAuth(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-
-	spew.Dump(redisSession)
 
 	// Verify the session secret
 	if redisSession.SessionSecret != sessionSecret {
