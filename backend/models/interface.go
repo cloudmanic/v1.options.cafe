@@ -84,10 +84,11 @@ type Datastore interface {
 	ResetUserPassword(id uint, password string) error
 	ValidateUserLogin(email string, password string) error
 	GetUserByStripeCustomer(customerId string) (User, error)
-	ValidateCreateUser(first string, last string, email string, password string) error
+	ValidateCreateUser(first string, last string, email string, googleAuth bool) error
 	LoginUserById(id uint, appId uint, userAgent string, ipAddress string) (User, error)
 	LoginUserByEmailPass(email string, password string, appId uint, userAgent string, ipAddress string) (User, error)
 	CreateUser(first string, last string, email string, password string, appId uint, userAgent string, ipAddress string) (User, error)
+	CreateUserFromGoogle(first string, last string, email string, subId string, appId uint, userAgent string, ipAddress string) (User, error)
 
 	// Orders
 	CreateOrder(order *Order) error

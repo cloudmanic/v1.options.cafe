@@ -35,13 +35,16 @@ export class AuthLoginComponent implements OnInit {
   returnUrl: "/";
   googleLoginState: boolean = false;
 
+  //
+  // Construct.
+  //
   constructor(private http: HttpClient, private router: Router, private activatedRoute: ActivatedRoute) { }
 
   //
   // OnInit...
   //
   ngOnInit() {
-    
+
     // Remove access token on server
     let access_token = localStorage.getItem('access_token');
 
@@ -94,8 +97,15 @@ export class AuthLoginComponent implements OnInit {
     localStorage.removeItem('google_auth_session_secret');
 
 
+    let post = { 
+       session_key: sessionKey, 
+       session_secret: sessionSecret, 
+       grant_type: "password", 
+       client_id: environment.client_id
+     }
+
     // Make the the HTTP request:
-    this.http.post<LoginResponse>(environment.app_server + '/oauth/google/token', { session_key: sessionKey, session_secret: sessionSecret, grant_type: "password", client_id: environment.client_id }).subscribe(
+    this.http.post<LoginResponse>(environment.app_server + '/oauth/google/token', post).subscribe(
 
       // Success
       data => {
@@ -130,7 +140,7 @@ export class AuthLoginComponent implements OnInit {
     localStorage.setItem('google_auth_session_key', sessionKey);    
 
     // Make the the HTTP request:
-    this.http.post<GoogleSessionResponse>(environment.app_server + '/oauth/google/session', { session_key: sessionKey }).subscribe(
+    this.http.post<GoogleSessionResponse>(environment.app_server + '/oauth/google/session', { session_key: sessionKey, type: 'login', redirect: environment.site_url + '/login' }).subscribe(
 
       // Success
       data => {

@@ -251,12 +251,63 @@ func (t *DB) ResetUserPassword(id uint, password string) error {
 }
 
 //
+// Create a new user. - From google auth
+//
+func (t *DB) CreateUserFromGoogle(first string, last string, email string, subId string, appId uint, userAgent string, ipAddress string) (User, error) {
+
+	// Lets do some validation
+	if err := t.ValidateCreateUser(first, last, email, true); err != nil {
+		return User{}, err
+	}
+
+	// Install user into the database
+	var _first = template.HTMLEscapeString(first)
+	var _last = template.HTMLEscapeString(last)
+
+	// Create new user
+	user := User{FirstName: _first, LastName: _last, Email: email, GoogleSubId: subId}
+	t.Create(&user)
+
+	// Log user creation.
+	services.Info("CreateUser - Created a new user account (from Google Auth) - " + first + " " + last + " " + email)
+
+	// Create a session so we get an access_token
+	session, err := t.CreateSession(user.Id, appId, userAgent, ipAddress)
+
+	if err != nil {
+		services.Error(err, "CreateUser - Unable to create session in CreateSession()")
+		return User{}, err
+	}
+
+	// Add the session to the user object.
+	user.Session = session
+
+	// Talk to stripe and setup the account.
+	err = t.CreateNewUserWithStripe(user)
+
+	if err != nil {
+		return User{}, err
+	}
+
+	// Do post register stuff
+	t.doPostUserRegisterStuff(user)
+
+	// Return the user.
+	return user, nil
+}
+
+//
 // Create a new user.
 //
 func (t *DB) CreateUser(first string, last string, email string, password string, appId uint, userAgent string, ipAddress string) (User, error) {
 
 	// Lets do some validation
-	if err := t.ValidateCreateUser(first, last, email, password); err != nil {
+	if err := t.ValidateCreateUser(first, last, email, false); err != nil {
+		return User{}, err
+	}
+
+	// Make sure the password is at least 6 chars long
+	if err := t.ValidatePassword(password); err != nil {
 		return User{}, err
 	}
 
@@ -296,12 +347,8 @@ func (t *DB) CreateUser(first string, last string, email string, password string
 		return User{}, err
 	}
 
-	// Subscribe new user to mailing lists.
-	go services.SendySubscribe("no-brokers", email, first, last)
-	go services.SendySubscribe("subscribers", email, first, last)
-
-	// Tell slack about this.
-	go services.SlackNotify("#events", "New Options Cafe User Account : "+email)
+	// Do post register stuff
+	t.doPostUserRegisterStuff(user)
 
 	// Return the user.
 	return user, nil
@@ -309,6 +356,20 @@ func (t *DB) CreateUser(first string, last string, email string, password string
 }
 
 // ------------------ Helper Functions --------------------- //
+
+//
+// Do post user register stuff.
+//
+func (t *DB) doPostUserRegisterStuff(user User) {
+
+	// Subscribe new user to mailing lists.
+	go services.SendySubscribe("no-brokers", user.Email, user.FirstName, user.LastName)
+	go services.SendySubscribe("subscribers", user.Email, user.FirstName, user.LastName)
+
+	// Tell slack about this.
+	go services.SlackNotify("#events", "New Options Cafe User Account : "+user.Email)
+
+}
 
 //
 // Validate a login user action.
@@ -337,30 +398,24 @@ func (t *DB) ValidateUserLogin(email string, password string) error {
 }
 
 //
-// Validate a create user action.
+// Validate a create user action. We do not always get a first name and last name from google.
+// so we make the validation optional with them.
 //
-func (t *DB) ValidateCreateUser(first string, last string, email string, password string) error {
+func (t *DB) ValidateCreateUser(first string, last string, email string, googleAuth bool) error {
 
 	// Are first and last name fields empty
-	if (len(first) == 0) && (len(last) == 0) {
+	if (!googleAuth) && (len(first) == 0) && (len(last) == 0) {
 		return errors.New("First name and last name fields are required.")
 	}
 
 	// Are first name empty
-	if len(first) == 0 {
+	if (!googleAuth) && len(first) == 0 {
 		return errors.New("First name field is required.")
 	}
 
 	// Are last name empty
-	if len(last) == 0 {
+	if (!googleAuth) && len(last) == 0 {
 		return errors.New("Last name field is required.")
-	}
-
-	// Make sure the password is at least 6 chars long
-	err := t.ValidatePassword(password)
-
-	if err != nil {
-		return err
 	}
 
 	// Lets validate the email address
@@ -369,7 +424,7 @@ func (t *DB) ValidateCreateUser(first string, last string, email string, passwor
 	}
 
 	// See if we already have this user.
-	_, err = t.GetUserByEmail(email)
+	_, err := t.GetUserByEmail(email)
 
 	if err == nil {
 		return errors.New("Looks like you already have an account.")

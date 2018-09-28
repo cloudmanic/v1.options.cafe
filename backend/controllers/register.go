@@ -49,7 +49,15 @@ func (t *Controller) DoRegister(c *gin.Context) {
 	defer c.Request.Body.Close()
 
 	// Validate user.
-	if err := t.DB.ValidateCreateUser(post.First, post.Last, post.Email, post.Password); err != nil {
+	if err := t.DB.ValidateCreateUser(post.First, post.Last, post.Email, false); err != nil {
+
+		// Respond with error
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Make sure the password is at least 6 chars long
+	if err := t.DB.ValidatePassword(post.Password); err != nil {
 
 		// Respond with error
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

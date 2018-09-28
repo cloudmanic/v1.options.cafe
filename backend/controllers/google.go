@@ -20,6 +20,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/realip"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 	"golang.org/x/oauth2"
@@ -29,9 +30,14 @@ import (
 var googleConf *oauth2.Config
 
 type GoogleSessionStore struct {
-	Type          string
+	Type          string `json:"type"`
 	UserId        uint   `json:"user_id"`
 	SessionSecret string `json:"session_secret"`
+	SubId         string `json:"sub_id"`
+	Email         string `json:"email"`
+	First         string `json:"first"`
+	Last          string `json:"last"`
+	Redirect      string `json:"redirect"`
 }
 
 //
@@ -64,14 +70,21 @@ func (t *Controller) DoStartGoogleLoginSession(c *gin.Context) {
 	defer c.Request.Body.Close()
 
 	// Set shared key
+	sessionRedirect := gjson.Get(string(body), "redirect").String()
+	sessionType := gjson.Get(string(body), "type").String()
 	sessionKey := gjson.Get(string(body), "session_key").String()
 	sessionSecret := randToken()
 
 	// Build json to store
-	jsonStore := `{"session_secret":"` + sessionSecret + `","user_id":0,"type":"login"}`
+	jsonStore, _ := json.Marshal(GoogleSessionStore{
+		UserId:        0,
+		Type:          sessionType,
+		SessionSecret: sessionSecret,
+		Redirect:      sessionRedirect,
+	})
 
 	// Encrypt the string we are storing.
-	hash, _ := helpers.Encrypt(jsonStore)
+	hash, _ := helpers.Encrypt(string(jsonStore))
 
 	// Store session key in redis.
 	cache.SetExpire("google_auth_session_"+sessionKey, (time.Minute * 1), hash)
@@ -89,7 +102,7 @@ func (t *Controller) DoGoogleAuthLogin(c *gin.Context) {
 	sessionKey := c.Query("session_key")
 
 	if len(sessionKey) <= 0 {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid session key: %s", c.Query("session_key")))
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid session key (#003): %s", c.Query("session_key")))
 		return
 	}
 
@@ -103,7 +116,7 @@ func (t *Controller) DoGoogleAuthLogin(c *gin.Context) {
 	}
 
 	if !found {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid session key: %s", c.Query("session_key")))
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid session key (#004): %s", c.Query("session_key")))
 		return
 	}
 
@@ -129,7 +142,7 @@ func (t *Controller) DoGoogleCallback(c *gin.Context) {
 	}
 
 	if !found {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid session key: %s", sessionKey))
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid session key (#001): %s", sessionKey))
 		return
 	}
 
@@ -142,6 +155,7 @@ func (t *Controller) DoGoogleCallback(c *gin.Context) {
 	}
 
 	// JSON to vars
+	sessionRedirect := gjson.Get(jsonRt, "redirect").String()
 	sessionType := gjson.Get(jsonRt, "type").String()
 	sessionSecret := gjson.Get(jsonRt, "session_secret").String()
 
@@ -171,21 +185,35 @@ func (t *Controller) DoGoogleCallback(c *gin.Context) {
 		return
 	}
 
+	// Log for later support issues.
+	services.Info("Google auth user information: " + string(data))
+
 	// Get data google returned.
 	subId := gjson.Get(string(data), "sub").String()
-	// email := gjson.Get(string(data), "email").String()
-	// firstName := gjson.Get(string(data), "given_name").String()
-	// lastName := gjson.Get(string(data), "family_name").String()
-
-	// fmt.Println(subId, email, firstName, lastName)
+	email := gjson.Get(string(data), "email").String()
+	firstName := gjson.Get(string(data), "given_name").String()
+	lastName := gjson.Get(string(data), "family_name").String()
 
 	// Get user from db
 	user, err := t.DB.GetUserByGoogleSubId(subId)
 
-	if err != nil {
-		// Redirect back as user was not found.
-		c.Redirect(302, os.Getenv("SITE_URL")+"/login?google_auth_failed=user-not-found")
-		return
+	if sessionType == "login" {
+
+		if err != nil {
+			// Redirect back as user was not found.
+			c.Redirect(302, sessionRedirect+"?google_auth_failed=user-not-found")
+			return
+		}
+
+	} else {
+
+		// They should login instead of register.
+		if err == nil {
+			// Redirect back as user was not found.
+			c.Redirect(302, sessionRedirect+"?google_auth_failed=user-already-in-system")
+			return
+		}
+
 	}
 
 	// Build json to store by adding in user id
@@ -193,6 +221,11 @@ func (t *Controller) DoGoogleCallback(c *gin.Context) {
 		UserId:        user.Id,
 		SessionSecret: sessionSecret,
 		Type:          sessionType,
+		SubId:         subId,
+		Email:         email,
+		First:         firstName,
+		Last:          lastName,
+		Redirect:      sessionRedirect,
 	})
 
 	// Encrypt the string we are storing.
@@ -207,7 +240,7 @@ func (t *Controller) DoGoogleCallback(c *gin.Context) {
 	cache.SetExpire("google_auth_session_"+sessionKey, (time.Minute * 1), hash)
 
 	// Redirect back to main site
-	c.Redirect(302, os.Getenv("SITE_URL")+"/login?google_auth_success=true")
+	c.Redirect(302, sessionRedirect+"?google_auth_success=true")
 }
 
 //
@@ -244,12 +277,12 @@ func (t *Controller) DoGetAccessTokenAfterGoogleAuth(c *gin.Context) {
 	}
 
 	if !found {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid session key: %s", c.Query("session_key")))
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid session key (#002): %s", c.Query("session_key")))
 		return
 	}
 
 	// Decrypt json blob
-	json, err := helpers.Decrypt(temp.(string))
+	jsonRt, err := helpers.Decrypt(temp.(string))
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -257,10 +290,16 @@ func (t *Controller) DoGetAccessTokenAfterGoogleAuth(c *gin.Context) {
 	}
 
 	// Set shared key
-	storedUserId := gjson.Get(json, "user_id").Int()
-	storedSessionSecret := gjson.Get(json, "session_secret").String()
+	redisSession := GoogleSessionStore{}
+	if err := json.Unmarshal([]byte(jsonRt), &redisSession); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
 
-	if storedSessionSecret != sessionSecret {
+	spew.Dump(redisSession)
+
+	// Verify the session secret
+	if redisSession.SessionSecret != sessionSecret {
 		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Invalid session secret."))
 		return
 	}
@@ -271,14 +310,35 @@ func (t *Controller) DoGetAccessTokenAfterGoogleAuth(c *gin.Context) {
 	// --- If we made it this far we can issue an access token.
 
 	// Login user in by id
-	user, err := t.DB.LoginUserById(uint(storedUserId), app.Id, c.Request.UserAgent(), realip.RealIP(c.Request))
+	user, err := t.DB.LoginUserById(uint(redisSession.UserId), app.Id, c.Request.UserAgent(), realip.RealIP(c.Request))
 
 	if err != nil {
 		services.BetterError(err)
 
-		// Respond with error
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Sorry, we could not find your account."})
-		return
+		// Are we logging in or registering
+		if redisSession.Type == "login" {
+
+			// Respond with error
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Sorry, we could not find your account."})
+			return
+
+		} else {
+
+			// Register new account
+			userNew, err := t.DB.CreateUserFromGoogle(redisSession.First, redisSession.Last, redisSession.Email, redisSession.SubId, app.Id, c.Request.UserAgent(), realip.RealIP(c.Request))
+
+			if err != nil {
+
+				// Respond with error
+				services.BetterError(err)
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Sorry, we could not register your account."})
+				return
+
+			}
+
+			// Set the user.
+			user = userNew
+		}
 	}
 
 	// Return success json.

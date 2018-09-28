@@ -7,5 +7,6 @@ export const environment = {
   production: false,
   client_id: "XL8TeRGBdsUvvM3",
   app_server: "http://127.0.0.1:7080",
-  ws_server: "ws://127.0.0.1:7080"    
+  ws_server: "ws://127.0.0.1:7080",
+  site_url: "http://localhost:4200"       
 };
