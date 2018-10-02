@@ -1,10 +1,10 @@
 //
-// Date: 11/11/2017
+// Date: 12/2/2018
 // Author(s): Spicer Matthews (spicer@options.cafe)
-// Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
+// Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-package controllers
+package admin
 
 import (
 	"fmt"
@@ -33,7 +33,7 @@ func (t *Controller) AuthMiddleware() gin.HandlerFunc {
 
 		if len(auth) != 2 || auth[0] != "Bearer" {
 
-			// We allow access token from the command line
+			// We allow access token from the url
 			if os.Getenv("APP_ENV") == "local" {
 
 				access_token = c.Query("access_token")
@@ -70,6 +70,14 @@ func (t *Controller) AuthMiddleware() gin.HandlerFunc {
 		if err != nil {
 			services.Critical("User Not Found - Unable to Authenticate - UserId (HTTP) : " + fmt.Sprint(session.UserId) + " - Session Id : " + fmt.Sprint(session.Id))
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization Failed (#003)"})
+			c.AbortWithStatus(401)
+			return
+		}
+
+		// Make sure this is an admin user (Options Cafe Employee)
+		if user.Admin != "Yes" {
+			services.Critical("User Not Found - Unable to Authenticate - UserId (HTTP) : " + fmt.Sprint(session.UserId) + " - Session Id : " + fmt.Sprint(session.Id))
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization Failed (#004)"})
 			c.AbortWithStatus(401)
 			return
 		}

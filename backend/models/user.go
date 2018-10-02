@@ -19,19 +19,21 @@ import (
 )
 
 type User struct {
-	Id                 uint      `gorm:"primary_key"`
+	Id                 uint      `gorm:"primary_key" json:"id"`
 	CreatedAt          time.Time `json:"-"`
 	UpdatedAt          time.Time `json:"-"`
-	FirstName          string    `sql:"not null"`
-	LastName           string    `sql:"not null"`
-	Email              string    `sql:"not null"`
+	FirstName          string    `sql:"not null" json:"first_name"`
+	LastName           string    `sql:"not null" json:"last_name"`
+	Email              string    `sql:"not null" json:"email"`
 	Password           string    `sql:"not null" json:"-"`
+	Admin              string    `sql:"not null;type:ENUM('Yes', 'No');default:'No'" json:"-"`
 	Status             string    `sql:"not null;type:ENUM('Active', 'Disable');default:'Active'" json:"-"`
 	Session            Session   `json:"-"`
-	Brokers            []Broker
-	StripeCustomer     string `sql:"not null" json:"-"`
-	StripeSubscription string `sql:"not null" json:"-"`
-	GoogleSubId        string `sql:"not null" json:"-"`
+	Brokers            []Broker  `json:"brokers"`
+	StripeCustomer     string    `sql:"not null" json:"-"`
+	StripeSubscription string    `sql:"not null" json:"-"`
+	GoogleSubId        string    `sql:"not null" json:"-"`
+	LastActivity       time.Time `json:"last_activity"`
 }
 
 //

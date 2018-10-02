@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cloudmanic/app.options.cafe/backend/controllers/admin"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/acme/autocert"
@@ -55,6 +56,12 @@ func (t *Controller) StartWebServer() {
 
 	// Register Routes
 	t.DoRoutes(router)
+
+	// Start admin controllers
+	a := &admin.Controller{DB: t.DB}
+
+	// Do admin routes
+	a.DoRoutes(router)
 
 	// Are we in testing mode? If not give us some SSL
 	if os.Getenv("APP_ENV") == "local" {
