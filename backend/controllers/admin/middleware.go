@@ -18,12 +18,27 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// IPs allowed to access these admin routes
+var allowedIps = map[string]bool{
+	"127.0.0.1":     true,
+	"71.238.46.175": true, // Spicer home
+	"96.239.59.69":  true, // VMG VPN
+}
+
 //
 // Here we make sure we passed in a proper Bearer Access Token.
 //
 func (t *Controller) AuthMiddleware() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
+
+		// We only allow this request from a few IP addresses
+		if _, ok := allowedIps[realip.RealIP(c.Request)]; !ok {
+			services.Critical("UnAuthorization IP address. - " + realip.RealIP(c.Request))
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization Failed (#005)"})
+			c.AbortWithStatus(401)
+			return
+		}
 
 		// Set access token and start the auth process
 		var access_token = ""
