@@ -1,35 +1,19 @@
 package types
 
 type UserProfile struct {
-  Id string
-  Name string
-  Accounts []UserProfileAccounts    
+	Id       string
+	Name     string
+	Accounts []UserProfileAccounts
 }
 
 type UserProfileAccounts struct {
-  AccountNumber string 
-  Classification string
-  DayTrader bool 
-  OptionLevel int
-  Status string
-  Type string
+	AccountNumber  string
+	Classification string
+	DayTrader      bool
+	OptionLevel    int
+	Status         string
+	Type           string
 }
-
-// Set Temp json struct
-type TmpUserProfileAccounts struct {
-  AccountNumber string `json:"account_number"`
-  Classification string
-  DayTrader bool `json:"day_trader"`
-  OptionLevel int `json:"option_level"`
-  Status string
-  Type string
-}   
-
-type TmpUserProfile struct {
-  Id string
-  Name string
-  Accounts []TmpUserProfileAccounts `json:"account"`   
-} 
 
 /*
 <profile>

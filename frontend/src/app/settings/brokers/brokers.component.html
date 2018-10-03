@@ -43,10 +43,16 @@
                       <h5>Accounts</h5>
 
                       <span *ngFor="let row2 of row.BrokerAccounts">
-                        <h6 *ngIf="row2.Id == row.SettingsActiveBrokerAccount.Id" class="red font-14 mb-10">{{ row2.Name }} - {{ row2.AccountNumber }}</h6>
+                        <h6 *ngIf="row2.Id == row.SettingsActiveBrokerAccount.Id" class="red font-14 mb-10">
+                          <span *ngIf="row2.Name != row2.AccountNumber">{{ row2.Name }} - {{ row2.AccountNumber }}</span>
+                          <span *ngIf="row2.Name == row2.AccountNumber">{{ row2.AccountNumber }}</span>
+                        </h6>
 
                         <h6 *ngIf="row2.Id != row.SettingsActiveBrokerAccount.Id" class="mb-10">
-                          <a class="link" (click)="brokerAccountClick(row, row2)">{{ row2.Name }} - {{ row2.AccountNumber }}</a> 
+                          <a class="link" (click)="brokerAccountClick(row, row2)">
+                            <span *ngIf="row2.Name != row2.AccountNumber">{{ row2.Name }} - {{ row2.AccountNumber }}</span>
+                            <span *ngIf="row2.Name == row2.AccountNumber">{{ row2.AccountNumber }}</span>
+                          </a> 
                         </h6>
                       </span>
 

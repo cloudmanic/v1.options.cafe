@@ -1,12 +1,13 @@
 package tradier
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
+	"github.com/tidwall/gjson"
 )
 
 //
@@ -19,12 +20,12 @@ func (t *Api) GetUserProfile() (types.UserProfile, error) {
 	// Setup http client
 	client := &http.Client{}
 
-  // Get url to api
-  apiUrl := apiBaseUrl
+	// Get url to api
+	apiUrl := apiBaseUrl
 
-  if t.Sandbox {
-    apiUrl = sandBaseUrl
-  }
+	if t.Sandbox {
+		apiUrl = sandBaseUrl
+	}
 
 	// Setup api request
 	req, _ := http.NewRequest("GET", apiUrl+"/user/profile", nil)
@@ -46,29 +47,45 @@ func (t *Api) GetUserProfile() (types.UserProfile, error) {
 	}
 
 	// Read the data we got.
-	body, _ := ioutil.ReadAll(res.Body)
-
-	// Bust open the Profile.
-	var ws map[string]types.TmpUserProfile
-
-	if err := json.Unmarshal(body, &ws); err != nil {
-		return user, err
-	}
+	jsonResponse, _ := ioutil.ReadAll(res.Body)
 
 	// Set the object.
-	user.Id = ws["profile"].Id
-	user.Name = ws["profile"].Name
+	user.Id = gjson.Get(string(jsonResponse), "profile.id").String()
+	user.Name = gjson.Get(string(jsonResponse), "profile.name").String()
 
-	// Loop through and set accounts.
-	for _, row := range ws["profile"].Accounts {
+	// See if we have one account or many account
+	vo := gjson.Get(string(jsonResponse), "profile.account.account_number")
 
+	// Only one account
+	if vo.Exists() {
+
+		// Add one account.
 		user.Accounts = append(user.Accounts, types.UserProfileAccounts{
-			AccountNumber:  row.AccountNumber,
-			Classification: row.Classification,
-			DayTrader:      row.DayTrader,
-			OptionLevel:    row.OptionLevel,
-			Status:         row.Status,
-			Type:           row.Type})
+			AccountNumber:  gjson.Get(string(jsonResponse), "profile.account.account_number").String(),
+			Classification: gjson.Get(string(jsonResponse), "profile.account.classification").String(),
+			DayTrader:      gjson.Get(string(jsonResponse), "profile.account.day_trader").Bool(),
+			OptionLevel:    int(gjson.Get(string(jsonResponse), "profile.account.option_level").Int()),
+			Status:         gjson.Get(string(jsonResponse), "profile.account.status").String(),
+			Type:           gjson.Get(string(jsonResponse), "profile.account.type").String(),
+		})
+
+	} else {
+
+		// Loop through the accounts because there is more than one.
+		vo1 := gjson.Get(string(jsonResponse), "profile.account")
+
+		for _, row := range vo1.Array() {
+
+			user.Accounts = append(user.Accounts, types.UserProfileAccounts{
+				AccountNumber:  gjson.Get(row.String(), "account_number").String(),
+				Classification: gjson.Get(row.String(), "classification").String(),
+				DayTrader:      gjson.Get(row.String(), "day_trader").Bool(),
+				OptionLevel:    int(gjson.Get(row.String(), "option_level").Int()),
+				Status:         gjson.Get(row.String(), "status").String(),
+				Type:           gjson.Get(row.String(), "type").String(),
+			})
+
+		}
 
 	}
 
