@@ -19,7 +19,9 @@ import { environment } from '../../../environments/environment';
 export class BrokersComponent implements OnInit 
 {
   brokers: Broker[] = []
-  showAddEditBroker: boolean = false;
+  editBroker: BrokerEdit = new BrokerEdit();
+  showAddBroker: boolean = false;
+  showEditBroker: boolean = false;
 
   // Add Broker Stuff
   addBrokerType: string = "Tradier";
@@ -42,6 +44,43 @@ export class BrokersComponent implements OnInit
   // NgInit
   //
   ngOnInit() {}
+
+  //
+  // Edit a broker.
+  //
+  showEditBrokerToggle(broker: Broker)
+  {
+    this.editBroker.Name = broker.Name;
+    this.editBroker.DisplayName = broker.DisplayName;
+    this.editBroker.StockCommission = Number(broker.SettingsActiveBrokerAccount.StockCommission.toFixed(2));
+    this.editBroker.OptionBase = Number(broker.SettingsActiveBrokerAccount.OptionBase.toFixed(2));
+    this.editBroker.OptionCommission = Number(broker.SettingsActiveBrokerAccount.OptionCommission.toFixed(2));
+    this.editBroker.StockMin = Number(broker.SettingsActiveBrokerAccount.StockMin.toFixed(2));
+    this.editBroker.OptionMultiLegMin = Number(broker.SettingsActiveBrokerAccount.OptionMultiLegMin.toFixed(2));
+    this.editBroker.Accounts = broker.BrokerAccounts;
+    this.showEditBroker = true;
+  }
+
+  //
+  // Close edit broker
+  //
+  closeShowEditBroker() {
+    this.showEditBroker = false;
+  }  
+
+  //
+  // Save broker
+  //
+  saveEditBroker() {
+    this.showEditBroker = false;
+  } 
+
+  //
+  // Unlink broker
+  //
+  unlinkBroker() {
+    this.showEditBroker = false;
+  } 
 
   //
   // Add broker
@@ -82,15 +121,15 @@ export class BrokersComponent implements OnInit
   {
     this.addBrokerError = "";
     this.addBrokerDisplayName = "";
-    this.showAddEditBroker = true;
+    this.showAddBroker = true;
   }
 
   //
   // Close add broker
   //
-  closeShowAddEditBroker() 
+  closeShowAddBroker() 
   {
-    this.showAddEditBroker = false;    
+    this.showAddBroker = false;    
   }
 
   //
@@ -108,7 +147,7 @@ export class BrokersComponent implements OnInit
         {
           this.brokers[i].SettingsActiveBrokerAccount = this.brokers[i].BrokerAccounts[0];
         }
-      }
+      }  
     });
   }
 
@@ -140,6 +179,21 @@ export class BrokersComponent implements OnInit
 
     return cssClass;
   }
+}
+
+//
+// Broker Edit class
+//
+export class BrokerEdit {
+  Name: string;
+  DisplayName: string;
+  StockCommission: number;
+  OptionBase: number;
+  OptionCommission: number;
+  StockMin: number;
+  OptionSingleMin: number;
+  OptionMultiLegMin: number;
+  Accounts: BrokerAccount[];
 }
 
 /* End File */

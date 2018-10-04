@@ -12,7 +12,7 @@
 
         <div class="article__body article__body--secondary">
           <div class="article__content">
-            <p>Options Cafe works with outside brokers to place trades on your behave. Below you can manage the brokers you have linked with your Options Cafe account.</p>
+            <p>Options Cafe works with outside brokers to place trades on your behalf. Below you can manage the brokers you have linked with your Options Cafe account.</p>
           </div>
 
           <div class="features">
@@ -24,9 +24,9 @@
               <div class="feature__inner" *ngIf="row.Status == 'Active'">
 
                 <div class="feature__head">
-                  <a href="#" class="{{ getLogoClass(row) }} feature__logo"></a>
+                  <a href="https://brokerage.tradier.com/?utm_campaign=options.cafe" target="blank" class="{{ getLogoClass(row) }} feature__logo"></a>
 
-                  <a href="#" class="btn-square">
+                  <a (click)="showEditBrokerToggle(row)" class="btn-square">
                     <i class="ico-settings"></i>
                   </a>
                 </div>
@@ -43,17 +43,14 @@
                       <h5>Accounts</h5>
 
                       <span *ngFor="let row2 of row.BrokerAccounts">
-                        <h6 *ngIf="row2.Id == row.SettingsActiveBrokerAccount.Id" class="red font-14 mb-10">
-                          <span *ngIf="row2.Name != row2.AccountNumber">{{ row2.Name }} - {{ row2.AccountNumber }}</span>
-                          <span *ngIf="row2.Name == row2.AccountNumber">{{ row2.AccountNumber }}</span>
-                        </h6>
-
+                        <h6 class="font-14 mb-10">{{ row2.Name }}</h6>
+<!-- 
                         <h6 *ngIf="row2.Id != row.SettingsActiveBrokerAccount.Id" class="mb-10">
                           <a class="link" (click)="brokerAccountClick(row, row2)">
                             <span *ngIf="row2.Name != row2.AccountNumber">{{ row2.Name }} - {{ row2.AccountNumber }}</span>
                             <span *ngIf="row2.Name == row2.AccountNumber">{{ row2.AccountNumber }}</span>
                           </a> 
-                        </h6>
+                        </h6> -->
                       </span>
 
                     </li>
@@ -102,9 +99,9 @@
               <!-- Disabled -->
               <div class="feature__inner" *ngIf="row.Status == 'Disabled'">
                 <div class="feature__head">
-                  <a href="#" class="{{ getLogoClass(row) }} feature__logo"></a>
+                  <a href="https://brokerage.tradier.com/?utm_campaign=options.cafe" class="{{ getLogoClass(row) }} feature__logo"></a>
 
-                  <a href="#" class="btn-square">
+                  <a (click)="showEditBrokerToggle(row)" class="btn-square">
                     <i class="ico-settings"></i>
                   </a>
                 </div>
@@ -141,10 +138,129 @@
 
 
 
+<!-- ********************* Edit Broker *********************  -->
+
+<app-dialog [(visible)]="showEditBroker">
+
+  <div class="popup-alt">
+    <div class="popup__inner popup__inner--size3">
+        <div class="article">
+            <div class="article__head">
+                <h6>Edit Broker</h6>
+            </div><!-- /.article__head -->
+
+            <div class="article__body article__body--primary">
+                <div class="form-info form-info--secondary">
+                    <form action="?" method="post">
+                      <div class="form__inner">
+
+                          <div class="form__body form__body--secondary">
+                            <a href="https://brokerage.tradier.com/?utm_campaign=options.cafe" class="{{ getLogoClass(editBroker) }} form__logo" target="blank"></a>
+
+                            <h4 class="form__title">Tradier</h4>
+
+                              <div class="form__row">
+                                  <label for="f_display">Display Name</label>
+                                  <div class="form__controls">
+                                      <input type="text" class="field form__field form__field--size1" name="DisplayName" id="f_display" placeholder="Trading Account" [(ngModel)]="editBroker.DisplayName" />
+                                  </div>
+                              </div>
+
+                              <div class="form__row">
+                                  <label for="f_stock">Stock Commission</label>
+      
+                                  <div class="form__row-inner">
+                                    <div class="form__controls">
+                                        <input type="number" class="field form__field form__field--size2" name="StockCommission" id="f_stock" placeholder="3.95" [(ngModel)]="editBroker.StockCommission" step="0.01" />
+                                    </div>
+
+                                    <h6 class="form__hint-info">/Trade</h6>
+                                  </div>
+                              </div>
+
+                              <div class="form__row">
+                                <label for="f_option">Option Base Commission</label>
+
+                                <div class="form__row-inner">
+                                  <div class="form__controls">
+                                    <input type="number" class="field form__field form__field--size2 field-error" name="OptionBase" id="f_option" [(ngModel)]="editBroker.OptionBase" step="0.01" />
+                                  </div>
+
+                                  <h6 class="form__hint-info">/Trade</h6>
+                                </div>
+                              </div>
+
+                              <div class="form__row">
+                                  <label for="f_contract">Contract Commission</label>
+              
+                                  <div class="form__row-inner">
+                                    <div class="form__controls">
+                                        <input type="number" class="field form__field form__field--size2" name="OptionCommission" id="f_contract" placeholder="0.35"  [(ngModel)]="editBroker.OptionCommission" step="0.01" />
+                                    </div>
+
+                                    <h6 class="form__hint-info">/Contract</h6>
+                                  </div>
+                              </div>
+
+                              <div class="form__row">
+                                  <label for="f_commission">Min. Stock Commission</label>
+              
+                                  <div class="form__controls">
+                                      <input type="number" class="field form__field form__field--size2" name="StockMin" id="f_commission" placeholder="7.00" [(ngModel)]="editBroker.StockMin" step="0.01" />
+                                  </div>
+                              </div>
+
+                              <div class="form__row">
+                                  <label for="f_min-commission">Minimum Option Commission</label>
+              
+                                  <div class="form__controls">
+                                      <input type="number" class="field form__field form__field--size2" name="OptionSingleMin" id="f_min-commission" placeholder="7.00" [(ngModel)]="editBroker.OptionSingleMin" step="0.01" />
+                                  </div>
+                              </div>
+
+                              <div class="form__row">
+                                  <label for="f_min-commission">Min. Multi Leg Commission</label>
+              
+                                  <div class="form__controls">
+                                      <input type="number" class="field form__field form__field--size2" name="OptionMultiLegMin" id="f_min-commission" placeholder="7.00" [(ngModel)]="editBroker.OptionMultiLegMin" step="0.01" />
+                                  </div>
+                              </div>
+
+                          </div>
 
 
-<!-- ********************* Add / Edit Broker *********************  -->
-<app-dialog [(visible)]="showAddEditBroker">
+                          <div class="form__body form__body--teritary">
+                            <h4 class="form__title">Account Display Names</h4>
+
+                            <div class="form__row" *ngFor="let row of editBroker.Accounts; let index = index">
+                              <label for="f_f1">#{{ row.AccountNumber }}</label>
+
+                              <div class="form__controls">
+                                <input type="text" class="field form__field" name="Name[{{ index }}]" id="f_f1" placeholder="Main Account" [(ngModel)]="row.Name" />
+                              </div>
+                            </div>   
+ 
+                              <a (click)="unlinkBroker()" class="link-alt">Unlink Broker</a>
+                          </div>
+                      </div>
+
+                        <div class="form__actions form__actions--quaternary">
+                          <a (click)="closeShowEditBroker()" class="link-alt">Cancel</a>
+                          <a (click)="saveEditBroker()" class="btn btn--pink">Save Changes</a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+</app-dialog>
+
+
+<!-- ********************* Add Broker *********************  -->
+<app-dialog [(visible)]="showAddBroker">
 
   <div class="popup-alt">
     <div class="popup__inner popup__inner--size2">
@@ -185,7 +301,7 @@
                         </div>
 
                         <div class="form__actions form__actions--primary">
-                          <a (click)="closeShowAddEditBroker()" class="link-alt">Cancel</a>
+                          <a (click)="closeShowAddBroker()" class="link-alt">Cancel</a>
                           <a (click)="addBroker()" class="btn btn--pink btn--size2">Add Broker</a>
                         </div>
 
