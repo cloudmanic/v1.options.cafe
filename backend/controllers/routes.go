@@ -85,6 +85,9 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 
 		// Status
 		apiV1.GET("/status/market", t.GetMarketStatus)
+
+		// Notifications
+		apiV1.POST("/notifications/add-channel", t.CreateNotifyChannel)
 	}
 
 	// ---------- Websockets -------------- //

@@ -8,5 +8,6 @@ export const environment = {
   client_id: "XL8TeRGBdsUvvM3",
   app_server: "http://127.0.0.1:7080",
   ws_server: "ws://127.0.0.1:7080",
-  site_url: "http://localhost:4200"       
+  site_url: "http://localhost:4200",
+  one_signal_app_id: "30a0bca0-6cf1-4147-b678-5d7f5ade72c9"       
 };

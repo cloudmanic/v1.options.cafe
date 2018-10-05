@@ -6,6 +6,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { StateService } from '../../providers/state/state.service';
+import { NotificationsService } from '../../providers/http/notifications.service';
 
 @Component({
   selector: 'app-layouts-core',
@@ -16,7 +17,10 @@ export class LayoutCoreComponent implements OnInit
 {
   successMsg: string = "";
 
-  constructor(private stateService: StateService) {}
+  //
+  // Construct
+  //
+  constructor(private stateService: StateService, private notificationsService: NotificationsService) { }
 
   //
   // NgInit...

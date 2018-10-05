@@ -70,6 +70,8 @@ func NewDB() (*DB, error) {
 	db.AutoMigrate(&TradeGroup{})
 	db.AutoMigrate(&ActiveSymbol{})
 	db.AutoMigrate(&Application{})
+	db.AutoMigrate(&Notification{})
+	db.AutoMigrate(&NotifyChannel{})
 	db.AutoMigrate(&BrokerAccount{})
 	db.AutoMigrate(&ForgotPassword{})
 	db.AutoMigrate(&BalanceHistory{})
@@ -93,6 +95,9 @@ func LoadTestingData(db *gorm.DB) {
 
 	// Settings
 	db.Exec("TRUNCATE TABLE settings;")
+
+	// NotifyChannel
+	db.Exec("TRUNCATE TABLE notify_channels;")
 
 	// Users
 	db.Exec("TRUNCATE TABLE users;")

@@ -185,6 +185,8 @@ export class BrokersComponent implements OnInit
 // Broker Edit class
 //
 export class BrokerEdit {
+  Id: number; // ignore
+  Status: string; // ignore
   Name: string;
   DisplayName: string;
   StockCommission: number;
@@ -194,6 +196,8 @@ export class BrokerEdit {
   OptionSingleMin: number;
   OptionMultiLegMin: number;
   Accounts: BrokerAccount[];
+  BrokerAccounts: BrokerAccount[]; // ignore
+  SettingsActiveBrokerAccount: BrokerAccount; // ignore
 }
 
 /* End File */

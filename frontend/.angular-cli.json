@@ -10,7 +10,10 @@
       "assets": [
         "js",
         "images",
-        "vendor"
+        "vendor",
+        "manifest.json",
+        "OneSignalSDKWorker.js",
+        "OneSignalSDKUpdaterWorker.js"
       ],
       "index": "index.html",
       "main": "main.ts",
@@ -23,7 +26,8 @@
         "styles.css",
         "app.css"
       ],
-      "scripts": [],
+      "scripts": [
+      ],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",

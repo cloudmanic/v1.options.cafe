@@ -16,6 +16,10 @@ import (
 //
 func (t *Api) SubmitOrder(accountId string, order types.Order) (types.OrderSubmit, error) {
 
+	// Log order
+	orderJson, _ := json.Marshal(order)
+	services.Info("Placing order for account - " + accountId + " : " + string(orderJson))
+
 	// Prep Order
 	params := prepOrder(order)
 
@@ -474,7 +478,10 @@ func prepOrder(order types.Order) url.Values {
 	params.Set("class", order.Class)
 	params.Set("side", order.Side)
 	params.Set("stop", strconv.FormatFloat(order.Stop, 'f', 2, 64))
-	params.Set("quantity", strconv.FormatFloat(order.Quantity, 'f', 2, 64))
+
+	if order.Class != "multileg" {
+		params.Set("quantity", strconv.FormatFloat(order.Quantity, 'f', 2, 64))
+	}
 
 	// Multi Leg?
 	for key, row := range order.Legs {

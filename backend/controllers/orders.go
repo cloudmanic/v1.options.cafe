@@ -48,6 +48,9 @@ func (t *Controller) PreviewOrder(c *gin.Context) {
 //
 func (t *Controller) SubmitOrder(c *gin.Context) {
 
+	// Get the user id.
+	userId := c.MustGet("userId").(uint)
+
 	// Build request
 	order, brokerCont, brokerAccount, err := orderBuildRequest(t, c)
 
@@ -64,6 +67,10 @@ func (t *Controller) SubmitOrder(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Order error."})
 		return
 	}
+
+	// Tell slack about this.
+	user, _ := t.DB.GetUserById(userId)
+	services.SlackNotify("#events", "New Options Cafe Order : "+user.Email)
 
 	// Return happy JSON
 	c.JSON(200, orderRequest)

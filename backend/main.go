@@ -37,6 +37,34 @@ func main() {
 
 	// -------------- If we made it this far it is time to start the http server -------------- //
 
+	// // One Signal Stuff.
+	// client := onesignal.NewClient(nil)
+	// client.AppKey = os.Getenv("ONESIGNAL_API_KEY")
+
+	// fmt.Println("### CreateNotifications ###")
+
+	// playerID := "b478ca26-387e-48bc-967f-a368adb097d1" // valid
+
+	// notificationReq := &onesignal.NotificationRequest{
+	// 	AppID:            os.Getenv("ONESIGNAL_APP_ID"),
+	// 	Headings:         map[string]string{"en": "Options Cafe Trading"},
+	// 	Contents:         map[string]string{"en": "Order #1325931 Filled."},
+	// 	IsAnyWeb:         true,
+	// 	IncludePlayerIDs: []string{playerID},
+	// }
+
+	// createRes, res, err := client.Notifications.Create(notificationReq)
+
+	// if err != nil {
+	// 	fmt.Printf("--- res:%+v, err:%+v\n", res)
+	// 	log.Fatal(err)
+	// }
+
+	// fmt.Printf("--- createRes:%+v\n", createRes)
+	// fmt.Println()
+
+	// os.Exit(1)
+
 	// Lets get started
 	services.Critical("App Started: " + os.Getenv("APP_ENV"))
 

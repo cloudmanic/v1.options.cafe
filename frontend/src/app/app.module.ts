@@ -31,6 +31,7 @@ import { WatchlistService } from './providers/http/watchlist.service';
 import { TradeGroupService } from './providers/http/trade-group.service';
 import { WebsocketService } from './providers/http/websocket.service';
 import { BrokerEventsService } from './providers/http/broker-events.service';
+import { NotificationsService } from './providers/http/notifications.service';
 
 // Layout
 import { SubnavComponent } from './layouts/sub-nav/subnav.component';
@@ -156,6 +157,7 @@ import { TradeEquityComponent } from './trade/trade-equity/trade-equity.componen
     ScreenerService,
     ReportsService,
     BrokerEventsService,
+    NotificationsService,
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }    
   ],
   
