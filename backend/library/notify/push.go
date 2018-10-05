@@ -69,6 +69,10 @@ func Push(userId uint, channels []string, uri string, data_json string) {
 
 		case "websocket":
 			websocketChan <- websocket.SendStruct{UserId: userId, Body: string(send_json)}
+
+			// case "web-push":
+			// Need to pass in a DB
+			// 	go web_push.Push(userId, uri, data_json)
 		}
 
 	}

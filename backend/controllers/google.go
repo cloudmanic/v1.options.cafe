@@ -54,7 +54,6 @@ func init() {
 		},
 		Endpoint: google.Endpoint,
 	}
-
 }
 
 //

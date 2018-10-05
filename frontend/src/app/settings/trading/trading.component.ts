@@ -79,7 +79,7 @@ export class TradingComponent implements OnInit {
     OneSignal.getUserId((userId) => {
 
       // Install channel
-      this.notificationsService.createNotificationChannel('One Signal', userId).subscribe();
+      this.notificationsService.createNotificationChannel('Web Push', userId).subscribe();
  
     });
 

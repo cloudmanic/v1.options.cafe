@@ -18,7 +18,7 @@ type NotifyChannel struct {
 	CreatedAt time.Time `json:"-"`
 	UpdatedAt time.Time `json:"-"`
 	UserId    uint      `gorm:"index" sql:"not null;index:UserId" json:"-"`
-	Type      string    `sql:"not null;type:ENUM('One Signal'); default:'One Signal'" json:"type"`
+	Type      string    `sql:"not null;type:ENUM('Web Push'); default:'Web Push'" json:"type"`
 	ChannelId string    `sql:"not null" json:"channel_id"`
 }
 
@@ -40,8 +40,8 @@ func (a NotifyChannel) Validate(db Datastore) error {
 // Validate Type
 //
 func validateType(value interface{}) error {
-	if value != "One Signal" {
-		return errors.New("Field channel_id must be set to One Signal.")
+	if value != "Web Push" {
+		return errors.New("Field channel_id must be set to Web Push.")
 	}
 	return nil
 }

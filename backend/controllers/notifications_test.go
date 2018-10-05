@@ -31,7 +31,7 @@ func TestCreateNotifyChannel01(t *testing.T) {
 
 	// Post data
 	chanPost := models.NotifyChannel{
-		Type:      "One Signal",
+		Type:      "Web Push",
 		ChannelId: "abc123-123-324afasf-asdf",
 	}
 
@@ -65,7 +65,7 @@ func TestCreateNotifyChannel01(t *testing.T) {
 	// Validate result
 	st.Expect(t, w.Code, 201)
 	st.Expect(t, testObj.UserId, uint(2))
-	st.Expect(t, w.Body.String(), `{"id":1,"type":"One Signal","channel_id":"abc123-123-324afasf-asdf"}`)
+	st.Expect(t, w.Body.String(), `{"id":1,"type":"Web Push","channel_id":"abc123-123-324afasf-asdf"}`)
 }
 
 //
@@ -106,7 +106,7 @@ func TestCreateNotifyChannel02(t *testing.T) {
 
 	// Validate result
 	st.Expect(t, w.Code, 400)
-	st.Expect(t, w.Body.String(), `{"errors":{"type":"Field channel_id must be set to One Signal."}}`)
+	st.Expect(t, w.Body.String(), `{"errors":{"type":"Field channel_id must be set to Web Push."}}`)
 }
 
 //
@@ -122,7 +122,7 @@ func TestCreateNotifyChannel03(t *testing.T) {
 
 	// Post data
 	chanPost := models.NotifyChannel{
-		Type:      "One Signal",
+		Type:      "Web Push",
 		ChannelId: "",
 	}
 

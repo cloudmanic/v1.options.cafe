@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
+	"github.com/cloudmanic/app.options.cafe/backend/library/notify/web_push"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cnf/structhash"
 )
@@ -45,6 +46,7 @@ func (t *Controller) StartMarketStatusFeed() {
 
 		// If the hashes do not match we know the market status has changed
 		if hash != storedHash {
+
 			// Build json to send
 			json, err := t.WsSendJsonBuild("change-detected", `{ "type": "market-status" }`)
 			services.Warning(err)
@@ -54,6 +56,13 @@ func (t *Controller) StartMarketStatusFeed() {
 
 			// Log event
 			services.Info("StartMarketStatusFeed() : Market status has changed to " + status.State)
+
+			// Just with this special case do we not go through the notify package. If storedHash is empty
+			// we know the app just started so most likely we do not want to push a notification.
+			if storedHash != "" {
+				go web_push.Push(t.DB, 0, "market-status", `{ "status": "`+status.State+`"}`)
+			}
+
 		}
 
 		// Store hash
