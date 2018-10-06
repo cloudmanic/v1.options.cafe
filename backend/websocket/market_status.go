@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
+	"github.com/cloudmanic/app.options.cafe/backend/library/notify/sms_push"
 	"github.com/cloudmanic/app.options.cafe/backend/library/notify/web_push"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cnf/structhash"
@@ -61,6 +62,7 @@ func (t *Controller) StartMarketStatusFeed() {
 			// we know the app just started so most likely we do not want to push a notification.
 			if storedHash != "" {
 				go web_push.Push(t.DB, 0, "market-status", `{ "status": "`+status.State+`"}`)
+				go sms_push.Push(t.DB, 0, "market-status", `{ "status": "`+status.State+`"}`)
 			}
 
 		}

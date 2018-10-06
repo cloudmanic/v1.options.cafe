@@ -6,19 +6,19 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-package web_push
+package sms_push
 
 import (
 	"os"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	onesignal "github.com/tbalthazar/onesignal-go"
+	"github.com/sfreiberg/gotwilio"
 	"github.com/tidwall/gjson"
 )
 
 //
-// Push to all web push channels that the users has opted into.
+// Push to all sms push channels that the users has opted into.
 //
 func Push(db models.Datastore, userId uint, uri string, data_json string) {
 
@@ -35,8 +35,6 @@ func Push(db models.Datastore, userId uint, uri string, data_json string) {
 //
 func DoMarketStatusChange(db models.Datastore, data_json string) {
 
-	deviceIds := []string{}
-
 	// Get the status.
 	status := gjson.Get(data_json, "status").String()
 
@@ -49,47 +47,30 @@ func DoMarketStatusChange(db models.Datastore, data_json string) {
 
 	// Lets get a list of device ids to send this notification to.
 	nc := []models.NotifyChannel{}
-	db.New().Where("type = ?", "Web Push").Find(&nc)
+	db.New().Where("type = ?", "Sms").Find(&nc)
 
+	// Loop through and send message
 	for _, row := range nc {
-		deviceIds = append(deviceIds, row.ChannelId)
-	}
-
-	// Send message
-	if len(deviceIds) > 0 {
-		DoOneSignalWebPushSend(deviceIds, "Options Cafe Trading", "The market is now "+status)
+		go DoTwilioSend(row.ChannelId, "Options Cafe Trading: The market is now "+status)
 	}
 
 }
 
 //
-// Send message up to open signal to be pushed out.
+// Send message up to twilio
 //
-func DoOneSignalWebPushSend(deviceIds []string, heading string, content string) {
+func DoTwilioSend(to string, message string) {
 
-	if len(os.Getenv("ONESIGNAL_APP_ID")) > 0 {
+	if len(os.Getenv("TWILIO_ACCOUNT_SID")) > 0 {
 
 		// Log
-		services.Info("Sending web push notification: " + content)
+		services.Info("Sending SMD notification: " + to + " - " + message)
 
-		// One Signal Stuff.
-		client := onesignal.NewClient(nil)
+		// Setup twilio
+		twilio := gotwilio.NewTwilioClient(os.Getenv("TWILIO_ACCOUNT_SID"), os.Getenv("TWILIO_AUTH_TOKEN"))
 
-		// Create send request.
-		notificationReq := &onesignal.NotificationRequest{
-			AppID:            os.Getenv("ONESIGNAL_APP_ID"),
-			Headings:         map[string]string{"en": heading},
-			Contents:         map[string]string{"en": content},
-			IsAnyWeb:         true,
-			IncludePlayerIDs: deviceIds,
-		}
-
-		// Send the request
-		_, _, err := client.Notifications.Create(notificationReq)
-
-		if err != nil {
-			services.BetterError(err)
-		}
+		// Send SMS
+		twilio.SendSMS(os.Getenv("TWILIO_PHONE"), to, message, "", "")
 
 	}
 
