@@ -128,6 +128,7 @@ export class BrokersComponent implements OnInit
   // Unlink broker
   //
   unlinkBroker() {
+    alert("Please contact us via the help section or email help@options.cafe and we can unlink this broker for you.");
     this.showEditBroker = false;
   } 
 
