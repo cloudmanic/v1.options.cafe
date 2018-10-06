@@ -37,14 +37,16 @@ type User struct {
 }
 
 type UserSubscription struct {
-	Name            string  `json:"name"`
-	Amount          float64 `json:"amount"`
-	TrialDays       int     `json:"trial_days"`
-	BillingInterval string  `json:"billing_interval"`
-	CardBrand       string  `json:"card_brand"`
-	CardLast4       string  `json:"card_last_4"`
-	CardExpMonth    int     `json:"card_exp_month"`
-	CardExpYear     int     `json:"card_exp_year"`
+	Name               string    `json:"name"`
+	Amount             float64   `json:"amount"`
+	CurrentPeriodStart time.Time `json:"current_period_start"`
+	CurrentPeriodEnd   time.Time `json:"current_period_end"`
+	TrialDays          int       `json:"trial_days"`
+	BillingInterval    string    `json:"billing_interval"`
+	CardBrand          string    `json:"card_brand"`
+	CardLast4          string    `json:"card_last_4"`
+	CardExpMonth       int       `json:"card_exp_month"`
+	CardExpYear        int       `json:"card_exp_year"`
 }
 
 //
@@ -513,6 +515,8 @@ func (t *DB) GetSubscriptionWithStripe(user User) (UserSubscription, error) {
 		}
 
 		// Build our internal object
+		subscription.CurrentPeriodStart = time.Unix(cust.Subscriptions.Data[0].CurrentPeriodStart, 0)
+		subscription.CurrentPeriodEnd = time.Unix(cust.Subscriptions.Data[0].CurrentPeriodEnd, 0)
 		subscription.Name = cust.Subscriptions.Data[0].Plan.Nickname
 		subscription.BillingInterval = string(cust.Subscriptions.Data[0].Plan.Interval)
 		subscription.Amount = float64(cust.Subscriptions.Data[0].Plan.Amount / 100)
