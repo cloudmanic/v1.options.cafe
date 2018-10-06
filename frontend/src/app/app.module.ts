@@ -78,6 +78,10 @@ import { DropdownSelectComponent } from './shared/dropdown-select/dropdown-selec
 import { AddEditComponent as ScreenerAddEditComponent } from './trading/screener/add-edit/add-edit.component';
 import { EquityComponent } from './trading/dashboard/positions/types/equity/equity.component';
 import { TradeEquityComponent } from './trade/trade-equity/trade-equity.component';
+import { PersonalInfoComponent } from './settings/account/personal-info/personal-info.component';
+import { BillingHistoryComponent } from './settings/account/billing-history/billing-history.component';
+import { AccountDetailsComponent } from './settings/account/account-details/account-details.component';
+import { SocialComponent } from './settings/account/social/social.component';
 
 @NgModule({
   declarations: [
@@ -132,6 +136,10 @@ import { TradeEquityComponent } from './trade/trade-equity/trade-equity.componen
     BrokersComponent,
     AccountComponent,
     TradingComponent,
+    PersonalInfoComponent,
+    BillingHistoryComponent,
+    AccountDetailsComponent,
+    SocialComponent,
   ],
   
   imports: [

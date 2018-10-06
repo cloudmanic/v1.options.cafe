@@ -1,7 +1,27 @@
 <app-layout-sub-nav></app-layout-sub-nav>
 
-<p>
-  account works!
-</p>
+<div class="content__inner">
+  <div class="shell shell--size1">
 
-<a routerLink="/logout">logout</a>
+    <div class="articles">
+      <div class="cols-primary">
+
+        <div class="col col--size1">  
+          <div app-settings-account-personal-info></div>
+        </div>
+
+        <div class="col col--size2">
+          <!-- <div class="article" app-settings-account-social></div> -->
+
+          <div class="article" app-settings-account-account-details></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="articles">
+      <div app-settings-account-billing-history></div>
+    </div>
+
+  </div>
+</div>
