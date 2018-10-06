@@ -39,6 +39,10 @@ type User struct {
 type UserSubscription struct {
 	Name               string    `json:"name"`
 	Amount             float64   `json:"amount"`
+	Status             string    `json:"status"`
+	Started            time.Time `json:"started"`
+	TrialStart         time.Time `json:"trial_start"`
+	TrialEnd           time.Time `json:"trial_end"`
 	CurrentPeriodStart time.Time `json:"current_period_start"`
 	CurrentPeriodEnd   time.Time `json:"current_period_end"`
 	TrialDays          int       `json:"trial_days"`
@@ -521,6 +525,10 @@ func (t *DB) GetSubscriptionWithStripe(user User) (UserSubscription, error) {
 		subscription.BillingInterval = string(cust.Subscriptions.Data[0].Plan.Interval)
 		subscription.Amount = float64(cust.Subscriptions.Data[0].Plan.Amount / 100)
 		subscription.TrialDays = int(cust.Subscriptions.Data[0].Plan.TrialPeriodDays)
+		subscription.Status = string(cust.Subscriptions.Data[0].Status)
+		subscription.Started = time.Unix(cust.Subscriptions.Data[0].CurrentPeriodStart, 0)
+		subscription.TrialStart = time.Unix(cust.Subscriptions.Data[0].TrialStart, 0)
+		subscription.TrialEnd = time.Unix(cust.Subscriptions.Data[0].TrialEnd, 0)
 
 		// Do we have a credit card on file
 		if cust.Sources.ListMeta.TotalCount > 0 {

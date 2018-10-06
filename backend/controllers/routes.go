@@ -29,6 +29,9 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		// Settings
 		apiV1.GET("/settings", t.GetSettings)
 
+		// Me
+		apiV1.GET("/me/subscription", t.GetSubscription)
+
 		// Orders
 		apiV1.POST("/orders", t.SubmitOrder)
 		apiV1.POST("/orders/preview", t.PreviewOrder)

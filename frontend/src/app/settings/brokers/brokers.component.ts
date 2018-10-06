@@ -116,7 +116,7 @@ export class BrokersComponent implements OnInit
         name = this.editBroker.Accounts[k].AccountNumber;
       }
 
-      this.brokerService.updateBrokerAccount(this.editBroker.Id, this.editBroker.Accounts[k].Id, name, this.editBroker.StockCommission, this.editBroker.StockMin, this.editBroker.OptionSingleMin, this.editBroker.OptionSingleMin, this.editBroker.OptionMultiLegMin, this.editBroker.OptionBase).subscribe((res) => {
+      this.brokerService.updateBrokerAccount(this.editBroker.Id, this.editBroker.Accounts[k].Id, name, this.editBroker.StockCommission, this.editBroker.StockMin, this.editBroker.OptionCommission, this.editBroker.OptionSingleMin, this.editBroker.OptionMultiLegMin, this.editBroker.OptionBase).subscribe((res) => {
         this.getBrokers();
       });
     } 

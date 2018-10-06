@@ -14,7 +14,7 @@ import "github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 //
 func (t *Api) GetBrokerConfig() *types.BrokerConfig {
 	return &types.BrokerConfig{
-		DefaultStockCommission:   5.00,
+		DefaultStockCommission:   3.95,
 		DefaultStockMin:          0.00,
 		DefaultOptionCommission:  0.35,
 		DefaultOptionSingleMin:   5.00,
