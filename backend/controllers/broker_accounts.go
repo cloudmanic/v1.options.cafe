@@ -8,7 +8,6 @@ package controllers
 
 import (
 	"errors"
-	"net/http"
 	"strconv"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
@@ -169,7 +168,7 @@ func (t *Controller) UpdateBrokerAccount(c *gin.Context) {
 	t.DB.New().Save(&o)
 
 	// Return success.
-	c.JSON(http.StatusNoContent, nil)
+	c.JSON(200, o)
 }
 
 /* End File */

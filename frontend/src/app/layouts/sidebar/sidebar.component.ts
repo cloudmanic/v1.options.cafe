@@ -63,8 +63,8 @@ export class SidebarComponent implements OnInit {
     }); 
 
     // This is useful for when the change detection was not caught (say laptop sleeping)
-    Observable.timer((1000 * 30), (1000 * 60)).takeUntil(this.destory).subscribe(x => { this.getBrokers(); });
-    Observable.timer((1000 * 30), (1000 * 60)).takeUntil(this.destory).subscribe(x => { this.getMarketStatus(); });           
+    Observable.timer((1000 * 10), (1000 * 10)).takeUntil(this.destory).subscribe(x => { this.getBrokers(); });
+    Observable.timer((1000 * 30), (1000 * 30)).takeUntil(this.destory).subscribe(x => { this.getMarketStatus(); });           
   }
 
   //

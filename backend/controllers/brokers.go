@@ -99,6 +99,51 @@ func (t *Controller) CreateBroker(c *gin.Context) {
 }
 
 //
+// Update broker.
+//
+func (t *Controller) UpdateBroker(c *gin.Context) {
+
+	// Set as int
+	id, err := strconv.ParseInt(c.Param("id"), 10, 32)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Parse json body
+	body, err := ioutil.ReadAll(c.Request.Body)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Get inputs. We do it this way as we do not want to accept any other input for security reasons.
+	displayName := gjson.Get(string(body), "display_name").String()
+
+	// Validate display name
+	if len(displayName) <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Display Name field can not be empty."})
+		return
+	}
+
+	// Setup Broker obj
+	broker, err := t.DB.GetBrokerById(uint(id))
+
+	if t.RespondError(c, err, httpNoRecordFound) {
+		return
+	}
+
+	// Update data
+	broker.DisplayName = displayName
+
+	// Update broker
+	t.DB.New().Save(&broker)
+
+	// Return happy JSON
+	c.JSON(200, broker)
+}
+
+//
 // Get a brokers active orders.
 //
 func (t *Controller) GetBrokerActiveOrders(c *gin.Context) {

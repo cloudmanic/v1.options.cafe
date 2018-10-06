@@ -19,14 +19,17 @@ import { environment } from '../../../environments/environment';
 export class BrokersComponent implements OnInit 
 {
   brokers: Broker[] = []
-  editBroker: BrokerEdit = new BrokerEdit();
-  showAddBroker: boolean = false;
-  showEditBroker: boolean = false;
-
+  
   // Add Broker Stuff
+  showAddBroker: boolean = false;
   addBrokerType: string = "Tradier";
   addBrokerError: string = "";
   addBrokerDisplayName: string = "";
+
+  // Edit Broker Stuff
+  editBrokerError: string = "";
+  showEditBroker: boolean = false;  
+  editBroker: BrokerEdit = new BrokerEdit();
 
   //
   // Construct.
@@ -50,6 +53,7 @@ export class BrokersComponent implements OnInit
   //
   showEditBrokerToggle(broker: Broker)
   {
+    this.editBroker.Id = broker.Id;
     this.editBroker.Name = broker.Name;
     this.editBroker.DisplayName = broker.DisplayName;
     this.editBroker.StockCommission = Number(broker.SettingsActiveBrokerAccount.StockCommission.toFixed(2));
@@ -57,6 +61,7 @@ export class BrokersComponent implements OnInit
     this.editBroker.OptionCommission = Number(broker.SettingsActiveBrokerAccount.OptionCommission.toFixed(2));
     this.editBroker.StockMin = Number(broker.SettingsActiveBrokerAccount.StockMin.toFixed(2));
     this.editBroker.OptionMultiLegMin = Number(broker.SettingsActiveBrokerAccount.OptionMultiLegMin.toFixed(2));
+    this.editBroker.OptionSingleMin = Number(broker.SettingsActiveBrokerAccount.OptionSingleMin.toFixed(2));
     this.editBroker.Accounts = broker.BrokerAccounts;
     this.showEditBroker = true;
   }
@@ -72,6 +77,50 @@ export class BrokersComponent implements OnInit
   // Save broker
   //
   saveEditBroker() {
+
+    this.editBrokerError = "";
+
+    // Validate display name.
+    if (this.editBroker.DisplayName.length <= 0) 
+    {
+      this.editBrokerError = "A broker display name is required.";
+      return;
+    } 
+
+    // Validate commission fields.
+    let fields = ['StockCommission', 'OptionBase', 'OptionCommission', 'StockMin', 'OptionMultiLegMin', 'OptionSingleMin'];
+
+    for(let i = 0; i < fields.length; i++)
+    {
+      if(this.editBroker[fields[i]] == null) 
+      {
+        this.editBrokerError = "All Commission fields are required.";
+        return;
+      }     
+    } 
+
+    // Ajax call to edit broker.
+    this.brokerService.update(this.editBroker.Id, this.editBroker.DisplayName).subscribe((res) => { 
+      this.getBrokers();
+    }); 
+
+    // Ajax call to edit broker account. This is hacky because of how the UI works. WE do not have a way to 
+    // control the commissions per broker account. 
+    // Loop through the different broker accounts. 
+    for (let k = 0; k < this.editBroker.Accounts.length; k++) 
+    {
+      let name = this.editBroker.Accounts[k].Name;
+
+      if(name.length <= 0)
+      {
+        name = this.editBroker.Accounts[k].AccountNumber;
+      }
+
+      this.brokerService.updateBrokerAccount(this.editBroker.Id, this.editBroker.Accounts[k].Id, name, this.editBroker.StockCommission, this.editBroker.StockMin, this.editBroker.OptionSingleMin, this.editBroker.OptionSingleMin, this.editBroker.OptionMultiLegMin, this.editBroker.OptionBase).subscribe((res) => {
+        this.getBrokers();
+      });
+    } 
+
     this.showEditBroker = false;
   } 
 
@@ -185,7 +234,7 @@ export class BrokersComponent implements OnInit
 // Broker Edit class
 //
 export class BrokerEdit {
-  Id: number; // ignore
+  Id: number;
   Status: string; // ignore
   Name: string;
   DisplayName: string;

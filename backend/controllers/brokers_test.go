@@ -336,4 +336,100 @@ func TestGetBalances01(t *testing.T) {
 	st.Expect(t, gock.IsDone(), true)
 }
 
+//
+// Test - UpdateBroker 01 - Success
+//
+func TestUpdateBroker01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Shared vars we use.
+	ts := time.Date(2017, 10, 29, 17, 20, 01, 507451, time.UTC)
+
+	// Install test data.
+	db.Exec("TRUNCATE TABLE brokers;")
+	db.Create(&models.Broker{Name: "Tradier", UserId: 2, AccessToken: "CLOwLO2cMnx-N_bPEexiVo9z9oRR80nPI9ycxQw3KQ-WQ4OP3D44gIbfLScAZ9pv", RefreshToken: "abc", TokenExpirationDate: ts, Status: "Active"})
+
+	// Body data // We send in limited data as all other broker data is added through the auth process.
+	var bodyStr = []byte(`{"name":"Bad Broker", "display_name":"Unit Test Broker#1"}`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("PUT", "/api/v1/brokers/1", bytes.NewBuffer(bodyStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.PUT("/api/v1/brokers/:id", c.UpdateBroker)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Grab result and convert to strut
+	result := models.Broker{}
+	err := json.Unmarshal([]byte(w.Body.String()), &result)
+
+	// Parse json that returned.
+	st.Expect(t, err, nil)
+	st.Expect(t, w.Code, 200)
+	st.Expect(t, w.Body.String(), `{"id":1,"name":"Tradier","display_name":"Unit Test Broker#1","broker_accounts":null,"status":"Active"}`)
+}
+
+//
+// Test - UpdateBroker 02 - fail
+//
+func TestUpdateBroker02(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Shared vars we use.
+	ts := time.Date(2017, 10, 29, 17, 20, 01, 507451, time.UTC)
+
+	// Install test data.
+	db.Exec("TRUNCATE TABLE brokers;")
+	db.Create(&models.Broker{Name: "Tradier", UserId: 2, AccessToken: "CLOwLO2cMnx-N_bPEexiVo9z9oRR80nPI9ycxQw3KQ-WQ4OP3D44gIbfLScAZ9pv", RefreshToken: "abc", TokenExpirationDate: ts, Status: "Active"})
+
+	// Body data // We send in limited data as all other broker data is added through the auth process.
+	var bodyStr = []byte(`{"name":"Bad Broker", "display_name":""}`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("PUT", "/api/v1/brokers/1", bytes.NewBuffer(bodyStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(2)) })
+
+	r.PUT("/api/v1/brokers/:id", c.UpdateBroker)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Grab result and convert to strut
+	result := models.Broker{}
+	err := json.Unmarshal([]byte(w.Body.String()), &result)
+
+	// Parse json that returned.
+	st.Expect(t, err, nil)
+	st.Expect(t, w.Code, 400)
+	st.Expect(t, w.Body.String(), `{"error":"Display Name field can not be empty."}`)
+}
+
 /* End File */

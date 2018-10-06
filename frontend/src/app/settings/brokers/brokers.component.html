@@ -241,6 +241,8 @@
                             </div>   
  
                               <a (click)="unlinkBroker()" class="link-alt">Unlink Broker</a>
+
+                              <div class="form__hint" *ngIf="editBrokerError.length > 0">{{ editBrokerError }}</div>
                           </div>
                       </div>
 

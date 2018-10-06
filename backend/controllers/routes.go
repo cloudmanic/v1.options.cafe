@@ -36,6 +36,7 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		// Brokers
 		apiV1.GET("/brokers", t.GetBrokers)
 		apiV1.POST("/brokers", t.CreateBroker)
+		apiV1.PUT("/brokers/:id", t.UpdateBroker)
 		apiV1.GET("/brokers/:id/balances", t.GetBalances)
 		apiV1.GET("/brokers/:id/orders", t.GetBrokerActiveOrders)
 		apiV1.PUT("/brokers/:id/accounts/:acctId", t.UpdateBrokerAccount)

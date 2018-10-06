@@ -65,6 +65,7 @@ func (t *Controller) ValidateRequest(c *gin.Context, obj ValidateRequest) error 
 
 		// If we had validation errors return them and do no more.
 		if err != nil {
+			services.Warning(err)
 			c.JSON(http.StatusBadRequest, gin.H{"errors": err})
 			return err
 		}
@@ -114,6 +115,17 @@ func GetSetPagingParms(c *gin.Context) (int, int, int) {
 // Respond with an error or object. When we create a new object in the system
 //
 func (t *Controller) RespondCreated(c *gin.Context, payload interface{}, err error) {
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	} else {
+		c.JSON(http.StatusCreated, payload)
+	}
+}
+
+//
+// Respond with an error or object. When we update an object in the system
+//
+func (t *Controller) RespondUpdated(c *gin.Context, payload interface{}, err error) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {

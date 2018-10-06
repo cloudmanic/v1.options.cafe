@@ -71,7 +71,37 @@ export class BrokerService
 
     return this.http.post<Broker>(environment.app_server + '/api/v1/brokers', body)
       .map((data) => { return Broker.fromJson(data); });
-  }      
+  }  
+
+  //
+  // Update a broker
+  //
+  update(brokerId: number, display_name: string): Observable<Broker> {
+    let body = {
+      display_name: display_name
+    }
+
+    return this.http.put<Broker>(environment.app_server + '/api/v1/brokers/' + brokerId, body)
+      .map((data) => { return Broker.fromJson(data); });
+  }
+
+  //
+  // Update a broker account
+  //
+  updateBrokerAccount(brokerId: number, brokerAccountId: number, name: string, stock_commission: number, stock_min: number, option_commission: number, option_single_min: number, option_multi_leg_min: number, option_base: number): Observable<Broker> {
+    let body = {
+      name: name, 
+      stock_commission: stock_commission, 
+      stock_min: stock_min, 
+      option_commission: option_commission, 
+      option_single_min: option_single_min, 
+      option_multi_leg_min: option_multi_leg_min, 
+      option_base: option_base 
+    }
+
+    return this.http.put<Broker>(environment.app_server + '/api/v1/brokers/' + brokerId + '/accounts/' + brokerAccountId, body)
+      .map((data) => { return Broker.fromJson(data); });
+  }       
 }
 
 /* End File */
