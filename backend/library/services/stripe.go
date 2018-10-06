@@ -3,6 +3,9 @@
 // Author(s): Spicer Matthews (spicer@options.cafe)
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
+// Notes: the reason this is in the services package is we don't
+// want to conflict with the stripe name space
+//
 
 package services
 
@@ -12,6 +15,7 @@ import (
 	"strconv"
 
 	"github.com/stripe/stripe-go"
+	"github.com/stripe/stripe-go/card"
 	"github.com/stripe/stripe-go/customer"
 	"github.com/stripe/stripe-go/sub"
 )
@@ -19,7 +23,7 @@ import (
 //
 // Add a new customer.
 //
-func AddCustomer(first string, last string, email string, accountId int) (string, error) {
+func StripeAddCustomer(first string, last string, email string, accountId int) (string, error) {
 
 	// Make sure we have a STRIPE_SECRET_KEY
 	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
@@ -49,9 +53,64 @@ func AddCustomer(first string, last string, email string, accountId int) (string
 }
 
 //
+// Delete a new customer.
+//
+func StripeDeleteCustomer(custToken string) error {
+
+	// Make sure we have a STRIPE_SECRET_KEY
+	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
+		Critical("No STRIPE_SECRET_KEY found in StripeAddCustomer")
+		return errors.New("No STRIPE_SECRET_KEY found in StripeDeleteCustomer")
+	}
+
+	// Add Stripe Key
+	stripe.Key = os.Getenv("STRIPE_SECRET_KEY")
+
+	// Setup the customer object and Delete
+	params := &stripe.CustomerParams{}
+	_, err := customer.Del(custToken, params)
+
+	if err != nil {
+		BetterError(errors.New("StripeDeleteCustomer : Unable to delete a customer. " + custToken + " (" + err.Error() + ")"))
+		return err
+	}
+
+	// Return happy
+	return nil
+
+}
+
+//
+// Get customer.
+//
+func StripeGetCustomer(custToken string) (*stripe.Customer, error) {
+
+	// Make sure we have a STRIPE_SECRET_KEY
+	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
+		Critical("No STRIPE_SECRET_KEY found in StripeAddCustomer")
+		return nil, errors.New("No STRIPE_SECRET_KEY found in StripeDeleteCustomer")
+	}
+
+	// Add Stripe Key
+	stripe.Key = os.Getenv("STRIPE_SECRET_KEY")
+
+	// Setup the customer object and Delete
+	cust, err := customer.Get(custToken, nil)
+
+	if err != nil {
+		BetterError(errors.New("StripeDeleteCustomer : Unable to delete a customer. " + custToken + " (" + err.Error() + ")"))
+		return nil, err
+	}
+
+	// Return happy
+	return cust, nil
+
+}
+
+//
 // Add a customer subscription.
 //
-func AddSubscription(custId string, plan string) (string, error) {
+func StripeAddSubscription(custId string, plan string) (string, error) {
 
 	// Make sure we have a STRIPE_SECRET_KEY
 	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
@@ -59,10 +118,19 @@ func AddSubscription(custId string, plan string) (string, error) {
 		return "", errors.New("No STRIPE_SECRET_KEY found in StripeAddSubscription")
 	}
 
+	// Setup Stripe Key
 	stripe.Key = os.Getenv("STRIPE_SECRET_KEY")
 
 	// Setup the customer object
-	subParams := &stripe.SubscriptionParams{Customer: &custId, Plan: &plan}
+	subParams := &stripe.SubscriptionParams{
+		Customer:        stripe.String(custId),
+		TrialPeriodDays: stripe.Int64(7),
+		Items: []*stripe.SubscriptionItemsParams{
+			{
+				Plan: stripe.String(plan),
+			},
+		},
+	}
 
 	// Create new subscription.
 	subscription, err := sub.New(subParams)
@@ -74,6 +142,100 @@ func AddSubscription(custId string, plan string) (string, error) {
 
 	// Return the new subscription Id
 	return subscription.ID, nil
+
+}
+
+//
+// Add a new credit card.
+//
+func StripeAddCreditCardByToken(custId string, token string) (string, error) {
+
+	// Make sure we have a STRIPE_SECRET_KEY
+	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
+		Critical("No STRIPE_SECRET_KEY found in AddCreditCardByToken")
+		return "", errors.New("No STRIPE_SECRET_KEY found in AddCreditCardByToken")
+	}
+
+	stripe.Key = os.Getenv("STRIPE_SECRET_KEY")
+
+	params := &stripe.CardParams{
+		Customer: stripe.String(custId),
+		Token:    stripe.String(token),
+	}
+
+	// call to stripe to add card
+	c, err := card.New(params)
+
+	if err != nil {
+		BetterError(errors.New("AddCreditCardByToken : Unable to add card. (" + err.Error() + ")"))
+		return "", err
+	}
+
+	// Return the new card Id
+	return c.ID, nil
+
+}
+
+//
+// List all credit cards on file.
+//
+func StripeListAllCreditCards(custId string) ([]string, error) {
+
+	cardList := []string{}
+
+	// Make sure we have a STRIPE_SECRET_KEY
+	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
+		Critical("No STRIPE_SECRET_KEY found in ListAllCreditCards")
+		return nil, errors.New("No STRIPE_SECRET_KEY found in ListAllCreditCards")
+	}
+
+	stripe.Key = os.Getenv("STRIPE_SECRET_KEY")
+
+	params := &stripe.CardListParams{
+		Customer: stripe.String(custId),
+	}
+
+	params.Filters.AddFilter("limit", "", "100")
+
+	list := card.List(params)
+
+	for list.Next() {
+		c := list.Card()
+		cardList = append(cardList, c.ID)
+	}
+
+	// Return the card list
+	return cardList, nil
+
+}
+
+//
+// Delete credit cards on file.
+//
+func StripeDeleteCreditCard(custId string, cardId string) error {
+
+	// Make sure we have a STRIPE_SECRET_KEY
+	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
+		Critical("No STRIPE_SECRET_KEY found in DeleteCreditCard")
+		return errors.New("No STRIPE_SECRET_KEY found in DeleteCreditCard")
+	}
+
+	stripe.Key = os.Getenv("STRIPE_SECRET_KEY")
+
+	params := &stripe.CardParams{
+		Customer: stripe.String(custId),
+	}
+
+	// Delete card at stripe
+	_, err := card.Del(cardId, params)
+
+	if err != nil {
+		BetterError(errors.New("DeleteCreditCard : Unable to delete card. (" + err.Error() + ")"))
+		return err
+	}
+
+	// Return happy
+	return nil
 
 }
 

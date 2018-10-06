@@ -36,6 +36,17 @@ type User struct {
 	LastActivity       time.Time `json:"last_activity"`
 }
 
+type UserSubscription struct {
+	Name            string  `json:"name"`
+	Amount          float64 `json:"amount"`
+	TrialDays       int     `json:"trial_days"`
+	BillingInterval string  `json:"billing_interval"`
+	CardBrand       string  `json:"card_brand"`
+	CardLast4       string  `json:"card_last_4"`
+	CardExpMonth    int     `json:"card_exp_month"`
+	CardExpYear     int     `json:"card_exp_year"`
+}
+
 //
 // Update user.
 //
@@ -357,6 +368,173 @@ func (t *DB) CreateUser(first string, last string, email string, password string
 
 }
 
+// ------------------ Stripe Functions --------------------- //
+
+//
+// Create new user with strip.
+//
+func (t *DB) CreateNewUserWithStripe(user User) error {
+
+	if len(os.Getenv("STRIPE_SECRET_KEY")) > 0 {
+
+		// Subscribe the new customer to services.
+		custId, err := services.StripeAddCustomer(user.FirstName, user.LastName, user.Email, int(user.Id))
+
+		if err != nil {
+			services.Error(err, "CreateNewUserWithStripe - Unable to create a customer account at services. - "+user.Email)
+			return err
+		}
+
+		// Subscribe this user to our default Stripe plan.
+		subId, err := services.StripeAddSubscription(custId, os.Getenv("STRIPE_DEFAULT_PLAN"))
+
+		if err != nil {
+			services.Error(err, "CreateNewUserWithStripe - Unable to create a subscription at services. - "+user.Email)
+			return err
+		}
+
+		// Update the user to include subscription and customer ids from strip.
+		user.StripeCustomer = custId
+		user.StripeSubscription = subId
+		t.Save(&user)
+
+	} else {
+
+		// Here we are doing local development or something.
+		// Really we should not be doing this but sometimes we want to
+		// develop stuff and not worry about strip.
+		user.StripeCustomer = "na"
+		user.StripeSubscription = "na"
+		t.Save(&user)
+
+	}
+
+	// Return happy.
+	return nil
+
+}
+
+//
+// Delete user with strip.
+//
+func (t *DB) DeleteUserWithStripe(user User) error {
+
+	if len(os.Getenv("STRIPE_SECRET_KEY")) > 0 {
+
+		// Delete customer to services.
+		err := services.StripeDeleteCustomer(user.StripeCustomer)
+
+		if err != nil {
+			services.Error(err, "DeleteUserWithStripe - Unable to delete a customer account at services. - "+user.Email)
+			return err
+		}
+
+		// Update the user to remove ids from strip.
+		user.StripeCustomer = ""
+		user.StripeSubscription = ""
+		t.Save(&user)
+
+	} else {
+
+		// Here we are doing local development or something.
+		// Really we should not be doing this but sometimes we want to
+		// develop stuff and not worry about strip.
+		user.StripeCustomer = "na"
+		user.StripeSubscription = "na"
+		t.Save(&user)
+
+	}
+
+	// Return happy.
+	return nil
+
+}
+
+//
+// Update credit card on file. This is used if there
+// is no credit card on file too.
+//
+func (t *DB) UpdateCreditCard(user User, stripeToken string) error {
+
+	if len(os.Getenv("STRIPE_SECRET_KEY")) > 0 {
+
+		// List cards in service.
+		cards, err := services.StripeListAllCreditCards(user.StripeCustomer)
+
+		if err != nil {
+			services.Error(err, "AddCreditCardByToken - Unable to add a card to account. - "+user.Email)
+			return err
+		}
+
+		// If we already have a card on file delete it.
+		if len(cards) > 0 {
+			for _, row := range cards {
+				services.StripeDeleteCreditCard(user.StripeCustomer, row)
+			}
+		}
+
+		// Add card to services.
+		_, err2 := services.StripeAddCreditCardByToken(user.StripeCustomer, stripeToken)
+
+		if err2 != nil {
+			services.Error(err, "AddCreditCardByToken - Unable to add a card to account. - "+user.Email)
+			return err
+		}
+
+	} else {
+		return errors.New("No stripe key found.")
+	}
+
+	// Return happy.
+	return nil
+
+}
+
+//
+// Get Stripe Subscription
+//
+func (t *DB) GetSubscriptionWithStripe(user User) (UserSubscription, error) {
+
+	subscription := UserSubscription{}
+
+	if len(os.Getenv("STRIPE_SECRET_KEY")) > 0 {
+
+		// Get customer to services.
+		cust, err := services.StripeGetCustomer(user.StripeCustomer)
+
+		if err != nil {
+			services.Error(err, "GetSubscriptionWithStripe - Unable to get customer. - "+user.Email)
+			return UserSubscription{}, err
+		}
+
+		// Make sure we have at least one subscription
+		if cust.Subscriptions.ListMeta.TotalCount <= 0 {
+			return UserSubscription{}, errors.New("No stripe subscription found.")
+		}
+
+		// Build our internal object
+		subscription.Name = cust.Subscriptions.Data[0].Plan.Nickname
+		subscription.BillingInterval = string(cust.Subscriptions.Data[0].Plan.Interval)
+		subscription.Amount = float64(cust.Subscriptions.Data[0].Plan.Amount / 100)
+		subscription.TrialDays = int(cust.Subscriptions.Data[0].Plan.TrialPeriodDays)
+
+		// Do we have a credit card on file
+		if cust.Sources.ListMeta.TotalCount > 0 {
+			subscription.CardBrand = string(cust.Sources.Data[0].Card.Brand)
+			subscription.CardLast4 = cust.Sources.Data[0].Card.Last4
+			subscription.CardExpMonth = int(cust.Sources.Data[0].Card.ExpMonth)
+			subscription.CardExpYear = int(cust.Sources.Data[0].Card.ExpYear)
+		}
+
+	} else {
+		return UserSubscription{}, errors.New("No stripe key found.")
+	}
+
+	// Return happy.
+	return subscription, nil
+
+}
+
 // ------------------ Helper Functions --------------------- //
 
 //
@@ -444,50 +622,6 @@ func (t *DB) ValidatePassword(password string) error {
 	// Make sure the password is at least 6 chars long
 	if len(password) < 6 {
 		return errors.New("The password filed must be at least 6 characters long.")
-	}
-
-	// Return happy.
-	return nil
-
-}
-
-//
-// Create new user with strip.
-//
-func (t *DB) CreateNewUserWithStripe(user User) error {
-
-	if len(os.Getenv("STRIPE_SECRET_KEY")) > 0 {
-
-		// Subscribe the new customer to services.
-		custId, err := services.AddCustomer(user.FirstName, user.LastName, user.Email, int(user.Id))
-
-		if err != nil {
-			services.Error(err, "CreateNewUserWithStripe - Unable to create a customer account at services. - "+user.Email)
-			return err
-		}
-
-		// Subscribe this user to our default Stripe plan.
-		subId, err := services.AddSubscription(custId, os.Getenv("STRIPE_DEFAULT_PLAN"))
-
-		if err != nil {
-			services.Error(err, "CreateNewUserWithStripe - Unable to create a subscription at services. - "+user.Email)
-			return err
-		}
-
-		// Update the user to include subscription and customer ids from strip.
-		user.StripeCustomer = custId
-		user.StripeSubscription = subId
-		t.Save(&user)
-
-	} else {
-
-		// Here we are doing local development or something.
-		// Really we should not be doing this but sometimes we want to
-		// develop stuff and not worry about strip.
-		user.StripeCustomer = "na"
-		user.StripeSubscription = "na"
-		t.Save(&user)
-
 	}
 
 	// Return happy.

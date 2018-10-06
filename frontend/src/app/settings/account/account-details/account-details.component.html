@@ -1,35 +1,55 @@
+<div class="article__head">
+  <h6>Account Details</h6>
+  <a  class="btn" *ngIf="hasPlan">Change</a>
+</div>
 
+<div class="article__body" *ngIf="hasPlan">
 
-  <div class="article__head">
-    <h6>Account Details</h6>
-    <a  class="btn">Change</a>
+  <ul class="list-data">
+    <li>
+      <h5>Payment Plan</h5>
+
+      <h6>Plan Billed Monthly</h6>
+    </li>
+
+    <li>
+      <h5>Payment Method</h5>
+
+      <h6>Visa ending in 8888, exp: 08/2028</h6>
+    </li>
+
+    <li>
+      <h5>Next Payment Due</h5>
+
+      <h6>$20.00 due on 11/10/2017</h6>
+    </li>
+
+  </ul>
+
+  <div class="article__actions article__actions--primary">
+    <a class="link red">Cancel Your Account</a>
   </div>
-  
-  <div class="article__body">
+</div>
 
-    <ul class="list-data">
-      <li>
-        <h5>Payment Plan</h5>
 
-        <h6>Plan Billed Monthly</h6>
-      </li>
 
-      <li>
-        <h5>Payment Method</h5>
 
-        <h6>Visa ending in 8888, exp: 08/2028</h6>
-      </li>
+<div class="article__body" *ngIf="! hasPlan">
+  <ul class="list-data">
+    <li>
+      <h5>Payment Plan</h5>
 
-      <li>
-        <h5>Next Payment Due</h5>
+      <h6>7 Day Free Trial</h6>
+    </li>
+  </ul><!-- /.list-data -->
 
-        <h6>$20.00 due on 11/10/2017</h6>
-      </li>
+  <div class="article__actions-alt">
+    <a href="#" class="btn btn--size1">Upgrade To Full Account</a>
 
-    </ul>
+    <h6 class="title-arrow">Enjoying Options Cafe? Upgrade now!</h6><!-- /.title-arrow -->
+  </div><!-- /.article__actions-alt -->
 
-    <div class="article__actions article__actions--primary">
-      <a class="link red">Cancel Your Account</a>
-    </div>
+  <div class="article__actions article__actions--primary">
+    <a class="link red">Cancel Your Account</a>
   </div>
-
+</div>

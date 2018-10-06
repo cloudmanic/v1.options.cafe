@@ -11,12 +11,20 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './account-details.component.html',
   styleUrls: []
 })
-export class AccountDetailsComponent implements OnInit {
 
+export class AccountDetailsComponent implements OnInit 
+{
+  hasPlan: boolean = false
+
+  //
+  // Constructor
+  //
   constructor() { }
 
-  ngOnInit() {
-  }
+  // 
+  // NG Init.
+  //
+  ngOnInit() {}
 
 }
 
