@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/notify"
+	"github.com/cloudmanic/app.options.cafe/backend/library/notify/websocket_push"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
@@ -58,7 +58,7 @@ func DoEquityOrder(db models.Datastore, userId uint) error {
 		}
 
 		// Notify
-		notify.PushWebsocket(db, userId, "change-detected", uint(0), `{ "type": "order-filled", "id": `+strconv.Itoa(int(row.Id))+` }`)
+		websocket_push.Push(userId, "change-detected", `{ "type": "order-filled", "id": `+strconv.Itoa(int(row.Id))+` }`)
 	}
 
 	// Return happy

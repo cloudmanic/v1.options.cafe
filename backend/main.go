@@ -6,7 +6,7 @@ import (
 
 	"github.com/cloudmanic/app.options.cafe/backend/cmd"
 	"github.com/cloudmanic/app.options.cafe/backend/controllers"
-	"github.com/cloudmanic/app.options.cafe/backend/library/notify"
+	"github.com/cloudmanic/app.options.cafe/backend/library/notify/websocket_push"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/cloudmanic/app.options.cafe/backend/users"
@@ -50,7 +50,7 @@ func main() {
 	userActionChan := make(chan users.UserFeedAction, 1000)
 
 	// Setup the notification channel
-	notify.SetWebsocketChannel(WsWriteChan)
+	websocket_push.SetWebsocketChannel(WsWriteChan)
 
 	// Setup users object & Start users feeds
 	u := &users.Base{

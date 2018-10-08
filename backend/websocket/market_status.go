@@ -16,8 +16,7 @@ import (
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
-	"github.com/cloudmanic/app.options.cafe/backend/library/notify/sms_push"
-	"github.com/cloudmanic/app.options.cafe/backend/library/notify/web_push"
+	"github.com/cloudmanic/app.options.cafe/backend/library/notify"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cnf/structhash"
 )
@@ -65,8 +64,8 @@ func (t *Controller) StartMarketStatusFeed() {
 				s = "closed"
 			}
 
-			go web_push.Push(t.DB, 0, "market-status-"+s, uint(0), `{ "status": "`+s+`"}`)
-			go sms_push.Push(t.DB, 0, "market-status-"+s, uint(0), `{ "status": "`+s+`"}`)
+			msg := "The market is now " + s
+			notify.Push(t.DB, notify.NotifyRequest{Uri: "market-status-" + s, ShortMsg: msg, Status: s})
 		}
 
 		// Store hash

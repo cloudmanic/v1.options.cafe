@@ -14,7 +14,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/archive"
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
-	"github.com/cloudmanic/app.options.cafe/backend/library/notify"
+	"github.com/cloudmanic/app.options.cafe/backend/library/notify/websocket_push"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cnf/structhash"
 )
@@ -89,8 +89,8 @@ func (t *Base) DoOrdersActiveTicker() {
 
 		// If there has been any changes in our orders send a notice.
 		if (len(hash) > 0) && (hash != lastHash) {
-			notify.PushWebsocket(t.DB, t.User.Id, "change-detected", uint(0), `{ "type": "orders" }`)
-			notify.PushWebsocket(t.DB, t.User.Id, "change-detected", uint(0), `{ "type": "trade-groups" }`)
+			websocket_push.Push(t.User.Id, "change-detected", `{ "type": "orders" }`)
+			websocket_push.Push(t.User.Id, "change-detected", `{ "type": "trade-groups" }`)
 		}
 
 		// Store this hash for next time.
