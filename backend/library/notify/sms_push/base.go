@@ -80,7 +80,7 @@ func Push(db models.Datastore, userId uint, uri string, uriRefId uint, data_json
 func DoMarketStatusChange(db models.Datastore, status string, content string) {
 
 	// We do not care about the pre-market stuff
-	if (status != "open") && (status != "postmarket") {
+	if (status != "open") && (status != "closed") {
 		return
 	}
 
