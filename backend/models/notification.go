@@ -13,13 +13,14 @@ type Notification struct {
 	CreatedAt    time.Time `json:"-"`
 	UpdatedAt    time.Time `json:"-"`
 	UserId       uint      `gorm:"index" sql:"not null;index:UserId" json:"-"`
-	Status       string    `sql:"not null;type:ENUM('Pending', 'Sent', 'Seen'); default:'Pending'" json:"type"`
-	Channel      string    `sql:"not null;type:ENUM('Push', 'SMS', 'Email', 'Slack', 'Zapier'); default:'Push'" json:"channel"`
-	Object       string    `sql:"not null" json:"object"`
-	ObjectId     uint      `sql:"not null" json:"object_id"`
+	Status       string    `sql:"not null;type:ENUM('pending', 'sent', 'seen'); default:'pending'" json:"type"`
+	Channel      string    `sql:"not null;type:ENUM('web-push', 'sms-push', 'email', 'slack', 'zapier'); default:'web-push'" json:"channel"`
+	Uri          string    `sql:"not null" json:"uri"`
+	UriRefId     uint      `sql:"not null" json:"uri_ref_id"`
 	Title        string    `sql:"not null" json:"title"`
 	ShortMessage string    `sql:"not null" json:"short_message"`
 	LongMessage  string    `sql:"not null" json:"long_message"`
+	SentTime     time.Time `json:"sent_time"`
 	Expires      time.Time `json:"-"`
 }
 

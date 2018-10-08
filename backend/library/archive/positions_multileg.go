@@ -102,7 +102,7 @@ func DoMultiLegOrders(db models.Datastore, userId uint, brokerId uint) error {
 		}
 
 		// Notify
-		notify.PushWebsocket(userId, "change-detected", `{ "type": "order-filled", "id": `+strconv.Itoa(int(row.Id))+` }`)
+		notify.PushWebsocket(db, userId, "change-detected", uint(0), `{ "type": "order-filled", "id": `+strconv.Itoa(int(row.Id))+` }`)
 	}
 
 	// Return happy

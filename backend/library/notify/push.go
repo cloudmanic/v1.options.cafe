@@ -15,7 +15,10 @@ import (
 	"encoding/json"
 	"flag"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/notify/sms_push"
+	"github.com/cloudmanic/app.options.cafe/backend/library/notify/web_push"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/cloudmanic/app.options.cafe/backend/websocket"
 )
 
@@ -31,14 +34,14 @@ func SetWebsocketChannel(ch chan websocket.SendStruct) {
 //
 // Send notification up websocket.
 //
-func PushWebsocket(userId uint, uri string, data_json string) {
-	Push(userId, []string{"websocket"}, uri, data_json)
+func PushWebsocket(db models.Datastore, userId uint, uri string, uriRefId uint, data_json string) {
+	Push(db, userId, []string{"websocket"}, uri, uriRefId, data_json)
 }
 
 //
 // A general way to push to all channels
 //
-func Push(userId uint, channels []string, uri string, data_json string) {
+func Push(db models.Datastore, userId uint, channels []string, uri string, uriRefId uint, data_json string) {
 
 	// Do nothing if we are testing. TODO: build testing for this.
 	if flag.Lookup("test.v") != nil {
@@ -70,9 +73,12 @@ func Push(userId uint, channels []string, uri string, data_json string) {
 		case "websocket":
 			websocketChan <- websocket.SendStruct{UserId: userId, Body: string(send_json)}
 
-			// case "web-push":
-			// Need to pass in a DB
-			// 	go web_push.Push(userId, uri, data_json)
+		case "web-push":
+			go web_push.Push(db, userId, uri, uriRefId, data_json)
+
+		case "sms-push":
+			go sms_push.Push(db, userId, uri, uriRefId, data_json)
+
 		}
 
 	}

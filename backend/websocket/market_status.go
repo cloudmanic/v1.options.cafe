@@ -61,10 +61,9 @@ func (t *Controller) StartMarketStatusFeed() {
 			// Just with this special case do we not go through the notify package. If storedHash is empty
 			// we know the app just started so most likely we do not want to push a notification.
 			if storedHash != "" {
-				go web_push.Push(t.DB, 0, "market-status", `{ "status": "`+status.State+`"}`)
-				go sms_push.Push(t.DB, 0, "market-status", `{ "status": "`+status.State+`"}`)
+				go web_push.Push(t.DB, 0, "market-status", uint(0), `{ "status": "`+status.State+`"}`)
+				go sms_push.Push(t.DB, 0, "market-status", uint(0), `{ "status": "`+status.State+`"}`)
 			}
-
 		}
 
 		// Store hash

@@ -89,8 +89,8 @@ func (t *Base) DoOrdersActiveTicker() {
 
 		// If there has been any changes in our orders send a notice.
 		if (len(hash) > 0) && (hash != lastHash) {
-			notify.PushWebsocket(t.User.Id, "change-detected", `{ "type": "orders" }`)
-			notify.PushWebsocket(t.User.Id, "change-detected", `{ "type": "trade-groups" }`)
+			notify.PushWebsocket(t.DB, t.User.Id, "change-detected", uint(0), `{ "type": "orders" }`)
+			notify.PushWebsocket(t.DB, t.User.Id, "change-detected", uint(0), `{ "type": "trade-groups" }`)
 		}
 
 		// Store this hash for next time.
