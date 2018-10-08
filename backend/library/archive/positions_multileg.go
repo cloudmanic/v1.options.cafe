@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/notify"
 	"github.com/cloudmanic/app.options.cafe/backend/library/notify/websocket_push"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
@@ -103,6 +104,14 @@ func DoMultiLegOrders(db models.Datastore, userId uint, brokerId uint) error {
 
 		// Notify
 		websocket_push.Push(userId, "change-detected", `{ "type": "order-filled", "id": `+strconv.Itoa(int(row.Id))+` }`)
+
+		// Push notifications
+		notify.Push(db, notify.NotifyRequest{
+			UriRefId: row.Id,
+			UserId:   userId,
+			Uri:      "order-filled",
+			ShortMsg: "Multi Leg Order #" + strconv.Itoa(int(row.Id)) + " has filled.",
+		})
 	}
 
 	// Return happy

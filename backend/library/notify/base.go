@@ -96,17 +96,61 @@ func PushChannel(db models.Datastore, channel string, request NotifyRequest) {
 
 	} else {
 
-		// HERE we only send by userId
-
-		// Do generic push
-
 		// TODO: We need to look up in settings if the user wants this notification. On Market status we check within that function.
+
+		switch channel {
+
+		case "web-push":
+			DoWebPushForUser(db, request.UserId, title, request.Status, request.ShortMsg)
+
+		case "sms-push":
+			DoSmsPushForUser(db, request.UserId, request.Status, request.ShortMsg)
+
+		}
 
 	}
 
 	// Update Notification as sent.
 	ob.Status = "sent"
 	db.New().Save(&ob)
+
+}
+
+//
+// Send SMS Push for a particular user.
+//
+func DoSmsPushForUser(db models.Datastore, userId uint, status string, content string) {
+
+	// Lets get a list of device ids to send this notification to.
+	nc := []models.NotifyChannel{}
+	db.New().Where("type = ? AND user_id = ?", "sms-push", userId).Find(&nc)
+
+	// Loop through and send message
+	for _, row := range nc {
+		sms_push.Push(row.ChannelId, content)
+	}
+
+}
+
+//
+// Send Web Push for a particular user.
+//
+func DoWebPushForUser(db models.Datastore, userId uint, title string, status string, content string) {
+
+	deviceIds := []string{}
+
+	// Lets get a list of device ids to send this notification to.
+	nc := []models.NotifyChannel{}
+	db.New().Where("type = ? AND user_id = ?", "web-push", userId).Find(&nc)
+
+	for _, row := range nc {
+		deviceIds = append(deviceIds, row.ChannelId)
+	}
+
+	// Send message
+	if len(deviceIds) > 0 {
+		web_push.Push(deviceIds, title, content)
+	}
 
 }
 
