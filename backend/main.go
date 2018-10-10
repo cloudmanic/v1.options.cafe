@@ -18,6 +18,7 @@ import (
 // Main....
 //
 func main() {
+
 	// Setup CPU stuff.
 	runtime.GOMAXPROCS(runtime.NumCPU())
 

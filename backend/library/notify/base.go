@@ -17,13 +17,13 @@ import (
 var channels []string = []string{"web-push", "sms-push"}
 
 type NotifyRequest struct {
-	UserId   uint
+	UserId   uint // If this is 0 we send to all users.
 	Uri      string
 	UriRefId uint
 	ShortMsg string
 	LongMsg  string
-	Status   string
 	Title    string
+	Date     time.Time // Override the "now"
 }
 
 //
@@ -45,7 +45,8 @@ func PushChannel(db models.Datastore, channel string, request NotifyRequest) {
 
 	// Set some helpful times
 	now := time.Now()
-	dayStart := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+	sentTime := now
+	dayStart := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
 
 	// Set title
 	title := "Options Cafe Trading"
@@ -54,14 +55,26 @@ func PushChannel(db models.Datastore, channel string, request NotifyRequest) {
 		title = request.Title
 	}
 
+	// Override the date? Note this is just date not time. We assume we only send one broadcast message a day when we pass in a "Date"
+	if request.Date.UnixNano() > 0 {
+		dayStart = time.Date(request.Date.Year(), request.Date.Month(), request.Date.Day(), 0, 0, 0, 0, time.Local)
+		sentTime = dayStart
+	}
+
 	// See if we have already sent this notification
 	o := models.Notification{}
-	db.New().Where("sent_time > ? AND channel = ? AND user_id = ? AND uri = ? AND uri_ref_id = ?", dayStart, channel, request.UserId, request.Uri, request.UriRefId).Find(&o)
+
+	if request.UserId == 0 {
+		db.New().Where("sent_time >= ? AND channel = ? AND uri = ? AND uri_ref_id = ?", dayStart, channel, request.Uri, request.UriRefId).Find(&o)
+	} else {
+		db.New().Where("sent_time >= ? AND channel = ? AND user_id = ? AND uri = ? AND uri_ref_id = ?", dayStart, channel, request.UserId, request.Uri, request.UriRefId).Find(&o)
+	}
 
 	// We already sent this notice
 	if o.Id > 0 {
 		return
 	}
+
 	// Store this notification
 	ob := models.Notification{
 		CreatedAt:    time.Now(),
@@ -74,23 +87,23 @@ func PushChannel(db models.Datastore, channel string, request NotifyRequest) {
 		Title:        title,
 		ShortMessage: request.ShortMsg,
 		LongMessage:  request.LongMsg,
-		SentTime:     time.Now(),
+		SentTime:     sentTime,
 		Expires:      time.Now(),
 	}
 
 	// Store in DB
 	db.New().Save(&ob)
 
-	// Special case for market status.
-	if (request.Uri == "market-status-open") || (request.Uri == "market-status-closed") {
+	// Do we send this to all users or just one?
+	if request.UserId == 0 {
 
 		switch channel {
 
 		case "web-push":
-			DoMarketStatusChangeWebPush(db, title, request.Status, request.ShortMsg)
+			DoToAllWebPush(db, title, request.ShortMsg)
 
 		case "sms-push":
-			DoMarketStatusChangeSmsPush(db, request.Status, request.ShortMsg)
+			DoToAllSmsPush(db, request.ShortMsg)
 
 		}
 
@@ -101,10 +114,10 @@ func PushChannel(db models.Datastore, channel string, request NotifyRequest) {
 		switch channel {
 
 		case "web-push":
-			DoWebPushForUser(db, request.UserId, title, request.Status, request.ShortMsg)
+			DoWebPushForUser(db, request.UserId, title, request.ShortMsg)
 
 		case "sms-push":
-			DoSmsPushForUser(db, request.UserId, request.Status, request.ShortMsg)
+			DoSmsPushForUser(db, request.UserId, request.ShortMsg)
 
 		}
 
@@ -119,7 +132,7 @@ func PushChannel(db models.Datastore, channel string, request NotifyRequest) {
 //
 // Send SMS Push for a particular user.
 //
-func DoSmsPushForUser(db models.Datastore, userId uint, status string, content string) {
+func DoSmsPushForUser(db models.Datastore, userId uint, content string) {
 
 	// Lets get a list of device ids to send this notification to.
 	nc := []models.NotifyChannel{}
@@ -135,7 +148,7 @@ func DoSmsPushForUser(db models.Datastore, userId uint, status string, content s
 //
 // Send Web Push for a particular user.
 //
-func DoWebPushForUser(db models.Datastore, userId uint, title string, status string, content string) {
+func DoWebPushForUser(db models.Datastore, userId uint, title string, content string) {
 
 	deviceIds := []string{}
 
@@ -155,15 +168,9 @@ func DoWebPushForUser(db models.Datastore, userId uint, title string, status str
 }
 
 //
-// Do market status. Since this goes out to everyone generically we
-// handle it differently.
+// Send this notification to all users. - SMS
 //
-func DoMarketStatusChangeSmsPush(db models.Datastore, status string, content string) {
-
-	// We do not care about the pre-market stuff
-	if (status != "open") && (status != "closed") {
-		return
-	}
+func DoToAllSmsPush(db models.Datastore, content string) {
 
 	// TODO: We need to look up in settings if the user wants this notification.
 
@@ -179,17 +186,11 @@ func DoMarketStatusChangeSmsPush(db models.Datastore, status string, content str
 }
 
 //
-// Do market status. Since this goes out to everyone generically we
-// handle it differently.
+// Send this notification to all users. - Web Push
 //
-func DoMarketStatusChangeWebPush(db models.Datastore, title string, status string, content string) {
+func DoToAllWebPush(db models.Datastore, title string, content string) {
 
 	deviceIds := []string{}
-
-	// We do not care about the pre-market stuff
-	if (status != "open") && (status != "closed") {
-		return
-	}
 
 	// Lets get a list of device ids to send this notification to.
 	nc := []models.NotifyChannel{}

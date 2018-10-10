@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/notify"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cnf/structhash"
@@ -64,8 +65,12 @@ func (t *Controller) StartMarketStatusFeed() {
 				s = "closed"
 			}
 
-			msg := "The market is now " + s
-			notify.Push(t.DB, notify.NotifyRequest{Uri: "market-status-" + s, ShortMsg: msg, Status: s})
+			// Some times s is empty.
+			if (s == "closed") || (s == "open") {
+				now := time.Now().Format("1/2/2006")
+				msg := now + ": The market is now " + s
+				notify.Push(t.DB, notify.NotifyRequest{Uri: "market-status-" + s, ShortMsg: msg, UserId: 0, Date: helpers.ParseDateNoError(status.Date)})
+			}
 		}
 
 		// Store hash
