@@ -140,7 +140,7 @@ func DoSmsPushForUser(db models.Datastore, userId uint, content string) {
 
 	// Loop through and send message
 	for _, row := range nc {
-		sms_push.Push(row.ChannelId, content)
+		sms_push.Push(row.ChannelId, "[Options Cafe] "+content)
 	}
 
 }
@@ -180,7 +180,7 @@ func DoToAllSmsPush(db models.Datastore, content string) {
 
 	// Loop through and send message
 	for _, row := range nc {
-		sms_push.Push(row.ChannelId, content)
+		sms_push.Push(row.ChannelId, "[Options Cafe] "+content)
 	}
 
 }
