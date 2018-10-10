@@ -14,7 +14,7 @@ import { Component, OnInit } from '@angular/core';
 
 export class AccountDetailsComponent implements OnInit 
 {
-  hasPlan: boolean = false
+  hasPlan: boolean = false;
 
   //
   // Constructor
@@ -25,7 +25,6 @@ export class AccountDetailsComponent implements OnInit
   // NG Init.
   //
   ngOnInit() {}
-
 }
 
 /* End File */

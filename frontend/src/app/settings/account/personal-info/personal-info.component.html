@@ -1,7 +1,7 @@
 <div class="article article--size1">
   <div class="article__head">
     <h6>Personal Info</h6>
-    <a class="btn">Edit Info</a>
+    <a (click)="doShowEditProfile()" class="btn">Edit Info</a>
   </div>
 
   <div class="article__body">
@@ -58,15 +58,179 @@
       </li>
 
       <li>
-        <h5>Password</h5>
-
-        <h6>••••••••</h6>
+        <p><a routerLink="/logout" class="link red">Sign Out</a></p>        
+        <p><a (click)="doShowEditPassword()" class="link red">Change your password</a></p>
       </li>
 
-      <li>
-        <a routerLink="/logout" class="link red">Sign Out</a>
-      </li>
     </ul>
 
   </div>
 </div>
+
+
+
+
+
+
+
+<app-dialog [(visible)]="showEditProfile">
+
+  <div class="popup-alt">
+    <div class="popup__inner">
+      <div class="article article--size2">
+        <div class="article__head">
+          <h6>Edit Personal Info</h6>
+        </div>
+
+        <div class="article__body article__body--primary">
+          <div class="form-info">
+
+            <form (submit)="doSaveEditProfile()">
+              <div class="form__body">
+                
+                <div class="form__row">
+                  <label for="f_name">First Name</label>
+                  
+                  <div class="form__controls">
+                    <input type="text" class="field form__field" name="f_name" id="f_name" placeholder="Steve" />
+                  </div>
+                </div>
+
+                <div class="form__row">
+                  <label for="l_name">Last Name</label>
+
+                  <div class="form__controls">
+                    <input type="text" class="field form__field" name="l_name" id="l_name" placeholder="Jobs" />
+                  </div>
+                </div>                  
+
+                            <div class="form__row">
+                                <label for="f_email">Email</label>
+
+                                <div class="form__controls">
+                                    <input type="text" class="field form__field" name="f_email" id="f_email" placeholder="mattdabrowiak@gmail.com" />
+                                </div><!-- /.form__controls -->
+                            </div><!-- /.form__row -->
+
+                            <div class="form__row">
+                                <label for="f_phone">Phone</label>
+
+                                <div class="form__controls">
+                                    <input type="text" class="field form__field" name="f_phone" id="f_phone" placeholder="503-888-8888" />
+                                </div><!-- /.form__controls -->
+                            </div><!-- /.form__row -->
+
+                            <div class="form__row">
+                                <label for="f_street">Street Address</label>
+
+                                <div class="form__controls">
+                                    <input type="text" class="field form__field" name="f_street" id="f_street" placeholder="5415 NE 43rd Ave" />
+                                </div><!-- /.form__controls -->
+                            </div><!-- /.form__row -->
+
+                            <div class="form__row form__row--primary">
+                                <div class="form__col form__col--size1">
+                                    <label for="f_city">City</label>
+
+                                    <div class="form__controls">
+                                        <input type="text" class="field form__field" name="f_city" id="f_city" placeholder="Place" />
+                                    </div><!-- /.form__controls -->
+                                </div><!-- /.form__col -->
+
+                                <div class="form__col">
+                                    <label for="f_state">State</label>
+
+                                    <div class="form__controls">
+                                        <div class="select select--primary">
+                                            <select name="field-search-expirations">
+                                                <option value="option-1" selected="">OR</option>
+
+                                                <option value="option-2">OR</option>
+                                            </select>
+                                        </div>
+                                    </div><!-- /.form__controls -->
+                                </div><!-- /.form__col -->
+                            </div><!-- /.form__row -->
+
+                            <div class="form__row">
+                                <label for="f_zip">Zip</label>
+
+                                <div class="form__controls">
+                                    <input type="text" class="field form__field" name="f_zip" id="f_zip" placeholder="Place" />
+                                </div><!-- /.form__controls -->
+                            </div><!-- /.form__row -->
+
+                        </div><!-- /.form__body -->
+
+                        <div class="form__actions">
+                          <a (click)="doCancelEditProfile()" class="link-alt">Cancel</a>
+                          <a (click)="doSaveEditProfile()" class="btn btn--pink">Save Changes</a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+</app-dialog>
+
+
+
+<app-dialog [(visible)]="showEditPassword">
+
+  <div class="popup-alt">
+    <div class="popup__inner">
+      <div class="article article--size2">
+
+        <div class="article__head">
+          <h6>Update Password</h6>
+        </div>
+
+        <div class="article__body article__body--primary">
+          <div class="form-info">
+
+            <form (submit)="doSaveEditPassword()">
+              <div class="form__body">
+                
+                <div class="form__row">
+                  <label for="f_name">Current Password</label>
+                  
+                  <div class="form__controls">
+                    <input type="password" class="field form__field" name="f_name" id="f_name"  />
+                  </div>
+                </div>
+
+                <div class="form__row">
+                  <label for="l_name">New Password</label>
+
+                  <div class="form__controls">
+                    <input type="password" class="field form__field" name="l_name" id="l_name" />
+                  </div>
+                </div>                  
+              
+                <div class="form__row">
+                  <label for="l_name">Confirm Password</label>
+
+                  <div class="form__controls">
+                    <input type="password" class="field form__field" name="l_name" id="l_name" />
+                  </div>
+                </div> 
+
+              </div>
+
+              <div class="form__actions">
+                <a (click)="doCancelEditPassword()" class="link-alt">Cancel</a>
+                <a (click)="doSaveEditPassword()" class="btn btn--pink">Save Password</a>
+              </div>
+            </form>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</app-dialog>

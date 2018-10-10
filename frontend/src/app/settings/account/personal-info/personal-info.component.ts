@@ -14,10 +14,62 @@ import { Component, OnInit } from '@angular/core';
 
 export class PersonalInfoComponent implements OnInit {
 
+  showEditProfile: boolean = false;
+  showEditPassword: boolean = false;
+
+  //
+  // Constructor
+  //
   constructor() { }
 
-  ngOnInit() {
+  // 
+  // NG Init.
+  //
+  ngOnInit() { }
+
+  //
+  // Edit profile.
+  //
+  doShowEditProfile() {
+    this.showEditProfile = true;
   }
+
+  //
+  // Save Edit profile.
+  //
+  doSaveEditProfile() {
+    this.showEditProfile = false;
+  }
+
+  //
+  // Cancel profile.
+  //
+  doCancelEditProfile() {
+    this.showEditProfile = false;
+  }
+
+  //
+  // Edit Password.
+  //
+  doShowEditPassword() {
+    this.showEditPassword = true;
+  }
+
+  //
+  // Save Edit profile.
+  //
+  doSaveEditPassword() {
+    this.showEditPassword = false;
+  }
+
+  //
+  // Cancel profile.
+  //
+  doCancelEditPassword() {
+    this.showEditPassword = false;
+  }
+
+
 
 }
 

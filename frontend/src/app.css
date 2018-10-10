@@ -61,6 +61,9 @@
   .nav-centered li + li { margin-left: 56px; }
 }
 
+/* Settings */
+.article--size2 { max-width: 350px; }
+
 /* Updates to sidebar - made sidebar less wide */
 .sidebar { width: 195px; }
 .content { padding: 125px 0 160px 195px; }
