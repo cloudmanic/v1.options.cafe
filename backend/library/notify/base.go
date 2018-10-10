@@ -23,7 +23,7 @@ type NotifyRequest struct {
 	ShortMsg string
 	LongMsg  string
 	Title    string
-	Date     time.Time // Override the "now"
+	Date     time.Time // Override the "now". We only pay attention to the date not the time.
 }
 
 //

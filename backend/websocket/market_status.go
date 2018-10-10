@@ -26,6 +26,7 @@ type MarketStatus struct {
 	Date        string `json:"date"`
 	State       string `json:"state"`
 	Description string `json:"description"`
+	NextState   string `json:"next_state"`
 }
 
 //
@@ -66,7 +67,7 @@ func (t *Controller) StartMarketStatusFeed() {
 			}
 
 			// Some times s is empty.
-			if (s == "closed") || (s == "open") {
+			if (status.NextState != "premarket") && ((s == "closed") || (s == "open")) {
 				tDate := helpers.ParseDateNoError(status.Date)
 				msg := tDate.Format("1/2/2006") + " - The market is now " + s + "."
 				notify.Push(t.DB, notify.NotifyRequest{Uri: "market-status-" + s, ShortMsg: msg, UserId: 0, Date: tDate})
