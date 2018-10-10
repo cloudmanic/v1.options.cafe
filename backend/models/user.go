@@ -13,8 +13,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/cloudmanic/app.options.cafe/backend/library/checkmail"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	validation "github.com/go-ozzo/ozzo-validation"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -26,13 +28,19 @@ type User struct {
 	LastName           string    `sql:"not null" json:"last_name"`
 	Email              string    `sql:"not null" json:"email"`
 	Password           string    `sql:"not null" json:"-"`
+	Phone              string    `sql:"not null" json:"phone"`
+	Address            string    `sql:"not null" json:"address"`
+	City               string    `sql:"not null" json:"city"`
+	State              string    `sql:"not null" json:"state"`
+	Zip                string    `sql:"not null" json:"zip"`
+	Country            string    `sql:"not null" json:"country"`
 	Admin              string    `sql:"not null;type:ENUM('Yes', 'No');default:'No'" json:"-"`
 	Status             string    `sql:"not null;type:ENUM('Active', 'Disable');default:'Active'" json:"-"`
 	Session            Session   `json:"-"`
 	Brokers            []Broker  `json:"brokers"`
 	StripeCustomer     string    `sql:"not null" json:"-"`
 	StripeSubscription string    `sql:"not null" json:"-"`
-	GoogleSubId        string    `sql:"not null" json:"-"`
+	GoogleSubId        string    `sql:"not null" json:"google_sub_id"`
 	LastActivity       time.Time `json:"last_activity"`
 }
 
@@ -51,6 +59,44 @@ type UserSubscription struct {
 	CardLast4          string    `json:"card_last_4"`
 	CardExpMonth       int       `json:"card_exp_month"`
 	CardExpYear        int       `json:"card_exp_year"`
+}
+
+//
+// Validate for this model.
+//
+func (a User) Validate(db Datastore) error {
+	return validation.ValidateStruct(&a,
+
+		// First Name
+		validation.Field(&a.FirstName, validation.Required.Error("The first name field is required.")),
+
+		// Last Name
+		validation.Field(&a.LastName, validation.Required.Error("The last name field is required.")),
+
+		// Email
+		validation.Field(&a.Email,
+			validation.Required.Error("The email field is required."),
+			validation.NewStringRule(govalidator.IsEmail, "The email field must be a valid email address"),
+			validation.By(db.ValidateUserEmail)),
+	)
+}
+
+//
+// Validate Email
+//
+func (t *DB) ValidateUserEmail(value interface{}) error {
+
+	// Make sure this email is not already in use.
+	user, _ := t.GetUserByEmail(value.(string))
+
+	// If we pass in the same value for email do nothing
+	if user.Email != value {
+		if user.Id > 0 {
+			return errors.New("Email address is already in use.")
+		}
+	}
+
+	return nil
 }
 
 //

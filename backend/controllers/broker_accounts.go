@@ -168,7 +168,7 @@ func (t *Controller) UpdateBrokerAccount(c *gin.Context) {
 	t.DB.New().Save(&o)
 
 	// Return success.
-	c.JSON(200, o)
+	c.JSON(202, o)
 }
 
 /* End File */

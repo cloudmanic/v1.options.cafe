@@ -1,0 +1,118 @@
+//
+// Date: 9/14/2018
+// Author(s): Spicer Matthews (spicer@options.cafe)
+// Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
+//
+
+package controllers
+
+import (
+	"bytes"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/gin-gonic/gin"
+	"github.com/nbio/st"
+)
+
+//
+// TestGetProfile01
+//
+func TestGetProfile01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Set User
+	db.Exec("TRUNCATE TABLE users;")
+	db.Exec("TRUNCATE TABLE brokers;")
+	db.Exec("TRUNCATE TABLE broker_accounts;")
+	db.Create(&models.User{FirstName: "Rob", LastName: "Tester", Email: "spicer+robtester@options.cafe", Status: "Active"})
+
+	// Make a mock request.
+	req, _ := http.NewRequest("GET", "/api/v1/me/profile", nil)
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.GET("/api/v1/me/profile", c.GetProfile)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Grab result and convert to strut
+	result := models.User{}
+	err := json.Unmarshal([]byte(w.Body.String()), &result)
+
+	// Parse json that returned.
+	st.Expect(t, err, nil)
+	st.Expect(t, w.Code, 200)
+	st.Expect(t, result.Email, "spicer+robtester@options.cafe")
+
+	// Testing the json is best because we want to make sure something bad does not sneak in like a password.
+	st.Expect(t, w.Body.String(), `{"id":1,"first_name":"Rob","last_name":"Tester","email":"spicer+robtester@options.cafe","phone":"","address":"","city":"","state":"","zip":"","country":"","brokers":[],"google_sub_id":"","last_activity":"0001-01-01T00:00:00Z"}`)
+}
+
+//
+// TestUpdateProfile01
+//
+func TestUpdateProfile01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Set User
+	db.Exec("TRUNCATE TABLE users;")
+	db.Exec("TRUNCATE TABLE brokers;")
+	db.Exec("TRUNCATE TABLE broker_accounts;")
+	db.Create(&models.User{FirstName: "Rob", LastName: "Tester", Email: "spicer+robtester@options.cafe", Status: "Active"})
+
+	// Body data
+	var bodyStr = []byte(`{"first_name":"Mike","last_name":"Tester","email":"spicer+unittest@options.cafe","phone":"555-234-1234","address":"901 Brutscher Street, D112","city":"Newberg","state":"OR","zip":"97132","country":"USA"}`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("PUT", "/api/v1/me/profile", bytes.NewBuffer(bodyStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.PUT("/api/v1/me/profile", c.UpdateProfile)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Grab result and convert to strut
+	result := models.User{}
+	err := json.Unmarshal([]byte(w.Body.String()), &result)
+
+	// // Parse json that returned.
+	st.Expect(t, err, nil)
+	st.Expect(t, w.Code, 202)
+	st.Expect(t, result.Email, "spicer+unittest@options.cafe")
+
+	// Testing the json is best because we want to make sure something bad does not sneak in like a password.
+	st.Expect(t, w.Body.String(), `{"id":1,"first_name":"Mike","last_name":"Tester","email":"spicer+unittest@options.cafe","phone":"555-234-1234","address":"901 Brutscher Street, D112","city":"Newberg","state":"OR","zip":"97132","country":"USA","brokers":[],"google_sub_id":"","last_activity":"0001-01-01T00:00:00Z"}`)
+}
+
+/* End File */
