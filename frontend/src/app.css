@@ -93,6 +93,8 @@
 
 /* Settings */
 .list-infos h5 { max-width: 175px; }
+.list-data h5 { font-weight: 500; }
+.form-info .form__col--size1a { max-width: 50%; flex: 0 0 50%; }
 
 /* Hide GooveHq stuff */
 iframe.grv-widget-tag { display: none !important; }

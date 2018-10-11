@@ -19,6 +19,7 @@ import { AuthGuard } from './auth/guards/auth.service';
 import { StateService } from './providers/state/state.service';
 
 // Providers - http
+import { MeService } from './providers/http/me.service';
 import { OptionsChainService } from './providers/http/options-chain.service';
 import { TradeService } from './providers/http/trade.service';
 import { ScreenerService } from './providers/http/screener.service';
@@ -150,7 +151,8 @@ import { SocialComponent } from './settings/account/social/social.component';
     HttpClientModule
   ],
   
-  providers: [ 
+  providers: [
+    MeService, 
     QuotesService, 
     AuthGuard, 
     SymbolService,

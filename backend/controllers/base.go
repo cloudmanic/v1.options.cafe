@@ -32,7 +32,7 @@ type Controller struct {
 }
 
 type ValidateRequest interface {
-	Validate(models.Datastore) error
+	Validate(models.Datastore, uint) error
 }
 
 //
@@ -60,8 +60,11 @@ func (t *Controller) ValidateRequest(c *gin.Context, obj ValidateRequest) error 
 	// Bind the JSON that got sent into an object and validate.
 	if err := c.ShouldBindJSON(obj); err == nil {
 
+		// Get user id.
+		userId := c.MustGet("userId").(uint)
+
 		// Run validation
-		err := obj.Validate(t.DB)
+		err := obj.Validate(t.DB, userId)
 
 		// If we had validation errors return them and do no more.
 		if err != nil {

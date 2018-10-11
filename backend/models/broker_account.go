@@ -33,7 +33,7 @@ type BrokerAccount struct {
 //
 // Validate for this model.
 //
-func (a BrokerAccount) Validate(db Datastore) error {
+func (a BrokerAccount) Validate(db Datastore, userId uint) error {
 	return validation.ValidateStruct(&a,
 		validation.Field(&a.Name, validation.Required.Error("The name field is required.")),
 		// validation.Field(&a.Strategy, validation.Required.Error("The strategy field is required.")),

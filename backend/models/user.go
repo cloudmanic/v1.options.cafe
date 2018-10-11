@@ -64,7 +64,9 @@ type UserSubscription struct {
 //
 // Validate for this model.
 //
-func (a User) Validate(db Datastore) error {
+func (a User) Validate(db Datastore, userId uint) error {
+
+	// Return validation
 	return validation.ValidateStruct(&a,
 
 		// First Name
@@ -77,26 +79,25 @@ func (a User) Validate(db Datastore) error {
 		validation.Field(&a.Email,
 			validation.Required.Error("The email field is required."),
 			validation.NewStringRule(govalidator.IsEmail, "The email field must be a valid email address"),
-			validation.By(db.ValidateUserEmail)),
+			validation.By(func(value interface{}) error { return db.ValidateUserEmail(userId, value.(string)) }),
+		),
 	)
 }
 
 //
 // Validate Email
 //
-func (t *DB) ValidateUserEmail(value interface{}) error {
+func (t *DB) ValidateUserEmail(userId uint, email string) error {
 
 	// Make sure this email is not already in use.
-	user, _ := t.GetUserByEmail(value.(string))
+	user, _ := t.GetUserByEmail(email)
 
 	// If we pass in the same value for email do nothing
-	if user.Email != value {
-		if user.Id > 0 {
-			return errors.New("Email address is already in use.")
-		}
+	if (user.Id == 0) || (user.Id == userId) {
+		return nil
 	}
 
-	return nil
+	return errors.New("Email address is already in use.")
 }
 
 //

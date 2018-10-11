@@ -25,7 +25,7 @@ type NotifyChannel struct {
 //
 // Validate for this model.
 //
-func (a NotifyChannel) Validate(db Datastore) error {
+func (a NotifyChannel) Validate(db Datastore, userId uint) error {
 	return validation.ValidateStruct(&a,
 
 		// Type

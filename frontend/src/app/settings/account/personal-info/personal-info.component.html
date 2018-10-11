@@ -10,56 +10,54 @@
       <li>
         <h5>Name</h5>
 
-        <h6>Matt Dabrowiak</h6>
+        <h6>{{ userProfile.FirstName }} {{ userProfile.LastName }}</h6>
       </li>
 
       <li>
         <h5>Email</h5>
 
         <h6>
-          <a >mattdabrowiak@gmail.com</a>
+          <a>{{ userProfile.Email }}</a>
         </h6>
       </li>
 
       <li>
         <h5>Phone</h5>
-
-        <h6>
-          <a >503-888-8888</a>
-        </h6>
+        <h6 *ngIf="! userProfile.Phone">---</h6>
+        <h6 *ngIf="userProfile.Phone">{{ userProfile.Phone }}</h6>
       </li>
 
       <li>
         <h5>Street Address</h5>
-
-        <h6>5415 NE 43rd Ave</h6>
+        <h6 *ngIf="! userProfile.Address">---</h6>
+        <h6 *ngIf="userProfile.Address">{{ userProfile.Address }}</h6>
       </li>
 
       <li>
         <ul>
           <li>
             <h5>City</h5>
-
-            <h6>Portland</h6>
+            <h6 *ngIf="! userProfile.City">---</h6>
+            <h6 *ngIf="userProfile.City">{{ userProfile.City }}</h6>            
           </li>
 
           <li>
             <h5>State</h5>
-
-            <h6>OR</h6>
+            <h6 *ngIf="! userProfile.State">---</h6>
+            <h6 *ngIf="userProfile.State">{{ userProfile.State }}</h6>            
           </li>
         </ul>
       </li>
 
       <li>
         <h5>Zip</h5>
-
-        <h6>97218</h6>
+        <h6 *ngIf="! userProfile.Zip">---</h6>
+        <h6 *ngIf="userProfile.Zip">{{ userProfile.Zip }}</h6>         
       </li>
 
       <li>
         <p><a routerLink="/logout" class="link red">Sign Out</a></p>        
-        <p><a (click)="doShowEditPassword()" class="link red">Change your password</a></p>
+        <p><a (click)="doShowEditPassword()" class="link red" *ngIf="! userProfile.GoogleSubId">Change your password</a></p>
       </li>
 
     </ul>
@@ -75,7 +73,7 @@
 
 <app-dialog [(visible)]="showEditProfile">
 
-  <div class="popup-alt">
+  <div class="popup-alt personal-info">
     <div class="popup__inner">
       <div class="article article--size2">
         <div class="article__head">
@@ -83,94 +81,86 @@
         </div>
 
         <div class="article__body article__body--primary">
-          <div class="form-info">
+          <div class="form-info form">
 
             <form (submit)="doSaveEditProfile()">
               <div class="form__body">
                 
                 <div class="form__row">
                   <label for="f_name">First Name</label>
-                  
-                  <div class="form__controls">
-                    <input type="text" class="field form__field" name="f_name" id="f_name" placeholder="Steve" />
+                  <div class="form__controls" [ngClass]="{ 'form__error': firstNameError }">
+                    <input type="text" class="field form__field" name="FirstName" id="f_name" [(ngModel)]="userProfile.FirstName" autocomplete="new"  />
+                    <span class="msg">{{ firstNameError }}</span>
                   </div>
                 </div>
 
                 <div class="form__row">
                   <label for="l_name">Last Name</label>
-
-                  <div class="form__controls">
-                    <input type="text" class="field form__field" name="l_name" id="l_name" placeholder="Jobs" />
+                  <div class="form__controls" [ngClass]="{ 'form__error': lastNameError }">
+                    <input type="text" class="field form__field" name="LastName" id="l_name" [(ngModel)]="userProfile.LastName" autocomplete="new" />
+                    <span class="msg">{{ lastNameError }}</span>
                   </div>
                 </div>                  
 
-                            <div class="form__row">
-                                <label for="f_email">Email</label>
+                <div class="form__row">
+                  <label for="f_email">Email</label>
+                  <div class="form__controls" [ngClass]="{ 'form__error': emailError }">
+                    <input type="text" class="field form__field" name="Email" id="f_email" [(ngModel)]="userProfile.Email" autocomplete="new" />
+                    <span class="msg">{{ emailError }}</span>
+                  </div>
+                </div>
 
-                                <div class="form__controls">
-                                    <input type="text" class="field form__field" name="f_email" id="f_email" placeholder="mattdabrowiak@gmail.com" />
-                                </div><!-- /.form__controls -->
-                            </div><!-- /.form__row -->
+                <div class="form__row">
+                  <label for="f_phone">Phone</label>
+                  <div class="form__controls">
+                    <input type="phone" class="field form__field" name="Phone" id="f_phone" [(ngModel)]="userProfile.Phone" autocomplete="new" />
+                  </div>
+                </div>
 
-                            <div class="form__row">
-                                <label for="f_phone">Phone</label>
+                <div class="form__row">
+                  <label for="f_phone">Street Address</label>
+                  <div class="form__controls">
+                    <input type="phone" class="field form__field" name="Address" id="f_address" [(ngModel)]="userProfile.Address" autocomplete="new" />
+                  </div>
+                </div>
 
-                                <div class="form__controls">
-                                    <input type="text" class="field form__field" name="f_phone" id="f_phone" placeholder="503-888-8888" />
-                                </div><!-- /.form__controls -->
-                            </div><!-- /.form__row -->
 
-                            <div class="form__row">
-                                <label for="f_street">Street Address</label>
+                <div class="form__row form__row--primary">
 
-                                <div class="form__controls">
-                                    <input type="text" class="field form__field" name="f_street" id="f_street" placeholder="5415 NE 43rd Ave" />
-                                </div><!-- /.form__controls -->
-                            </div><!-- /.form__row -->
+                  <div class="form__col form__col--size1a">
+                    <label for="f_city">City</label>
+                    <div class="form__controls">
+                      <input type="text" class="field form__field" name="City" id="f_city" [(ngModel)]="userProfile.City" autocomplete="new" />
+                    </div>
+                  </div>
 
-                            <div class="form__row form__row--primary">
-                                <div class="form__col form__col--size1">
-                                    <label for="f_city">City</label>
-
-                                    <div class="form__controls">
-                                        <input type="text" class="field form__field" name="f_city" id="f_city" placeholder="Place" />
-                                    </div><!-- /.form__controls -->
-                                </div><!-- /.form__col -->
-
-                                <div class="form__col">
-                                    <label for="f_state">State</label>
-
-                                    <div class="form__controls">
-                                        <div class="select select--primary">
-                                            <select name="field-search-expirations">
-                                                <option value="option-1" selected="">OR</option>
-
-                                                <option value="option-2">OR</option>
-                                            </select>
-                                        </div>
-                                    </div><!-- /.form__controls -->
-                                </div><!-- /.form__col -->
-                            </div><!-- /.form__row -->
-
-                            <div class="form__row">
-                                <label for="f_zip">Zip</label>
-
-                                <div class="form__controls">
-                                    <input type="text" class="field form__field" name="f_zip" id="f_zip" placeholder="Place" />
-                                </div><!-- /.form__controls -->
-                            </div><!-- /.form__row -->
-
-                        </div><!-- /.form__body -->
-
-                        <div class="form__actions">
-                          <a (click)="doCancelEditProfile()" class="link-alt">Cancel</a>
-                          <a (click)="doSaveEditProfile()" class="btn btn--pink">Save Changes</a>
-                        </div>
-                    </form>
+                  <div class="form__col form__col--size1a">
+                    <label for="f_city">State</label>
+                    <div class="form__controls">
+                      <input type="text" class="field form__field" name="State" id="f_state" [(ngModel)]="userProfile.State" autocomplete="new" />
+                    </div>
+                  </div>
 
                 </div>
-            </div>
+
+                <div class="form__row">
+                  <label for="f_phone">Zip</label>
+                  <div class="form__controls">
+                    <input type="tel" class="field form__field" name="Zip" id="f_phone" [(ngModel)]="userProfile.Zip" autocomplete="new" />
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="form__actions">
+                <a (click)="doCancelEditProfile()" class="link-alt">Cancel</a>
+                <a (click)="doSaveEditProfile()" class="btn btn--pink">Save Changes</a>
+              </div>
+            </form>
+
+          </div>
         </div>
+      </div>
     </div>
   </div>
 

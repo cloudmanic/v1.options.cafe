@@ -28,7 +28,7 @@ type WatchlistSymbol struct {
 //
 // Validate for this model.
 //
-func (a WatchlistSymbol) Validate(db Datastore) error {
+func (a WatchlistSymbol) Validate(db Datastore, userId uint) error {
 	return validation.ValidateStruct(&a,
 		validation.Field(&a.WatchlistId, validation.Required.Error("The watchlist_id field is required.")),
 		validation.Field(&a.SymbolId, validation.Required.Error("The symbol_id field is required."), validation.By(db.ValidateSymbolId)),
