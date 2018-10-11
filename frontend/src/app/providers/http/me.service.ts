@@ -49,7 +49,21 @@ export class MeService
 
     return this.http.put<Me>(environment.app_server + '/api/v1/me/profile', post)
       .map((data) => { return new Me().fromJson(data); });
-  }         
+  }
+
+  //
+  // Change password
+  //
+  restPassword(current_pass: string, new_pass: string): Observable<boolean> {
+
+    let post = {
+      current_password: current_pass,
+      new_password: new_pass
+    }
+
+    return this.http.put<boolean>(environment.app_server + '/api/v1/me/rest-password', post)
+      .map((data) => { return true; });
+  }           
 }
 
 /* End File */

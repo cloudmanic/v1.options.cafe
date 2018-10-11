@@ -25,10 +25,11 @@ export class PersonalInfoComponent implements OnInit
   showEditProfile: boolean = false;
   showEditPassword: boolean = false;
 
-  // Validation 
-  firstNameError = ""
-  lastNameError = ""
-  emailError = ""    
+  // Password 
+  currentPass = "";
+  newPass = "";
+  newPassConfirm = "";
+  passError = "";    
 
   //
   // Construct.
@@ -114,6 +115,9 @@ export class PersonalInfoComponent implements OnInit
         this.userProfile = res;
         this.showEditProfile = false;
         this.stateService.SetSettingsUserProfile(res);
+
+        // Show success notice
+        this.stateService.SiteSuccess.emit("Your profile has been successfully updated.");        
       }, 
 
       // Error
@@ -141,6 +145,10 @@ export class PersonalInfoComponent implements OnInit
   // Edit Password.
   //
   doShowEditPassword() {
+    this.passError = "";
+    this.currentPass = "";
+    this.newPass = "";
+    this.newPassConfirm = "";     
     this.showEditPassword = true;
   }
 
@@ -148,13 +156,45 @@ export class PersonalInfoComponent implements OnInit
   // Save Edit profile.
   //
   doSaveEditPassword() {
-    this.showEditPassword = false;
+
+    this.passError = "";
+
+    // Confirm passwords
+    if(this.newPass != this.newPassConfirm)
+    {
+      this.passError = "New passwords did not match.";
+      return;
+    }
+
+    // Ajax call to save the password.
+    this.meService.restPassword(this.currentPass, this.newPass).subscribe(
+
+      // Success
+      (res) => {
+        this.showEditPassword = false;
+
+        // Show success notice
+        this.stateService.SiteSuccess.emit("Your password has been successfully updated.");
+      },
+
+      // Error
+      (err: HttpErrorResponse) => {
+        this.passError = err.error.error;
+      }
+
+    );
+
+    //this.showEditPassword = false;
   }
 
   //
   // Cancel profile.
   //
-  doCancelEditPassword() {
+  doCancelEditPassword() { 
+    this.passError = "";  
+    this.currentPass = "";
+    this.newPass = "";
+    this.newPassConfirm = "";     
     this.showEditPassword = false;
   }
 

@@ -205,4 +205,46 @@ func TestResetPassword02(t *testing.T) {
 	st.Expect(t, w.Body.String(), `{"error":"Please enter a password at least 6 chars long."}`)
 }
 
+//
+// TestResetPassword03
+//
+func TestResetPassword03(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Set User
+	db.Exec("TRUNCATE TABLE users;")
+	db.Exec("TRUNCATE TABLE brokers;")
+	db.Exec("TRUNCATE TABLE broker_accounts;")
+	db.Create(&models.User{FirstName: "Rob", LastName: "Tester", Email: "spicer+robtester@options.cafe", Status: "Active", Password: "$2a$10$eJ4biSke/V5Id9DK1nb2ZeCrGjI2IMaSQ.vTpaDeRbo4kg77RdhiC"})
+
+	// Body data
+	var bodyStr = []byte(`{"current_password":"foobar!!!","new_password":"abc123"}`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("PUT", "/api/v1/me/rest-password", bytes.NewBuffer(bodyStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.PUT("/api/v1/me/rest-password", c.ResetPassword)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Parse json that returned.
+	st.Expect(t, w.Code, 400)
+	st.Expect(t, w.Body.String(), `{"error":"Incorrect current password."}`)
+}
+
 /* End File */

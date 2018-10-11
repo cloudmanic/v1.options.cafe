@@ -179,7 +179,7 @@
         </div>
 
         <div class="article__body article__body--primary">
-          <div class="form-info">
+          <div class="form-info form">
 
             <form (submit)="doSaveEditPassword()">
               <div class="form__body">
@@ -188,7 +188,7 @@
                   <label for="f_name">Current Password</label>
                   
                   <div class="form__controls">
-                    <input type="password" class="field form__field" name="f_name" id="f_name"  />
+                    <input type="password" class="field form__field" name="currentPass" id="f_name" [(ngModel)]="currentPass" autocomplete="new"  />
                   </div>
                 </div>
 
@@ -196,15 +196,16 @@
                   <label for="l_name">New Password</label>
 
                   <div class="form__controls">
-                    <input type="password" class="field form__field" name="l_name" id="l_name" />
+                    <input type="password" class="field form__field" name="newPass" id="l_name" [(ngModel)]="newPass" autocomplete="new" />
                   </div>
                 </div>                  
               
                 <div class="form__row">
                   <label for="l_name">Confirm Password</label>
 
-                  <div class="form__controls">
-                    <input type="password" class="field form__field" name="l_name" id="l_name" />
+                  <div class="form__controls" [ngClass]="{ 'form__error': passError }">
+                    <input type="password" class="field form__field" name="newPassConfirm" id="l_name" [(ngModel)]="newPassConfirm" autocomplete="new" />
+                    <span class="msg">{{ passError }}</span>
                   </div>
                 </div> 
 
