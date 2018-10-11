@@ -1,9 +1,9 @@
 <div class="article__head">
   <h6>Account Details</h6>
-  <a class="btn" *ngIf="hasPlan">Change</a>
+  <a class="btn" *ngIf="userSubscription.Status != 'trialing'">Change</a>
 </div>
 
-<div class="article__body" *ngIf="hasPlan">
+<div class="article__body" *ngIf="userSubscription.Status != 'trialing'">
 
   <ul class="list-data">
     <li>
@@ -27,19 +27,19 @@
   </ul>
 
   <div class="article__actions article__actions--primary">
-    <a class="link red">Cancel Your Account</a>
+    <a class="link red" (click)="cancelAccount()">Cancel Your Account</a>
   </div>
 </div>
 
 
 
 
-<div class="article__body" *ngIf="! hasPlan">
+<div class="article__body" *ngIf="userSubscription.Status == 'trialing'">
   <ul class="list-data">
     <li>
       <h5>Payment Plan</h5>
 
-      <h6>Free Trial Ending On 11/11/18</h6>
+      <h6>Free Trial until {{ userSubscription.TrialEnd | date:'shortDate' }}</h6>
     </li>
   </ul><!-- /.list-data -->
 
@@ -50,6 +50,35 @@
   </div><!-- /.article__actions-alt -->
 
   <div class="article__actions article__actions--primary">
-    <a class="link red">Cancel Your Account</a>
+    <a class="link red" (click)="cancelAccount()">Cancel Your Account</a>
   </div>
 </div>
+
+
+<app-dialog [(visible)]="showCloseDownAccount">
+
+  <div class="popup-alt">
+    <div class="popup__inner">
+      <div class="article article--size2">
+
+        <div class="article__head">
+          <h6>Cancel Account</h6>
+        </div>
+
+        <div class="article__body article__body--primary">
+          <div class="form-info form">
+
+            <p>To close down your account please contact us via the Help link in the upper right or email us at help@options.cafe.</p>
+
+            <div class="form__actions">
+              <a (click)="doCancelAccount()" class="btn">OK</a>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</app-dialog>
