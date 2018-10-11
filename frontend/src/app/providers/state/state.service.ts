@@ -7,6 +7,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Me } from '../../models/me';
 import { Rank } from '../../models/rank';
 import { Order } from '../../models/order';
 import { Broker } from '../../models/broker';
@@ -54,6 +55,9 @@ export class StateService
   // Account History
   private accountHistoryPage: number = 1;
   private accountHistoryList: BrokerEvent[];
+
+  // Settings 
+  private settingsUserProfile: Me;
 
   // Emitters - Pushers
   public SiteSuccess = new EventEmitter<string>();
@@ -117,6 +121,20 @@ export class StateService
 
     }, 10000);
 
+  }
+
+  //
+  // Set settingsUserProfile
+  //
+  SetSettingsUserProfile(data: Me) {
+    this.settingsUserProfile = data;
+  }
+
+  //
+  // Get settingsUserProfile
+  //
+  GetSettingsUserProfile() {
+    return this.settingsUserProfile;
   }
 
   //

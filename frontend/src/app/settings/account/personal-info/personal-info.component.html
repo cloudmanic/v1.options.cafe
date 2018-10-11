@@ -88,25 +88,25 @@
                 
                 <div class="form__row">
                   <label for="f_name">First Name</label>
-                  <div class="form__controls" [ngClass]="{ 'form__error': firstNameError }">
+                  <div class="form__controls" [ngClass]="{ 'form__error': httpErrors.FirstName }">
                     <input type="text" class="field form__field" name="FirstName" id="f_name" [(ngModel)]="userProfile.FirstName" autocomplete="new"  />
-                    <span class="msg">{{ firstNameError }}</span>
+                    <span class="msg">{{ httpErrors.FirstName }}</span>
                   </div>
                 </div>
 
                 <div class="form__row">
                   <label for="l_name">Last Name</label>
-                  <div class="form__controls" [ngClass]="{ 'form__error': lastNameError }">
+                  <div class="form__controls" [ngClass]="{ 'form__error': httpErrors.LastName }">
                     <input type="text" class="field form__field" name="LastName" id="l_name" [(ngModel)]="userProfile.LastName" autocomplete="new" />
-                    <span class="msg">{{ lastNameError }}</span>
+                    <span class="msg">{{ httpErrors.LastName }}</span>
                   </div>
                 </div>                  
 
                 <div class="form__row">
                   <label for="f_email">Email</label>
-                  <div class="form__controls" [ngClass]="{ 'form__error': emailError }">
+                  <div class="form__controls" [ngClass]="{ 'form__error': httpErrors.Email }">
                     <input type="text" class="field form__field" name="Email" id="f_email" [(ngModel)]="userProfile.Email" autocomplete="new" />
-                    <span class="msg">{{ emailError }}</span>
+                    <span class="msg">{{ httpErrors.Email }}</span>
                   </div>
                 </div>
 

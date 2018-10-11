@@ -5,9 +5,11 @@
 //
 
 import { Me } from '../../../models/me';
+import { HttpErrors } from '../../../models/http-errors';
 import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MeService } from '../../../providers/http/me.service';
+import { StateService } from '../../../providers/state/state.service';
 
 @Component({
   selector: '[app-settings-account-personal-info]',
@@ -15,8 +17,9 @@ import { MeService } from '../../../providers/http/me.service';
   styleUrls: []
 })
 
-export class PersonalInfoComponent implements OnInit {
-
+export class PersonalInfoComponent implements OnInit 
+{
+  httpErrors: HttpErrors = new HttpErrors();
   tmpUserProfile: Me = new Me();
   userProfile: Me = new Me();
   showEditProfile: boolean = false;
@@ -30,7 +33,11 @@ export class PersonalInfoComponent implements OnInit {
   //
   // Construct.
   //
-  constructor(private meService: MeService) { }
+  constructor(private stateService: StateService, private meService: MeService) 
+  { 
+    // Get cached data
+    this.userProfile = this.stateService.GetSettingsUserProfile();
+  }
 
   // 
   // NG Init.
@@ -49,6 +56,7 @@ export class PersonalInfoComponent implements OnInit {
     // Ajax call to get user data.
     this.meService.getProfile().subscribe((res) => {
       this.userProfile = res;
+      this.stateService.SetSettingsUserProfile(res);
     });
   }
 
@@ -70,29 +78,27 @@ export class PersonalInfoComponent implements OnInit {
     let yesError = false;
 
     // Clear Validation 
-    this.firstNameError = "";
-    this.lastNameError = "";
-    this.emailError = ""; 
+    this.httpErrors = new HttpErrors();
 
     // Validate - First Name
     if (this.userProfile.FirstName.length <= 0)
     {
       yesError = true;
-      this.firstNameError = "First name field is required.";
+      this.httpErrors.FirstName = "First name field is required.";
     }
 
     // Validate - Last Name
     if (this.userProfile.LastName.length <= 0) 
     {
       yesError = true;      
-      this.lastNameError = "Last name field is required.";
+      this.httpErrors.LastName = "Last name field is required.";
     }
 
     // Validate - Email
     if (this.userProfile.Email.length <= 0) 
     {
       yesError = true;
-      this.emailError = "Email field is required.";
+      this.httpErrors.Email = "Email field is required.";
     }
 
     if(yesError)
@@ -107,11 +113,12 @@ export class PersonalInfoComponent implements OnInit {
       (res) => {
         this.userProfile = res;
         this.showEditProfile = false;
+        this.stateService.SetSettingsUserProfile(res);
       }, 
 
       // Error
       (err: HttpErrorResponse) => {
-        this.emailError = err.error.errors.email;
+        this.httpErrors = new HttpErrors().fromJson(err.error.errors);
       }
 
     );
@@ -123,9 +130,7 @@ export class PersonalInfoComponent implements OnInit {
   doCancelEditProfile() 
   {
     // Clear Validation 
-    this.firstNameError = "";
-    this.lastNameError = "";
-    this.emailError = ""; 
+    this.httpErrors = new HttpErrors();
 
     // Reset values    
     this.userProfile = new Me().setFromObj(this.tmpUserProfile);
