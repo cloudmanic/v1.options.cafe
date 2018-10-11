@@ -57,7 +57,7 @@ export class StateService
   private accountHistoryList: BrokerEvent[];
 
   // Settings 
-  private settingsUserProfile: Me;
+  private settingsUserProfile: Me = new Me();
 
   // Emitters - Pushers
   public SiteSuccess = new EventEmitter<string>();

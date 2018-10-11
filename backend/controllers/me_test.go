@@ -16,6 +16,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
 	"github.com/nbio/st"
+	"golang.org/x/crypto/bcrypt"
 )
 
 //
@@ -106,13 +107,102 @@ func TestUpdateProfile01(t *testing.T) {
 	result := models.User{}
 	err := json.Unmarshal([]byte(w.Body.String()), &result)
 
-	// // Parse json that returned.
+	// Parse json that returned.
 	st.Expect(t, err, nil)
 	st.Expect(t, w.Code, 202)
 	st.Expect(t, result.Email, "spicer+unittest@options.cafe")
 
 	// Testing the json is best because we want to make sure something bad does not sneak in like a password.
 	st.Expect(t, w.Body.String(), `{"id":1,"first_name":"Mike","last_name":"Tester","email":"spicer+unittest@options.cafe","phone":"555-234-1234","address":"901 Brutscher Street, D112","city":"Newberg","state":"OR","zip":"97132","country":"USA","brokers":[],"google_sub_id":"","last_activity":"0001-01-01T00:00:00Z"}`)
+}
+
+//
+// TestResetPassword01
+//
+func TestResetPassword01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Set User
+	db.Exec("TRUNCATE TABLE users;")
+	db.Exec("TRUNCATE TABLE brokers;")
+	db.Exec("TRUNCATE TABLE broker_accounts;")
+	db.Create(&models.User{FirstName: "Rob", LastName: "Tester", Email: "spicer+robtester@options.cafe", Status: "Active", Password: "$2a$10$eJ4biSke/V5Id9DK1nb2ZeCrGjI2IMaSQ.vTpaDeRbo4kg77RdhiC"})
+
+	// Body data
+	var bodyStr = []byte(`{"current_password":"foobar","new_password":"abc123"}`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("PUT", "/api/v1/me/rest-password", bytes.NewBuffer(bodyStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.PUT("/api/v1/me/rest-password", c.ResetPassword)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Parse json that returned.
+	st.Expect(t, w.Code, 202)
+
+	// Validate new password
+	user, _ := db.GetUserById(uint(1))
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte("abc123"))
+	st.Expect(t, err, nil)
+
+}
+
+//
+// TestResetPassword02
+//
+func TestResetPassword02(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Set User
+	db.Exec("TRUNCATE TABLE users;")
+	db.Exec("TRUNCATE TABLE brokers;")
+	db.Exec("TRUNCATE TABLE broker_accounts;")
+	db.Create(&models.User{FirstName: "Rob", LastName: "Tester", Email: "spicer+robtester@options.cafe", Status: "Active", Password: "$2a$10$eJ4biSke/V5Id9DK1nb2ZeCrGjI2IMaSQ.vTpaDeRbo4kg77RdhiC"})
+
+	// Body data
+	var bodyStr = []byte(`{"current_password":"foobar","new_password":"abc"}`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("PUT", "/api/v1/me/rest-password", bytes.NewBuffer(bodyStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.PUT("/api/v1/me/rest-password", c.ResetPassword)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Parse json that returned.
+	st.Expect(t, w.Code, 400)
+	st.Expect(t, w.Body.String(), `{"error":"Please enter a password at least 6 chars long."}`)
 }
 
 /* End File */

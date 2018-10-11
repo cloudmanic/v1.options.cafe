@@ -7,8 +7,14 @@
 package controllers
 
 import (
+	"io/ioutil"
+	"net/http"
+
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
+	"github.com/tidwall/gjson"
+	"golang.org/x/crypto/bcrypt"
 )
 
 //
@@ -95,6 +101,62 @@ func (t *Controller) GetSubscription(c *gin.Context) {
 
 	// Return happy JSON
 	c.JSON(200, sub)
+}
+
+//
+// Reset the users password
+//
+func (t *Controller) ResetPassword(c *gin.Context) {
+
+	// Make sure the UserId is correct.
+	userId := c.MustGet("userId").(uint)
+
+	// Get the full user
+	user, err := t.DB.GetUserById(userId)
+
+	if t.RespondError(c, err, "User not found. Please contact help@options.cafe") {
+		return
+	}
+
+	// Parse json body
+	body, err := ioutil.ReadAll(c.Request.Body)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	newPass := gjson.Get(string(body), "new_password").String()
+	currentPass := gjson.Get(string(body), "current_password").String()
+
+	// Now that we know the user lets make sure the password that was posted in was at least 6 chars.
+	err = t.DB.ValidatePassword(newPass)
+
+	if err != nil {
+		services.BetterError(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Please enter a password at least 6 chars long."})
+		return
+	}
+
+	// Validate password here by comparing hashes nil means success
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(currentPass))
+
+	if err != nil {
+		services.BetterError(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Incorrect current password."})
+		return
+	}
+
+	// Change password
+	err = t.DB.ResetUserPassword(user.Id, newPass)
+
+	if err != nil {
+		services.BetterError(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to reset password."})
+		return
+	}
+
+	// Return happy
+	c.JSON(202, nil)
 }
 
 /* End File */

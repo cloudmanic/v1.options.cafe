@@ -33,6 +33,7 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		apiV1.GET("/me/profile", t.GetProfile)
 		apiV1.PUT("/me/profile", t.UpdateProfile)
 		apiV1.GET("/me/subscription", t.GetSubscription)
+		apiV1.PUT("/me/rest-password", t.ResetPassword)
 
 		// Orders
 		apiV1.POST("/orders", t.SubmitOrder)
