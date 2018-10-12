@@ -60,6 +60,13 @@ import { AccountSummaryComponent } from './reports/account-summary/account-summa
 import { BrokersComponent } from './settings/brokers/brokers.component';
 import { TradingComponent } from './settings/trading/trading.component';
 import { AccountComponent } from './settings/account/account.component';
+import { PersonalInfoComponent } from './settings/account/personal-info/personal-info.component';
+import { BillingHistoryComponent } from './settings/account/billing-history/billing-history.component';
+import { AccountDetailsComponent } from './settings/account/account-details/account-details.component';
+import { SocialComponent } from './settings/account/social/social.component';
+import { UpgradeComponent } from './settings/account/upgrade/upgrade.component';
+import { ExpiredComponent } from './settings/account/expired/expired.component';
+import { CreditCardComponent } from './settings/account/upgrade/credit-card/credit-card.component';
 
 // Trading
 import { IvrComponent } from './trading/dashboard/ivr/ivr.component';
@@ -79,10 +86,6 @@ import { DropdownSelectComponent } from './shared/dropdown-select/dropdown-selec
 import { AddEditComponent as ScreenerAddEditComponent } from './trading/screener/add-edit/add-edit.component';
 import { EquityComponent } from './trading/dashboard/positions/types/equity/equity.component';
 import { TradeEquityComponent } from './trade/trade-equity/trade-equity.component';
-import { PersonalInfoComponent } from './settings/account/personal-info/personal-info.component';
-import { BillingHistoryComponent } from './settings/account/billing-history/billing-history.component';
-import { AccountDetailsComponent } from './settings/account/account-details/account-details.component';
-import { SocialComponent } from './settings/account/social/social.component';
 
 @NgModule({
   declarations: [
@@ -141,6 +144,9 @@ import { SocialComponent } from './settings/account/social/social.component';
     BillingHistoryComponent,
     AccountDetailsComponent,
     SocialComponent,
+    UpgradeComponent,
+    ExpiredComponent,
+    CreditCardComponent,
   ],
   
   imports: [

@@ -69,7 +69,11 @@ export class StateService
   //
   constructor(private http: HttpClient, private router: Router) 
   {
+    // Ping server at start too
     this.PingServer();
+
+    // Ajax call to ping server every 10 seconds
+    setInterval(() => { this.PingServer(); }, 10000);
   } 
 
   //
@@ -79,47 +83,51 @@ export class StateService
   //
   PingServer()
   {
+    this.http.get(environment.app_server + '/api/v1/ping').subscribe(
+      // Success
+      data => {
 
-    // Ajax call to ping server every 10 seconds
-    setInterval(() => {
-
-      this.http.get(environment.app_server + '/api/v1/ping').subscribe(
-        // Success
-        data => {
-
-          if(data["status"] == "logout")
-          {
-            this.router.navigate(['/logout']);
-          }
-
-        },
-
-        // Error
-        (err: HttpErrorResponse) => {
-
-          if (err.error instanceof Error) 
-          {
-            // A client-side or network error occurred. Handle it accordingly.
-            console.log('An error occurred:', err.error);
-          } else 
-          {
-            // Log error
-            console.log(err.error.error);
-
-            // Access token mostly not good. 
-            // If the error is blank it often means the 
-            // server is down.
-            if(err.error.error && (err.error.error.length > 0)) 
-            {
-              this.router.navigate(['/logout']);
-            }
-          }
-
+        // Delinquent status - Means the person is not current on payment.
+        if (data["status"] == "delinquent") {
+          this.router.navigate(['/settings/account/upgrade']);
+          return
         }
 
-      );
+        // Expired status - Means the person's free trial has expired.
+        if (data["status"] == "expired") {
+          this.router.navigate(['/settings/account/expired']);
+          return
+        }
 
-    }, 10000);
+        // Logout status
+        if (data["status"] == "logout") {
+          this.router.navigate(['/logout']);
+          return
+        }
+
+      },
+
+      // Error
+      (err: HttpErrorResponse) => {
+
+        if (err.error instanceof Error) {
+          // A client-side or network error occurred. Handle it accordingly.
+          console.log('An error occurred:', err.error);
+        } else {
+          // Log error
+          console.log(err.error.error);
+
+          // Access token mostly not good. 
+          // If the error is blank it often means the 
+          // server is down.
+          if (err.error.error && (err.error.error.length > 0)) {
+            this.router.navigate(['/logout']);
+          }
+        }
+
+      }
+
+    );
 
   }
 

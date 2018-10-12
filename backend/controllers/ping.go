@@ -16,7 +16,27 @@ import (
 func (t *Controller) PingFromServer(c *gin.Context) {
 
 	// Make sure the UserId is correct.
-	//userId := c.MustGet("userId").(uint)
+	userId := c.MustGet("userId").(uint)
+
+	// Get the full user
+	user, err := t.DB.GetUserById(userId)
+
+	if err != nil {
+		c.JSON(200, gin.H{"status": "logout"})
+		return
+	}
+
+	// See if we are Delinquent
+	if user.Status == "Delinquent" {
+		c.JSON(200, gin.H{"status": "delinquent"})
+		return
+	}
+
+	// See if we are Expired
+	if user.Status == "Expired" {
+		c.JSON(200, gin.H{"status": "expired"})
+		return
+	}
 
 	// Return happy JSON
 	c.JSON(200, gin.H{"status": "ok"})

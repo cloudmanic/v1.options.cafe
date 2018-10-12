@@ -18,6 +18,9 @@ import { LayoutCoreComponent } from './layouts/core/core.component';
 import { AccountComponent } from './settings/account/account.component';
 import { TradingComponent } from './settings/trading/trading.component';
 import { BrokersComponent } from './settings/brokers/brokers.component';
+import { UpgradeComponent } from './settings/account/upgrade/upgrade.component';
+import { ExpiredComponent } from './settings/account/expired/expired.component';
+import { CreditCardComponent } from './settings/account/upgrade/credit-card/credit-card.component';
 
 // Backtest
 import { BacktestHomeComponent } from './backtest/home/home.component';
@@ -44,6 +47,11 @@ const appRoutes: Routes = [
   { path: 'forgot-password', component: AuthForgotPasswordComponent },   
   { path: 'reset-password', component: AuthResetPasswordComponent }, 
   
+  // Upgrade
+  { path: 'settings/account/upgrade', component: UpgradeComponent },
+  { path: 'settings/account/expired', component: ExpiredComponent },
+  { path: 'settings/account/upgrade/credit-card', component: CreditCardComponent },  
+
   // Core App
   { path: '', component: LayoutCoreComponent, children: [
     
