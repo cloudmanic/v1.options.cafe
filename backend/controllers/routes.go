@@ -34,6 +34,7 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		apiV1.PUT("/me/profile", t.UpdateProfile)
 		apiV1.GET("/me/subscription", t.GetSubscription)
 		apiV1.PUT("/me/rest-password", t.ResetPassword)
+		apiV1.PUT("/me/update-credit-card", t.UpdateCreditCard)
 
 		// Orders
 		apiV1.POST("/orders", t.SubmitOrder)

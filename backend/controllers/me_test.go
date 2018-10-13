@@ -247,4 +247,75 @@ func TestResetPassword03(t *testing.T) {
 	st.Expect(t, w.Body.String(), `{"error":"Incorrect current password."}`)
 }
 
+//
+// TestUpdateCreditCard01
+//
+func TestUpdateCreditCard01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Set User
+	db.Exec("TRUNCATE TABLE users;")
+
+	// Create a test user.
+	user := models.User{
+		FirstName: "Jane",
+		LastName:  "Unittester",
+		Email:     "jane+unittest@options.cafe",
+		Status:    "Trial",
+	}
+
+	// Insert user (create at stripe)
+	err := db.CreateNewUserWithStripe(user)
+	st.Expect(t, err, nil)
+
+	// Since we are testing we know the user is id 1
+	dbUser, err := db.GetUserById(1)
+	st.Expect(t, err, nil)
+
+	// Add a a credit card for testing we want to verify stripe only has one card at a time.
+	err = db.UpdateCreditCard(dbUser, "tok_amex")
+	st.Expect(t, err, nil)
+
+	// Body data
+	var bodyStr = []byte(`{"token":"tok_mastercard","coupon":"abc123"}`)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("PUT", "/api/v1/me/update-credit-card", bytes.NewBuffer(bodyStr))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.PUT("/api/v1/me/update-credit-card", c.UpdateCreditCard)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Parse json that returned.
+	st.Expect(t, w.Code, 202)
+
+	// Get subscription with stripe
+	sub, err := db.GetSubscriptionWithStripe(dbUser)
+	st.Expect(t, err, nil)
+
+	// All good?
+	st.Expect(t, sub.CardBrand, "MasterCard")
+	st.Expect(t, sub.CardLast4, "4444")
+	st.Expect(t, sub.CardExpMonth, 10)
+	st.Expect(t, sub.CardExpYear, 2019)
+
+	// Clean things up at stripe
+	db.DeleteUserWithStripe(dbUser)
+}
+
 /* End File */
