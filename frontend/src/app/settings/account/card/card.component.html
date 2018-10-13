@@ -1,0 +1,96 @@
+<form (submit)="getCreditCardToken()">
+  <div class="form__body">
+    <div class="form__image">
+      <img src="/images/temp/payments.png" alt="" />
+    </div>
+
+    <div class="form__row">
+      <label for="f_card-num">Card number</label>
+      <div class="form__controls">
+        <input type="text" class="field form__field" id="f_card-num" [(ngModel)]="form.Number" [ngModelOptions]="{standalone: true}" />
+      </div>
+    </div>
+
+    <label for="f_date">Expiration Date</label>
+    <div class="form__row form__row--secondary">
+      <div class="form__col form__col--size3">
+        <div class="form__controls">
+          <div class="select select--primary">
+            <select id="f_date" [(ngModel)]="form.ExpMonth" [ngModelOptions]="{standalone: true}">
+              <option value="1">January</option>
+              <option value="2">February</option>
+              <option value="3">March</option>
+              <option value="4">April</option>
+              <option value="5">May</option>
+              <option value="6">June</option>
+              <option value="7">July</option>
+              <option value="8">August</option>
+              <option value="9">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <span class="form__devider">/</span>
+
+      <div class="form__col form__col--size2">
+        <div class="form__controls">
+          <div class="select select--primary">
+            <select id="f_year" [(ngModel)]="form.ExpYear" [ngModelOptions]="{standalone: true}" >
+              <option value="2018">2018</option>
+              <option value="2019">2019</option>
+              <option value="2020">2020</option> 
+              <option value="2018">2021</option>
+              <option value="2019">2022</option>
+              <option value="2020">2023</option>  
+              <option value="2020">2024</option>  
+              <option value="2020">2025</option>  
+              <option value="2020">2026</option>  
+              <option value="2020">2027</option>                                                                                                  
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form__row form__row--teritary">
+      <div class="form__col">
+        <label for="f_cvc">CVC</label>
+
+        <div class="form__controls">
+          <input type="text" class="field form__field" id="f_cvc" [(ngModel)]="form.CVC" [ngModelOptions]="{standalone: true}" />
+        </div>
+      </div>
+
+      <div class="form__col">
+        <label for="f_zip-code">Zip Code</label>
+
+        <div class="form__controls">
+          <input type="text" class="field form__field" id="f_zip-code" [(ngModel)]="form.ZipCode" [ngModelOptions]="{standalone: true}"  />
+        </div>
+      </div>
+    </div>
+
+
+    <div class="form__row">
+
+      <a class="link-alt" (click)="doShowCoupon()" *ngIf="! showCouponField">Enter Coupon</a>
+
+      <label for="f_coupon" *ngIf="showCouponField">Coupon Code</label>
+
+      <div class="form__controls" *ngIf="showCouponField">
+        <input type="text" class="field form__field" id="f_coupon" [(ngModel)]="form.Coupon" [ngModelOptions]="{standalone: true}" />
+      </div>
+    </div>
+
+    <h6 class="form__hint form__hint--primary" *ngIf="couponMsg">{{ couponMsg }}</h6>
+    <h6 class="form__hint" *ngIf="errMsg">{{ errMsg }}</h6>
+  </div>
+
+  <div class="form__actions form__actions--primary">
+    <a (click)="doCancel()" class="link-alt">Cancel</a>
+    <button class="btn btn--pink" [attr.disabled]="btnDisabled ? '' : null">Save Credit Card</button>
+  </div>
+</form>

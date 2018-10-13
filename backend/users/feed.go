@@ -127,6 +127,11 @@ func (t *Base) DoUserFeed(user models.User) {
 			continue
 		}
 
+		// Skip over delinquent brokers
+		if row.Status == "Delinquent" {
+			continue
+		}
+
 		// Need an access token to continue
 		if len(row.AccessToken) <= 0 {
 			services.Critical("User Connection (Brokers) No Access Token Found : " + user.Email + " (" + row.Name + ")")

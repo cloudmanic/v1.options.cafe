@@ -64,6 +64,10 @@ func (t *Controller) DoStripeWebhook(c *gin.Context) {
 	case "customer.subscription.deleted":
 		t.StripeEventSubscriptionDeleted(user)
 
+	// invoice.payment_failed
+	case "invoice.payment_failed":
+		t.StripeEventPaymentFailed(user)
+
 	}
 
 	// Tell stripe all went well.
@@ -73,11 +77,34 @@ func (t *Controller) DoStripeWebhook(c *gin.Context) {
 // -------------------- Stripe Events --------------------------- //
 
 //
+// Stripe event : invoice.payment_failed
+//
+func (t *Controller) StripeEventPaymentFailed(user models.User) {
+
+	// See if we put this user in to a Delinquent or expired state.
+	if user.Status == "Trial" {
+		user.Status = "Expired"
+	} else {
+		user.Status = "Delinquent"
+	}
+
+	// Update the user's state
+	t.DB.UpdateUser(&user)
+
+	// Log event.
+	services.Info("Stripe Subscription Update State Changed To " + user.Status + " : " + user.Email)
+
+	// Tell slack about this.
+	go services.SlackNotify("#events", "Options Cafe User State Changed To "+user.Status+" : "+user.Email)
+}
+
+//
 // Stripe event : customer.subscription.deleted
 //
 func (t *Controller) StripeEventSubscriptionDeleted(user models.User) {
 
 	// Remove the subscription from the database.
+	user.Status = "Delinquent"
 	user.StripeSubscription = ""
 	t.DB.UpdateUser(&user)
 

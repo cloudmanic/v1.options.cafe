@@ -119,7 +119,7 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 	r.POST("/forgot-password", t.DoForgotPassword)
 
 	// Webhooks
-	r.GET("/webhooks/stripe", t.DoStripeWebhook)
+	r.POST("/webhooks/stripe", t.DoStripeWebhook)
 
 	// // Tradier Oauth
 	tr := &tradier.TradierAuth{DB: t.DB}

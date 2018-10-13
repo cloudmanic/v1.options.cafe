@@ -8,20 +8,30 @@
   <ul class="list-data">
     <li>
       <h5>Payment Plan</h5>
-
-      <h6>Plan Billed Monthly</h6>
+      <h6 *ngIf="userSubscription.BillingInterval == 'year'">Plan Billed Yearly</h6>
+      <h6 *ngIf="userSubscription.BillingInterval == 'month'">Plan Billed Monthly</h6>
     </li>
 
-    <li>
+    <li *ngIf="! userSubscription.CardBrand">
+      <h5>Payment Method</h5>
+      <div class="mt-5">
+        <a class="link red" (click)="doShowUpdateCreditCard()">Update Credit Card</a>
+      </div>
+    </li>
+
+    <li *ngIf="userSubscription.CardBrand">
       <h5>Payment Method</h5>
 
-      <h6>Visa ending in 8888, exp: 08/2028</h6>
+      <h6>
+        {{ userSubscription.CardBrand }} ending in {{ userSubscription.CardLast4 }}, 
+        exp: {{ userSubscription.CardExpireMonth }}/{{ userSubscription.CardExpireYear }}
+      </h6>
     </li>
 
     <li>
       <h5>Next Payment Due</h5>
 
-      <h6>$20.00 due on 11/10/2017</h6>
+      <h6>{{ userSubscription.Amount | currency }} due on {{ userSubscription.CurrentPeriodEnd | date:'shortDate' }}</h6>
     </li>
 
   </ul>
@@ -77,6 +87,31 @@
           </div>
         </div>
 
+      </div>
+    </div>
+  </div>
+
+</app-dialog>
+
+
+
+
+<app-dialog [(visible)]="showUpdateCreditCard">
+
+  <div class="popup-alt">
+    <div class="popup__inner popup__inner--size1">
+      <div class="article">
+        <div class="article__head">
+          <h6>Update Card</h6>
+        </div>
+
+        <div class="article__body article__body--primary">
+          <div class="form-info form-error">
+
+            <app-settings-account-card (onClose)="doCancelUpdateCreditCard($event)"></app-settings-account-card>
+          
+          </div>
+        </div>
       </div>
     </div>
   </div>

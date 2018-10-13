@@ -67,6 +67,7 @@ import { SocialComponent } from './settings/account/social/social.component';
 import { UpgradeComponent } from './settings/account/upgrade/upgrade.component';
 import { ExpiredComponent } from './settings/account/expired/expired.component';
 import { CreditCardComponent } from './settings/account/upgrade/credit-card/credit-card.component';
+import { CardComponent } from './settings/account/card/card.component';
 
 // Trading
 import { IvrComponent } from './trading/dashboard/ivr/ivr.component';
@@ -147,6 +148,7 @@ import { TradeEquityComponent } from './trade/trade-equity/trade-equity.componen
     UpgradeComponent,
     ExpiredComponent,
     CreditCardComponent,
+    CardComponent,
   ],
   
   imports: [

@@ -35,7 +35,7 @@ type User struct {
 	Zip                string    `sql:"not null" json:"zip"`
 	Country            string    `sql:"not null" json:"country"`
 	Admin              string    `sql:"not null;type:ENUM('Yes', 'No');default:'No'" json:"-"`
-	Status             string    `sql:"not null;type:ENUM('Active', 'Disable', 'Delinquent', 'Expired');default:'Active'" json:"-"`
+	Status             string    `sql:"not null;type:ENUM('Active', 'Disable', 'Delinquent', 'Expired', 'Trial');default:'Trial'" json:"-"`
 	Session            Session   `json:"-"`
 	Brokers            []Broker  `json:"brokers"`
 	StripeCustomer     string    `sql:"not null" json:"-"`
@@ -331,7 +331,7 @@ func (t *DB) CreateUserFromGoogle(first string, last string, email string, subId
 	var _last = template.HTMLEscapeString(last)
 
 	// Create new user
-	user := User{FirstName: _first, LastName: _last, Email: email, GoogleSubId: subId}
+	user := User{FirstName: _first, LastName: _last, Email: email, GoogleSubId: subId, Status: "Trial"}
 	t.Create(&user)
 
 	// Log user creation.
@@ -389,7 +389,7 @@ func (t *DB) CreateUser(first string, last string, email string, password string
 	var _first = template.HTMLEscapeString(first)
 	var _last = template.HTMLEscapeString(last)
 
-	user := User{FirstName: _first, LastName: _last, Email: email, Password: string(hash)}
+	user := User{FirstName: _first, LastName: _last, Email: email, Password: string(hash), Status: "Trial"}
 	t.Create(&user)
 
 	// Log user creation.

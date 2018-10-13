@@ -100,5 +100,6 @@
 iframe.grv-widget-tag { display: none !important; }
 iframe.grv-widget-app { display: block !important; }
 
+button:disabled { opacity: .3 }
 input[type="submit"]:disabled { opacity: .3 }
 .select-only-one:after { content: unset; }

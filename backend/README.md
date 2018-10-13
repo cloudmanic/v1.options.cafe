@@ -40,3 +40,19 @@ Some data needs to be imported to kick the application off. For example import a
 * We use Redis. On OSX you install it with `brew install redis`
 
 * OSX: `brew services list` | `brew services redis start` | `brew services restart redis`
+
+## User Status
+
+In the users table a user has a status. Here is a summary of what that means.
+'Active','Disable','Delinquent','Expired','Trial'
+
+* ```Active```: User is outside of the free trail. User has a valid credit card on file and it charges. This is the state we want all users in.
+
+* ```Disabled```: User has been disabled by an admin. This does not happen much. Mainly used if a user is abusing the system. 
+
+* ```Delinquent```: User is outside of the free trail, has added a credit card in the past, but for some reason we can't charge that card at the time of subscription renewal (monthly or yearly). Background feeds disable. Users are redirected to this url `/settings/account/upgrade`. Their strips subscriotion has been deleted. They have an customer profile in strope but not a subscription. 
+
+* ```Expired```: User's free trail has come to an end and they have not added a credit card yet to charge. Background feeds continue to work but the UI blocks the user from access the application. They are redirected to this page `/settings/account/expired`.
+
+* ```Trial```: User is currently on the free trial every new user gets. They have full access to everything.
+

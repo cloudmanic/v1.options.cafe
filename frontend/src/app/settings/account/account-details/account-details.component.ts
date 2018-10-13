@@ -6,7 +6,7 @@
 
 import { Me } from '../../../models/me';
 import { Subscription } from '../../../models/subscription';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, } from '@angular/core';
 import { MeService } from '../../../providers/http/me.service';
 import { StateService } from '../../../providers/state/state.service';
 
@@ -19,8 +19,9 @@ import { StateService } from '../../../providers/state/state.service';
 export class AccountDetailsComponent implements OnInit 
 {
   hasPlan: boolean = false;
+  showUpdateCreditCard: boolean = false;
   showCloseDownAccount: boolean = false;
-  userSubscription: Subscription = new Subscription(); 
+  userSubscription: Subscription = new Subscription();
 
   //
   // Construct.
@@ -62,8 +63,25 @@ export class AccountDetailsComponent implements OnInit
   //
   // Close cancel account overlay.
   //
-  doCancelAccount() {
+  doCancelAccount() 
+  {
     this.showCloseDownAccount = false;
+  }
+
+  //
+  // Show Credit Card overlay.
+  //
+  doShowUpdateCreditCard() 
+  {
+    this.showUpdateCreditCard = true;
+  }
+
+  //
+  // Cancel Credit Card overlay.
+  //
+  doCancelUpdateCreditCard(agreed: boolean)
+  {
+    this.showUpdateCreditCard = false;
   }  
 }
 
