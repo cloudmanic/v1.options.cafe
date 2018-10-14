@@ -42,6 +42,7 @@ type User struct {
 	StripeSubscription string    `sql:"not null" json:"-"`
 	GoogleSubId        string    `sql:"not null" json:"google_sub_id"`
 	LastActivity       time.Time `json:"last_activity"`
+	TrialExpire        time.Time `json:"-"`
 }
 
 type UserSubscription struct {
@@ -353,13 +354,6 @@ func (t *DB) CreateUserFromGoogle(first string, last string, email string, subId
 	// Add the session to the user object.
 	user.Session = session
 
-	// Talk to stripe and setup the account.
-	err = t.CreateNewUserWithStripe(user)
-
-	if err != nil {
-		return User{}, err
-	}
-
 	// Do post register stuff
 	t.doPostUserRegisterStuff(user)
 
@@ -411,13 +405,6 @@ func (t *DB) CreateUser(first string, last string, email string, password string
 	// Add the session to the user object.
 	user.Session = session
 
-	// Talk to stripe and setup the account.
-	err = t.CreateNewUserWithStripe(user)
-
-	if err != nil {
-		return User{}, err
-	}
-
 	// Do post register stuff
 	t.doPostUserRegisterStuff(user)
 
@@ -431,7 +418,7 @@ func (t *DB) CreateUser(first string, last string, email string, password string
 //
 // Create new user with strip.
 //
-func (t *DB) CreateNewUserWithStripe(user User) error {
+func (t *DB) CreateNewUserWithStripe(user User, plan string, token string, coupon string) error {
 
 	if len(os.Getenv("STRIPE_SECRET_KEY")) > 0 {
 
@@ -443,8 +430,30 @@ func (t *DB) CreateNewUserWithStripe(user User) error {
 			return err
 		}
 
+		// Update the user to include subscription and customer ids from strip.
+		user.StripeCustomer = custId
+		t.Save(&user)
+
+		// Add the credit card to stripe
+		err = t.UpdateCreditCard(user, token)
+
+		if err != nil {
+			services.BetterError(err)
+			return err
+		}
+
+		// Do we have a coupon code?
+		if len(coupon) > 0 {
+			services.Info("Coupon code passed with subscribe token: " + coupon + " - " + user.Email)
+			err = t.ApplyCoupon(user, coupon)
+
+			if err != nil {
+				services.BetterError(err)
+			}
+		}
+
 		// Subscribe this user to our default Stripe plan.
-		subId, err := services.StripeAddSubscription(custId, os.Getenv("STRIPE_DEFAULT_PLAN"))
+		subId, err := services.StripeAddSubscription(custId, plan)
 
 		if err != nil {
 			services.Error(err, "CreateNewUserWithStripe - Unable to create a subscription at services. - "+user.Email)
@@ -452,7 +461,6 @@ func (t *DB) CreateNewUserWithStripe(user User) error {
 		}
 
 		// Update the user to include subscription and customer ids from strip.
-		user.StripeCustomer = custId
 		user.StripeSubscription = subId
 		t.Save(&user)
 

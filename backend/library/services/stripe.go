@@ -238,8 +238,7 @@ func StripeAddSubscription(custId string, plan string) (string, error) {
 
 	// Setup the customer object
 	subParams := &stripe.SubscriptionParams{
-		Customer:        stripe.String(custId),
-		TrialPeriodDays: stripe.Int64(7),
+		Customer: stripe.String(custId),
 		Items: []*stripe.SubscriptionItemsParams{
 			{
 				Plan: stripe.String(plan),

@@ -18,6 +18,45 @@ import (
 )
 
 //
+// Subscribe to a plan.
+//
+func (t *Controller) SubscribeUser(c *gin.Context) {
+
+	// Make sure the UserId is correct.
+	userId := c.MustGet("userId").(uint)
+
+	// Get the full user
+	user, err := t.DB.GetUserById(userId)
+
+	if t.RespondError(c, err, "User not found. Please contact help@options.cafe") {
+		return
+	}
+
+	// Parse json body
+	body, err := ioutil.ReadAll(c.Request.Body)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Read data from POST request.
+	plan := gjson.Get(string(body), "plan").String()
+	token := gjson.Get(string(body), "token").String()
+	coupon := gjson.Get(string(body), "coupon").String()
+
+	// Talk to stripe and setup the account.
+	err = t.DB.CreateNewUserWithStripe(user, plan, token, coupon)
+
+	if t.RespondError(c, err, "Unable to upgrade your account. Please contact help@options.cafe") {
+		return
+	}
+
+	// Return happy
+	c.JSON(202, nil)
+
+}
+
+//
 // Verify coupon
 //
 func (t *Controller) VerifyCoupon(c *gin.Context) {
@@ -121,12 +160,17 @@ func (t *Controller) UpdateCreditCard(c *gin.Context) {
 		return
 	}
 
-	// Read data from POST request.
+	// Do we have a coupon code?
 	couponCode := gjson.Get(string(body), "coupon_code").String()
 
-	// Add the credit card to stripe
-	err = t.DB.ApplyCoupon(user, couponCode)
-	services.BetterError(err)
+	if len(couponCode) > 0 {
+		services.Info("Coupon code passed with credit card token: " + couponCode + " - " + user.Email)
+		err = t.DB.ApplyCoupon(user, couponCode)
+
+		if err != nil {
+			services.BetterError(err)
+		}
+	}
 
 	// Return happy
 	c.JSON(202, nil)
@@ -207,11 +251,26 @@ func (t *Controller) GetSubscription(c *gin.Context) {
 		return
 	}
 
-	// Get subscription with stripe
-	sub, err := t.DB.GetSubscriptionWithStripe(user)
+	// Build a default subscription
+	sub := models.UserSubscription{
+		TrialDays:  7,
+		Status:     "trialing",
+		TrialStart: user.CreatedAt,
+		TrialEnd:   user.TrialExpire,
+	}
 
-	if t.RespondError(c, err, "Subscription not found. Please contact help@options.cafe") {
-		return
+	// See if we have a subscription
+	if len(user.StripeSubscription) > 0 {
+
+		// Get subscription with stripe
+		sub2, err := t.DB.GetSubscriptionWithStripe(user)
+
+		if t.RespondError(c, err, "Subscription not found. Please contact help@options.cafe") {
+			return
+		}
+
+		sub = sub2
+
 	}
 
 	// Return happy JSON

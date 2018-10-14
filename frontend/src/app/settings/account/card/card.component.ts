@@ -8,6 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Coupon } from '../../../models/coupon';
 import { MeService } from '../../../providers/http/me.service';
+import { StateService } from '../../../providers/state/state.service';
 
 declare var Stripe: any;
 
@@ -34,7 +35,7 @@ export class CardComponent implements OnInit
   //
   // Construct.
   //
-  constructor(private meService: MeService) { }
+  constructor(private stateService: StateService, private meService: MeService) { }
 
   // 
   // NG Init.
@@ -45,7 +46,8 @@ export class CardComponent implements OnInit
     this.form.CVC = '123';
     this.form.ExpMonth = '12';
     this.form.ExpYear = '2019';
-    this.form.ZipCode = '97132';               
+    this.form.ZipCode = '97132';
+    this.form.Coupon = 'Go7s5ivW';               
   }
 
   //
@@ -115,10 +117,23 @@ export class CardComponent implements OnInit
         return;
       }
 
-      // Clear credit card data.
-      this.form = new CreditCardForm();
-      this.form.ExpMonth = '1';
-      this.form.ExpYear = '2020';
+      // Send the token to the server
+      this.meService.updateCreditCard(response.id, this.form.Coupon).subscribe((res) => {
+
+        // Close overlay
+        this.showOverlay = false;
+        this.onClose.emit(false); 
+
+        // Show success notice
+        this.stateService.SiteSuccess.emit("Your credit card has been successfully updated.");
+
+        // Clear credit card data.
+        this.form = new CreditCardForm();
+        this.form.ExpMonth = '1';
+        this.form.ExpYear = '2020';  
+
+      });
+
     });
   }
 

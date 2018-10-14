@@ -102,7 +102,20 @@ export class MeService
 
     return this.http.post<boolean>(environment.app_server + '/api/v1/me/apply-coupon', post)
       .map((data) => { return true; });
-  }           
+  }
+
+  //
+  // Update credit card.
+  //
+  updateCreditCard(token: string, coupon: string): Observable<boolean> {
+    let post = {
+      token: token,
+      coupon_code: coupon 
+    }
+
+    return this.http.put<boolean>(environment.app_server + '/api/v1/me/update-credit-card', post)
+      .map((data) => { return true; });
+  }             
 }
 
 /* End File */

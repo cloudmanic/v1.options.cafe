@@ -8,6 +8,7 @@ package users
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/feed"
@@ -32,6 +33,33 @@ func (t *Base) StartFeeds() {
 
 	// Listen for user actions
 	go t.ListenForUserActions()
+
+	// Expire Trials
+	go t.DoExpireTrails()
+}
+
+//
+// Expire users from Trials
+func (t *Base) DoExpireTrails() {
+
+	for {
+
+		users := []models.User{}
+		t.DB.New().Where("trial_expire <= ? AND status = ? AND stripe_subscription = ?", time.Now(), "Trial", "").Find(&users)
+
+		for _, row := range users {
+
+			row.Status = "Expired"
+			t.DB.New().Save(&row)
+			services.Info("Free trial has just expired : " + row.Email)
+			go services.SlackNotify("#events", "New Options Cafe User Free Trial Expired : "+row.Email)
+
+		}
+
+		// Sleep for 60 second
+		time.Sleep(time.Second * 60)
+	}
+
 }
 
 //

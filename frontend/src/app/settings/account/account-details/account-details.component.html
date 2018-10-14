@@ -3,37 +3,35 @@
   <a class="btn" *ngIf="userSubscription.Status != 'trialing'">Change</a>
 </div>
 
-<div class="article__body" *ngIf="userSubscription.Status != 'trialing'">
+<div class="article__body" *ngIf="userSubscription.Status">
 
   <ul class="list-data">
     <li>
       <h5>Payment Plan</h5>
-      <h6 *ngIf="userSubscription.BillingInterval == 'year'">Plan Billed Yearly</h6>
-      <h6 *ngIf="userSubscription.BillingInterval == 'month'">Plan Billed Monthly</h6>
+      <h6 *ngIf="userSubscription.Status == 'trialing'" >Free Trial until {{ userSubscription.TrialEnd | date:'shortDate' }}</h6>
+      <h6 *ngIf="(userSubscription.BillingInterval == 'year') && (userSubscription.Status != 'trialing')">Plan Billed Yearly</h6>
+      <h6 *ngIf="(userSubscription.BillingInterval == 'month') && (userSubscription.Status != 'trialing')">Plan Billed Monthly</h6>
     </li>
 
-    <li *ngIf="! userSubscription.CardBrand">
-      <h5>Payment Method</h5>
-      <div class="mt-5">
-        <a class="link red" (click)="doShowUpdateCreditCard()">Update Credit Card</a>
-      </div>
-    </li>
-
-    <li *ngIf="userSubscription.CardBrand">
+    <li *ngIf="(userSubscription.CardBrand.length > 0)">
       <h5>Payment Method</h5>
 
-      <h6>
+      <h6 *ngIf="userSubscription.CardBrand.length > 0">
         {{ userSubscription.CardBrand }} ending in {{ userSubscription.CardLast4 }}, 
         exp: {{ userSubscription.CardExpireMonth }}/{{ userSubscription.CardExpireYear }}
       </h6>
+
+      <div class="mt-5">
+        <a class="link red" (click)="doShowUpdateCreditCard()">Update Credit Card</a>
+      </div>      
     </li>
 
-    <li *ngIf="userSubscription.CouponCode && (userSubscription.CouponDuration == 'forever')">
+    <li *ngIf="(userSubscription.CouponCode.length > 0) && (userSubscription.CouponDuration == 'forever')">
       <h5>Coupon</h5>
-      <h6 *ngIf="userSubscription.CouponPercentOff">{{ userSubscription.CouponPercentOff }}% Off Your Subscription</h6>     
+      <h6>{{ userSubscription.CouponPercentOff }}% Off Your Subscription</h6>     
     </li>
 
-    <li>
+    <li *ngIf="(userSubscription.Status != 'trialing')">
       <h5>Next Payment Due</h5>
 
       <h6>{{ userSubscription.Amount | currency }} due on {{ userSubscription.CurrentPeriodEnd | date:'shortDate' }}</h6>
@@ -41,33 +39,18 @@
 
   </ul>
 
-  <div class="article__actions article__actions--primary">
-    <a class="link red" (click)="cancelAccount()">Cancel Your Account</a>
-  </div>
-</div>
-
-
-
-
-<div class="article__body" *ngIf="userSubscription.Status == 'trialing'">
-  <ul class="list-data">
-    <li>
-      <h5>Payment Plan</h5>
-
-      <h6>Free Trial until {{ userSubscription.TrialEnd | date:'shortDate' }}</h6>
-    </li>
-  </ul><!-- /.list-data -->
-
-  <div class="article__actions-alt">
+  <div class="article__actions-alt" *ngIf="userSubscription.CardBrand.length <= 0">
     <a href="#" class="btn btn--size1">Upgrade To Full Account</a>
 
     <h6 class="title-arrow">Enjoying Options Cafe? Upgrade now!</h6><!-- /.title-arrow -->
-  </div><!-- /.article__actions-alt -->
+  </div>  
 
   <div class="article__actions article__actions--primary">
     <a class="link red" (click)="cancelAccount()">Cancel Your Account</a>
   </div>
 </div>
+
+
 
 
 <app-dialog [(visible)]="showCloseDownAccount">

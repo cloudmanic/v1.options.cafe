@@ -89,6 +89,7 @@ type Datastore interface {
 	ApplyCoupon(user User, couponCode string) error
 	UpdateCreditCard(user User, stripeToken string) error
 	GetSubscriptionWithStripe(user User) (UserSubscription, error)
+	CreateNewUserWithStripe(user User, plan string, token string, coupon string) error
 	ValidateCreateUser(first string, last string, email string, googleAuth bool) error
 	LoginUserById(id uint, appId uint, userAgent string, ipAddress string) (User, error)
 	LoginUserByEmailPass(email string, password string, appId uint, userAgent string, ipAddress string) (User, error)
