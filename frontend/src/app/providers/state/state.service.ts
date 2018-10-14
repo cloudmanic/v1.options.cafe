@@ -77,76 +77,6 @@ export class StateService
   } 
 
   //
-  // Ping to make sure our access token is still good.
-  // If not redirect back to login. Also the server
-  // uses this as an opportunity to collect some stats.
-  //
-  PingServer()
-  {
-    this.http.get(environment.app_server + '/api/v1/ping').subscribe(
-      // Success
-      data => {
-
-        // We do not redirect from - /settings/account/expired
-        if (window.location.pathname == "/settings/account/expired") {
-          return;
-        }
-
-        // We do not redirect from - /settings/account/upgrade
-        if (window.location.pathname == "/settings/account/upgrade") {
-          return;
-        }
-
-        // We do not redirect from - /settings/account/upgrade/credit-card
-        if (window.location.pathname == "/settings/account/upgrade/credit-card") {
-          return;
-        }
-
-        // Delinquent status - Means the person is not current on payment.
-        if (data["status"] == "delinquent") {
-          this.router.navigate(['/settings/account/upgrade']);
-          return;
-        }
-
-        // Expired status - Means the person's free trial has expired.
-        if (data["status"] == "expired") {
-          this.router.navigate(['/settings/account/expired']);
-          return;
-        }
-
-        // Logout status
-        if (data["status"] == "logout") {
-          this.router.navigate(['/logout']);
-          return;
-        }
-
-      },
-
-      // Error
-      (err: HttpErrorResponse) => {
-
-        if (err.error instanceof Error) {
-          // A client-side or network error occurred. Handle it accordingly.
-          console.log('An error occurred:', err.error);
-        } else {
-          // Log error
-          console.log(err.error.error);
-
-          // Access token mostly not good. 
-          // If the error is blank it often means the 
-          // server is down.
-          if (err.error.error && (err.error.error.length > 0)) {
-            this.router.navigate(['/logout']);
-          }
-        }
-
-      }
-
-    );
-
-  }
-
-  //
   // Set settingsUserProfile
   //
   SetSettingsUserProfile(data: Me) {
@@ -434,6 +364,122 @@ export class StateService
   GetActiveBrokerAccount() : BrokerAccount {
     return this.activeBrokerAccount
   } 
+
+  //
+  // Ping to make sure our access token is still good.
+  // If not redirect back to login. Also the server
+  // uses this as an opportunity to collect some stats.
+  //
+  PingServer() {
+    this.http.get(environment.app_server + '/api/v1/ping').subscribe(
+      // Success
+      data => {
+
+        // We do not redirect from - /settings/account/expired
+        if (window.location.pathname == "/settings/account/expired") {
+          return;
+        }
+
+        // We do not redirect from - /settings/account/upgrade
+        if (window.location.pathname == "/settings/account/upgrade") {
+          return;
+        }
+
+        // We do not redirect from - /settings/account/upgrade/credit-card
+        if (window.location.pathname == "/settings/account/upgrade/credit-card") {
+          return;
+        }
+
+        // We do not redirect from - /login
+        if (window.location.pathname == "/login") {
+          return;
+        }
+
+
+        // We do not redirect from - /register
+        if (window.location.pathname == "/register") {
+          return;
+        }
+
+        // We do not redirect from - /forgot-password
+        if (window.location.pathname == "/forgot-password") {
+          return;
+        }
+
+        // Delinquent status - Means the person is not current on payment.
+        if (data["status"] == "delinquent") {
+          this.router.navigate(['/settings/account/upgrade']);
+          return;
+        }
+
+        // Expired status - Means the person's free trial has expired.
+        if (data["status"] == "expired") {
+          this.router.navigate(['/settings/account/expired']);
+          return;
+        }
+
+        // Logout status
+        if (data["status"] == "logout") {
+          this.router.navigate(['/logout']);
+          return;
+        }
+
+      },
+
+      // Error
+      (err: HttpErrorResponse) => {
+
+        // We do not redirect from - /settings/account/expired
+        if (window.location.pathname == "/settings/account/expired") {
+          return;
+        }
+
+        // We do not redirect from - /settings/account/upgrade
+        if (window.location.pathname == "/settings/account/upgrade") {
+          return;
+        }
+
+        // We do not redirect from - /settings/account/upgrade/credit-card
+        if (window.location.pathname == "/settings/account/upgrade/credit-card") {
+          return;
+        }
+
+        // We do not redirect from - /login
+        if (window.location.pathname == "/login") {
+          return;
+        }
+
+
+        // We do not redirect from - /register
+        if (window.location.pathname == "/register") {
+          return;
+        }
+
+        // We do not redirect from - /forgot-password
+        if (window.location.pathname == "/forgot-password") {
+          return;
+        }
+
+        if (err.error instanceof Error) {
+          // A client-side or network error occurred. Handle it accordingly.
+          console.log('An error occurred:', err.error);
+        } else {
+          // Log error
+          console.log(err.error.error);
+
+          // Access token mostly not good. 
+          // If the error is blank it often means the 
+          // server is down.
+          if (err.error.error && (err.error.error.length > 0)) {
+            this.router.navigate(['/logout']);
+          }
+        }
+
+      }
+
+    );
+
+  }  
 }
 
 /* End File */

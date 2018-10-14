@@ -15,11 +15,39 @@ import (
 	"strconv"
 
 	"github.com/stripe/stripe-go"
+	"github.com/stripe/stripe-go/balance"
 	"github.com/stripe/stripe-go/card"
 	"github.com/stripe/stripe-go/coupon"
 	"github.com/stripe/stripe-go/customer"
 	"github.com/stripe/stripe-go/sub"
 )
+
+//
+// Get one transaction balance.
+//
+func StripeGetBalanceTransaction(id string) (*stripe.BalanceTransaction, error) {
+
+	// Make sure we have a STRIPE_SECRET_KEY
+	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
+		Critical("No STRIPE_SECRET_KEY found in StripeGetBalanceTransaction")
+		return nil, errors.New("No STRIPE_SECRET_KEY found in StripeGetBalanceTransaction")
+	}
+
+	// Add Stripe Key
+	stripe.Key = os.Getenv("STRIPE_SECRET_KEY")
+
+	// Get the transaction
+	bt, err := balance.GetBalanceTransaction(id, nil)
+
+	if err != nil {
+		BetterError(errors.New("StripeGetBalanceTransaction : Unable to get a transaction balance. " + id + " (" + err.Error() + ")"))
+		return nil, err
+	}
+
+	// Return happy
+	return bt, nil
+
+}
 
 //
 // Apply a coupon to a Subscription

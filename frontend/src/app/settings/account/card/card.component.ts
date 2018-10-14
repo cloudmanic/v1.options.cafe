@@ -10,6 +10,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Coupon } from '../../../models/coupon';
 import { MeService } from '../../../providers/http/me.service';
 import { StateService } from '../../../providers/state/state.service';
+import { environment } from '../../../../environments/environment';
 
 declare var Stripe: any;
 
@@ -38,7 +39,11 @@ export class CardComponent implements OnInit
   //
   // Construct.
   //
-  constructor(private stateService: StateService, private meService: MeService, private router: Router) { }
+  constructor(private stateService: StateService, private meService: MeService, private router: Router) 
+  { 
+    // Set stripe key
+    Stripe.setPublishableKey(environment.stripe_pub_key);
+  }
 
   // 
   // NG Init.
@@ -218,12 +223,12 @@ export class CardComponent implements OnInit
 
 class CreditCardForm 
 {
-  Number: string,
-  CVC: string,
-  ExpMonth: string,
-  ExpYear: string,
-  ZipCode: string,
-  Coupon: string
+  Number: string;
+  CVC: string;
+  ExpMonth: string;
+  ExpYear: string;
+  ZipCode: string;
+  Coupon: string;
 }
 
 /* End File */

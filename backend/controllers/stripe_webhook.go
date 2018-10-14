@@ -7,6 +7,7 @@
 package controllers
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -68,6 +69,10 @@ func (t *Controller) DoStripeWebhook(c *gin.Context) {
 	case "invoice.payment_failed":
 		t.StripeEventPaymentFailed(user)
 
+	// charge.succeeded
+	case "charge.succeeded":
+		t.StripeEventChargeSucceeded(user, event.GetObjectValue("balance_transaction"))
+
 	}
 
 	// Tell stripe all went well.
@@ -77,16 +82,41 @@ func (t *Controller) DoStripeWebhook(c *gin.Context) {
 // -------------------- Stripe Events --------------------------- //
 
 //
+// Stripe event : charge.succeeded
+//
+func (t *Controller) StripeEventChargeSucceeded(user models.User, balanceTransaction string) {
+
+	// Just make sure the user is in Active state
+	user.Status = "Active"
+
+	// Update the user's state
+	t.DB.UpdateUser(&user)
+
+	// Log event.
+	services.Info("Stripe Subscription Update State Changed To " + user.Status + " : " + user.Email)
+
+	// Get the amount we received and fee. This is something we could later send into Skyclerk
+	tb, err := services.StripeGetBalanceTransaction(balanceTransaction)
+
+	if err != nil {
+		services.BetterError(err)
+		return
+	}
+
+	// Log BalanceTransaction.
+	fee := float32(float32(tb.Fee) / 100)
+	amount := float32(float32(tb.Amount) / 100)
+
+	services.Info("Stripe Payment Received From " + user.Email + ": Amount $" + fmt.Sprintf("%f", amount) + " Fee: $" + fmt.Sprintf("%f", fee))
+}
+
+//
 // Stripe event : invoice.payment_failed
 //
 func (t *Controller) StripeEventPaymentFailed(user models.User) {
 
-	// See if we put this user in to a Delinquent or expired state.
-	if user.Status == "Trial" {
-		user.Status = "Expired"
-	} else {
-		user.Status = "Delinquent"
-	}
+	// Delinquent means they are past due.
+	user.Status = "Delinquent"
 
 	// Update the user's state
 	t.DB.UpdateUser(&user)

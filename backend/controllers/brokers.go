@@ -16,6 +16,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
@@ -92,6 +93,17 @@ func (t *Controller) CreateBroker(c *gin.Context) {
 	o.Name = name
 	o.Status = "Disabled"
 	o.DisplayName = displayName
+
+	// Get the full user
+	user, err := t.DB.GetUserById(userId)
+
+	if t.RespondError(c, err, "User not found. Please contact help@options.cafe") {
+		return
+	}
+
+	// Update Sendy with this new fact.
+	go services.SendyUnsubscribe("no-brokers", user.Email)
+	go services.SendySubscribe("subscribers", user.Email, user.FirstName, user.LastName, "No", name, "")
 
 	// Create Screen
 	err = t.DB.CreateNewRecord(&o, models.InsertParam{})

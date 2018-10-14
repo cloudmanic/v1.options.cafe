@@ -356,7 +356,7 @@ func (t *DB) CreateUserFromGoogle(first string, last string, email string, subId
 	user.Session = session
 
 	// Do post register stuff
-	t.doPostUserRegisterStuff(user)
+	t.doPostUserRegisterStuff(user, ipAddress)
 
 	// Return the user.
 	return user, nil
@@ -411,7 +411,7 @@ func (t *DB) CreateUser(first string, last string, email string, password string
 	user.Session = session
 
 	// Do post register stuff
-	t.doPostUserRegisterStuff(user)
+	t.doPostUserRegisterStuff(user, ipAddress)
 
 	// Return the user.
 	return user, nil
@@ -427,12 +427,21 @@ func (t *DB) CreateNewUserWithStripe(user User, plan string, token string, coupo
 
 	if len(os.Getenv("STRIPE_SECRET_KEY")) > 0 {
 
-		// Subscribe the new customer to services.
-		custId, err := services.StripeAddCustomer(user.FirstName, user.LastName, user.Email, int(user.Id))
+		// First lets see if we have a customer with stripe
+		custId := user.StripeCustomer
 
-		if err != nil {
-			services.Error(err, "CreateNewUserWithStripe - Unable to create a customer account at services. - "+user.Email)
-			return err
+		if len(user.StripeCustomer) <= 0 {
+
+			// Subscribe the new customer to services.
+			custId2, err := services.StripeAddCustomer(user.FirstName, user.LastName, user.Email, int(user.Id))
+
+			if err != nil {
+				services.Error(err, "CreateNewUserWithStripe - Unable to create a customer account at services. - "+user.Email)
+				return err
+			}
+
+			custId = custId2
+
 		}
 
 		// Update the user to include subscription and customer ids from strip.
@@ -441,7 +450,7 @@ func (t *DB) CreateNewUserWithStripe(user User, plan string, token string, coupo
 
 		// Add the credit card to stripe
 		if len(token) > 0 {
-			err = t.UpdateCreditCard(user, token)
+			err := t.UpdateCreditCard(user, token)
 
 			if err != nil {
 				services.BetterError(err)
@@ -450,17 +459,28 @@ func (t *DB) CreateNewUserWithStripe(user User, plan string, token string, coupo
 		}
 
 		// Subscribe this user to our default Stripe plan.
-		subId, err := services.StripeAddSubscription(custId, plan, coupon)
+		subId := user.StripeSubscription
 
-		if err != nil {
-			services.Error(err, "CreateNewUserWithStripe - Unable to create a subscription at services. - "+user.Email)
-			return err
+		if len(user.StripeSubscription) <= 0 {
+
+			subId2, err := services.StripeAddSubscription(custId, plan, coupon)
+
+			if err != nil {
+				services.Error(err, "CreateNewUserWithStripe - Unable to create a subscription at services. - "+user.Email)
+				return err
+			}
+
+			subId = subId2
+
 		}
 
 		// Update the user to include subscription and customer ids from strip.
 		user.Status = "Active"
 		user.StripeSubscription = subId
 		t.Save(&user)
+
+		// Update Sendy with this new fact.
+		go services.SendySubscribe("subscribers", user.Email, user.FirstName, user.LastName, "Yes", "", "")
 
 	} else {
 
@@ -643,11 +663,11 @@ func (t *DB) GetSubscriptionWithStripe(user User) (UserSubscription, error) {
 //
 // Do post user register stuff.
 //
-func (t *DB) doPostUserRegisterStuff(user User) {
+func (t *DB) doPostUserRegisterStuff(user User, ipAddress string) {
 
 	// Subscribe new user to mailing lists.
-	go services.SendySubscribe("no-brokers", user.Email, user.FirstName, user.LastName)
-	go services.SendySubscribe("subscribers", user.Email, user.FirstName, user.LastName)
+	go services.SendySubscribe("no-brokers", user.Email, user.FirstName, user.LastName, "No", "", ipAddress)
+	go services.SendySubscribe("subscribers", user.Email, user.FirstName, user.LastName, "No", "", ipAddress)
 
 	// Tell slack about this.
 	go services.SlackNotify("#events", "New Options Cafe User Account : "+user.Email)

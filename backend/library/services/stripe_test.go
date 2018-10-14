@@ -15,6 +15,26 @@ import (
 )
 
 //
+// Test getting a BalanceTransaction
+//
+func TestGetBalanceTransaction01(t *testing.T) {
+
+	// We comment this out because "txn_1DLGzaKah1jS67deeMUpKcBG" might not be reliable.
+	// We could do better testing like create a charge and then grab the Balance transaction
+
+	// // Load .env file
+	// err := godotenv.Load("../../.env")
+
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// // Get transaction balance
+	// tb, err := StripeGetBalanceTransaction("txn_1DLGzaKah1jS67deeMUpKcBG")
+	// st.Expect(t, err, nil)
+}
+
+//
 // Test - Apply Coupon
 //
 func TestApplyCoupon01(t *testing.T) {
@@ -45,7 +65,7 @@ func TestApplyCoupon01(t *testing.T) {
 	st.Expect(t, err, nil)
 
 	// Add a customer to a subscription
-	subId, err := StripeAddSubscription(customerId, os.Getenv("STRIPE_DEFAULT_PLAN"))
+	subId, err := StripeAddSubscription(customerId, os.Getenv("STRIPE_DEFAULT_PLAN"), "")
 	st.Expect(t, err, nil)
 
 	// Apply the coupon to the subscription

@@ -23,8 +23,8 @@ import (
 //
 func (t *Base) StartFeeds() {
 
-	// Get all active users
-	users := t.DB.GetAllActiveUsers()
+	// Get all users (regardless of status)
+	users := t.DB.GetAllUsers()
 
 	// Loop through the users
 	for i := range users {
