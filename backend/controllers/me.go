@@ -18,6 +18,42 @@ import (
 )
 
 //
+// Apply a coupon (discount) to the account.
+//
+func (t *Controller) ApplyCoupon(c *gin.Context) {
+
+	// Make sure the UserId is correct.
+	userId := c.MustGet("userId").(uint)
+
+	// Get the full user
+	user, err := t.DB.GetUserById(userId)
+
+	if t.RespondError(c, err, "User not found. Please contact help@options.cafe") {
+		return
+	}
+
+	// Parse json body
+	body, err := ioutil.ReadAll(c.Request.Body)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Read data from POST request.
+	couponCode := gjson.Get(string(body), "coupon_code").String()
+
+	// Add the credit card to stripe
+	err = t.DB.ApplyCoupon(user, couponCode)
+
+	if t.RespondError(c, err, "Unable to add coupon to your account. Please contact help@options.cafe") {
+		return
+	}
+
+	// Return happy
+	c.JSON(202, nil)
+}
+
+//
 // Add credit card to the account. If one is already on the account we
 // replace the card and add the new one. We pass in a stripe token.
 //
@@ -42,7 +78,6 @@ func (t *Controller) UpdateCreditCard(c *gin.Context) {
 
 	// Read data from PUT request.
 	token := gjson.Get(string(body), "token").String()
-	//coupon := gjson.Get(string(body), "coupon").String()
 
 	// Add the credit card to stripe
 	err = t.DB.UpdateCreditCard(user, token)

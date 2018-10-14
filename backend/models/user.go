@@ -59,6 +59,11 @@ type UserSubscription struct {
 	CardLast4          string    `json:"card_last_4"`
 	CardExpMonth       int       `json:"card_exp_month"`
 	CardExpYear        int       `json:"card_exp_year"`
+	CouponName         string    `json:"coupon_name"`
+	CouponCode         string    `json:"coupon_code"`
+	AmountOff          int64     `json:"amount_off"`
+	PercentOff         float64   `json:"percent_off"`
+	CouponDuration     string    `json:"coupon_duration"`
 }
 
 //
@@ -544,6 +549,30 @@ func (t *DB) UpdateCreditCard(user User, stripeToken string) error {
 }
 
 //
+// Apply a coupon to a user's subscription
+//
+func (t *DB) ApplyCoupon(user User, couponCode string) error {
+
+	if len(os.Getenv("STRIPE_SECRET_KEY")) > 0 {
+
+		// Apply coupon to subscription.
+		err := services.StripeApplyCoupon(user.StripeSubscription, couponCode)
+
+		if err != nil {
+			services.Error(err, "ApplyCoupon - Unable to apply a coupon. - "+user.Email)
+			return err
+		}
+
+	} else {
+		return errors.New("No stripe key found.")
+	}
+
+	// Return happy.
+	return nil
+
+}
+
+//
 // Get Stripe Subscription
 //
 func (t *DB) GetSubscriptionWithStripe(user User) (UserSubscription, error) {
@@ -583,6 +612,15 @@ func (t *DB) GetSubscriptionWithStripe(user User) (UserSubscription, error) {
 			subscription.CardLast4 = cust.Sources.Data[0].Card.Last4
 			subscription.CardExpMonth = int(cust.Sources.Data[0].Card.ExpMonth)
 			subscription.CardExpYear = int(cust.Sources.Data[0].Card.ExpYear)
+		}
+
+		// Do we have a coupon on file?
+		if cust.Subscriptions.Data[0].Discount != nil {
+			subscription.CouponCode = string(cust.Subscriptions.Data[0].Discount.Coupon.ID)
+			subscription.CouponName = string(cust.Subscriptions.Data[0].Discount.Coupon.Name)
+			subscription.AmountOff = cust.Subscriptions.Data[0].Discount.Coupon.AmountOff
+			subscription.PercentOff = cust.Subscriptions.Data[0].Discount.Coupon.PercentOff
+			subscription.CouponDuration = string(cust.Subscriptions.Data[0].Discount.Coupon.Duration)
 		}
 
 	} else {
