@@ -225,7 +225,7 @@ func StripeGetCustomer(custToken string) (*stripe.Customer, error) {
 //
 // Add a customer subscription.
 //
-func StripeAddSubscription(custId string, plan string) (string, error) {
+func StripeAddSubscription(custId string, plan string, coupon string) (string, error) {
 
 	// Make sure we have a STRIPE_SECRET_KEY
 	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
@@ -244,6 +244,12 @@ func StripeAddSubscription(custId string, plan string) (string, error) {
 				Plan: stripe.String(plan),
 			},
 		},
+	}
+
+	// Do we have a coupon code?
+	if len(coupon) > 0 {
+		subParams.Coupon = stripe.String(coupon)
+		Info("Coupon code passed with subscribe token: " + coupon + " - " + custId)
 	}
 
 	// Create new subscription.

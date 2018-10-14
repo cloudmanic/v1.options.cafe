@@ -435,25 +435,17 @@ func (t *DB) CreateNewUserWithStripe(user User, plan string, token string, coupo
 		t.Save(&user)
 
 		// Add the credit card to stripe
-		err = t.UpdateCreditCard(user, token)
-
-		if err != nil {
-			services.BetterError(err)
-			return err
-		}
-
-		// Do we have a coupon code?
-		if len(coupon) > 0 {
-			services.Info("Coupon code passed with subscribe token: " + coupon + " - " + user.Email)
-			err = t.ApplyCoupon(user, coupon)
+		if len(token) > 0 {
+			err = t.UpdateCreditCard(user, token)
 
 			if err != nil {
 				services.BetterError(err)
+				return err
 			}
 		}
 
 		// Subscribe this user to our default Stripe plan.
-		subId, err := services.StripeAddSubscription(custId, plan)
+		subId, err := services.StripeAddSubscription(custId, plan, coupon)
 
 		if err != nil {
 			services.Error(err, "CreateNewUserWithStripe - Unable to create a subscription at services. - "+user.Email)
@@ -461,6 +453,7 @@ func (t *DB) CreateNewUserWithStripe(user User, plan string, token string, coupo
 		}
 
 		// Update the user to include subscription and customer ids from strip.
+		user.Status = "Active"
 		user.StripeSubscription = subId
 		t.Save(&user)
 
