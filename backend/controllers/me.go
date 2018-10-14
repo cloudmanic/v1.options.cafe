@@ -9,7 +9,9 @@ package controllers
 import (
 	"io/ioutil"
 	"net/http"
+	"os"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
@@ -43,6 +45,16 @@ func (t *Controller) SubscribeUser(c *gin.Context) {
 	plan := gjson.Get(string(body), "plan").String()
 	token := gjson.Get(string(body), "token").String()
 	coupon := gjson.Get(string(body), "coupon").String()
+
+	// If plan is monthly
+	if plan == "monthly" {
+		plan = os.Getenv("STRIPE_MONTHLY_PLAN")
+	}
+
+	// If plan is yearly
+	if plan == "yearly" {
+		plan = os.Getenv("STRIPE_YEARLY_PLAN")
+	}
 
 	// Talk to stripe and setup the account.
 	err = t.DB.CreateNewUserWithStripe(user, plan, token, coupon)
@@ -253,8 +265,9 @@ func (t *Controller) GetSubscription(c *gin.Context) {
 
 	// Build a default subscription
 	sub := models.UserSubscription{
-		TrialDays:  7,
+		TrialDays:  helpers.StringToInt(os.Getenv("TRIAL_DAY_COUNT")),
 		Status:     "trialing",
+		Started:    user.CreatedAt,
 		TrialStart: user.CreatedAt,
 		TrialEnd:   user.TrialExpire,
 	}

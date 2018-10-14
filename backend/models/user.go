@@ -15,6 +15,7 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"github.com/cloudmanic/app.options.cafe/backend/library/checkmail"
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"golang.org/x/crypto/bcrypt"
@@ -384,11 +385,15 @@ func (t *DB) CreateUser(first string, last string, email string, password string
 		return User{}, err
 	}
 
+	// Trail expire
+	now := time.Now()
+	tExpire := now.Add(time.Hour * 24 * 7)
+
 	// Install user into the database
 	var _first = template.HTMLEscapeString(first)
 	var _last = template.HTMLEscapeString(last)
 
-	user := User{FirstName: _first, LastName: _last, Email: email, Password: string(hash), Status: "Trial"}
+	user := User{FirstName: _first, LastName: _last, Email: email, Password: string(hash), Status: "Trial", TrialExpire: tExpire}
 	t.Create(&user)
 
 	// Log user creation.
@@ -601,11 +606,11 @@ func (t *DB) GetSubscriptionWithStripe(user User) (UserSubscription, error) {
 		subscription.Name = cust.Subscriptions.Data[0].Plan.Nickname
 		subscription.BillingInterval = string(cust.Subscriptions.Data[0].Plan.Interval)
 		subscription.Amount = float64(cust.Subscriptions.Data[0].Plan.Amount / 100)
-		subscription.TrialDays = int(cust.Subscriptions.Data[0].Plan.TrialPeriodDays)
+		subscription.TrialDays = helpers.StringToInt(os.Getenv("TRIAL_DAY_COUNT")) // we keep track our own Trail
 		subscription.Status = string(cust.Subscriptions.Data[0].Status)
-		subscription.Started = time.Unix(cust.Subscriptions.Data[0].CurrentPeriodStart, 0)
-		subscription.TrialStart = time.Unix(cust.Subscriptions.Data[0].TrialStart, 0)
-		subscription.TrialEnd = time.Unix(cust.Subscriptions.Data[0].TrialEnd, 0)
+		subscription.Started = user.CreatedAt
+		subscription.TrialStart = user.CreatedAt
+		subscription.TrialEnd = user.TrialExpire
 
 		// Do we have a credit card on file
 		if cust.Sources.ListMeta.TotalCount > 0 {

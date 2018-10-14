@@ -11,6 +11,19 @@ import (
 )
 
 //
+// Convert a string to a int
+//
+func StringToInt(s string) int {
+	idInt, err := strconv.Atoi(s)
+
+	if err != nil {
+		return 0
+	}
+
+	return idInt
+}
+
+//
 // Convert a string to a uint
 //
 func StringToUint(s string) uint {

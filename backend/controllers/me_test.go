@@ -523,7 +523,7 @@ func TestSubscribeUser01(t *testing.T) {
 	db.New().Save(&user)
 
 	// Body data
-	var bodyStr = []byte(`{"token": "tok_mastercard", "plan": "plan_DjnWwzHMV7lhsL", "coupon":""}`)
+	var bodyStr = []byte(`{"token": "tok_mastercard", "plan": "yearly", "coupon":""}`)
 
 	// Make a mock request.
 	req, _ := http.NewRequest("POST", "/me/subscribe", bytes.NewBuffer(bodyStr))
@@ -584,7 +584,7 @@ func TestSubscribeUser02(t *testing.T) {
 	st.Expect(t, len(couponId) > 0, true)
 
 	// Body data
-	var bodyStr = []byte(`{"token": "tok_mastercard", "plan": "plan_DjnWwzHMV7lhsL", "coupon":"` + couponId + `"}`)
+	var bodyStr = []byte(`{"token": "tok_mastercard", "plan": "monthly", "coupon":"` + couponId + `"}`)
 
 	// Make a mock request.
 	req, _ := http.NewRequest("POST", "/me/subscribe", bytes.NewBuffer(bodyStr))
@@ -649,7 +649,7 @@ func TestSubscribeUser03(t *testing.T) {
 	st.Expect(t, len(couponId) > 0, true)
 
 	// Body data
-	var bodyStr = []byte(`{"token": "", "plan": "plan_DjnWwzHMV7lhsL", "coupon":"` + couponId + `"}`)
+	var bodyStr = []byte(`{"token": "", "plan": "monthly", "coupon":"` + couponId + `"}`)
 
 	// Make a mock request.
 	req, _ := http.NewRequest("POST", "/me/subscribe", bytes.NewBuffer(bodyStr))
