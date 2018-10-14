@@ -1,6 +1,6 @@
 <div class="article__head">
   <h6>Account Details</h6>
-  <a class="btn" *ngIf="userSubscription.Status != 'trialing'">Change</a>
+  <!-- <a class="btn" *ngIf="userSubscription.Status != 'trialing'">Change</a> -->
 </div>
 
 <div class="article__body" *ngIf="userSubscription.Status">
@@ -39,8 +39,10 @@
 
   </ul>
 
-  <div class="article__actions-alt" *ngIf="userSubscription.CardBrand.length <= 0">
-    <a href="#" class="btn btn--size1">Upgrade To Full Account</a>
+  <div class="article__actions-alt" *ngIf="userSubscription.Status != 'active'">
+    <a routerLink="/settings/account/upgrade" [queryParams]="{back: '/settings/account'}" class="btn btn--size1">
+      Upgrade To Full Account
+    </a>
 
     <h6 class="title-arrow">Enjoying Options Cafe? Upgrade now!</h6><!-- /.title-arrow -->
   </div>  
@@ -96,7 +98,7 @@
         <div class="article__body article__body--primary">
           <div class="form-info form-error">
 
-            <app-settings-account-card (onClose)="doCancelUpdateCreditCard($event)"></app-settings-account-card>
+            <app-settings-account-card (onClose)="doCancelUpdateCreditCard($event)" formType="update"></app-settings-account-card>
           
           </div>
         </div>

@@ -4,6 +4,7 @@
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Coupon } from '../../../models/coupon';
@@ -21,6 +22,8 @@ declare var Stripe: any;
 export class CardComponent implements OnInit 
 {
   // Passed vars
+  @Input() plan: string;
+  @Input() formType: string;  
   @Input() showOverlay: boolean;
   @Output() onClose = new EventEmitter<boolean>();
 
@@ -35,7 +38,7 @@ export class CardComponent implements OnInit
   //
   // Construct.
   //
-  constructor(private stateService: StateService, private meService: MeService) { }
+  constructor(private stateService: StateService, private meService: MeService, private router: Router) { }
 
   // 
   // NG Init.
@@ -72,9 +75,32 @@ export class CardComponent implements OnInit
       // If 100% off no need for a credit card.
       if((this.coupon.PercentOff >= 100) && (this.coupon.Valid))
       {
-        this.meService.applyCoupon(this.form.Coupon).subscribe((res) => {
-          this.doCancel();
-        });
+        // If this is a subscribe action
+        if (this.formType == "subscribe") 
+        {
+          // Apply 100% coupon and redirect
+          this.meService.subscribeUser("", this.plan, this.form.Coupon).subscribe((res) => {
+
+            // Redirect to the app.
+            this.router.navigate(['/']);
+
+          }); 
+
+          return;
+        }
+
+        // If this is a update action
+        if (this.formType == "update") 
+        {
+          // Apply 100% coupon and close overlay
+          this.meService.applyCoupon(this.form.Coupon).subscribe((res) => {
+            this.doCancel();
+          });
+          
+          return;
+        }
+
+
       } else 
       {
         this.couponMsg = this.coupon.PercentOff + "% off your subscription.";
@@ -117,24 +143,58 @@ export class CardComponent implements OnInit
         return;
       }
 
-      // Send the token to the server
-      this.meService.updateCreditCard(response.id, this.form.Coupon).subscribe((res) => {
+      // If this is a subscribe action
+      if(this.formType == "subscribe")
+      {
+        this.subscribeUser(response.id);
+        return;
+      }
 
-        // Close overlay
-        this.showOverlay = false;
-        this.onClose.emit(false); 
-
-        // Show success notice
-        this.stateService.SiteSuccess.emit("Your credit card has been successfully updated.");
-
-        // Clear credit card data.
-        this.form = new CreditCardForm();
-        this.form.ExpMonth = '1';
-        this.form.ExpYear = '2020';  
-
-      });
+      // If this is a update action
+      if(this.formType == "update") 
+      {
+        this.updateCreditCard(response.id);
+        return;
+      }
 
     });
+  }
+
+  //
+  // Subscribe user
+  //
+  subscribeUser(token: string)
+  {
+    // Send the token to the server
+    this.meService.subscribeUser(token, this.plan, this.form.Coupon).subscribe((res) => {
+
+      // Redirect to the app.
+      this.router.navigate(['/']);
+
+    }); 
+  }
+
+  //
+  // Update credit card
+  //
+  updateCreditCard(token: string)
+  {
+    // Send the token to the server
+    this.meService.updateCreditCard(token, this.form.Coupon).subscribe((res) => {
+
+      // Close overlay
+      this.showOverlay = false;
+      this.onClose.emit(false);
+
+      // Show success notice
+      this.stateService.SiteSuccess.emit("Your credit card has been successfully updated.");
+
+      // Clear credit card data.
+      this.form = new CreditCardForm();
+      this.form.ExpMonth = '1';
+      this.form.ExpYear = '2020';
+
+    }); 
   }
 
   //

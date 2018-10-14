@@ -87,22 +87,37 @@ export class StateService
       // Success
       data => {
 
+        // We do not redirect from - /settings/account/expired
+        if (window.location.pathname == "/settings/account/expired") {
+          return;
+        }
+
+        // We do not redirect from - /settings/account/upgrade
+        if (window.location.pathname == "/settings/account/upgrade") {
+          return;
+        }
+
+        // We do not redirect from - /settings/account/upgrade/credit-card
+        if (window.location.pathname == "/settings/account/upgrade/credit-card") {
+          return;
+        }
+
         // Delinquent status - Means the person is not current on payment.
         if (data["status"] == "delinquent") {
           this.router.navigate(['/settings/account/upgrade']);
-          return
+          return;
         }
 
         // Expired status - Means the person's free trial has expired.
         if (data["status"] == "expired") {
           this.router.navigate(['/settings/account/expired']);
-          return
+          return;
         }
 
         // Logout status
         if (data["status"] == "logout") {
           this.router.navigate(['/logout']);
-          return
+          return;
         }
 
       },

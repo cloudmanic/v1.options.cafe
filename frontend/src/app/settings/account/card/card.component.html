@@ -90,7 +90,11 @@
     <h6 class="form__hint" *ngIf="errMsg">{{ errMsg }}</h6>
   </div>
 
-  <div class="form__actions form__actions--primary">
+  <div class="form__actions form__actions--senary" *ngIf="formType == 'subscribe'">
+    <button class="btn btn--full btn--pink" [attr.disabled]="btnDisabled ? '' : null">Subscribe Now</button>
+  </div>
+
+  <div class="form__actions form__actions--primary" *ngIf="formType == 'update'">
     <a (click)="doCancel()" class="link-alt">Cancel</a>
     <button class="btn btn--pink" [attr.disabled]="btnDisabled ? '' : null">Save Credit Card</button>
   </div>

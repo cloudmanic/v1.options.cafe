@@ -1,5 +1,11 @@
 <div class="section-primary section-primary--alt">
     <div class="shell shell--size2">
+        <div class="section__bar" *ngIf="back.length">
+            <a routerLink="{{ back }}" class="link-back">
+                <i class="ico-angle-left"></i> Back to Settings
+            </a>
+        </div>
+
         <div class="section__body">
             <div class="section__body-inner">
                 <div class="widget-options">
@@ -106,13 +112,43 @@
 
                     <a routerLink="/settings/account/upgrade/credit-card" [queryParams]="{plan: 'yearly'}" class="btn btn--pink">Choose This Plan</a>
                 </li>
-            </ul><!-- /.list-plans -->
+            </ul>
             
             <div class="section__foot section__foot--alt">
                 <p>If you wish to cancel your account, click here. If you have any questions please contact us.</p>
 
-                <a href="#" class="btn btn--border">Cancel Account</a>
-            </div><!-- /.section__foot -->
-        </div><!-- /.section__body -->
-    </div><!-- /.shell -->
-</div><!-- /.section-primary -->
+                <a (click)="cancelAccount()" class="btn btn--border">Cancel Account</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<app-dialog [(visible)]="showCloseDownAccount">
+
+  <div class="popup-alt">
+    <div class="popup__inner">
+      <div class="article article--size2">
+
+        <div class="article__head">
+          <h6>Cancel Account</h6>
+        </div>
+
+        <div class="article__body article__body--primary">
+          <div class="form-info form">
+
+            <p>To close down your account please contact us via email us at help@options.cafe.</p>
+
+            <div class="form__actions">
+              <a (click)="doCancelAccount()" class="btn">OK</a>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</app-dialog>

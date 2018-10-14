@@ -11,11 +11,35 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './expired.component.html',
   styleUrls: []
 })
-export class ExpiredComponent implements OnInit {
 
+export class ExpiredComponent implements OnInit 
+{
+  showCloseDownAccount: boolean = false;
+
+  //
+  // Construct.
+  //
   constructor() { }
 
-  ngOnInit() {
+  //
+  // OnInit...
+  //
+  ngOnInit() { }
+
+  //
+  // Cancel account
+  //
+  cancelAccount() 
+  {
+    this.showCloseDownAccount = true;
+  }
+
+  //
+  // Cancel account
+  //
+  doCancelAccount() 
+  {
+    this.showCloseDownAccount = false;
   }
 
 }

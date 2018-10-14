@@ -1,104 +1,37 @@
 <div class="section-primary section-primary--alt">
     <div class="shell shell--size2">
         <div class="section__body">
-            <div class="section__content-alt">
-                <h5>You’ve picked Options Cafe Annual! Great!</h5>
+            <div class="section__content-alt" *ngIf="plan == 'yearly'">
+              <h5>You’ve picked Options Cafe Annual! Great!</h5>
+              <p>
+                We’ll charge your card $200 now and $200 each year thereafter.<br>
+                If you ever change your mind, you can cancel any time, no questions asked.
+              </p>
+            </div>
 
-                <p>
-                    We’ll charge your card $200 now and $200 on October 5th each year thereafter.<br>
-                    If you ever change your mind, you can cancel any time, no questions asked.
-                </p>
-            </div><!-- /.section__content -->
+            <div class="section__content-alt" *ngIf="plan == 'monthly'">
+              <h5>You’ve picked Options Cafe Monthly! Great!</h5>
+              <p>
+                We’ll charge your card $20 now and $20 each month thereafter.<br>
+                If you ever change your mind, you can cancel any time, no questions asked.
+              </p>
+            </div>
 
             <div class="article article--size2 article--primary">
                 <div class="article__body article__body--size3">
                     <div class="form-info form-error">
-                        <form action="?" method="post">
-                            <div class="form__body">
-                                <div class="form__image">
-                                    <img src="/images/temp/payments.png" alt="" />
-                                </div><!-- /.form__image -->
+                        
+                        <app-settings-account-card [plan]="plan" formType="subscribe"></app-settings-account-card>
 
-                                <div class="form__row">
-                                    <label for="f_card-num">Card number</label>
-
-                                    <div class="form__controls">
-                                        <input type="text" class="field form__field" name="f_card-num" id="f_card-num" placeholder=" 9899 9854 6541 2581" />
-                                    </div><!-- /.form__controls -->
-                                </div><!-- /.form__row -->
-
-                                <label for="f_date">Expiration Date</label>
-                                
-                                <div class="form__row form__row--secondary">
-                                    <div class="form__col form__col--size3">
-                                        <div class="form__controls">
-                                            <div class="select select--primary">
-                                                <select name="f_date" id="f_date">
-                                                    <option value="option-1" >Month</option>
-
-                                                    <option value="option-2" selected>December</option>
-                                                </select>
-                                            </div>
-                                        </div><!-- /.form__controls -->
-                                    </div><!-- /.form__col -->
-
-                                    <span class="form__devider">/</span>
-
-                                    <div class="form__col form__col--size2">
-                                        <div class="form__controls">
-                                            <div class="select select--primary">
-                                                <select name="f_year" id="f_year">
-                                                    <option value="option-1">Year</option>
-
-                                                    <option value="option-2" selected>2018</option>
-                                                </select>
-                                            </div>
-                                        </div><!-- /.form__controls -->
-                                    </div><!-- /.form__col -->
-                                </div><!-- /.form__row -->
-
-                                <div class="form__row form__row--teritary">
-                                    <div class="form__col">
-                                        <label for="f_cvc">CVC</label>
-
-                                        <div class="form__controls">
-                                            <input type="text" class="field form__field" name="f_cvc" id="f_cvc" placeholder="4565" />
-                                        </div><!-- /.form__controls -->
-                                    </div><!-- /.form__col -->
-
-                                    <div class="form__col">
-                                        <label for="f_zip-code">Zip Code</label>
-
-                                        <div class="form__controls">
-                                            <input type="text" class="field form__field" name="f_zip-code" id="f_zip-code" placeholder="97485" />
-                                        </div><!-- /.form__controls -->
-                                    </div><!-- /.form__col -->
-                                </div><!-- /.form__row -->
-
-                                <div class="form__row">
-                                    <label for="f_coupon">Coupon Code</label>
-
-                                    <div class="form__controls">
-                                        <input type="text" class="field form__field" name="f_coupon" id="f_coupon" placeholder="Make Money / Save Money!" />
-                                    </div><!-- /.form__controls -->
-                                </div><!-- /.form__row -->
-
-                                <h6 class="form__hint form__hint--primary">Good for 50% off the first year.</h6><!-- /.form__hint -->
-                            </div><!-- /.form__body -->
-
-                            <div class="form__actions form__actions--senary">
-                                <a href="#" class="btn btn--full btn--pink">Update My Account</a>
-                            </div><!-- /.form__actions -->
-                        </form>
-                    </div><!-- /.form -->
-                </div><!-- /.article__body -->
-            </div><!-- /.article -->
+                    </div>
+                </div>
+            </div>
             
             <div class="section__foot section__foot--alternative">
-                <p>If you wish to cancel your account, click here. If you have any questions please contact us.</p>
+              <p>If you have any questions please contact us.</p>
+              <a href="http://help.options.cafe" class="btn btn--border" target="_blank">Contact Support</a>
+            </div>
 
-                <a href="#" class="btn btn--border">Cancel Account</a>
-            </div><!-- /.section__foot -->
-        </div><!-- /.section__body -->
-    </div><!-- /.shell -->
-</div><!-- /.section-primary -->
+        </div>
+    </div>
+</div>

@@ -105,6 +105,20 @@ export class MeService
   }
 
   //
+  // Subscribe user.
+  //
+  subscribeUser(token: string, plan: string, coupon: string): Observable<boolean> {
+    let post = {
+      token: token,
+      plan: plan,
+      coupon: coupon
+    }
+
+    return this.http.post<boolean>(environment.app_server + '/api/v1/me/subscribe', post)
+      .map((data) => { return true; });
+  }
+
+  //
   // Update credit card.
   //
   updateCreditCard(token: string, coupon: string): Observable<boolean> {
