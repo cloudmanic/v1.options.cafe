@@ -7,6 +7,7 @@
 import 'rxjs/Rx';
 import * as moment from 'moment';
 import { Me } from '../../models/me';
+import { Coupon } from '../../models/coupon';
 import { Subscription } from '../../models/subscription';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
@@ -71,6 +72,35 @@ export class MeService
     }
 
     return this.http.put<boolean>(environment.app_server + '/api/v1/me/rest-password', post)
+      .map((data) => { return true; });
+  }
+
+  //
+  // Verify Coupon Code
+  //
+  getVerifyCoupon(code: string): Observable<Coupon> {
+    return this.http.get<Coupon>(environment.app_server + '/api/v1/me/verify-coupon/' + code)
+      .map((data) => {
+        let coupon = new Coupon();
+        coupon.Valid = data["valid"];
+        coupon.Name = data["name"];
+        coupon.Code = data["code"];
+        coupon.AmountOff = data["amount_off"];
+        coupon.PercentOff = data["percent_off"];
+        coupon.Duration = data["duration"];
+        return coupon; 
+      });
+  }
+
+  //
+  // Apply coupon.
+  //
+  applyCoupon(code: string): Observable<boolean> {
+    let post = {
+      coupon_code: code
+    }
+
+    return this.http.post<boolean>(environment.app_server + '/api/v1/me/apply-coupon', post)
       .map((data) => { return true; });
   }           
 }

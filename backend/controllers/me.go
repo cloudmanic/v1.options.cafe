@@ -18,6 +18,41 @@ import (
 )
 
 //
+// Verify coupon
+//
+func (t *Controller) VerifyCoupon(c *gin.Context) {
+
+	// Get code from Stripe
+	coupon, err := services.StripeGetCoupon(c.Param("code"))
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Setup return value
+	type RtStruct struct {
+		Valid      bool    `json:"valid"`
+		Name       string  `json:"name"`
+		Code       string  `json:"code"`
+		AmountOff  int64   `json:"amount_off"`
+		PercentOff float64 `json:"percent_off"`
+		Duration   string  `json:"duration"`
+	}
+
+	rt := RtStruct{
+		Valid:      coupon.Valid,
+		Name:       coupon.Name,
+		Code:       coupon.ID,
+		AmountOff:  coupon.AmountOff,
+		PercentOff: coupon.PercentOff,
+		Duration:   string(coupon.Duration),
+	}
+
+	// Return happy JSON
+	c.JSON(200, rt)
+}
+
+//
 // Apply a coupon (discount) to the account.
 //
 func (t *Controller) ApplyCoupon(c *gin.Context) {
@@ -85,6 +120,13 @@ func (t *Controller) UpdateCreditCard(c *gin.Context) {
 	if t.RespondError(c, err, "Unable to add credit card to your account. Please contact help@options.cafe") {
 		return
 	}
+
+	// Read data from POST request.
+	couponCode := gjson.Get(string(body), "coupon_code").String()
+
+	// Add the credit card to stripe
+	err = t.DB.ApplyCoupon(user, couponCode)
+	services.BetterError(err)
 
 	// Return happy
 	c.JSON(202, nil)

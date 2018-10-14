@@ -1,6 +1,7 @@
 /* ------------- Here is where non-htmlburger css goes. ------------------ */
 
 .clear { content: ''; clear: both; }
+.inline-block { display: inline-block; }
 .error-text { color: #d64561; }
 .link { text-decoration: none; }
 .red { color: #ce4260; }
@@ -11,6 +12,7 @@
 
 .mt-3 { margin-top: 3px !important; }
 .mt-5 { margin-top: 5px !important; }
+.mt-10 { margin-top: 10px !important; }
 .mt-20 { margin-top: 20px !important; }
 
 .mb-3 { margin-bottom: 3px !important; }

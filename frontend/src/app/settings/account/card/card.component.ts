@@ -4,7 +4,9 @@
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Coupon } from '../../../models/coupon';
 import { MeService } from '../../../providers/http/me.service';
 
 declare var Stripe: any;
@@ -25,16 +27,14 @@ export class CardComponent implements OnInit
   errMsg: string = "";
   couponMsg: string = "";
   btnDisabled: boolean = false;
-  showCouponField: boolean = false;  
+  showCouponField: boolean = false;
+  coupon: Coupon = new Coupon(); 
   form: CreditCardForm = new CreditCardForm();
 
   //
   // Construct.
   //
-  constructor(private meService: MeService) {
-    // Get cached data
-    //this.userProfile = this.stateService.GetSettingsUserProfile();
-  }
+  constructor(private meService: MeService) { }
 
   // 
   // NG Init.
@@ -54,6 +54,35 @@ export class CardComponent implements OnInit
   doShowCoupon()
   {
     this.showCouponField = true;
+  }
+
+  //
+  // Verify coupon
+  //
+  verifyCoupon()
+  {
+    this.errMsg = "";
+
+    // Ajax call to verify coupon.
+    this.meService.getVerifyCoupon(this.form.Coupon).subscribe((res) => {
+      this.coupon = res;
+
+      // If 100% off no need for a credit card.
+      if((this.coupon.PercentOff >= 100) && (this.coupon.Valid))
+      {
+        this.meService.applyCoupon(this.form.Coupon).subscribe((res) => {
+          this.doCancel();
+        });
+      } else 
+      {
+        this.couponMsg = this.coupon.PercentOff + "% off your subscription.";
+      }
+    },
+
+    // Error
+    (err: HttpErrorResponse) => {
+      this.errMsg = "Invalid coupon code.";
+    });
   }
 
   //

@@ -21,6 +21,11 @@ export class Subscription
   CardBrand: string;
   CardExpireMonth: number;
   CardExpireYear: number;
+  CouponName: string;
+  CouponCode: string;
+  CouponAmountOff: number;
+  CouponPercentOff: number;
+  CouponDuration: string;  
 
   //
   // Build from JSON.
@@ -47,6 +52,11 @@ export class Subscription
     result.CardBrand = json["card_brand"];
     result.CardExpireMonth = json["card_exp_month"];
     result.CardExpireYear = json["card_exp_year"];
+    result.CouponName = json["coupon_name"];
+    result.CouponCode = json["coupon_code"];
+    result.CouponAmountOff = json["coupon_amount_off"];
+    result.CouponPercentOff = json["coupon_percent_off"];
+    result.CouponDuration = json["coupon_duration"];     
 
     // Return happy
     return result;

@@ -15,9 +15,9 @@ import (
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/nbio/st"
+	"github.com/tidwall/gjson"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -382,16 +382,117 @@ func TestApplyCoupon01(t *testing.T) {
 	sub, err := db.GetSubscriptionWithStripe(dbUser)
 	st.Expect(t, err, nil)
 
-	spew.Dump(sub)
-
 	// All good?
 	st.Expect(t, sub.CardBrand, "")
 	st.Expect(t, sub.CardLast4, "")
 	st.Expect(t, sub.CardExpMonth, 0)
 	st.Expect(t, sub.CardExpYear, 0)
+	st.Expect(t, sub.CouponName, "Unit Test Coupon 1")
+	st.Expect(t, sub.CouponCode, couponId)
+	st.Expect(t, sub.CouponAmountOff, int64(0))
+	st.Expect(t, sub.CouponPercentOff, 65.00)
+	st.Expect(t, sub.CouponDuration, "forever")
 
 	// Clean things up at stripe
 	db.DeleteUserWithStripe(dbUser)
+
+	// Clean things up by deleting the coupon
+	err = services.StripeDeleteCoupon(couponId)
+	st.Expect(t, err, nil)
+}
+
+//
+// TestVerifyCoupon01
+//
+func TestVerifyCoupon01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Create a new coupon
+	couponId, err := services.StripeCreateNewCoupon("Unit Test Coupon 1", 65.00)
+	st.Expect(t, err, nil)
+	st.Expect(t, len(couponId) > 0, true)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("GET", "/me/verify-coupon/"+couponId, nil)
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.GET("/me/verify-coupon/:code", c.VerifyCoupon)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Grab result and convert to strut
+	result := models.User{}
+	err = json.Unmarshal([]byte(w.Body.String()), &result)
+
+	// Read JSON
+	code := gjson.Get(w.Body.String(), "code").String()
+	percentOff := gjson.Get(w.Body.String(), "percent_off").Float()
+
+	// Parse json that returned.
+	st.Expect(t, err, nil)
+	st.Expect(t, w.Code, 200)
+	st.Expect(t, code, couponId)
+	st.Expect(t, percentOff, 65.00)
+
+	// Clean things up by deleting the coupon
+	err = services.StripeDeleteCoupon(couponId)
+	st.Expect(t, err, nil)
+}
+
+//
+// TestVerifyCoupon02
+//
+func TestVerifyCoupon02(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Create a new coupon
+	couponId, err := services.StripeCreateNewCoupon("Unit Test Coupon 1", 65.00)
+	st.Expect(t, err, nil)
+	st.Expect(t, len(couponId) > 0, true)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("GET", "/me/verify-coupon/blah", nil)
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.GET("/me/verify-coupon/:code", c.VerifyCoupon)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Grab result and convert to strut
+	result := models.User{}
+	err = json.Unmarshal([]byte(w.Body.String()), &result)
+
+	// Parse json that returned.
+	st.Expect(t, err, nil)
+	st.Expect(t, w.Code, 400)
 
 	// Clean things up by deleting the coupon
 	err = services.StripeDeleteCoupon(couponId)

@@ -82,6 +82,7 @@
 
       <div class="form__controls" *ngIf="showCouponField">
         <input type="text" class="field form__field" id="f_coupon" [(ngModel)]="form.Coupon" [ngModelOptions]="{standalone: true}" />
+        <a (click)="verifyCoupon()" class="link-alt mt-10 inline-block">Verify Coupon</a>
       </div>
     </div>
 

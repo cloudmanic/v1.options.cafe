@@ -48,7 +48,7 @@ export class AccountDetailsComponent implements OnInit
     // Ajax call to get the subscription data.
     this.meService.getSubscription().subscribe((res) => {
       this.userSubscription = res;
-      console.log(res);
+      //console.log(res);
     });
   }
 
@@ -81,6 +81,7 @@ export class AccountDetailsComponent implements OnInit
   //
   doCancelUpdateCreditCard(agreed: boolean)
   {
+    this.getSubscriptionData();
     this.showUpdateCreditCard = false;
   }  
 }

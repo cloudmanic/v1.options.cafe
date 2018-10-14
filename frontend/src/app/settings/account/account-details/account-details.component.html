@@ -28,6 +28,11 @@
       </h6>
     </li>
 
+    <li *ngIf="userSubscription.CouponCode && (userSubscription.CouponDuration == 'forever')">
+      <h5>Coupon</h5>
+      <h6 *ngIf="userSubscription.CouponPercentOff">{{ userSubscription.CouponPercentOff }}% Off Your Subscription</h6>     
+    </li>
+
     <li>
       <h5>Next Payment Due</h5>
 

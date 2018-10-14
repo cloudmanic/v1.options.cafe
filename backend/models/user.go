@@ -61,8 +61,8 @@ type UserSubscription struct {
 	CardExpYear        int       `json:"card_exp_year"`
 	CouponName         string    `json:"coupon_name"`
 	CouponCode         string    `json:"coupon_code"`
-	AmountOff          int64     `json:"amount_off"`
-	PercentOff         float64   `json:"percent_off"`
+	CouponAmountOff    int64     `json:"coupon_amount_off"`
+	CouponPercentOff   float64   `json:"coupon_percent_off"`
 	CouponDuration     string    `json:"coupon_duration"`
 }
 
@@ -618,8 +618,8 @@ func (t *DB) GetSubscriptionWithStripe(user User) (UserSubscription, error) {
 		if cust.Subscriptions.Data[0].Discount != nil {
 			subscription.CouponCode = string(cust.Subscriptions.Data[0].Discount.Coupon.ID)
 			subscription.CouponName = string(cust.Subscriptions.Data[0].Discount.Coupon.Name)
-			subscription.AmountOff = cust.Subscriptions.Data[0].Discount.Coupon.AmountOff
-			subscription.PercentOff = cust.Subscriptions.Data[0].Discount.Coupon.PercentOff
+			subscription.CouponAmountOff = cust.Subscriptions.Data[0].Discount.Coupon.AmountOff
+			subscription.CouponPercentOff = cust.Subscriptions.Data[0].Discount.Coupon.PercentOff
 			subscription.CouponDuration = string(cust.Subscriptions.Data[0].Discount.Coupon.Duration)
 		}
 
