@@ -7,6 +7,7 @@
 import 'rxjs/Rx';
 import * as moment from 'moment';
 import { Me } from '../../models/me';
+import { Invoice } from '../../models/invoice';
 import { Coupon } from '../../models/coupon';
 import { Subscription } from '../../models/subscription';
 import { Injectable } from '@angular/core';
@@ -38,6 +39,14 @@ export class MeService
   getSubscription(): Observable<Subscription> {
     return this.http.get<Subscription>(environment.app_server + '/api/v1/me/subscription')
       .map((data) => { return new Subscription().fromJson(data); });
+  } 
+
+  //
+  // Get user invoices
+  //
+  getInvoices(): Observable<Invoice[]> {
+    return this.http.get<Invoice[]>(environment.app_server + '/api/v1/me/invoices')
+      .map((data) => { return new Invoice().fromJsonList(data); });
   } 
 
   //

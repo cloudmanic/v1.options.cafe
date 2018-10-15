@@ -33,95 +33,32 @@
         </thead>
 
         <tbody>
-          <tr>
+          <tr *ngFor="let row of invoices;">
             <td>
-              <p>10/12/17</p>
+              <p>{{ row.Date | date:'shortDate' }}</p>
             </td>
 
             <td>
-              <p>Subscription renewal 10/12/2017 - 11/11/2017</p>
+              <p>{{ row.Transaction }}</p>
             </td>
 
             <td>
-              <p>Visa ending 5662</p>
+              <p *ngIf="row.PaymentMethod">{{ row.PaymentMethod }}</p>
+              <p *ngIf="! row.PaymentMethod">---</p>
             </td>
 
             <td>
-              <p>$20.00</p>
+              <p>{{ row.Amount | currency }}</p>
             </td>
 
             <td>
-              <a  class="link">Download</a>
-            </td>
-          </tr>
-
-          <tr>
-            <td>
-              <p>9/12/17</p>
-            </td>
-
-            <td>
-              <p>Subscription renewal 9/12/2017 - 10/11/2017</p>
-            </td>
-
-            <td>
-              <p>Visa ending 5662</p>
-            </td>
-
-            <td>
-              <p>$20.00</p>
-            </td>
-
-            <td>
-              <a  class="link">Download</a>
+              <a href="{{ row.InvoiceUrl }}" class="link" *ngIf="row.InvoiceUrl">Download</a>
+              <p *ngIf="! row.InvoiceUrl">---</p>
             </td>
           </tr>
 
-          <tr>
-            <td>
-              <p>8/12/17</p>
-            </td>
 
-            <td>
-              <p>Subscription renewal 7/12/2017 - 8/11/2017</p>
-            </td>
-
-            <td>
-              <p>Visa ending 5662</p>
-            </td>
-
-            <td>
-              <p>$20.00</p>
-            </td>
-
-            <td>
-              <a  class="link">Download</a>
-            </td>
-          </tr>
-
-          <tr>
-            <td>
-              <p>7/12/17</p>
-            </td>
-
-            <td>
-              <p>Subscription renewal 6/12/2017 - 7/11/2017</p>
-            </td>
-
-            <td>
-              <p>Visa ending 5662</p>
-            </td>
-
-            <td>
-              <p>$20.00</p>
-            </td>
-
-            <td>
-              <a  class="link">Download</a>
-            </td>
-          </tr>
-
-          <tr>
+<!--           <tr>
             <td>
               <p>6/12/17</p>
             </td>
@@ -141,73 +78,8 @@
             </td>
 
             <td></td>
-          </tr>
+          </tr> -->
 
-          <tr>
-            <td>
-              <p>5/12/17</p>
-            </td>
-
-            <td>
-              <p>Subscription renewal 5/12/2017 - 6/11/2017</p>
-            </td>
-
-            <td>
-              <p>Visa ending 3425</p>
-            </td>
-
-            <td>
-              <p>$20.00</p>
-            </td>
-
-            <td>
-              <a  class="link">Download</a>
-            </td>
-          </tr>
-
-          <tr>
-            <td>
-              <p>4/12/17</p>
-            </td>
-
-            <td>
-              <p>Subscription renewal 4/12/2017 - 5/11/2017</p>
-            </td>
-
-            <td>
-              <p>Visa ending 3425</p>
-            </td>
-
-            <td>
-              <p>$20.00</p>
-            </td>
-
-            <td>
-              <a  class="link">Download</a>
-            </td>
-          </tr>
-
-          <tr>
-            <td>
-              <p>3/12/17</p>
-            </td>
-
-            <td>
-              <p>Subscription renewal 3/12/2017 - 4/11/2017</p>
-            </td>
-
-            <td>
-              <p>Visa ending 3425</p>
-            </td>
-
-            <td>
-              <p>$20.00</p>
-            </td>
-
-            <td>
-              <a  class="link">Download</a>
-            </td>
-          </tr>
         </tbody>
       </table>
 
