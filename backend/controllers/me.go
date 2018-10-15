@@ -20,6 +20,32 @@ import (
 )
 
 //
+// Get account invoice history
+//
+func (t *Controller) SubscriptionInvoices(c *gin.Context) {
+
+	// Make sure the UserId is correct.
+	userId := c.MustGet("userId").(uint)
+
+	// Get the full user
+	user, err := t.DB.GetUserById(userId)
+
+	if t.RespondError(c, err, "User not found. Please contact help@options.cafe") {
+		return
+	}
+
+	// Get the history
+	history, err := t.DB.GetInvoiceHistoryWithStripe(user)
+
+	if t.RespondError(c, err, "Invoice not found. Please contact help@options.cafe") {
+		return
+	}
+
+	// Return happy
+	c.JSON(200, history)
+}
+
+//
 // Subscribe to a plan.
 //
 func (t *Controller) SubscribeUser(c *gin.Context) {

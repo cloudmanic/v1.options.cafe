@@ -64,7 +64,7 @@ func TestCreateNewUserWithStripe01(t *testing.T) {
 		Email:     "jane+unittest@options.cafe",
 	}
 
-	err := db.CreateNewUserWithStripe(user)
+	err := db.CreateNewUserWithStripe(user, "", "", "")
 
 	// Since we are testing we know the user is id 4
 	dbUser, _ := db.GetUserById(4)
@@ -101,7 +101,7 @@ func TestGetSubscriptionWithStripe01(t *testing.T) {
 		Email:     "jane+unittest@options.cafe",
 	}
 
-	err := db.CreateNewUserWithStripe(user)
+	err := db.CreateNewUserWithStripe(user, "", "", "")
 
 	// Since we are testing we know the user is id 4
 	dbUser, _ := db.GetUserById(4)
@@ -164,7 +164,7 @@ func TestGetSubscriptionWithStripe02(t *testing.T) {
 		Email:     "jane+unittest@options.cafe",
 	}
 
-	err := db.CreateNewUserWithStripe(user)
+	err := db.CreateNewUserWithStripe(user, "", "", "")
 
 	// Since we are testing we know the user is id 4
 	dbUser, _ := db.GetUserById(4)
@@ -194,6 +194,33 @@ func TestGetSubscriptionWithStripe02(t *testing.T) {
 
 	// Clean things up at stripe
 	db.DeleteUserWithStripe(dbUser)
+}
+
+//
+// Test - GetInvoiceHistoryWithStripe
+//
+func TestGetInvoiceHistoryWithStripe01(t *testing.T) {
+
+	// // Load config file.
+	// env.ReadEnv("../.env")
+
+	// // Start the db connection.
+	// db, _ := NewDB()
+	// defer db.Close()
+
+	// // Create a test user.
+	// user := User{
+	// 	FirstName:      "Jane",
+	// 	LastName:       "Unittester",
+	// 	Email:          "jane+unittest@options.cafe",
+	// 	StripeCustomer: "cus_Djqq5q9mnW0lm6",
+	// }
+
+	// // Get invoices from stripe.
+	// inv, err := db.GetInvoiceHistoryWithStripe(user)
+	// st.Expect(t, err, nil)
+
+	// spew.Dump(inv)
 }
 
 //

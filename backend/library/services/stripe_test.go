@@ -15,6 +15,37 @@ import (
 )
 
 //
+// Test getting a GetChargesByCustomer
+//
+func TestGetChargesByCustomer01(t *testing.T) {
+
+	// // We comment this out because "cus_Djqq5q9mnW0lm6" might not be reliable.
+	// // We could do better testing like create a charge and test
+
+	// // Load .env file
+	// err := godotenv.Load("../../.env")
+
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// // Get transaction balance
+	// ch, err := StripeGetChargesByCustomer("cus_Djqq5q9mnW0lm6")
+	// st.Expect(t, err, nil)
+
+	// //spew.Dump(ch)
+
+	// for _, row := range ch {
+
+	// 	if row.Invoice != nil {
+	// 		inv, _ := StripeGetInvoice(row.Invoice.ID)
+	// 		spew.Dump(inv)
+	// 	}
+
+	// }
+}
+
+//
 // Test getting a BalanceTransaction
 //
 func TestGetBalanceTransaction01(t *testing.T) {

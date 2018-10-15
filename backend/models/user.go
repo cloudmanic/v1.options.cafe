@@ -68,6 +68,14 @@ type UserSubscription struct {
 	CouponDuration     string    `json:"coupon_duration"`
 }
 
+type UserInvoice struct {
+	Date          time.Time `json:"date"`
+	Amount        float64   `json:"amount"`
+	Transaction   string    `json:"transaction"`
+	PaymentMethod string    `json:"payment_method"`
+	InvoiceUrl    string    `json:"invoice_url"`
+}
+
 //
 // Validate for this model.
 //
@@ -658,6 +666,76 @@ func (t *DB) GetSubscriptionWithStripe(user User) (UserSubscription, error) {
 	// Return happy.
 	return subscription, nil
 
+}
+
+//
+// Get invoice history from stripe
+//
+func (t *DB) GetInvoiceHistoryWithStripe(user User) ([]UserInvoice, error) {
+
+	invoices := []UserInvoice{}
+
+	// Add trial period
+	invoices = append(invoices, UserInvoice{
+		Date:          user.CreatedAt,
+		Amount:        0,
+		Transaction:   "Trial Period " + user.CreatedAt.Format("1/2/06") + " - " + user.TrialExpire.Format("1/2/06"),
+		PaymentMethod: "",
+		InvoiceUrl:    "",
+	})
+
+	if len(os.Getenv("STRIPE_SECRET_KEY")) > 0 {
+
+		// Get charges by customer
+		charges, err := services.StripeGetChargesByCustomer(user.StripeCustomer)
+
+		if err != nil {
+			services.Error(err, "GetInvoiceHistoryWithStripe - Unable to get charges by customer. - "+user.Email)
+			return []UserInvoice{}, err
+		}
+
+		// Loop through and add invoices
+		for _, row := range charges {
+
+			// Build invoice object
+			tmp := UserInvoice{
+				Date:          time.Unix(row.Created, 0),
+				Amount:        float64(row.Amount / 100),
+				Transaction:   "Charge",
+				PaymentMethod: string(row.Source.Card.Brand) + " ending " + string(row.Source.Card.Last4),
+				InvoiceUrl:    "",
+			}
+
+			// is this a refund?
+			if row.Refunded {
+				tmp.Amount = float64(row.AmountRefunded/100) * -1
+				tmp.Transaction = tmp.Transaction + " Refund"
+			}
+
+			// Add invoice information
+			if row.Invoice != nil {
+				inv, err := services.StripeGetInvoice(row.Invoice.ID)
+
+				if err == nil {
+					tmp.InvoiceUrl = inv.InvoicePDF
+
+					// Get the date range
+					start := time.Unix(inv.Lines.Data[0].Period.Start, 0).Format("1/2/06")
+					end := time.Unix(inv.Lines.Data[0].Period.End, 0).Format("1/2/06")
+					tmp.Transaction = "Subscription " + start + " - " + end
+
+				}
+
+			}
+
+			invoices = append(invoices, tmp)
+
+		}
+
+	}
+
+	// Return happy.
+	return invoices, nil
 }
 
 // ------------------ Helper Functions --------------------- //
