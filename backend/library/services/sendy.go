@@ -23,6 +23,20 @@ func SendySubscribe(listId string, email string, first string, last string, paid
 	// Get the proper list id from our configs
 	switch listId {
 
+	case "trial":
+		if len(os.Getenv("SENDY_TRIAL_LIST")) > 0 {
+
+			listIdString = os.Getenv("SENDY_TRIAL_LIST")
+
+		}
+
+	case "expired":
+		if len(os.Getenv("SENDY_EXPIRED_LIST")) > 0 {
+
+			listIdString = os.Getenv("SENDY_EXPIRED_LIST")
+
+		}
+
 	case "subscribers":
 		if len(os.Getenv("SENDY_SUBSCRIBE_LIST")) > 0 {
 
@@ -93,6 +107,20 @@ func SendyUnsubscribe(listId string, email string) {
 
 	// Get the proper list id from our configs
 	switch listId {
+
+	case "trial":
+		if len(os.Getenv("SENDY_TRIAL_LIST")) > 0 {
+
+			listIdString = os.Getenv("SENDY_TRIAL_LIST")
+
+		}
+
+	case "expired":
+		if len(os.Getenv("SENDY_EXPIRED_LIST")) > 0 {
+
+			listIdString = os.Getenv("SENDY_EXPIRED_LIST")
+
+		}
 
 	case "subscribers":
 		if len(os.Getenv("SENDY_SUBSCRIBE_LIST")) > 0 {

@@ -480,6 +480,8 @@ func (t *DB) CreateNewUserWithStripe(user User, plan string, token string, coupo
 		t.Save(&user)
 
 		// Update Sendy with this new fact.
+		go services.SendyUnsubscribe("trial", user.Email)
+		go services.SendyUnsubscribe("expired", user.Email)
 		go services.SendySubscribe("subscribers", user.Email, user.FirstName, user.LastName, "Yes", "", "")
 
 	} else {
@@ -666,6 +668,7 @@ func (t *DB) GetSubscriptionWithStripe(user User) (UserSubscription, error) {
 func (t *DB) doPostUserRegisterStuff(user User, ipAddress string) {
 
 	// Subscribe new user to mailing lists.
+	go services.SendySubscribe("trial", user.Email, user.FirstName, user.LastName, "", "", ipAddress)
 	go services.SendySubscribe("no-brokers", user.Email, user.FirstName, user.LastName, "No", "", ipAddress)
 	go services.SendySubscribe("subscribers", user.Email, user.FirstName, user.LastName, "No", "", ipAddress)
 

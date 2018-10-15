@@ -53,6 +53,8 @@ func (t *Base) DoExpireTrails() {
 			t.DB.New().Save(&row)
 			services.Info("Free trial has just expired : " + row.Email)
 			go services.SlackNotify("#events", "New Options Cafe User Free Trial Expired : "+row.Email)
+			go services.SendyUnsubscribe("trial", row.Email)
+			go services.SendySubscribe("expired", row.Email, row.FirstName, row.LastName, "", "", "")
 
 		}
 
@@ -152,6 +154,11 @@ func (t *Base) DoUserFeed(user models.User) {
 
 		// Skip over disabled brokers
 		if row.Status == "Disabled" {
+			continue
+		}
+
+		// Skip over expired brokers
+		if row.Status == "Expired" {
 			continue
 		}
 
