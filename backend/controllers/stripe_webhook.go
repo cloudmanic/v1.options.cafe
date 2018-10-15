@@ -11,8 +11,6 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/cloudmanic/app.options.cafe/backend/emails"
-	"github.com/cloudmanic/app.options.cafe/backend/library/email"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
@@ -141,17 +139,17 @@ func (t *Controller) StripeEventSubscriptionDeleted(user models.User) {
 	// Log event.
 	services.Info("Stripe Subscription Deleted: " + user.Email)
 
-	// Send email telling the user this happened.
-	var url = "https://app.options.cafe"
+	// // Send email telling the user this happened.
+	// var url = "https://app.options.cafe"
 
-	go email.Send(
-		user.Email,
-		"Options Cafe : Subscription Canceled",
-		emails.GetSubscriptionCanceledHtml(user.FirstName, url),
-		emails.GetSubscriptionCanceledText(user.FirstName, url))
+	// go email.Send(
+	// 	user.Email,
+	// 	"Options Cafe : Subscription Canceled",
+	// 	emails.GetSubscriptionCanceledHtml(user.FirstName, url),
+	// 	emails.GetSubscriptionCanceledText(user.FirstName, url))
 
 	// Tell slack about this.
-	go services.SlackNotify("#events", "Options Cafe Subscription Canceled : "+user.Email)
+	go services.SlackNotify("#events", "Options Cafe Subscription StripeEventSubscriptionDeleted : "+user.Email)
 
 }
 
