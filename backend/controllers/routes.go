@@ -32,12 +32,12 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		// Me
 		apiV1.GET("/me/profile", t.GetProfile)
 		apiV1.PUT("/me/profile", t.UpdateProfile)
-		apiV1.GET("/me/invoices", t.SubscriptionInvoices)
 		apiV1.POST("/me/subscribe", t.SubscribeUser)
 		apiV1.GET("/me/subscription", t.GetSubscription)
 		apiV1.PUT("/me/rest-password", t.ResetPassword)
 		apiV1.GET("/me/verify-coupon/:code", t.VerifyCoupon)
 		apiV1.POST("/me/apply-coupon", t.ApplyCoupon)
+		apiV1.GET("/me/billing-history", t.BillingHistory)
 		apiV1.PUT("/me/update-credit-card", t.UpdateCreditCard)
 
 		// Orders

@@ -22,7 +22,7 @@ import (
 //
 // Get account invoice history
 //
-func (t *Controller) SubscriptionInvoices(c *gin.Context) {
+func (t *Controller) BillingHistory(c *gin.Context) {
 
 	// Make sure the UserId is correct.
 	userId := c.MustGet("userId").(uint)

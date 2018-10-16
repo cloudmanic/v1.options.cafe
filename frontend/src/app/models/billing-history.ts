@@ -6,7 +6,7 @@
 
 import * as moment from 'moment';
 
-export class Invoice 
+export class BillingHistory 
 {
   Amount: number;
   Date: Date;
@@ -17,9 +17,9 @@ export class Invoice
   //
   // Build from json list.
   //
-  fromJsonList(json: Object[]): Invoice[]
+  fromJsonList(json: Object[]): BillingHistory[]
   {
-    let invoices: Invoice[] = [];
+    let invoices: BillingHistory[] = [];
 
     if (!json) 
     {
@@ -37,9 +37,9 @@ export class Invoice
   //
   // Build from JSON.
   //
-  fromJson(json: Object): Invoice 
+  fromJson(json: Object): BillingHistory 
   {
-    let result = new Invoice();
+    let result = new BillingHistory();
 
     if (!json) {
       return result;

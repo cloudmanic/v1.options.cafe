@@ -5,7 +5,7 @@
 //
 
 import { Component, OnInit } from '@angular/core';
-import { Invoice } from '../../../models/invoice';
+import { BillingHistory } from '../../../models/billing-history';
 import { MeService } from '../../../providers/http/me.service';
 import { StateService } from '../../../providers/state/state.service';
 
@@ -16,7 +16,7 @@ import { StateService } from '../../../providers/state/state.service';
 })
 export class BillingHistoryComponent implements OnInit 
 {
-  invoices: Invoice[] = [];
+  billingHistory: BillingHistory[] = [];
 
   //
   // Construct.
@@ -39,9 +39,9 @@ export class BillingHistoryComponent implements OnInit
   //
   getInvoiceData()
   {
-    // Ajax call to get the subscription data.
-    this.meService.getInvoices().subscribe((res) => {
-      this.invoices = res;
+    // Ajax call to get the billing history data.
+    this.meService.getBillingHistory().subscribe((res) => {
+      this.billingHistory = res;
     });
   }
 
