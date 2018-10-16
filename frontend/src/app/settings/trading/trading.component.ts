@@ -15,8 +15,9 @@ declare var OneSignal: any;
   styleUrls: []
 })
 
-export class TradingComponent implements OnInit {
-
+export class TradingComponent implements OnInit 
+{
+  strategySettingsState: StrategyActiveState = new StrategyActiveState();
 
   //
   // Construct.
@@ -28,6 +29,8 @@ export class TradingComponent implements OnInit {
   //
   ngOnInit() 
   {
+    console.log(this.strategySettingsState);
+
     //this.storeOneSignalUserId();
 
 
@@ -43,6 +46,34 @@ export class TradingComponent implements OnInit {
 
   }
 
+  //
+  // Change which setting we are on.
+  // 
+  strategySettingsClick(type: string)
+  {
+    // Clear all states.
+    for(var row in this.strategySettingsState)
+    {
+      this.strategySettingsState[row] = false;
+    }
+
+    // Set the active state.
+    this.strategySettingsState[type] = true;
+  }
+
+  //
+  // Helper toggle for strategy 
+  //
+  strategyHelperToggle(type: string)
+  {
+    if(this.strategySettingsState[type])
+    {
+      this.strategySettingsState[type] = false;
+    } else
+    {
+      this.strategySettingsState[type] = true;
+    }
+  }
 
   //
   // We call this when a Push Notification 
@@ -85,4 +116,20 @@ export class TradingComponent implements OnInit {
 
   }
 
+}
+
+//
+// Keep track of what setting state we are in.
+//
+class StrategyActiveState
+{
+  PutCreditSpread: boolean = true;
+  CallCreditSpread: boolean = false;
+  PutDebitSpread: boolean = false;
+  CallDebitSpread: boolean = false;
+
+  // Helper Bubbles
+  HelperPutCreditSpreadLots: boolean = false;
+  HelperPutCreditSpreadOpenPrice: boolean = false;
+  HelperPutCreditSpreadClosePrice: boolean = false;    
 }

@@ -1,7 +1,503 @@
 <app-layout-sub-nav></app-layout-sub-nav>
 
-<p>
-  trading works!
-</p>
+
+
+
+<div class="content__inner">
+  <div class="shell shell--large">
+    <div class="widget-settings">
+      <div class="widget__inner">
+        <div class="widget__aside">
+          <h5>Strategy Settings</h5>
+
+          <ul class="list-strategies">
+            <li [ngClass]="{ active: strategySettingsState.PutCreditSpread }">
+              <a (click)="strategySettingsClick('PutCreditSpread')">
+                Put Credit Spread
+                <i class="ico-angle-right-pink"></i>
+              </a>
+            </li>
+
+            <li [ngClass]="{ active: strategySettingsState.CallCreditSpread }">
+              <a (click)="strategySettingsClick('CallCreditSpread')">
+                Call Credit Spread
+                <i class="ico-angle-right-pink"></i>
+              </a>
+            </li>
+
+            <li [ngClass]="{ active: strategySettingsState.PutDebitSpread }">
+              <a (click)="strategySettingsClick('PutDebitSpread')">
+                Put Debit Spread
+                <i class="ico-angle-right-pink"></i>
+              </a>
+            </li>
+
+            <li [ngClass]="{ active: strategySettingsState.CallDebitSpread }">
+              <a (click)="strategySettingsClick('CallDebitSpread')">
+                Call Debit Spread
+                <i class="ico-angle-right-pink"></i>
+              </a>
+            </li>
+
+          </ul> 
+        </div>
+
+
+
+        <!-- ************* Put Credit Spread **************** -->
+        
+        <div class="widget__body" *ngIf="strategySettingsState.PutCreditSpread">
+          <h5>Put Credit Spread</h5>
+
+          <div class="widget__body-inner">
+            <p>
+              To easily placed trades you can set defaults for one click trading. For more information 
+              <a href="#">click here.</a>
+            </p>
+
+            <div class="table-alt">
+              <table>
+                <thead>
+                  <tr>
+                    <th></th>
+                    
+                    <th>
+                      <h5 class="title-question">
+                        Open Price
+
+                        <a (click)="strategyHelperToggle('HelperPutCreditSpreadOpenPrice')" class="link-question">
+                          <i class="ico-question"></i>
+                        </a>
+
+                        <div class="title-question__tooltip" *ngIf="strategySettingsState.HelperPutCreditSpreadOpenPrice">
+                          <h5>What is this?</h5>
+
+                          <p>
+                            A lot is the quanity of the trade you are putting on. 
+                            For example a vertical spread with a lot of 4 is selling 4 contracts and buying 4 contracts for a total of 8 contracts. An Iron Condor with a lot size of 2 is buying 4 contracts and selling 4 more for a total of 8 contracts. If you are just buying or selling an option your lot size will be the number of contracts you are trading.
+                          </p>
+                        </div>
+                      </h5>
+                    </th>
+
+                    <th>
+                      <h5 class="title-question active">
+                        Lots
+
+                        <a (click)="strategyHelperToggle('HelperPutCreditSpreadLots')" class="link-question">
+                          <i class="ico-question"></i>
+                        </a>
+
+                        <div class="title-question__tooltip" *ngIf="strategySettingsState.HelperPutCreditSpreadLots">
+                          <h5>What is this?</h5>
+
+                          <p>
+                            A lot is the quanity of the trade you are putting on. 
+                            For example a vertical spread with a lot of 4 is selling 4 contracts and buying 4 contracts for a total of 8 contracts. An Iron Condor with a lot size of 2 is buying 4 contracts and selling 4 more for a total of 8 contracts. If you are just buying or selling an option your lot size will be the number of contracts you are trading.
+                          </p>
+                        </div>
+                      </h5>
+                    </th>
+
+                    <th>
+                      <h5 class="title-question">
+                        Close Price
+
+                        <a (click)="strategyHelperToggle('HelperPutCreditSpreadClosePrice')" class="link-question">
+                          <i class="ico-question"></i>
+                        </a>
+
+                        <div class="title-question__tooltip" *ngIf="strategySettingsState.HelperPutCreditSpreadClosePrice">
+                          <h5>What is this?</h5>
+
+                          <p>
+                            A lot is the quanity of the trade you are putting on. 
+                            For example a vertical spread with a lot of 4 is selling 4 contracts and buying 4 contracts for a total of 8 contracts. An Iron Condor with a lot size of 2 is buying 4 contracts and selling 4 more for a total of 8 contracts. If you are just buying or selling an option your lot size will be the number of contracts you are trading.
+                          </p>
+                        </div>
+                      </h5>
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr>
+                    <td>
+                      <h4>Put Credit Spread</h4>
+                    </td>
+                    
+                    <td>
+                      <div class="select select--primary">
+                        <select name="field-search-expirations">
+                          <option value="option-1" selected="">Mid Point</option>
+
+                          <option value="option-2">Option 2</option>
+                        </select>
+                      </div>
+                    </td>
+
+                    <td>
+                      <input type="text" class="field">
+                    </td>
+
+                    <td>
+                      <input type="text" class="field" placeholder="$">
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td>
+                      <h4>Call Credit Spread</h4>
+                    </td>
+                    
+                    <td>
+                      <div class="select select--primary">
+                        <select name="field-search-expirations">
+                          <option value="option-1" selected="">Mid Point</option>
+
+                          <option value="option-2">Option 2</option>
+                        </select>
+                      </div>
+                    </td>
+
+                    <td>
+                      <input type="text" class="field">
+                    </td>
+
+                    <td>
+                      <input type="text" class="field" placeholder="$">
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td>
+                      <h4>Put Debit Spread</h4>
+                    </td>
+                    
+                    <td>
+                      <div class="select select--primary">
+                        <select name="field-search-expirations">
+                          <option value="option-1" selected="">Mid Point</option>
+
+                          <option value="option-2">Option 2</option>
+                        </select>
+                      </div>
+                    </td>
+
+                    <td>
+                      <input type="text" class="field">
+                    </td>
+
+                    <td>
+                      <input type="text" class="field" placeholder="$">
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td>
+                      <h4>Call Debit Spread</h4>
+                    </td>
+                    
+                    <td>
+                      <div class="select select--primary">
+                        <select name="field-search-expirations">
+                          <option value="option-1" selected="">Mid Point</option>
+
+                          <option value="option-2">Option 2</option>
+                        </select>
+                      </div>
+                    </td>
+
+                    <td>
+                      <input type="text" class="field">
+                    </td>
+
+                    <td>
+                      <input type="text" class="field" placeholder="$">
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="widget-settings">
+      <div class="table-def js-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Notifications</th>
+              
+              <th>Email</th>
+              
+              <th>SMS</th>
+              
+              <th>Push Notifications</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>
+                <h6>Open Trade Has Been Filled</h6>
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch1" />
+
+                  <label for="ch1"></label>
+                </div><!-- /.checkbox -->
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch2" checked />
+
+                  <label for="ch2"></label>
+                </div><!-- /.checkbox -->
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch3" />
+
+                  <label for="ch3"></label>
+                </div><!-- /.checkbox -->
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <h6>Trade Ends</h6>
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch4" />
+
+                  <label for="ch4"></label>
+                </div><!-- /.checkbox -->
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch5" />
+
+                  <label for="ch5"></label>
+                </div><!-- /.checkbox -->
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch6" checked />
+
+                  <label for="ch6"></label>
+                </div><!-- /.checkbox -->
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <h6>Limit Reached</h6>
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch7" checked/>
+
+                  <label for="ch7"></label>
+                </div><!-- /.checkbox -->
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch8" />
+
+                  <label for="ch8"></label>
+                </div><!-- /.checkbox -->
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch9" />
+
+                  <label for="ch9"></label>
+                </div><!-- /.checkbox -->
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <h6>More Notifications</h6>
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch10" />
+
+                  <label for="ch10"></label>
+                </div><!-- /.checkbox -->
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch11" checked />
+
+                  <label for="ch11"></label>
+                </div><!-- /.checkbox -->
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch12" />
+
+                  <label for="ch12"></label>
+                </div><!-- /.checkbox -->
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <h6>Open Trade Has Been Filled</h6>
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch13" />
+
+                  <label for="ch13"></label>
+                </div><!-- /.checkbox -->
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch14" />
+
+                  <label for="ch14"></label>
+                </div><!-- /.checkbox -->
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch15" />
+
+                  <label for="ch15"></label>
+                </div><!-- /.checkbox -->
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <h6>Trade Ends</h6>
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch16" checked />
+
+                  <label for="ch16"></label>
+                </div><!-- /.checkbox -->
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch17" checked />
+
+                  <label for="ch17"></label>
+                </div><!-- /.checkbox -->
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch18" />
+
+                  <label for="ch18"></label>
+                </div><!-- /.checkbox -->
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <h6>Limit Reached</h6>
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch19" />
+
+                  <label for="ch19"></label>
+                </div><!-- /.checkbox -->
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch20" />
+
+                  <label for="ch20"></label>
+                </div><!-- /.checkbox -->
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch21" />
+
+                  <label for="ch21"></label>
+                </div><!-- /.checkbox -->
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <h6>More Notifications</h6>
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch22" checked />
+
+                  <label for="ch22"></label>
+                </div><!-- /.checkbox -->
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch23" checked />
+
+                  <label for="ch23"></label>
+                </div><!-- /.checkbox -->
+              </td>
+
+              <td>
+                <div class="checkbox">
+                  <input type="checkbox" id="ch24" />
+
+                  <label for="ch24"></label>
+                </div><!-- /.checkbox -->
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div><!-- /.table -->
+    </div><!-- /.widget-settings -->
+  </div><!-- /.shell shell-large -->
+</div><!-- /.content__inner -->
+
 
 <a (click)="setupBrowserNotifications()" class="btn btn--pink">Setup Notifications</a>
