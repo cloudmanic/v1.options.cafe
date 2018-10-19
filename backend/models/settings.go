@@ -33,6 +33,21 @@ type Settings struct {
 	StrategyCdsClosePrice float64 `json:"strategy_cds_close_price" sql:"not null;default:0.03"`
 	StrategyCdsOpenPrice  string  `json:"strategy_cds_open_price" sql:"not null;default:'mid-point'"`
 	StrategyCdsLots       uint    `json:"strategy_cds_lots" sql:"not null;default:10"`
+
+	// Trade Filled
+	NoticeTradeFilledEmail string `sql:"not null;type:ENUM('Yes', 'No');default:'No'" json:"notice_trade_filled_email"`
+	NoticeTradeFilledSms   string `sql:"not null;type:ENUM('Yes', 'No');default:'No'" json:"notice_trade_filled_sms"`
+	NoticeTradeFilledPush  string `sql:"not null;type:ENUM('Yes', 'No');default:'No'" json:"notice_trade_filled_push"`
+
+	// Market Open
+	NoticeMarketOpenedEmail string `sql:"not null;type:ENUM('Yes', 'No');default:'No'" json:"notice_market_open_email"`
+	NoticeMarketOpenedSms   string `sql:"not null;type:ENUM('Yes', 'No');default:'No'" json:"notice_market_open_sms"`
+	NoticeMarketOpenedPush  string `sql:"not null;type:ENUM('Yes', 'No');default:'No'" json:"notice_market_open_push"`
+
+	// Market Closed
+	NoticeMarketClosedEmail string `sql:"not null;type:ENUM('Yes', 'No');default:'No'" json:"notice_market_closed_email"`
+	NoticeMarketClosedSms   string `sql:"not null;type:ENUM('Yes', 'No');default:'No'" json:"notice_market_closed_sms"`
+	NoticeMarketClosedPush  string `sql:"not null;type:ENUM('Yes', 'No');default:'No'" json:"notice_market_closed_push"`
 }
 
 //

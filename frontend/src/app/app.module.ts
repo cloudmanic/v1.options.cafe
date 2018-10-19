@@ -28,6 +28,7 @@ import { BrokerService } from './providers/http/broker.service';
 import { SymbolService } from './providers/http/symbol.service';
 import { StatusService } from './providers/http/status.service';
 import { ReportsService } from './providers/http/reports.service';
+import { SettingsService } from './providers/http/settings.service';
 import { WatchlistService } from './providers/http/watchlist.service';
 import { TradeGroupService } from './providers/http/trade-group.service';
 import { WebsocketService } from './providers/http/websocket.service';
@@ -176,6 +177,7 @@ import { TradeEquityComponent } from './trade/trade-equity/trade-equity.componen
     ReportsService,
     BrokerEventsService,
     NotificationsService,
+    SettingsService,
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }    
   ],
   

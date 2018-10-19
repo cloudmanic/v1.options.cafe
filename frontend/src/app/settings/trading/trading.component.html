@@ -13,7 +13,7 @@
           <ul class="list-strategies">
             <li [ngClass]="{ active: strategySettingsState.PutCreditSpread }">
               <a (click)="strategySettingsClick('PutCreditSpread')">
-                Put Credit Spread
+                Vertical Spreads
                 <i class="ico-angle-right-pink"></i>
               </a>
             </li>
@@ -47,7 +47,7 @@
         <!-- ************* Put Credit Spread **************** -->
         
         <div class="widget__body" *ngIf="strategySettingsState.PutCreditSpread">
-          <h5>Put Credit Spread</h5>
+          <h5>Vertical Spreads</h5>
 
           <div class="widget__body-inner">
             <p>
@@ -128,20 +128,20 @@
                     
                     <td>
                       <div class="select select--primary">
-                        <select name="field-search-expirations">
-                          <option value="option-1" selected="">Mid Point</option>
-
-                          <option value="option-2">Option 2</option>
+                        <select name="StrategyPcsOpenPrice" [(ngModel)]="settings.StrategyPcsOpenPrice">
+                          <option value="bid">Bid</option>
+                          <option value="ask">Ask</option>                           
+                          <option value="mid-point">Mid Point</option>                         
                         </select>
                       </div>
                     </td>
 
                     <td>
-                      <input type="text" class="field">
+                      <input type="text" class="field" name="StrategyPcsLots" [(ngModel)]="settings.StrategyPcsLots" />
                     </td>
 
                     <td>
-                      <input type="text" class="field" placeholder="$">
+                      <input type="text" class="field" placeholder="$" name="StrategyPcsClosePrice" [(ngModel)]="settings.StrategyPcsClosePrice" />
                     </td>
                   </tr>
 
@@ -152,20 +152,20 @@
                     
                     <td>
                       <div class="select select--primary">
-                        <select name="field-search-expirations">
-                          <option value="option-1" selected="">Mid Point</option>
-
-                          <option value="option-2">Option 2</option>
+                        <select name="StrategyCcsOpenPrice" [(ngModel)]="settings.StrategyCcsOpenPrice">
+                          <option value="bid">Bid</option>
+                          <option value="ask">Ask</option>                           
+                          <option value="mid-point">Mid Point</option>                         
                         </select>
                       </div>
                     </td>
 
                     <td>
-                      <input type="text" class="field">
+                      <input type="text" class="field" name="StrategyCcsLots" [(ngModel)]="settings.StrategyCcsLots" />
                     </td>
 
                     <td>
-                      <input type="text" class="field" placeholder="$">
+                      <input type="text" class="field" placeholder="$" name="StrategyCcsClosePrice" [(ngModel)]="settings.StrategyCcsClosePrice" />
                     </td>
                   </tr>
 
@@ -176,20 +176,20 @@
                     
                     <td>
                       <div class="select select--primary">
-                        <select name="field-search-expirations">
-                          <option value="option-1" selected="">Mid Point</option>
-
-                          <option value="option-2">Option 2</option>
+                        <select name="StrategyPdsOpenPrice" [(ngModel)]="settings.StrategyPdsOpenPrice">
+                          <option value="bid">Bid</option>
+                          <option value="ask">Ask</option>                           
+                          <option value="mid-point">Mid Point</option>                         
                         </select>
                       </div>
                     </td>
 
                     <td>
-                      <input type="text" class="field">
+                      <input type="text" class="field" name="StrategyPdsLots" [(ngModel)]="settings.StrategyPdsLots" />
                     </td>
 
                     <td>
-                      <input type="text" class="field" placeholder="$">
+                      <input type="text" class="field" placeholder="$" name="StrategyPdsClosePrice" [(ngModel)]="settings.StrategyPdsClosePrice" />
                     </td>
                   </tr>
 
@@ -200,20 +200,20 @@
                     
                     <td>
                       <div class="select select--primary">
-                        <select name="field-search-expirations">
-                          <option value="option-1" selected="">Mid Point</option>
-
-                          <option value="option-2">Option 2</option>
+                        <select name="StrategyCdsOpenPrice" [(ngModel)]="settings.StrategyCdsOpenPrice">
+                          <option value="bid">Bid</option>
+                          <option value="ask">Ask</option>                           
+                          <option value="mid-point">Mid Point</option>                         
                         </select>
                       </div>
                     </td>
 
                     <td>
-                      <input type="text" class="field">
+                      <input type="text" class="field" name="StrategyCdsLots" [(ngModel)]="settings.StrategyCdsLots" />
                     </td>
 
                     <td>
-                      <input type="text" class="field" placeholder="$">
+                      <input type="text" class="field" placeholder="$" name="StrategyCdsClosePrice" [(ngModel)]="settings.StrategyCdsClosePrice" />
                     </td>
                   </tr>
                 </tbody>

@@ -4,7 +4,9 @@
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import { Settings } from '../../models/settings';
 import { Component, OnInit } from '@angular/core';
+import { SettingsService } from '../../providers/http/settings.service';
 import { NotificationsService } from '../../providers/http/notifications.service';
 
 declare var OneSignal: any;
@@ -17,19 +19,21 @@ declare var OneSignal: any;
 
 export class TradingComponent implements OnInit 
 {
+  settings: Settings = new Settings();
   strategySettingsState: StrategyActiveState = new StrategyActiveState();
 
   //
   // Construct.
   //
-  constructor(private notificationsService: NotificationsService) { }
+  constructor(private notificationsService: NotificationsService, private settingsService: SettingsService) { }
 
   //
   // NgInit
   //
   ngOnInit() 
   {
-    console.log(this.strategySettingsState);
+    // Load data for page.
+    this.loadSettingsData(); 
 
     //this.storeOneSignalUserId();
 
@@ -44,6 +48,17 @@ export class TradingComponent implements OnInit
 
     // });
 
+  }
+
+  //
+  // Load settings data.
+  //
+  loadSettingsData()
+  {
+    this.settingsService.get().subscribe((res) => {
+      this.settings = res;
+      console.log(res);
+    });
   }
 
   //
