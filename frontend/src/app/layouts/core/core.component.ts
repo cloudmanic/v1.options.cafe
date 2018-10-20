@@ -30,6 +30,7 @@ export class LayoutCoreComponent implements OnInit
     // Subscribe SiteSuccess events
     this.stateService.SiteSuccess.subscribe(data => {
       this.successMsg = data;
+      setTimeout(() => { this.closeSuccess() }, 3000);
     });
   }
 

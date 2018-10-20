@@ -72,7 +72,18 @@ export class TradingComponent implements OnInit
   {
     this.settingsService.update(this.settings).subscribe((res) => {
       this.stateService.SetSettings(this.settings);
+
+      // Show success notice
+      this.stateService.SiteSuccess.emit("Your trade settings have been successfully updated.");     
     });    
+  }
+
+  //
+  // Strategy change
+  //
+  strategyChange()
+  {
+    this.updateSettings(); 
   }
 
   //

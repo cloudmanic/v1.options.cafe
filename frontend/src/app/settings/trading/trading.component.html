@@ -128,7 +128,7 @@
                     
                     <td>
                       <div class="select select--primary">
-                        <select name="StrategyPcsOpenPrice" [(ngModel)]="settings.StrategyPcsOpenPrice">
+                        <select name="StrategyPcsOpenPrice" [(ngModel)]="settings.StrategyPcsOpenPrice" (change)="strategyChange()">
                           <option value="bid">Bid</option>
                           <option value="ask">Ask</option>                           
                           <option value="mid-point">Mid Point</option>                         
@@ -137,11 +137,11 @@
                     </td>
 
                     <td>
-                      <input type="text" class="field" name="StrategyPcsLots" [(ngModel)]="settings.StrategyPcsLots" />
+                      <input type="number" class="field" name="StrategyPcsLots" [(ngModel)]="settings.StrategyPcsLots" (change)="strategyChange()" />
                     </td>
 
                     <td>
-                      <input type="text" class="field" placeholder="$" name="StrategyPcsClosePrice" [(ngModel)]="settings.StrategyPcsClosePrice" />
+                      <input type="number" class="field" placeholder="$" name="StrategyPcsClosePrice" [(ngModel)]="settings.StrategyPcsClosePrice" (change)="strategyChange()" />
                     </td>
                   </tr>
 
@@ -152,7 +152,7 @@
                     
                     <td>
                       <div class="select select--primary">
-                        <select name="StrategyCcsOpenPrice" [(ngModel)]="settings.StrategyCcsOpenPrice">
+                        <select name="StrategyCcsOpenPrice" [(ngModel)]="settings.StrategyCcsOpenPrice" (change)="strategyChange()">
                           <option value="bid">Bid</option>
                           <option value="ask">Ask</option>                           
                           <option value="mid-point">Mid Point</option>                         
@@ -161,11 +161,11 @@
                     </td>
 
                     <td>
-                      <input type="text" class="field" name="StrategyCcsLots" [(ngModel)]="settings.StrategyCcsLots" />
+                      <input type="number" class="field" name="StrategyCcsLots" [(ngModel)]="settings.StrategyCcsLots" (change)="strategyChange()" />
                     </td>
 
                     <td>
-                      <input type="text" class="field" placeholder="$" name="StrategyCcsClosePrice" [(ngModel)]="settings.StrategyCcsClosePrice" />
+                      <input type="number" class="field" placeholder="$" name="StrategyCcsClosePrice" [(ngModel)]="settings.StrategyCcsClosePrice" (change)="strategyChange()" />
                     </td>
                   </tr>
 
@@ -176,7 +176,7 @@
                     
                     <td>
                       <div class="select select--primary">
-                        <select name="StrategyPdsOpenPrice" [(ngModel)]="settings.StrategyPdsOpenPrice">
+                        <select name="StrategyPdsOpenPrice" [(ngModel)]="settings.StrategyPdsOpenPrice" (change)="strategyChange()">
                           <option value="bid">Bid</option>
                           <option value="ask">Ask</option>                           
                           <option value="mid-point">Mid Point</option>                         
@@ -185,11 +185,11 @@
                     </td>
 
                     <td>
-                      <input type="text" class="field" name="StrategyPdsLots" [(ngModel)]="settings.StrategyPdsLots" />
+                      <input type="number" class="field" name="StrategyPdsLots" [(ngModel)]="settings.StrategyPdsLots" (change)="strategyChange()" />
                     </td>
 
                     <td>
-                      <input type="text" class="field" placeholder="$" name="StrategyPdsClosePrice" [(ngModel)]="settings.StrategyPdsClosePrice" />
+                      <input type="number" class="field" placeholder="$" name="StrategyPdsClosePrice" [(ngModel)]="settings.StrategyPdsClosePrice" (change)="strategyChange()" />
                     </td>
                   </tr>
 
@@ -200,7 +200,7 @@
                     
                     <td>
                       <div class="select select--primary">
-                        <select name="StrategyCdsOpenPrice" [(ngModel)]="settings.StrategyCdsOpenPrice">
+                        <select name="StrategyCdsOpenPrice" [(ngModel)]="settings.StrategyCdsOpenPrice" (change)="strategyChange()">
                           <option value="bid">Bid</option>
                           <option value="ask">Ask</option>                           
                           <option value="mid-point">Mid Point</option>                         
@@ -209,11 +209,11 @@
                     </td>
 
                     <td>
-                      <input type="text" class="field" name="StrategyCdsLots" [(ngModel)]="settings.StrategyCdsLots" />
+                      <input type="number" class="field" name="StrategyCdsLots" [(ngModel)]="settings.StrategyCdsLots" (change)="strategyChange()" />
                     </td>
 
                     <td>
-                      <input type="text" class="field" placeholder="$" name="StrategyCdsClosePrice" [(ngModel)]="settings.StrategyCdsClosePrice" />
+                      <input type="number" class="field" placeholder="$" name="StrategyCdsClosePrice" [(ngModel)]="settings.StrategyCdsClosePrice" (change)="strategyChange()" />
                     </td>
                   </tr>
                 </tbody>
