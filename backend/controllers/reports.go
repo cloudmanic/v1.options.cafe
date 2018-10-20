@@ -7,7 +7,6 @@
 package controllers
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
@@ -30,8 +29,6 @@ func (t *Controller) ReportsGetProfitLoss(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(userId)
-
 	// Get broker account
 	brokerAccount, err := t.DB.GetBrokerAccountByIdUserId(uint(brokerAccountId), userId)
 
@@ -41,9 +38,10 @@ func (t *Controller) ReportsGetProfitLoss(c *gin.Context) {
 
 	// Get list of profits
 	profits := reports.GetProfitLoss(t.DB, brokerAccount, reports.ProfitLossParams{
-		StartDate: helpers.ParseDateNoError("2018-01-01"),
-		EndDate:   helpers.ParseDateNoError("2018-12-31"),
-		GroupBy:   "month",
+		StartDate: helpers.ParseDateNoError(c.Query("start")),
+		EndDate:   helpers.ParseDateNoError(c.Query("end")),
+		GroupBy:   c.Query("group"),
+		Sort:      c.Query("sort"),
 	})
 
 	// Return happy JSON

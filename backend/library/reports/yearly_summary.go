@@ -41,7 +41,7 @@ func GetYearsWithTradeGroups(db models.Datastore, brokerAccount models.BrokerAcc
 	var results []Result
 
 	// Set select string
-	queryStr := "SELECT YEAR(closed_date) AS year FROM trade_groups WHERE broker_account_id = ? GROUP BY year ORDER BY year desc"
+	queryStr := "SELECT YEAR(closed_date) AS year FROM trade_groups WHERE status = 'Closed' AND broker_account_id = ? GROUP BY year ORDER BY year desc"
 
 	// Run query.
 	db.New().Raw(queryStr, brokerAccount.Id).Scan(&results)
@@ -66,7 +66,7 @@ func GetYearlySummaryByAccountYear(db models.Datastore, brokerAccount models.Bro
 		"SUM(CASE WHEN profit < 0 THEN 1 ELSE 0 END) AS loss_count, SUM(CASE WHEN profit > 0 THEN 1 ELSE 0 END) AS win_count, " +
 		"STDDEV(profit) AS profit_std, AVG(percent_gain) AS avg_percent_gain, AVG(risked) AS avg_risked, STDDEV(percent_gain) AS percent_gain_std"
 
-	queryStr := "SELECT " + selectStr + " FROM trade_groups WHERE broker_account_id = ? AND YEAR(closed_date) = ?"
+	queryStr := "SELECT " + selectStr + " FROM trade_groups WHERE status = 'Closed' AND broker_account_id = ? AND YEAR(closed_date) = ?"
 
 	// Run query.
 	db.New().Raw(queryStr, brokerAccount.Id, year).Scan(&summary)
