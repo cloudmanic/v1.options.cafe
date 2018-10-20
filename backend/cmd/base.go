@@ -31,6 +31,12 @@ func Run(db *models.DB) bool {
 
 	switch *action {
 
+	// Go to Angular
+	case "go-to-angular":
+		actions.GoToAngular()
+		return true
+		break
+
 	// Bulk EOD options import
 	case "bulk-eod-options-import":
 		options.DoBulkEodImportToPerSymbolDay()

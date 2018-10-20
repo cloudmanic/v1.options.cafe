@@ -66,6 +66,16 @@ export class TradingComponent implements OnInit
   }
 
   //
+  // Update settings
+  //
+  updateSettings()
+  {
+    this.settingsService.update(this.settings).subscribe((res) => {
+      this.stateService.SetSettings(this.settings);
+    });    
+  }
+
+  //
   // Notice change
   //
   noticeChange(which: string) 
@@ -78,7 +88,7 @@ export class TradingComponent implements OnInit
       this.settings[which] = "Yes";
     }
 
-    console.log(this.settings);
+    this.updateSettings();
   }
 
   //

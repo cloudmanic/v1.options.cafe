@@ -8,10 +8,59 @@ package actions
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
+
+//
+// Create models and services in go for Angular
+//
+// go run main.go -cmd=go-to-angular
+//
+func GoToAngular() {
+
+	o := models.Settings{}
+
+	t := reflect.TypeOf(o)
+	val := reflect.ValueOf(&o).Elem()
+
+	// Build out what we need to map json to Angular vars in the fromJson
+	fmt.Println("")
+	fmt.Println("########### Json To Angular (used in model::fromJson) ############")
+	for i := 0; i < val.NumField(); i++ {
+		n := val.Type().Field(i).Name
+		f, _ := t.FieldByName(n)
+
+		v, ok := f.Tag.Lookup("json")
+
+		if !ok {
+			continue
+		}
+
+		fmt.Println("result." + n + ` = json["` + v + `"];`)
+	}
+
+	// Build the post back to the server in Angular more or less Angular to json
+	fmt.Println("")
+	fmt.Println("########### Angular to json (used in service) ############")
+
+	for i := 0; i < val.NumField(); i++ {
+		n := val.Type().Field(i).Name
+		f, _ := t.FieldByName(n)
+
+		v, ok := f.Tag.Lookup("json")
+
+		if !ok {
+			continue
+		}
+
+		fmt.Println(v + ": obj." + n + ",")
+	}
+
+	fmt.Println("")
+}
 
 //
 // Create a new application.
