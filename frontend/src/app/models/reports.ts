@@ -4,6 +4,9 @@
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import * as moment from 'moment';
+
+// Summary Yearly
 export class SummaryYearly 
 {
   public Year: number;
@@ -44,6 +47,57 @@ export class SummaryYearly
   }
 
   
+}
+
+// Profit and Loss
+export class ProfitLoss 
+{
+  Date: Date;
+  Profit: number;
+  TradeCount: number;
+  Commissions: number;
+  ProfitPerTrade: number;
+  WinRatio: number;
+  LossCount: number;
+  WinCount: number;
+
+  //
+  // Build from json list.
+  //
+  fromJsonList(json: Object[]): ProfitLoss[] {
+    let list: ProfitLoss[] = [];
+
+    if (!json) {
+      return list;
+    }
+
+    for (let i = 0; i < json.length; i++) {
+      list.push(this.fromJson(json[i]));
+    }
+
+    return list;
+  }
+
+  //
+  // Json to Object.
+  //
+  fromJson(json: Object): ProfitLoss 
+  {
+    let obj = new ProfitLoss();
+
+    obj.Date = moment(json["date"]).toDate();
+    obj.Profit = json["profit"];
+    obj.TradeCount = json["trade_count"];
+    obj.Commissions = json["commissions"];
+    obj.ProfitPerTrade = json["profit_per_trade"];
+    obj.WinRatio = json["win_ratio"];
+    obj.LossCount = json["loss_count"];
+    obj.WinCount = json["win_count"];
+
+    return obj;
+  }
+
+
 }
 
 /* End File */

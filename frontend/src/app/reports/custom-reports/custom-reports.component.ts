@@ -4,8 +4,8 @@
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import { ProfitLoss } from '../../models/reports';
 import { Component, OnInit } from '@angular/core';
-import { SummaryYearly } from '../../models/reports';
 import { StateService } from '../../providers/state/state.service';
 import { ReportsService } from '../../providers/http/reports.service';
 
@@ -17,6 +17,8 @@ import { ReportsService } from '../../providers/http/reports.service';
 
 export class CustomReportsComponent implements OnInit 
 {
+  listData: ProfitLoss[] = [];
+
   //
   // Construct.
   //
@@ -30,7 +32,20 @@ export class CustomReportsComponent implements OnInit
   //
   ngOnInit() 
   {
+    // Get data for page.
+    this.getProfitLoss();
+  }
 
+  //
+  // Get Data = Profit Loss
+  //
+  getProfitLoss() 
+  {
+    this.reportsService.getProfitLoss(Number(this.stateService.GetStoredActiveAccountId()), "2018-01-01", "2018-12-31", "month", "desc").subscribe((res) => {
+      this.listData = res;
+
+      console.log(res);
+    });
   }
 
 }
