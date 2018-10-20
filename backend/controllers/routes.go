@@ -28,6 +28,7 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 
 		// Settings
 		apiV1.GET("/settings", t.GetSettings)
+		apiV1.PUT("/settings", t.UpdateSettings)
 
 		// Me
 		apiV1.GET("/me/profile", t.GetProfile)

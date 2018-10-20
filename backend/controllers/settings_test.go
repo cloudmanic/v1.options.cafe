@@ -7,6 +7,8 @@
 package controllers
 
 import (
+	"bytes"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -73,6 +75,156 @@ func TestGetSettings01(t *testing.T) {
 	// Parse json that returned.
 	st.Expect(t, w2.Code, 200)
 	st.Expect(t, w2.Body.String(), jsonResponse)
+}
+
+//
+// TestGetSettings01
+//
+func TestUpdateSettings01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Create a temp setting
+	settings := db.SettingsGetOrCreateByUserId(1)
+
+	// Change some values to test.
+	settings.StrategyCcsClosePrice = 0.40
+	settings.NoticeTradeFilledEmail = "Yes"
+	settings.NoticeTradeFilledSms = "Yes"
+	json, _ := json.Marshal(settings)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("PUT", "/api/v1/settings", bytes.NewBuffer(json))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.PUT("/api/v1/settings", c.UpdateSettings)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Parse json that returned.
+	st.Expect(t, w.Code, 204)
+	st.Expect(t, w.Body.String(), "")
+
+	// Get settings again to verify
+	s := db.SettingsGetOrCreateByUserId(1)
+
+	// Verify
+	st.Expect(t, s.StrategyCcsClosePrice, 0.40)
+	st.Expect(t, s.NoticeTradeFilledEmail, "Yes")
+	st.Expect(t, s.NoticeTradeFilledSms, "Yes")
+	st.Expect(t, s.NoticeTradeFilledPush, "No")
+	st.Expect(t, s.StrategyCcsOpenPrice, "mid-point")
+	st.Expect(t, s.StrategyPcsClosePrice, 0.03)
+}
+
+//
+// TestGetSettings02
+//
+func TestUpdateSettings02(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Create a temp setting
+	settings := db.SettingsGetOrCreateByUserId(1)
+
+	// Change some values to test.
+	settings.UserId = 12 // Making sure this is ignored
+	settings.StrategyCcsClosePrice = 0.40
+	settings.NoticeTradeFilledEmail = "Yes"
+	settings.NoticeTradeFilledSms = "Yes"
+	json, _ := json.Marshal(settings)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("PUT", "/api/v1/settings", bytes.NewBuffer(json))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.PUT("/api/v1/settings", c.UpdateSettings)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Parse json that returned.
+	st.Expect(t, w.Code, 204)
+	st.Expect(t, w.Body.String(), "")
+
+	// Get settings again to verify
+	s := db.SettingsGetOrCreateByUserId(1)
+
+	// Verify
+	st.Expect(t, s.UserId, uint(1))
+	st.Expect(t, s.StrategyCcsClosePrice, 0.40)
+	st.Expect(t, s.NoticeTradeFilledEmail, "Yes")
+	st.Expect(t, s.NoticeTradeFilledSms, "Yes")
+	st.Expect(t, s.NoticeTradeFilledPush, "No")
+	st.Expect(t, s.StrategyCcsOpenPrice, "mid-point")
+	st.Expect(t, s.StrategyPcsClosePrice, 0.03)
+}
+
+//
+// TestGetSettings03
+//
+func TestUpdateSettings03(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Create a temp setting
+	settings := db.SettingsGetOrCreateByUserId(1)
+
+	// Change some values to test.
+	settings.StrategyCcsClosePrice = 0.40
+	settings.NoticeTradeFilledEmail = "break"
+	settings.NoticeTradeFilledSms = "Yes"
+	json, _ := json.Marshal(settings)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("PUT", "/api/v1/settings", bytes.NewBuffer(json))
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.PUT("/api/v1/settings", c.UpdateSettings)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	// Parse json that returned.
+	st.Expect(t, w.Code, 400)
+	st.Expect(t, w.Body.String(), `{"errors":{"notice_trade_filled_email":"The notice_trade_filled_email must be Yes or No."}}`)
 }
 
 /* End File */

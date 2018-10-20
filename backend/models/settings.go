@@ -6,7 +6,11 @@
 
 package models
 
-import "time"
+import (
+	"time"
+
+	validation "github.com/go-ozzo/ozzo-validation"
+)
 
 type Settings struct {
 	Id        uint      `gorm:"primary_key" json:"id"`
@@ -48,6 +52,103 @@ type Settings struct {
 	NoticeMarketClosedEmail string `sql:"not null;type:ENUM('Yes', 'No');default:'No'" json:"notice_market_closed_email"`
 	NoticeMarketClosedSms   string `sql:"not null;type:ENUM('Yes', 'No');default:'No'" json:"notice_market_closed_sms"`
 	NoticeMarketClosedPush  string `sql:"not null;type:ENUM('Yes', 'No');default:'No'" json:"notice_market_closed_push"`
+}
+
+//
+// Validate for this model.
+//
+func (a Settings) Validate(db Datastore, userId uint) error {
+
+	// Return validation
+	return validation.ValidateStruct(&a,
+
+		// Strategies - Vertical Spreads
+		validation.Field(&a.StrategyPcsClosePrice, validation.Required.Error("The strategy_pcs_close_price field is required.")),
+		validation.Field(&a.StrategyPcsLots, validation.Required.Error("The strategy_pcs_close_price field is required.")),
+
+		validation.Field(&a.StrategyCcsClosePrice, validation.Required.Error("The strategy_ccs_close_price field is required.")),
+		validation.Field(&a.StrategyCcsLots, validation.Required.Error("The strategy_ccs_lots field is required.")),
+
+		validation.Field(&a.StrategyPdsClosePrice, validation.Required.Error("The strategy_pds_close_price field is required.")),
+		validation.Field(&a.StrategyPdsLots, validation.Required.Error("The strategy_pds_lots field is required.")),
+
+		validation.Field(&a.StrategyCdsClosePrice, validation.Required.Error("The strategy_cds_close_price field is required.")),
+		validation.Field(&a.StrategyCdsLots, validation.Required.Error("The strategy_cds_lots field is required.")),
+
+		validation.Field(&a.StrategyPcsOpenPrice,
+			validation.Required.Error("The notice_trade_filled_email field is required."),
+			validation.In("mid-point", "bid", "ask").Error("The strategy_pcs_open_price must be mid-point, bid, or ask."),
+		),
+
+		validation.Field(&a.StrategyCcsOpenPrice,
+			validation.Required.Error("The notice_trade_filled_email field is required."),
+			validation.In("mid-point", "bid", "ask").Error("The strategy_ccs_open_price must be mid-point, bid, or ask."),
+		),
+
+		validation.Field(&a.StrategyPdsOpenPrice,
+			validation.Required.Error("The notice_trade_filled_email field is required."),
+			validation.In("mid-point", "bid", "ask").Error("The strategy_pds_open_price must be mid-point, bid, or ask."),
+		),
+
+		validation.Field(&a.StrategyCdsOpenPrice,
+			validation.Required.Error("The notice_trade_filled_email field is required."),
+			validation.In("mid-point", "bid", "ask").Error("The strategy_cds_open_price must be mid-point, bid, or ask."),
+		),
+
+		// NoticeTradeFilledEmail
+		validation.Field(&a.NoticeTradeFilledEmail,
+			validation.Required.Error("The notice_trade_filled_email field is required."),
+			validation.In("Yes", "No").Error("The notice_trade_filled_email must be Yes or No."),
+		),
+
+		// NoticeTradeFilledSms
+		validation.Field(&a.NoticeTradeFilledSms,
+			validation.Required.Error("The notice_trade_filled_email field is required."),
+			validation.In("Yes", "No").Error("The notice_market_open_sms must be Yes or No."),
+		),
+
+		// NoticeTradeFilledPush
+		validation.Field(&a.NoticeTradeFilledPush,
+			validation.Required.Error("The notice_trade_filled_email field is required."),
+			validation.In("Yes", "No").Error("The notice_market_open_push must be Yes or No."),
+		),
+
+		// NoticeMarketOpenedEmail
+		validation.Field(&a.NoticeMarketOpenedEmail,
+			validation.Required.Error("The notice_trade_filled_email field is required."),
+			validation.In("Yes", "No").Error("The notice_trade_filled_email must be Yes or No."),
+		),
+
+		// NoticeMarketOpenedSms
+		validation.Field(&a.NoticeMarketOpenedSms,
+			validation.Required.Error("The notice_trade_filled_email field is required."),
+			validation.In("Yes", "No").Error("The notice_market_open_sms must be Yes or No."),
+		),
+
+		// NoticeMarketOpenedPush
+		validation.Field(&a.NoticeMarketOpenedPush,
+			validation.Required.Error("The notice_trade_filled_email field is required."),
+			validation.In("Yes", "No").Error("The notice_market_open_push must be Yes or No."),
+		),
+
+		// NoticeMarketClosedEmail
+		validation.Field(&a.NoticeMarketClosedEmail,
+			validation.Required.Error("The notice_trade_filled_email field is required."),
+			validation.In("Yes", "No").Error("The notice_market_closed_email must be Yes or No."),
+		),
+
+		// NoticeMarketClosedSms
+		validation.Field(&a.NoticeMarketClosedSms,
+			validation.Required.Error("The notice_trade_filled_email field is required."),
+			validation.In("Yes", "No").Error("The notice_market_closed_sms must be Yes or No."),
+		),
+
+		// NoticeMarketClosedPush
+		validation.Field(&a.NoticeMarketClosedPush,
+			validation.Required.Error("The notice_trade_filled_email field is required."),
+			validation.In("Yes", "No").Error("The notice_market_closed_push must be Yes or No."),
+		),
+	)
 }
 
 //
