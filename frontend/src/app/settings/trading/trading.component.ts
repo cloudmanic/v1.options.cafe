@@ -6,6 +6,7 @@
 
 import { Settings } from '../../models/settings';
 import { Component, OnInit } from '@angular/core';
+import { StateService } from '../../providers/state/state.service';
 import { SettingsService } from '../../providers/http/settings.service';
 import { NotificationsService } from '../../providers/http/notifications.service';
 
@@ -25,7 +26,10 @@ export class TradingComponent implements OnInit
   //
   // Construct.
   //
-  constructor(private notificationsService: NotificationsService, private settingsService: SettingsService) { }
+  constructor(private notificationsService: NotificationsService, private settingsService: SettingsService, private stateService: StateService) 
+  { 
+    this.settings = this.stateService.GetSettings();
+  }
 
   //
   // NgInit
@@ -57,8 +61,24 @@ export class TradingComponent implements OnInit
   {
     this.settingsService.get().subscribe((res) => {
       this.settings = res;
-      console.log(res);
+      this.stateService.SetSettings(res);
     });
+  }
+
+  //
+  // Notice change
+  //
+  noticeChange(which: string) 
+  {
+    if(this.settings[which] == "Yes")
+    {
+      this.settings[which] = "No";
+    } else
+    {
+      this.settings[which] = "Yes";
+    }
+
+    console.log(this.settings);
   }
 
   //
@@ -138,13 +158,10 @@ export class TradingComponent implements OnInit
 //
 class StrategyActiveState
 {
-  PutCreditSpread: boolean = true;
-  CallCreditSpread: boolean = false;
-  PutDebitSpread: boolean = false;
-  CallDebitSpread: boolean = false;
+  VerticalSpread: boolean = true;
 
   // Helper Bubbles
-  HelperPutCreditSpreadLots: boolean = false;
-  HelperPutCreditSpreadOpenPrice: boolean = false;
-  HelperPutCreditSpreadClosePrice: boolean = false;    
+  HelperVerticalSpreadLots: boolean = false;
+  HelperVerticalSpreadOpenPrice: boolean = false;
+  HelperVerticalSpreadClosePrice: boolean = false;    
 }

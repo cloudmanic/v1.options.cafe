@@ -12,6 +12,7 @@ import { Rank } from '../../models/rank';
 import { Order } from '../../models/order';
 import { Broker } from '../../models/broker';
 import { Symbol } from '../../models/symbol';
+import { Settings } from '../../models/settings';
 import { Screener } from '../../models/screener';
 import { Watchlist } from '../../models/watchlist';
 import { BrokerEvent } from '../../models/broker-event';
@@ -58,6 +59,7 @@ export class StateService
 
   // Settings 
   private settingsUserProfile: Me = new Me();
+  private settings: Settings = new Settings();
 
   // Emitters - Pushers
   public SiteSuccess = new EventEmitter<string>();
@@ -75,6 +77,20 @@ export class StateService
     // Ajax call to ping server every 10 seconds
     setInterval(() => { this.PingServer(); }, 10000);
   } 
+
+  //
+  // Set settings
+  //
+  SetSettings(data: Settings) {
+    this.settings = data;
+  }
+
+  //
+  // Get setting
+  //
+  GetSettings() {
+    return this.settings;
+  }
 
   //
   // Set settingsUserProfile

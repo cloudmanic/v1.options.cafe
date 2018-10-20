@@ -11,14 +11,14 @@
           <h5>Strategy Settings</h5>
 
           <ul class="list-strategies">
-            <li [ngClass]="{ active: strategySettingsState.PutCreditSpread }">
-              <a (click)="strategySettingsClick('PutCreditSpread')">
+            <li [ngClass]="{ active: strategySettingsState.VerticalSpread }">
+              <a (click)="strategySettingsClick('VerticalSpread')">
                 Vertical Spreads
                 <i class="ico-angle-right-pink"></i>
               </a>
             </li>
 
-            <li [ngClass]="{ active: strategySettingsState.CallCreditSpread }">
+<!--             <li [ngClass]="{ active: strategySettingsState.CallCreditSpread }">
               <a (click)="strategySettingsClick('CallCreditSpread')">
                 Call Credit Spread
                 <i class="ico-angle-right-pink"></i>
@@ -37,7 +37,7 @@
                 Call Debit Spread
                 <i class="ico-angle-right-pink"></i>
               </a>
-            </li>
+            </li> -->
 
           </ul> 
         </div>
@@ -46,7 +46,7 @@
 
         <!-- ************* Put Credit Spread **************** -->
         
-        <div class="widget__body" *ngIf="strategySettingsState.PutCreditSpread">
+        <div class="widget__body" *ngIf="strategySettingsState.VerticalSpread">
           <h5>Vertical Spreads</h5>
 
           <div class="widget__body-inner">
@@ -65,11 +65,11 @@
                       <h5 class="title-question">
                         Open Price
 
-                        <a (click)="strategyHelperToggle('HelperPutCreditSpreadOpenPrice')" class="link-question">
+                        <a (click)="strategyHelperToggle('HelperVerticalSpreadOpenPrice')" class="link-question">
                           <i class="ico-question"></i>
                         </a>
 
-                        <div class="title-question__tooltip" *ngIf="strategySettingsState.HelperPutCreditSpreadOpenPrice">
+                        <div class="title-question__tooltip" *ngIf="strategySettingsState.HelperVerticalSpreadOpenPrice">
                           <h5>What is this?</h5>
 
                           <p>
@@ -84,11 +84,11 @@
                       <h5 class="title-question active">
                         Lots
 
-                        <a (click)="strategyHelperToggle('HelperPutCreditSpreadLots')" class="link-question">
+                        <a (click)="strategyHelperToggle('HelperVerticalSpreadLots')" class="link-question">
                           <i class="ico-question"></i>
                         </a>
 
-                        <div class="title-question__tooltip" *ngIf="strategySettingsState.HelperPutCreditSpreadLots">
+                        <div class="title-question__tooltip" *ngIf="strategySettingsState.HelperVerticalSpreadLots">
                           <h5>What is this?</h5>
 
                           <p>
@@ -103,11 +103,11 @@
                       <h5 class="title-question">
                         Close Price
 
-                        <a (click)="strategyHelperToggle('HelperPutCreditSpreadClosePrice')" class="link-question">
+                        <a (click)="strategyHelperToggle('HelperVerticalSpreadClosePrice')" class="link-question">
                           <i class="ico-question"></i>
                         </a>
 
-                        <div class="title-question__tooltip" *ngIf="strategySettingsState.HelperPutCreditSpreadClosePrice">
+                        <div class="title-question__tooltip" *ngIf="strategySettingsState.HelperVerticalSpreadClosePrice">
                           <h5>What is this?</h5>
 
                           <p>
@@ -253,251 +253,95 @@
           </thead>
 
           <tbody>
+
             <tr>
               <td>
-                <h6>Open Trade Has Been Filled</h6>
+                <h6>Market Is Open</h6>
               </td>
 
               <td>
                 <div class="checkbox">
-                  <input type="checkbox" id="ch1" />
-
+                  <input type="checkbox" id="ch1" [checked]="settings.NoticeMarketOpenedEmail == 'Yes'" (change)="noticeChange('NoticeMarketOpenedEmail')" />
                   <label for="ch1"></label>
-                </div><!-- /.checkbox -->
+                </div>
               </td>
 
               <td>
                 <div class="checkbox">
-                  <input type="checkbox" id="ch2" checked />
-
+                  <input type="checkbox" id="ch2" [checked]="settings.NoticeMarketOpenedSms == 'Yes'" (change)="noticeChange('NoticeMarketOpenedSms')" />
                   <label for="ch2"></label>
-                </div><!-- /.checkbox -->
+                </div>
               </td>
 
               <td>
                 <div class="checkbox">
-                  <input type="checkbox" id="ch3" />
-
+                  <input type="checkbox" id="ch3" [checked]="settings.NoticeMarketOpenedPush == 'Yes'" (change)="noticeChange('NoticeMarketOpenedPush')" />
                   <label for="ch3"></label>
-                </div><!-- /.checkbox -->
+                </div>
               </td>
-            </tr>
+            </tr> 
 
             <tr>
               <td>
-                <h6>Trade Ends</h6>
+                <h6>Market Is Closed</h6>
               </td>
 
               <td>
                 <div class="checkbox">
-                  <input type="checkbox" id="ch4" />
-
-                  <label for="ch4"></label>
-                </div><!-- /.checkbox -->
+                  <input type="checkbox" id="ch1" [checked]="settings.NoticeMarketClosedEmail == 'Yes'" (change)="noticeChange('NoticeMarketClosedEmail')" />
+                  <label for="ch1"></label>
+                </div>
               </td>
 
               <td>
                 <div class="checkbox">
-                  <input type="checkbox" id="ch5" />
-
-                  <label for="ch5"></label>
-                </div><!-- /.checkbox -->
+                  <input type="checkbox" id="ch2" [checked]="settings.NoticeMarketClosedSms == 'Yes'" (change)="noticeChange('NoticeMarketClosedSms')" />
+                  <label for="ch2"></label>
+                </div>
               </td>
 
               <td>
                 <div class="checkbox">
-                  <input type="checkbox" id="ch6" checked />
-
-                  <label for="ch6"></label>
-                </div><!-- /.checkbox -->
+                  <input type="checkbox" id="ch3" [checked]="settings.NoticeMarketClosedPush == 'Yes'" (change)="noticeChange('NoticeMarketClosedPush')" />
+                  <label for="ch3"></label>
+                </div>
               </td>
-            </tr>
+            </tr>   
 
             <tr>
               <td>
-                <h6>Limit Reached</h6>
+                <h6>Trade Has Been Filled</h6>
               </td>
 
               <td>
                 <div class="checkbox">
-                  <input type="checkbox" id="ch7" checked/>
-
-                  <label for="ch7"></label>
-                </div><!-- /.checkbox -->
+                  <input type="checkbox" id="ch1" [checked]="settings.NoticeTradeFilledEmail == 'Yes'" (change)="noticeChange()" (change)="noticeChange('NoticeTradeFilledEmail')" />
+                  <label for="ch1"></label>
+                </div>
               </td>
 
               <td>
                 <div class="checkbox">
-                  <input type="checkbox" id="ch8" />
-
-                  <label for="ch8"></label>
-                </div><!-- /.checkbox -->
+                  <input type="checkbox" id="ch2" [checked]="settings.NoticeTradeFilledSms == 'Yes'" (change)="noticeChange()" (change)="noticeChange('NoticeTradeFilledSms')" />
+                  <label for="ch2"></label>
+                </div>
               </td>
 
               <td>
                 <div class="checkbox">
-                  <input type="checkbox" id="ch9" />
-
-                  <label for="ch9"></label>
-                </div><!-- /.checkbox -->
+                  <input type="checkbox" id="ch3" [value]="Yes" [checked]="settings.NoticeTradeFilledPush == 'Yes'" (change)="noticeChange('NoticeTradeFilledPush')" />
+                  <label for="ch3"></label>
+                </div>
               </td>
-            </tr>
+            </tr>                     
 
-            <tr>
-              <td>
-                <h6>More Notifications</h6>
-              </td>
-
-              <td>
-                <div class="checkbox">
-                  <input type="checkbox" id="ch10" />
-
-                  <label for="ch10"></label>
-                </div><!-- /.checkbox -->
-              </td>
-
-              <td>
-                <div class="checkbox">
-                  <input type="checkbox" id="ch11" checked />
-
-                  <label for="ch11"></label>
-                </div><!-- /.checkbox -->
-              </td>
-
-              <td>
-                <div class="checkbox">
-                  <input type="checkbox" id="ch12" />
-
-                  <label for="ch12"></label>
-                </div><!-- /.checkbox -->
-              </td>
-            </tr>
-
-            <tr>
-              <td>
-                <h6>Open Trade Has Been Filled</h6>
-              </td>
-
-              <td>
-                <div class="checkbox">
-                  <input type="checkbox" id="ch13" />
-
-                  <label for="ch13"></label>
-                </div><!-- /.checkbox -->
-              </td>
-
-              <td>
-                <div class="checkbox">
-                  <input type="checkbox" id="ch14" />
-
-                  <label for="ch14"></label>
-                </div><!-- /.checkbox -->
-              </td>
-
-              <td>
-                <div class="checkbox">
-                  <input type="checkbox" id="ch15" />
-
-                  <label for="ch15"></label>
-                </div><!-- /.checkbox -->
-              </td>
-            </tr>
-
-            <tr>
-              <td>
-                <h6>Trade Ends</h6>
-              </td>
-
-              <td>
-                <div class="checkbox">
-                  <input type="checkbox" id="ch16" checked />
-
-                  <label for="ch16"></label>
-                </div><!-- /.checkbox -->
-              </td>
-
-              <td>
-                <div class="checkbox">
-                  <input type="checkbox" id="ch17" checked />
-
-                  <label for="ch17"></label>
-                </div><!-- /.checkbox -->
-              </td>
-
-              <td>
-                <div class="checkbox">
-                  <input type="checkbox" id="ch18" />
-
-                  <label for="ch18"></label>
-                </div><!-- /.checkbox -->
-              </td>
-            </tr>
-
-            <tr>
-              <td>
-                <h6>Limit Reached</h6>
-              </td>
-
-              <td>
-                <div class="checkbox">
-                  <input type="checkbox" id="ch19" />
-
-                  <label for="ch19"></label>
-                </div><!-- /.checkbox -->
-              </td>
-
-              <td>
-                <div class="checkbox">
-                  <input type="checkbox" id="ch20" />
-
-                  <label for="ch20"></label>
-                </div><!-- /.checkbox -->
-              </td>
-
-              <td>
-                <div class="checkbox">
-                  <input type="checkbox" id="ch21" />
-
-                  <label for="ch21"></label>
-                </div><!-- /.checkbox -->
-              </td>
-            </tr>
-
-            <tr>
-              <td>
-                <h6>More Notifications</h6>
-              </td>
-
-              <td>
-                <div class="checkbox">
-                  <input type="checkbox" id="ch22" checked />
-
-                  <label for="ch22"></label>
-                </div><!-- /.checkbox -->
-              </td>
-
-              <td>
-                <div class="checkbox">
-                  <input type="checkbox" id="ch23" checked />
-
-                  <label for="ch23"></label>
-                </div><!-- /.checkbox -->
-              </td>
-
-              <td>
-                <div class="checkbox">
-                  <input type="checkbox" id="ch24" />
-
-                  <label for="ch24"></label>
-                </div><!-- /.checkbox -->
-              </td>
-            </tr>
           </tbody>
         </table>
-      </div><!-- /.table -->
-    </div><!-- /.widget-settings -->
-  </div><!-- /.shell shell-large -->
-</div><!-- /.content__inner -->
+
+      </div>
+    </div>
+  </div>
+</div>
 
 
 <a (click)="setupBrowserNotifications()" class="btn btn--pink">Setup Notifications</a>
