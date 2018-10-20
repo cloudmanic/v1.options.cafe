@@ -345,3 +345,46 @@
 
 
 <a (click)="setupBrowserNotifications()" class="btn btn--pink">Setup Notifications</a>
+
+
+
+
+
+
+<app-dialog [(visible)]="showEditPhone">
+
+  <div class="popup-alt personal-info">
+    <div class="popup__inner">
+      <div class="article article--size2">
+        <div class="article__head">
+          <h6>Edit Personal Info</h6>
+        </div>
+
+        <div class="article__body article__body--primary">
+          <div class="form-info form">
+
+            <form (submit)="doSaveEditProfile()">
+              <div class="form__body">
+
+                <div class="form__row">
+                  <label for="f_phone">Phone</label>
+                  <div class="form__controls">
+                    <input type="phone" class="field form__field" name="Phone" id="f_phone" [(ngModel)]="userProfile.Phone" autocomplete="new" />
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="form__actions">
+                <a (click)="doCancelEditProfile()" class="link-alt">Cancel</a>
+                <a (click)="doSaveEditProfile()" class="btn btn--pink">Save Changes</a>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</app-dialog>
