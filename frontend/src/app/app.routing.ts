@@ -26,6 +26,7 @@ import { CreditCardComponent } from './settings/account/upgrade/credit-card/cred
 import { BacktestHomeComponent } from './backtest/home/home.component';
 
 // Reports
+import { CustomReportsComponent } from './reports/custom-reports/custom-reports.component';
 import { AccountHistoryComponent } from './reports/account-history/account-history.component';
 import { AccountSummaryComponent } from './reports/account-summary/account-summary.component';
 
@@ -65,6 +66,7 @@ const appRoutes: Routes = [
     // Reports
     { path: 'reports/account-summary', component: AccountSummaryComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'account-summary', action: '' } },
     { path: 'reports/account-history', component: AccountHistoryComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'account-history', action: '' } },
+    { path: 'reports/custom', component: CustomReportsComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'custom', action: '' } },
 
     // Backtest 
     { path: 'backtest', component: BacktestHomeComponent, canActivate: [AuthGuard], data: { section: 'backtest', subSection: 'dashboard', action: '' } },

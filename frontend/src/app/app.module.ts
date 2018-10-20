@@ -55,6 +55,7 @@ import { BacktestSubnavComponent } from './backtest/sub-nav/subnav.component';
 import { BacktestHomeComponent } from './backtest/home/home.component';
 
 // Reports
+import { CustomReportsComponent } from './reports/custom-reports/custom-reports.component';
 import { AccountHistoryComponent } from './reports/account-history/account-history.component';
 import { AccountSummaryComponent } from './reports/account-summary/account-summary.component';
 
@@ -153,6 +154,7 @@ import { TradeEquityComponent } from './trade/trade-equity/trade-equity.componen
     CreditCardComponent,
     CardComponent,
     ToolTipComponent,
+    CustomReportsComponent,
   ],
   
   imports: [

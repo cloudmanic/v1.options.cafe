@@ -7,11 +7,48 @@
 package controllers
 
 import (
+	"fmt"
 	"strconv"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/reports"
 	"github.com/gin-gonic/gin"
 )
+
+//
+// Return profit and losses
+//
+func (t *Controller) ReportsGetProfitLoss(c *gin.Context) {
+
+	// Make sure the UserId is correct.
+	userId := c.MustGet("userId").(uint)
+
+	// Set as int - brokerAccountId
+	brokerAccountId, err := strconv.ParseInt(c.Param("brokerAccount"), 10, 32)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	fmt.Println(userId)
+
+	// Get broker account
+	brokerAccount, err := t.DB.GetBrokerAccountByIdUserId(uint(brokerAccountId), userId)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Get list of profits
+	profits := reports.GetProfitLoss(t.DB, brokerAccount, reports.ProfitLossParams{
+		StartDate: helpers.ParseDateNoError("2018-01-01"),
+		EndDate:   helpers.ParseDateNoError("2018-12-31"),
+		GroupBy:   "month",
+	})
+
+	// Return happy JSON
+	c.JSON(200, profits)
+}
 
 //
 // Return a list of years that have trade groups
@@ -30,6 +67,10 @@ func (t *Controller) ReportsGetTradeGroupYears(c *gin.Context) {
 
 	// Get broker account
 	brokerAccount, err := t.DB.GetBrokerAccountByIdUserId(uint(brokerAccountId), userId)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
 
 	// Get list of years
 	years := reports.GetYearsWithTradeGroups(t.DB, brokerAccount)
@@ -62,6 +103,10 @@ func (t *Controller) ReportsGetAccountYearlySummary(c *gin.Context) {
 
 	// Get broker account
 	brokerAccount, err := t.DB.GetBrokerAccountByIdUserId(uint(brokerAccountId), userId)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
 
 	// Get summary from database
 	summary := reports.GetYearlySummaryByAccountYear(t.DB, brokerAccount, int(year))

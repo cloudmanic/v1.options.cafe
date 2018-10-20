@@ -94,6 +94,7 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 
 		// Reports
 		apiV1.GET("/reports/:brokerAccount/tradegroup/years", t.ReportsGetTradeGroupYears)
+		apiV1.GET("/reports/:brokerAccount/profit-loss", t.ReportsGetProfitLoss)
 		apiV1.GET("/reports/:brokerAccount/summary/yearly/:year", t.ReportsGetAccountYearlySummary)
 
 		// Status
