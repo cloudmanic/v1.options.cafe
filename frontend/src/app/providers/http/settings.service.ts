@@ -33,7 +33,7 @@ export class SettingsService
   //
   // Update Settings
   //
-  update(obj: Settings): Observable<boolean> {
+  update(obj: Settings): Observable<boolean>
   {
     let post = {
       strategy_pcs_close_price: obj.StrategyPcsClosePrice,

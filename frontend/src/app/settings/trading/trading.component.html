@@ -64,57 +64,30 @@
                     <th>
                       <h5 class="title-question">
                         Open Price
-
-                        <a (click)="strategyHelperToggle('HelperVerticalSpreadOpenPrice')" class="link-question">
-                          <i class="ico-question"></i>
-                        </a>
-
-                        <div class="title-question__tooltip" *ngIf="strategySettingsState.HelperVerticalSpreadOpenPrice">
-                          <h5>What is this?</h5>
-
-                          <p>
-                            A lot is the quanity of the trade you are putting on. 
-                            For example a vertical spread with a lot of 4 is selling 4 contracts and buying 4 contracts for a total of 8 contracts. An Iron Condor with a lot size of 2 is buying 4 contracts and selling 4 more for a total of 8 contracts. If you are just buying or selling an option your lot size will be the number of contracts you are trading.
-                          </p>
-                        </div>
+                        <app-shared-tool-tip
+                          [show]="strategySettingsState.HelperVerticalSpreadOpenPrice" 
+                          [title]="strategySettingsState.HelperVerticalSpreadOpenTitle" 
+                          [message]="strategySettingsState.HelperVerticalSpreadOpenMsg"></app-shared-tool-tip>
                       </h5>
                     </th>
 
                     <th>
                       <h5 class="title-question active">
-                        Lots
-
-                        <a (click)="strategyHelperToggle('HelperVerticalSpreadLots')" class="link-question">
-                          <i class="ico-question"></i>
-                        </a>
-
-                        <div class="title-question__tooltip" *ngIf="strategySettingsState.HelperVerticalSpreadLots">
-                          <h5>What is this?</h5>
-
-                          <p>
-                            A lot is the quanity of the trade you are putting on. 
-                            For example a vertical spread with a lot of 4 is selling 4 contracts and buying 4 contracts for a total of 8 contracts. An Iron Condor with a lot size of 2 is buying 4 contracts and selling 4 more for a total of 8 contracts. If you are just buying or selling an option your lot size will be the number of contracts you are trading.
-                          </p>
-                        </div>
+                        Trade Lots
+                        <app-shared-tool-tip
+                          [show]="strategySettingsState.HelperVerticalSpreadLots" 
+                          [title]="strategySettingsState.HelperVerticalSpreadLotsTitle" 
+                          [message]="strategySettingsState.HelperVerticalSpreadLotsMsg"></app-shared-tool-tip>
                       </h5>
                     </th>
 
                     <th>
                       <h5 class="title-question">
                         Close Price
-
-                        <a (click)="strategyHelperToggle('HelperVerticalSpreadClosePrice')" class="link-question">
-                          <i class="ico-question"></i>
-                        </a>
-
-                        <div class="title-question__tooltip" *ngIf="strategySettingsState.HelperVerticalSpreadClosePrice">
-                          <h5>What is this?</h5>
-
-                          <p>
-                            A lot is the quanity of the trade you are putting on. 
-                            For example a vertical spread with a lot of 4 is selling 4 contracts and buying 4 contracts for a total of 8 contracts. An Iron Condor with a lot size of 2 is buying 4 contracts and selling 4 more for a total of 8 contracts. If you are just buying or selling an option your lot size will be the number of contracts you are trading.
-                          </p>
-                        </div>
+                        <app-shared-tool-tip
+                          [show]="strategySettingsState.HelperVerticalSpreadClosePrice" 
+                          [title]="strategySettingsState.HelperVerticalSpreadCloseTitle" 
+                          [message]="strategySettingsState.HelperVerticalSpreadCloseMsg"></app-shared-tool-tip>
                       </h5>
                     </th>
                   </tr>
@@ -342,11 +315,6 @@
     </div>
   </div>
 </div>
-
-
-<a (click)="setupBrowserNotifications()" class="btn btn--pink">Setup Notifications</a>
-
-
 
 
 

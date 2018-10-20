@@ -11,6 +11,7 @@ import { TokenInterceptor } from './providers/http/token.interceptor';
 import { HighchartsChartComponent } from './shared/highcharts/highcharts-chart.component';
 
 // Shared
+import { ToolTipComponent } from './shared/tool-tip/tool-tip.component';
 import { PagingComponent } from './shared/paging/paging.component';
 import { DialogComponent } from './shared/dialog/dialog.component';
 
@@ -101,6 +102,7 @@ import { TradeEquityComponent } from './trade/trade-equity/trade-equity.componen
     LayoutCoreComponent,    
     
     // Shared
+    ToolTipComponent,
     PagingComponent,
     DialogComponent,    
 
@@ -150,6 +152,7 @@ import { TradeEquityComponent } from './trade/trade-equity/trade-equity.componen
     ExpiredComponent,
     CreditCardComponent,
     CardComponent,
+    ToolTipComponent,
   ],
   
   imports: [
