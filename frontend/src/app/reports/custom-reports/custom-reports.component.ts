@@ -19,6 +19,7 @@ import { ReportsService } from '../../providers/http/reports.service';
 
 export class CustomReportsComponent implements OnInit 
 {
+  chartType: string = "column";
   groupBy: string = "month";
   listData: ProfitLoss[] = [];
   Highcharts = Highcharts;
@@ -82,7 +83,7 @@ export class CustomReportsComponent implements OnInit
       },
 
       title: {
-        text: 'Date'
+        text: ''
       }
     },
 
@@ -98,6 +99,15 @@ export class CustomReportsComponent implements OnInit
   constructor(private stateService: StateService, private reportsService: ReportsService) 
   {
 
+  }
+
+  //
+  // Set chart type.
+  //
+  setChartType(type: string)
+  {
+    this.chartType = type;
+    this.buildChart();
   }
 
   //
@@ -141,6 +151,7 @@ export class CustomReportsComponent implements OnInit
       }
 
       // Rebuilt the chart
+      this.chartOptions.chart.type = this.chartType;
       this.chartOptions.series[0].data = data;
       this.chartOptions.series[0].name = "Profit & Loss";
       this.chartUpdateFlag = true;

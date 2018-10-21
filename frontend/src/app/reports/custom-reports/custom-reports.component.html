@@ -82,20 +82,22 @@
           </div>
 
           <ul class="list-actions-alt">
-            <li>
-              <a href="#" class="btn-square">
+            <li [ngClass]="{ 'active': (chartType == 'column') }">
+              <a class="btn-square" (click)="setChartType('column')">
+                <i class="ico-chart-2"></i>
+              </a>
+            </li>
+
+            <li [ngClass]="{ 'active': (chartType == 'line') }">
+              <a class="btn-square" (click)="setChartType('line')">
                 <i class="ico-chart-1"></i>
               </a>
             </li>
 
-            <li class="active">
-              <a href="#" class="btn-square">
-                <i class="ico-chart-2"></i>
-              </a>
-            </li>
-          </ul><!-- /.list-actions -->
+          </ul>
 
-          <ul class="list-actions-alt list-actions-alt--primary">
+<!--           <ul class="list-actions-alt list-actions-alt--primary">
+
             <li>
               <a href="#" class="btn btn--border btn--size3">
                 <i class="ico-download"></i>
@@ -111,9 +113,11 @@
                 PDF
               </a>
             </li>
-          </ul><!-- /.list-actions -->
-        </div><!-- /.article__head-group -->
-      </div><!-- /.article__head -->
+
+          </ul> -->
+
+        </div>
+      </div>
 
       <div class="article__body">
         
