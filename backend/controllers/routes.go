@@ -42,6 +42,7 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		apiV1.PUT("/me/update-credit-card", t.UpdateCreditCard)
 
 		// Orders
+		apiV1.DELETE("/orders/:brokerAccount/:brokerOrderId", t.CancelOrder)
 		apiV1.POST("/orders", t.SubmitOrder)
 		apiV1.POST("/orders/preview", t.PreviewOrder)
 

@@ -143,4 +143,49 @@ func (t *Api) SendGetRequest(urlStr string) (string, error) {
 	return string(body), nil
 }
 
+//
+// Send a DELETE request to Tradier. Returns the JSON string or an error
+//
+func (t *Api) SendDeleteRequest(urlStr string) (string, error) {
+
+	// Setup http client
+	client := &http.Client{}
+
+	// Get url to api
+	apiUrl := apiBaseUrl
+
+	if t.Sandbox {
+		apiUrl = sandBaseUrl
+	}
+
+	// Setup api request
+	req, _ := http.NewRequest("DELETE", apiUrl+urlStr, nil)
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Authorization", fmt.Sprint("Bearer ", t.ApiKey))
+
+	res, err := client.Do(req)
+
+	if err != nil {
+		return "", err
+	}
+
+	// Close Body
+	defer res.Body.Close()
+
+	// Read the data we got.
+	body, err := ioutil.ReadAll(res.Body)
+
+	if err != nil {
+		return "", err
+	}
+
+	// Make sure the api responded with a 200
+	if res.StatusCode != 200 {
+		return "", errors.New(fmt.Sprint("API did not return 200, It returned (", apiUrl+urlStr, ")", res.StatusCode, " ", string(body)))
+	}
+
+	// Return happy.
+	return string(body), nil
+}
+
 /* End File */

@@ -10,6 +10,7 @@ import { Subject } from 'rxjs/Subject';
 import { Component, OnInit } from '@angular/core';
 import { Order } from '../../../models/order';
 import { StateService } from '../../../providers/state/state.service';
+import { TradeService } from '../../../providers/http/trade.service';
 import { WebsocketService } from '../../../providers/http/websocket.service';
 import { BrokerService } from '../../../providers/http/broker.service';
 import { ChangeDetected } from '../../../models/change-detected';
@@ -31,7 +32,7 @@ export class OrdersComponent implements OnInit {
   //
   // Constructor....
   //
-  constructor(private websocketService: WebsocketService, private stateService: StateService, private brokerService: BrokerService) { }
+  constructor(private websocketService: WebsocketService, private stateService: StateService, private brokerService: BrokerService, private tradeService: TradeService) { }
 
   //
   // OnInit....
@@ -86,7 +87,14 @@ export class OrdersComponent implements OnInit {
 
     // Cancel order action
     da1.click = (row: Order) => {
-      console.log(row);
+
+      this.tradeService.cancelOrder(this.stateService.GetActiveBrokerAccount().Id, row.Id).subscribe((res) => {
+
+        // Show success notice
+        this.stateService.SiteSuccess.emit("Order Canceled: Your order number #" + row.Id);
+
+      });
+
     };
 
     das.push(da1);

@@ -23,6 +23,15 @@ export class TradeService
   constructor(private http: HttpClient) { }
 
   //
+  // Cancel Order
+  //
+  cancelOrder(brokerAccountId: number, brokerOrderId: number): Observable<boolean>
+  {
+    return this.http.delete<boolean>(environment.app_server + '/api/v1/orders/' + brokerAccountId + '/' + brokerOrderId, {})
+      .map((data) => { return true; });    
+  }
+
+  //
   // Submit trade.
   //
   submitTrade(trade: TradeDetails, brokerAccountId: string): Observable<OrderSubmit>

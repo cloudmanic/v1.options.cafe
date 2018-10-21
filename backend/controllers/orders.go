@@ -8,6 +8,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
@@ -16,6 +17,72 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
 )
+
+//
+// Cancel an order
+//
+func (t *Controller) CancelOrder(c *gin.Context) {
+
+	// Get the user id.
+	userId := c.MustGet("userId").(uint)
+
+	// Set Broker Account Id as int
+	brokerAccountId, err := strconv.ParseInt(c.Param("brokerAccount"), 10, 32)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Get broker account.
+	brokerAccount, err := t.DB.GetBrokerAccountByIdUserId(uint(brokerAccountId), userId)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Get the broker
+	broker, err := t.DB.GetBrokerById(brokerAccount.BrokerId)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Decrypt the access token
+	apiKey, err := helpers.Decrypt(broker.AccessToken)
+
+	if err != nil {
+		services.Warning(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "API invalid."})
+	}
+
+	var brokerCont tradier.Api
+
+	// Figure out which broker connection to setup.
+	switch broker.Name {
+
+	case "Tradier":
+		brokerCont = tradier.Api{ApiKey: apiKey, DB: t.DB, Sandbox: false}
+
+	case "Tradier Sandbox":
+		brokerCont = tradier.Api{ApiKey: apiKey, DB: t.DB, Sandbox: true}
+
+	default:
+		services.Critical("Order: Unknown Broker : " + broker.Name)
+
+	}
+
+	// Send cancel order request to broker
+	err = brokerCont.CancelOrder(brokerAccount.AccountNumber, c.Param("brokerOrderId"))
+
+	if err != nil {
+		services.Warning(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cancel order error."})
+		return
+	}
+
+	// Return happy JSON
+	c.JSON(http.StatusNoContent, gin.H{})
+}
 
 //
 // Preview an order

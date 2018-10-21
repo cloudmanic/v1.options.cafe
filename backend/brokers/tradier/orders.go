@@ -12,6 +12,24 @@ import (
 )
 
 //
+// Cancel order
+//
+func (t *Api) CancelOrder(accountId string, orderId string) error {
+
+	// Log order cancel
+	services.Info("Canceling order for account - " + accountId + " : " + orderId)
+
+	// Get the JSON
+	_, err := t.SendDeleteRequest("/accounts/" + accountId + "/orders/" + orderId)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+//
 // Submit order
 //
 func (t *Api) SubmitOrder(accountId string, order types.Order) (types.OrderSubmit, error) {

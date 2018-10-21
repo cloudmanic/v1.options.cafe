@@ -12,6 +12,7 @@ type Api interface {
 	GetBalances() ([]types.Balance, error)
 	GetAllHistory() ([]types.History, error)
 	GetHistoryByAccountId(string) ([]types.History, error)
+	CancelOrder(accountId string, orderId string) error
 	SubmitOrder(accountId string, order types.Order) (types.OrderSubmit, error)
 	PreviewOrder(accountId string, order types.Order) (types.OrderPreview, error)
 	GetOrders() ([]types.Order, error)
