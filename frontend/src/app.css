@@ -91,6 +91,7 @@
 .widget__actions .delete-btn { display: inline-block; float: right; margin-top: 20px; color: #ce4260; font-weight: 500; } 
 
 /* Reports */
+.table-totals td { border-bottom: unset; border-top: 1px solid #000; }
 .article .article__head .article__btn { z-index: 1000 }
 
 /* Settings */

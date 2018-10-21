@@ -156,11 +156,11 @@
             <tbody>
               <tr *ngFor="let row of listData;">
                 <td>
-                  <p>{{ row.Date | date:'shortDate' }}</p>
+                  <p>{{ row.Date | date:'MM/yyyy' }}</p>
                 </td>
 
                 <td> 
-                  <strong class="green">{{ row.Profit | currency }}</strong>
+                  <strong class="green" [ngClass]="{ 'green': (row.Profit > 0), 'red': (row.Profit < 0) }">{{ row.Profit | currency }}</strong>
                 </td>
 
                 <td>
@@ -179,6 +179,28 @@
                   <strong>{{ row.WinRatio | number:'1.2-2' }}%</strong>
                 </td>
               </tr>
+
+              <tr class="table-totals">
+                <td>
+                  <strong>Totals</strong>
+                </td>
+
+                <td> 
+                  <strong>{{ getProfitTotal(listData) | currency }}</strong>
+                </td>
+
+                <td>
+                  <strong>{{ getTradeTotal(listData) }}</strong>
+                </td>
+
+                <td>
+                  <strong>{{ getCommissionsTotal(listData) | currency }}</strong>
+                </td>
+
+                <td>&nbsp;</td>
+
+                <td>&nbsp;</td>
+              </tr>              
 
             </tbody>
           </table>

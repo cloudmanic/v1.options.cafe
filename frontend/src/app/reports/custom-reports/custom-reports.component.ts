@@ -48,6 +48,51 @@ export class CustomReportsComponent implements OnInit
     });
   }
 
+  //
+  // Get profit total
+  //
+  getProfitTotal(rows: ProfitLoss[]): number 
+  {
+    let total = 0;
+
+    for(let i = 0; i < rows.length; i++)
+    {
+      total += rows[i].Profit;
+    }
+
+    return total;
+  }
+
+  //
+  // Get trade total
+  //
+  getTradeTotal(rows: ProfitLoss[]): number 
+  {
+    let total = 0;
+
+    for (let i = 0; i < rows.length; i++) 
+    {
+      total += rows[i].TradeCount;
+    }
+
+    return total;
+  }
+
+  //
+  // Get trade total
+  //
+  getCommissionsTotal(rows: ProfitLoss[]): number 
+  {
+    let total = 0;
+
+    for (let i = 0; i < rows.length; i++) 
+    {
+      total += rows[i].Commissions;
+    }
+
+    return total;
+  }
+
 }
 
 /* End File */
