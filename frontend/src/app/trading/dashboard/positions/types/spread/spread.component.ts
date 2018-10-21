@@ -58,7 +58,7 @@ export class SpreadComponent implements OnInit
 
       // Set values
       let tradeDetails = new TradeDetails();
-      tradeDetails.Symbol = "SPY";
+      tradeDetails.Symbol = row.Positions[0].Symbol.OptionUnderlying;
       tradeDetails.Class = "multileg";
       tradeDetails.OrderType = "debit";
       tradeDetails.Duration = "gtc";
@@ -97,7 +97,7 @@ export class SpreadComponent implements OnInit
 
       // Set values
       let tradeDetails = new TradeDetails();
-      tradeDetails.Symbol = "SPY";
+      tradeDetails.Symbol = row.Positions[0].Symbol.OptionUnderlying;
       tradeDetails.Class = "multileg";
       tradeDetails.OrderType = "debit";
       tradeDetails.Duration = "gtc";
@@ -138,7 +138,7 @@ export class SpreadComponent implements OnInit
 
       // Set values
       let tradeDetails = new TradeDetails();
-      tradeDetails.Symbol = "SPY";
+      tradeDetails.Symbol = row.Positions[0].Symbol.OptionUnderlying;
       tradeDetails.Class = "multileg";
       tradeDetails.OrderType = "market";
       tradeDetails.Duration = "gtc";

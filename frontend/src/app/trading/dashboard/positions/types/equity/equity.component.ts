@@ -7,6 +7,7 @@
 import { Order } from '../../../../../models/order';
 import { TradeGroup } from '../../../../../models/trade-group';
 import { Position } from '../../../../../models/position';
+import { Settings } from '../../../../../models/settings';
 import { WebsocketService } from '../../../../../providers/http/websocket.service';
 import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../../../../../providers/http/trade.service';
 import { DropdownAction } from '../../../../../shared/dropdown-select/dropdown-select.component';
@@ -23,22 +24,59 @@ export class EquityComponent implements OnInit {
   @Input() title: string = "";
   @Input() quotes = {};
   @Input() orders: Order[];
-  @Input() tradeGroups: TradeGroup[]; 
+  @Input() settings: Settings; 
+  @Input() tradeGroups: TradeGroup[];
+  actions: DropdownAction[] = null; 
 
   //
   // Constructor....
   //
-  constructor(private websocketService: WebsocketService) { }
+  constructor(private tradeService: TradeService) { }
 
   //
   // OnInit....
   //
   ngOnInit() 
   {
-    // // Subscribe to data updates from the quotes - Market Quotes
-    // this.websocketService.quotePushData.subscribe(data => {
-    //   this.quotes[data.symbol] = data;
-    // }); 
+    // Setup Dropdown actions
+    this.setupActions();
+  }
+
+  //
+  // Setup actions.
+  //
+  setupActions() 
+  {
+    let das = []
+
+    // First action
+    let da1 = new DropdownAction();
+    da1.title = "Close Trade";
+
+    // Place trade to close
+    da1.click = (row: TradeGroup) => {
+
+      // Set values
+      let tradeDetails = new TradeDetails();
+      tradeDetails.Symbol = row.Positions[0].Symbol.ShortName;
+      tradeDetails.Class = "equity";
+      tradeDetails.Side = "sell";
+      tradeDetails.OrderType = "market";
+      tradeDetails.Duration = "gtc";
+      tradeDetails.Qty = Math.abs(row.Positions[0].Qty);
+
+      // Build legs
+      tradeDetails.Legs = [];
+
+      // Open builder to place trade.
+      this.tradeService.tradeEvent.emit(new TradeEvent().createNew("toggle-trade-builder", tradeDetails));
+    };
+
+    // Add to actions.
+    das.push(da1);
+
+    // Load actions.
+    this.actions = das;
   }
 
 
