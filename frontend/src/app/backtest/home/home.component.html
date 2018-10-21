@@ -19,19 +19,19 @@
 
         <ul>
           <li>
-            <a ceiboShare [googlePlus]="{url: 'https://options.cafe'}">
+            <a (click)="googleShare()">
               <i class="ico-gplus"></i>
             </a>
           </li>
 
           <li>
-            <a ceiboShare [facebook]="{u: 'https://options.cafe'}">
+            <a (click)="facebookShare()">
               <i class="ico-facebook"></i>
             </a>
           </li>
 
           <li>
-            <a ceiboShare [twitter]="{url: 'https://options.cafe', text: 'Options backtesting is coming soon to Options Cafe!', via: 'options_cafe', hashtags: 'OptionsTrading'}">
+            <a (click)="twitterShare()">
               <i class="ico-twitter"></i>
             </a>
           </li>
