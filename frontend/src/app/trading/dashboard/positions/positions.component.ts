@@ -8,10 +8,12 @@ import 'rxjs/add/operator/takeUntil';
 import { Subject } from 'rxjs/Subject';
 import { Component, OnInit } from '@angular/core';
 import { Order } from '../../../models/order';
+import { Settings } from '../../../models/settings';
 import { ChangeDetected } from '../../../models/change-detected';
 import { TradeGroup, TradeGroupsCont } from '../../../models/trade-group';
 import { WebsocketService } from '../../../providers/http/websocket.service';
 import { StateService } from '../../../providers/state/state.service';
+import { SettingsService } from '../../../providers/http/settings.service';
 import { TradeGroupService } from '../../../providers/http/trade-group.service';
 
 @Component({
@@ -19,18 +21,21 @@ import { TradeGroupService } from '../../../providers/http/trade-group.service';
   templateUrl: './positions.component.html'
 })
 
-export class PositionsComponent implements OnInit {
-  
-  public quotes = {}
-  public orders: Order[];  
-  public tradeGroups: TradeGroupsCont;
-
-  private destory: Subject<boolean> = new Subject<boolean>();
+export class PositionsComponent implements OnInit 
+{  
+  quotes = {}
+  orders: Order[];
+  tradeGroups: TradeGroupsCont;
+  settings: Settings = new Settings();
+  destory: Subject<boolean> = new Subject<boolean>();
 
   //
   // Constructor....
   //
-  constructor(private websocketService: WebsocketService, private stateService: StateService, private tradeGroupService: TradeGroupService) { }
+  constructor(private websocketService: WebsocketService, private stateService: StateService, private tradeGroupService: TradeGroupService, private settingsService: SettingsService) 
+  { 
+    this.settings = this.stateService.GetSettings();
+  }
 
   //
   // OnInit....
@@ -39,6 +44,9 @@ export class PositionsComponent implements OnInit {
   {
     // Get the Positions
     this.getPositions();
+
+    // Load settings data
+    this.loadSettingsData();
 
     // Get Data from cache
     this.quotes = this.stateService.GetQuotes();    
@@ -67,7 +75,18 @@ export class PositionsComponent implements OnInit {
   {
     this.destory.next();
     this.destory.complete();
-  } 
+  }
+
+  //
+  // Load settings data.
+  //
+  loadSettingsData() 
+  {
+    this.settingsService.get().subscribe((res) => {
+      this.settings = res;
+      this.stateService.SetSettings(res);
+    });
+  }    
 
   //
   // Manage change detection.

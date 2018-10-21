@@ -80,7 +80,6 @@ import { ScreenerComponent } from './trading/screener/home.component';
 import { DashboardComponent } from './trading/dashboard/home.component';
 import { OrdersComponent } from './trading/dashboard/orders/orders.component';
 import { PositionsComponent } from './trading/dashboard/positions/positions.component';
-import { PositionComponent } from './trading/dashboard/positions/position.component';
 import { MarketQuotesComponent } from './trading/dashboard/market-quotes/market-quotes.component';
 import { DashboardChartComponent } from './trading/dashboard/dashboard-chart/dashboard-chart.component';
 import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-symbols.component';
@@ -90,6 +89,8 @@ import { DropdownSelectComponent } from './shared/dropdown-select/dropdown-selec
 import { AddEditComponent as ScreenerAddEditComponent } from './trading/screener/add-edit/add-edit.component';
 import { EquityComponent } from './trading/dashboard/positions/types/equity/equity.component';
 import { TradeEquityComponent } from './trade/trade-equity/trade-equity.component';
+import { SpreadComponent } from './trading/dashboard/positions/types/spread/spread.component';
+import { OptionComponent } from './trading/dashboard/positions/types/option/option.component';
 
 @NgModule({
   declarations: [
@@ -131,7 +132,6 @@ import { TradeEquityComponent } from './trade/trade-equity/trade-equity.componen
     DashboardComponent,
     WatchlistComponent,
     PositionsComponent,
-    PositionComponent,
     MarketQuotesComponent,
     DashboardChartComponent,
     TypeaheadSymbolsComponent,
@@ -155,6 +155,8 @@ import { TradeEquityComponent } from './trade/trade-equity/trade-equity.componen
     CardComponent,
     ToolTipComponent,
     CustomReportsComponent,
+    SpreadComponent,
+    OptionComponent,
   ],
   
   imports: [
