@@ -19,6 +19,9 @@ import { ReportsService } from '../../providers/http/reports.service';
 
 export class CustomReportsComponent implements OnInit 
 {
+  cumulative: boolean = false;
+  dataType: string = "profit-loss";
+  showFirstRun: boolean = false;
   dateSelect: string = "1-year";
   chartType: string = "column";
   groupBy: string = "month";
@@ -127,7 +130,26 @@ export class CustomReportsComponent implements OnInit
   }
 
   //
-  // Chart change`
+  // Data type change.
+  //
+  dataTypeChange()
+  {
+    switch(this.dataType)
+    {
+      case "profit-loss":
+        this.cumulative = false;
+      break;
+
+      case "profit-loss-cumulative":
+        this.cumulative = true;
+      break;      
+    }
+
+    this.chartChange();
+  }
+
+  //
+  // Chart change
   //
   chartChange()
   {
@@ -193,7 +215,16 @@ export class CustomReportsComponent implements OnInit
   //
   buildChart()
   {
-    this.reportsService.getProfitLoss(Number(this.stateService.GetStoredActiveAccountId()), this.startDate, this.endDate, this.groupBy, "asc").subscribe((res) => {
+    this.reportsService.getProfitLoss(Number(this.stateService.GetStoredActiveAccountId()), this.startDate, this.endDate, this.groupBy, "asc", this.cumulative).subscribe((res) => {
+
+      // Show first run
+      if(res.length > 0) 
+      {
+        this.showFirstRun = false;
+      } else 
+      {
+        this.showFirstRun = true;
+      }
 
       var data = [];
 
@@ -223,7 +254,14 @@ export class CustomReportsComponent implements OnInit
   //
   getProfitLoss() 
   {
-    this.reportsService.getProfitLoss(Number(this.stateService.GetStoredActiveAccountId()), this.startDate, this.endDate, this.groupBy, "desc").subscribe((res) => {
+    let sort = "desc";
+
+    if(this.cumulative)
+    {
+      sort = "asc";
+    }
+
+    this.reportsService.getProfitLoss(Number(this.stateService.GetStoredActiveAccountId()), this.startDate, this.endDate, this.groupBy, sort, this.cumulative).subscribe((res) => {
       this.listData = res;
     });
   }

@@ -36,12 +36,20 @@ func (t *Controller) ReportsGetProfitLoss(c *gin.Context) {
 		return
 	}
 
+	// Figure out if this is Cumulative
+	cum := false
+
+	if c.Query("cumulative") == "true" {
+		cum = true
+	}
+
 	// Get list of profits
 	profits := reports.GetProfitLoss(t.DB, brokerAccount, reports.ProfitLossParams{
-		StartDate: helpers.ParseDateNoError(c.Query("start")),
-		EndDate:   helpers.ParseDateNoError(c.Query("end")),
-		GroupBy:   c.Query("group"),
-		Sort:      c.Query("sort"),
+		StartDate:  helpers.ParseDateNoError(c.Query("start")),
+		EndDate:    helpers.ParseDateNoError(c.Query("end")),
+		GroupBy:    c.Query("group"),
+		Sort:       c.Query("sort"),
+		Cumulative: cum,
 	})
 
 	// Return happy JSON

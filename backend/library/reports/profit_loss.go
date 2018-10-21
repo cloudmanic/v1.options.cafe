@@ -15,10 +15,11 @@ import (
 )
 
 type ProfitLossParams struct {
-	StartDate time.Time `json:"start_date"`
-	EndDate   time.Time `json:"end_date"`
-	GroupBy   string    `json:group_by`
-	Sort      string    `json:sort`
+	StartDate  time.Time `json:"start_date"`
+	EndDate    time.Time `json:"end_date"`
+	GroupBy    string    `json:group_by`
+	Sort       string    `json:sort`
+	Cumulative bool      `json:cumulative`
 }
 
 type ProfitLoss struct {
@@ -38,6 +39,7 @@ type ProfitLoss struct {
 //
 func GetProfitLoss(db models.Datastore, brokerAccount models.BrokerAccount, parms ProfitLossParams) []ProfitLoss {
 
+	total := 0.00
 	selectStr := ""
 	queryStr := ""
 	profits := []ProfitLoss{}
@@ -76,6 +78,12 @@ func GetProfitLoss(db models.Datastore, brokerAccount models.BrokerAccount, parm
 		// Special case for day grouping
 		if parms.GroupBy == "day" {
 			profits[key].Date = Date{helpers.ParseDateNoError(row.DateStr)}
+		}
+
+		// Is this Cumulative?
+		if parms.Cumulative {
+			total = total + profits[key].Profit
+			profits[key].Profit = total
 		}
 
 	}

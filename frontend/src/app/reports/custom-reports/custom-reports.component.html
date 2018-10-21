@@ -8,8 +8,9 @@
 
           <div class="select-container select-container--size3">
             <div class="select select--primary">
-              <select name="field-profit">
-                <option value="option-1" selected="">Profit & Loss</option>
+              <select name="dataType" [(ngModel)]="dataType" (change)="dataTypeChange()">
+                <option value="profit-loss">Profit & Loss</option>
+                <option value="profit-loss-cumulative">Cumulative Earnings</option>                
               </select>
             </div>
           </div>
@@ -128,7 +129,21 @@
         </div> -->
       </div>
 
-      <div class="article__body">
+
+
+      <div class="article__body article__body--teritary" *ngIf="showFirstRun">
+        <div class="article__content-alt">
+          <h3>No data available!</h3>
+          <img src="/images/temp/chart1.png" alt="" />
+          <h4>Try adjusting the date range.</h4>
+          <h4>Or maybe you need to do some more trading first!</h4>
+        </div>
+      </div>
+
+
+
+
+      <div class="article__body" *ngIf="! showFirstRun">
         
         <div class="report">
           <highcharts-chart [Highcharts]="Highcharts" [constructorType]="chartConstructor" [options]="chartOptions" [(update)]="chartUpdateFlag" style="width: 100%; height: 500px; display: block;"></highcharts-chart>
@@ -140,8 +155,12 @@
             <thead>
               <tr>
                 <th class="hidden-desktop">Date</th>
+
+                <th *ngIf="cumulative">
+                  <ins>Cumulative Earnings</ins>
+                </th>
                 
-                <th>
+                <th *ngIf="! cumulative">
                   <ins>Profit & Loss</ins>
                 </th>
 
@@ -194,7 +213,7 @@
                 </td>
               </tr>
 
-              <tr class="table-totals">
+              <tr class="table-totals" *ngIf="! cumulative">
                 <td>
                   <strong>Totals</strong>
                 </td>
@@ -223,7 +242,7 @@
       </div>
     </div>
 
-    <div class="section-small">
+    <div class="section-small" *ngIf="! showFirstRun">
       <p>* Profit &amp; Loss includes commission costs.</p>
     </div>
 
