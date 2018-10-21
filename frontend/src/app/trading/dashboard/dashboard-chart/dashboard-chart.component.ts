@@ -177,8 +177,23 @@ export class DashboardChartComponent implements OnInit
   //
   // Get start date.
   //
-  getStartDate() : Date {
+  getStartDate() : Date 
+  {
+    // See if today is a weekend
     let start = new Date();
+    let dayCount = moment().isoWeekday();
+
+    switch(dayCount)
+    {
+      case 6:
+        start = moment().subtract(1, 'day').toDate();
+      break;
+
+      case 7:
+        start = moment().subtract(2, 'days').toDate();
+      break;    
+    }
+
     let parts = this.rangeSelect.split("-");
     this.interval = parts[1];
 
@@ -196,7 +211,8 @@ export class DashboardChartComponent implements OnInit
   //
   // Change date range.
   //
-  onRangeSelect(event) {
+  onRangeSelect(event) 
+  {
     this.getChartData();
   }
 
