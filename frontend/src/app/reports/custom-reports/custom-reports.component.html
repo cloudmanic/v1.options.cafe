@@ -9,8 +9,6 @@
             <div class="select select--primary">
               <select name="field-profit">
                 <option value="option-1" selected="">Profit & Loss</option>
-
-                <option value="option-2">Option 2</option>
               </select>
             </div>
           </div><!-- /.select-container -->
@@ -18,7 +16,7 @@
           <div class="select-container select-container--size2">
             <h6>Date Range</h6>
             
-            <div class="select select--primary expanded">
+            <div class="select select--primary expanded hidden">
               <select name="field-date">
                 <option value="option-1" selected="">Custom</option>
 
@@ -76,12 +74,12 @@
             
             <div class="select select--primary">
               <select name="field-month">
-                <option value="option-1" selected="">Month</option>
-
-                <option value="option-2">Month 2</option>
+                <option value="month" selected="">Month</option>
+                <option value="year">Year</option>
+                <option value="day">Day</option>                
               </select>
             </div>
-          </div><!-- /.select-container -->
+          </div>
 
           <ul class="list-actions-alt">
             <li>
@@ -118,8 +116,9 @@
       </div><!-- /.article__head -->
 
       <div class="article__body">
+        
         <div class="report">
-          <img src="/images/temp/reports1.jpg" alt="" />
+          <highcharts-chart [Highcharts]="Highcharts" [constructorType]="chartConstructor" [options]="chartOptions" [(update)]="chartUpdateFlag" style="width: 100%; height: 500px; display: block;"></highcharts-chart>
         </div>
 
         <div class="table-simple table-simple--alt js-table">
