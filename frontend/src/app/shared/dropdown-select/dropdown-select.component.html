@@ -4,7 +4,13 @@
   <div class="dropdown__body">
     <ul class="list-actions">
       <li *ngFor="let row of actions;">
-        <a (click)="row.click(data)">{{ row.title }}</a>
+        <a (click)="row.click(data)" *ngIf="! row.section">{{ row.title }}</a>
+
+        <p *ngIf="row.section">
+          <small>
+            <em>{{ row.title }}</em>
+          </small>
+        </p>        
       </li>
     </ul>
   </div>

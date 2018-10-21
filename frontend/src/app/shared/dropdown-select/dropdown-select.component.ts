@@ -59,6 +59,7 @@ export class DropdownAction
 {
   title: string = "";
   click: Function = null;
+  section: boolean = false;
 }
 
 /* End File */

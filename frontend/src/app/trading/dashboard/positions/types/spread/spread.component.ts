@@ -47,7 +47,10 @@ export class SpreadComponent implements OnInit
   //
   setupActions() 
   {
-    let das = []
+    // Build social section
+    let closeSection = new DropdownAction();
+    closeSection.title = "Close Position";
+    closeSection.section = true;
 
     // First action
     let da1 = new DropdownAction();
@@ -84,13 +87,11 @@ export class SpreadComponent implements OnInit
       this.tradeService.tradeEvent.emit(new TradeEvent().createNew("toggle-trade-builder", tradeDetails));
     };
 
-    // Add to actions.
-    das.push(da1);
 
 
-    // Section action
+    // Close Trade @
     let da2 = new DropdownAction();
-    da2.title = "Close Trade @ $" + this.settings.StrategyPcsClosePrice;
+    da2.title = "Close @ $" + this.settings.StrategyPcsClosePrice;
 
     // Place trade to close
     da2.click = (row: TradeGroup) => {
@@ -124,14 +125,11 @@ export class SpreadComponent implements OnInit
       this.tradeService.tradeEvent.emit(new TradeEvent().createNew("toggle-trade-builder", tradeDetails));
     };
 
-    // Add to actions
-    das.push(da2);
 
 
-
-    // Section action
+    // Close Trade @ Market
     let da3 = new DropdownAction();
-    da3.title = "Close Trade @ Market";
+    da3.title = "Close @ Market";
 
     // Place trade to close
     da3.click = (row: TradeGroup) => {
@@ -164,11 +162,35 @@ export class SpreadComponent implements OnInit
       this.tradeService.tradeEvent.emit(new TradeEvent().createNew("toggle-trade-builder", tradeDetails));
     };
 
-    // Add to actions
-    das.push(da3);
+
+    // Build social section
+    let socialSection = new DropdownAction();
+    socialSection.title = "Share Position";
+    socialSection.section = true;
+
+    // Tweet Trade
+    let tweet = new DropdownAction();
+    tweet.title = "Tweet Trade";
+
+    // Place trade to close
+    tweet.click = (row: TradeGroup) => {
+
+      let credit = (row.Credit / row.Positions[0].Qty) / 100;
+
+      let tweet = "I just opened a new " + row.Type + " today on the " + row.Positions[0].Symbol.OptionUnderlying + ". For a credit of $" + credit + ".%0a%0a";
+
+      for (let i = 0; i < row.Positions.length; i++) 
+      {
+        tweet = tweet + row.Positions[i].Symbol.Name + "%0a";
+      }
+
+      tweet = tweet + "%0a";
+
+      window.open('https://twitter.com/share?text=' + tweet + '&via=options_cafe&url=https://options.cafe&hashtags=OptionsTrading', '', 'menubar=no, toolbar = no, resizable = yes, scrollbars = yes, height = 600, width = 600');
+    };
 
     // Load actions.
-    this.actions = das;
+    this.actions = [closeSection, da1, da2, da3, socialSection, tweet];
   }
 
   //
