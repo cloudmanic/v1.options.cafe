@@ -46,15 +46,16 @@
 					<ul>
 						<li [ngClass]="{ 'current': (subSection == 'account-summary') }">
 							<a routerLink="/reports/account-summary">Account Summary</a>
-						</li><!-- /.current -->
-
-						<li [ngClass]="{ 'current': (subSection == 'account-history') }">
-							<a routerLink="/reports/account-history">Account History</a>
 						</li>
 
 						<li [ngClass]="{ 'current': (subSection == 'custom') }">
 							<a routerLink="/reports/custom">Custom Reports</a>
 						</li>
+
+						<li [ngClass]="{ 'current': (subSection == 'account-history') }">
+							<a routerLink="/reports/account-history">Account History</a>
+						</li>
+
 					</ul>
 				</nav>
 

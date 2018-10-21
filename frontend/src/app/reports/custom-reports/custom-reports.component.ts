@@ -6,6 +6,8 @@
 
 import * as moment from 'moment-timezone';
 import * as Highcharts from 'highcharts/highstock';
+import 'rxjs/add/operator/takeUntil';
+import { Subject } from 'rxjs/Subject';
 import { Angular2Csv } from 'angular2-csv/Angular2-csv';
 import { ProfitLoss } from '../../models/reports';
 import { Component, OnInit } from '@angular/core';
@@ -37,6 +39,8 @@ export class CustomReportsComponent implements OnInit
   chartConstructor = 'chart';
 
   chartUpdateFlag: boolean = false;
+
+  destory: Subject<boolean> = new Subject<boolean>();
 
   // High charts config
   chartOptions = {
@@ -125,10 +129,25 @@ export class CustomReportsComponent implements OnInit
   //
   ngOnInit() 
   {
+    // Subscribe to changes in the selected broker.
+    this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
+      this.buildChart();
+      this.getProfitLoss();
+    });
+
     // Get data for page.
     this.buildChart();
     this.getProfitLoss();
   }
+
+  //
+  // OnDestroy
+  //
+  ngOnDestroy() {
+    this.destory.next();
+    this.destory.complete();
+  }
+
 
   //
   // Data type change.
