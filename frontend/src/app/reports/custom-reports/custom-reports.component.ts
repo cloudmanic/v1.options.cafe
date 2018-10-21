@@ -19,6 +19,7 @@ import { ReportsService } from '../../providers/http/reports.service';
 
 export class CustomReportsComponent implements OnInit 
 {
+  groupBy: string = "month";
   listData: ProfitLoss[] = [];
   Highcharts = Highcharts;
 
@@ -28,9 +29,6 @@ export class CustomReportsComponent implements OnInit
 
   // High charts config
   chartOptions = {
-    lang: {
-      thousandsSep: ','
-    },
 
     chart: { type: 'column' },
 
@@ -79,7 +77,8 @@ export class CustomReportsComponent implements OnInit
 
       dateTimeLabelFormats: {
         month: '%b \'%y',
-        year: '%Y'
+        year: '%Y',
+        day: '%e. %b'
       },
 
       title: {
@@ -107,16 +106,25 @@ export class CustomReportsComponent implements OnInit
   ngOnInit() 
   {
     // Get data for page.
+    this.buildChart();
     this.getProfitLoss();
   }
 
   //
-  // Get Data = Profit Loss
+  // Chart change`
   //
-  getProfitLoss() 
+  chartChange()
   {
-    this.reportsService.getProfitLoss(Number(this.stateService.GetStoredActiveAccountId()), "2018-01-01", "2018-12-31", "month", "desc").subscribe((res) => {
-      this.listData = res;
+    this.buildChart();    
+    this.getProfitLoss();
+  }
+
+  //
+  // Get chart data
+  //
+  buildChart()
+  {
+    this.reportsService.getProfitLoss(Number(this.stateService.GetStoredActiveAccountId()), "2017-01-01", "2018-12-31", this.groupBy, "asc").subscribe((res) => {
 
       var data = [];
 
@@ -124,7 +132,7 @@ export class CustomReportsComponent implements OnInit
       {
         let color = "#5cb85c";
 
-        if(res[i].Profit < 0)
+        if (res[i].Profit < 0) 
         {
           color = "#ce4260";
         }
@@ -137,6 +145,16 @@ export class CustomReportsComponent implements OnInit
       this.chartOptions.series[0].name = "Profit & Loss";
       this.chartUpdateFlag = true;
 
+    });
+  }
+
+  //
+  // Get Data = Profit Loss
+  //
+  getProfitLoss() 
+  {
+    this.reportsService.getProfitLoss(Number(this.stateService.GetStoredActiveAccountId()), "2017-01-01", "2018-12-31", this.groupBy, "desc").subscribe((res) => {
+      this.listData = res;
     });
   }
 

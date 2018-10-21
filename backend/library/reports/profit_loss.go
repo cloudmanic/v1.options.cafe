@@ -73,6 +73,11 @@ func GetProfitLoss(db models.Datastore, brokerAccount models.BrokerAccount, parm
 			profits[key].Date = Date{now.New(helpers.ParseDateNoError(row.DateStr + "-12")).EndOfMonth()}
 		}
 
+		// Special case for day grouping
+		if parms.GroupBy == "day" {
+			profits[key].Date = Date{helpers.ParseDateNoError(row.DateStr)}
+		}
+
 	}
 
 	// Return Happy

@@ -73,8 +73,8 @@
             <h6>Group By</h6>
             
             <div class="select select--primary">
-              <select name="field-month">
-                <option value="month" selected="">Month</option>
+              <select name="groupBy" [(ngModel)]="groupBy" (change)="chartChange()">
+                <option value="month">Month</option>
                 <option value="year">Year</option>
                 <option value="day">Day</option>                
               </select>
@@ -155,7 +155,9 @@
             <tbody>
               <tr *ngFor="let row of listData;">
                 <td>
-                  <p>{{ row.Date | date:'MM/yyyy' }}</p>
+                  <p *ngIf="groupBy == 'year'">{{ row.Date | date:'yyyy' }}</p>
+                  <p *ngIf="groupBy == 'month'">{{ row.Date | date:'MM/yyyy' }}</p>
+                  <p *ngIf="groupBy == 'day'">{{ row.Date | date:'shortDate' }}</p>
                 </td>
 
                 <td> 
