@@ -5,70 +5,36 @@
     <div class="article article--secondary">
       <div class="article__head article__head--secondary">
         <div class="article__head-group">
-          <div class="select-container select-container--size1">
+
+          <div class="select-container select-container--size3">
             <div class="select select--primary">
               <select name="field-profit">
                 <option value="option-1" selected="">Profit & Loss</option>
               </select>
             </div>
-          </div><!-- /.select-container -->
+          </div>
 
-          <div class="select-container select-container--size2">
-            <h6>Date Range</h6>
-            
-            <div class="select select--primary expanded hidden">
-              <select name="field-date">
-                <option value="option-1" selected="">Custom</option>
-
-                <option value="option-2">Option 2</option>
+          <div class="select-container select-container--size3">
+            <div class="select select--primary">
+              <select name="dateSelect" [(ngModel)]="dateSelect" (change)="dateChange()">
+                <option value="1-year">Last 1 Year</option>
+                <option value="2-year">Last 2 Year</option>
+                <option value="3-year">Last 3 Year</option>
+                <option value="4-year">Last 4 Year</option>                
+                <option value="5-year">Last 5 Year</option>
+                <option value="10-year">Last 10 Year</option>
+                <option value="ytd">Year to Date</option>
+                <option value="custom">Custom Dates</option>
               </select>
+            </div>            
+          </div>
 
-              <ul>
-                <li>
-                  <a href="#">This Month</a>
-                </li>
-                
-                <li class="active">
-                  <a href="#">Last Month</a>
-                </li>
-                
-                <li>
-                  <a href="#">Year to Date</a>
-                </li>
-                
-                <li>
-                  <a href="#">Last 1 Year</a>
-                </li>
-                
-                <li>
-                  <a href="#">Last 2 Years</a>
-                </li>
-                
-                <li>
-                  <a href="#">Last 5 Years</a>
-                </li>
-                
-                <li>
-                  <a href="#">Last 10 Years</a>
-                </li>
-                
-                <li>
-                  <a href="#">Custom Date Range</a>
-                </li>
-              </ul>
-            </div>
-          </div><!-- /.select-container -->
-
-          <div class="field-container">
-            <input type="text" class="field field--size1 js-date" placeholder="10/23/17" />
-
+          <div class="field-container mr-20 ml-20" *ngIf="dateSelect == 'custom'">
+            <input type="date" class="field field--size-2-plus" (change)="dateChange()" name="startDateInput" [(ngModel)]="startDateInput" />
             <h6>To</h6>
-            
-            <input type="text" class="field field--size1 js-date" placeholder="10/23/17" />
-          </div><!-- /.field-container -->
-        </div><!-- /.article__head-group -->
+            <input type="date" class="field field--size-2-plus" (change)="dateChange()" name="endDateInput" [(ngModel)]="endDateInput" />
+          </div>
 
-        <div class="article__head-group">
           <div class="select-container select-container--size3">
             <h6>Group By</h6>
             
@@ -80,6 +46,49 @@
               </select>
             </div>
           </div>
+
+          <div class="select-container select-container--size3">
+            <ul class="list-actions-alt">
+              <li [ngClass]="{ 'active': (chartType == 'column') }">
+                <a class="btn-square" (click)="setChartType('column')">
+                  <i class="ico-chart-2"></i>
+                </a>
+              </li>
+
+              <li [ngClass]="{ 'active': (chartType == 'line') }">
+                <a class="btn-square" (click)="setChartType('line')">
+                  <i class="ico-chart-1"></i>
+                </a>
+              </li>
+
+            </ul>
+          </div>
+
+<!--           <div class="select-container select-container--size3">
+
+            <ul class="list-actions-alt list-actions-alt--primary">
+              <li>
+                <a href="#" class="btn btn--border btn--size3">
+                  <i class="ico-download"></i>
+                  CSV
+                </a>
+              </li>
+
+              <li>
+                <a href="#" class="btn btn--border btn--size3">
+                  <i class="ico-download"></i>
+                  PDF
+                </a>
+              </li>
+            </ul>
+
+          </div> -->
+
+
+        </div>
+
+<!--         <div class="article__head-group">
+
 
           <ul class="list-actions-alt">
             <li [ngClass]="{ 'active': (chartType == 'column') }">
@@ -96,7 +105,7 @@
 
           </ul>
 
-<!--           <ul class="list-actions-alt list-actions-alt--primary">
+          <ul class="list-actions-alt list-actions-alt--primary">
 
             <li>
               <a href="#" class="btn btn--border btn--size3">
@@ -114,9 +123,9 @@
               </a>
             </li>
 
-          </ul> -->
+          </ul>
 
-        </div>
+        </div> -->
       </div>
 
       <div class="article__body">
@@ -215,10 +224,8 @@
     </div>
 
     <div class="section-small">
-      <p>
-        Curabitur eu dolor eu urna pretium dapibus. Praesent a euismod ex, in euismod risus. Aliquam ullamcorper lectus tempus feugiat facilisis. Vivamus ac semper felis. Fusce ut lacus accumsan, eleifend mi eget, placerat augue. Quisque pellentesque cursus ex eget molestie. Aenean varius lacus quis massa pharetra, vel tincidunt velit lobortis.
-      </p>
-    </div><!-- /.section-small -->
+      <p>* Profit &amp; Loss includes commission costs.</p>
+    </div>
 
-  </div><!-- /.shell shell-large -->
-</div><!-- /.content__inner -->
+  </div>
+</div>

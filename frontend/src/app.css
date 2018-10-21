@@ -24,6 +24,10 @@
 .ml-5 { margin-left: 5px !important; }
 .ml-20 { margin-left: 20px !important; }
 
+.mr-3 { margin-right: 3px !important; }
+.mr-5 { margin-right: 5px !important; }
+.mr-20 { margin-right: 20px !important; }
+
 /* Widths */
 .width-95 { width: 95px !important; }
 .width-135 { width: 135px !important; }
@@ -91,6 +95,7 @@
 .widget__actions .delete-btn { display: inline-block; float: right; margin-top: 20px; color: #ce4260; font-weight: 500; } 
 
 /* Reports */
+.field--size-2-plus { width: 170px; }
 .table-totals td { border-bottom: unset; border-top: 1px solid #000; }
 .article .article__head .article__btn { z-index: 1000 }
 

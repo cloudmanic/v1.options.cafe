@@ -19,8 +19,14 @@ import { ReportsService } from '../../providers/http/reports.service';
 
 export class CustomReportsComponent implements OnInit 
 {
+  dateSelect: string = "1-year";
   chartType: string = "column";
   groupBy: string = "month";
+  startDate: Date = moment(moment().year() + "-01-01").toDate();
+  endDate: Date = moment().toDate();
+  startDateInput: Date = moment(moment().year() + "-01-01").format('YYYY-MM-DD');
+  endDateInput: Date = moment().format('YYYY-MM-DD');
+
   listData: ProfitLoss[] = [];
   Highcharts = Highcharts;
 
@@ -130,11 +136,64 @@ export class CustomReportsComponent implements OnInit
   }
 
   //
+  // Deal with date change
+  //
+  dateChange()
+  {
+    // Set start and stop dates based on predefined selector
+    switch(this.dateSelect)
+    {
+      case "1-year":
+        this.startDate = moment().subtract(1, 'year').toDate();
+        this.endDate = moment().toDate();
+      break;
+
+      case "2-year":
+        this.startDate = moment().subtract(2, 'year').toDate();
+        this.endDate = moment().toDate();
+      break;
+
+      case "3-year":
+        this.startDate = moment().subtract(3, 'year').toDate();
+        this.endDate = moment().toDate();
+      break;
+
+      case "4-year":
+        this.startDate = moment().subtract(4, 'year').toDate();
+        this.endDate = moment().toDate();
+      break;
+
+      case "5-year":
+        this.startDate = moment().subtract(5, 'year').toDate();
+        this.endDate = moment().toDate();
+      break;
+
+      case "10-year":
+        this.startDate = moment().subtract(10, 'year').toDate();
+        this.endDate = moment().toDate();
+      break;
+
+      case "ytd":
+        this.startDate = moment(moment().year() + "-01-01").toDate();
+        this.endDate = moment().toDate();
+      break;
+
+      case "custom":
+        this.startDate = moment(this.startDateInput).toDate();
+        this.endDate = moment(this.endDateInput).toDate();
+      break;
+    }
+
+    this.buildChart();
+    this.getProfitLoss();    
+  }
+
+  //
   // Get chart data
   //
   buildChart()
   {
-    this.reportsService.getProfitLoss(Number(this.stateService.GetStoredActiveAccountId()), "2017-01-01", "2018-12-31", this.groupBy, "asc").subscribe((res) => {
+    this.reportsService.getProfitLoss(Number(this.stateService.GetStoredActiveAccountId()), this.startDate, this.endDate, this.groupBy, "asc").subscribe((res) => {
 
       var data = [];
 
@@ -164,7 +223,7 @@ export class CustomReportsComponent implements OnInit
   //
   getProfitLoss() 
   {
-    this.reportsService.getProfitLoss(Number(this.stateService.GetStoredActiveAccountId()), "2017-01-01", "2018-12-31", this.groupBy, "desc").subscribe((res) => {
+    this.reportsService.getProfitLoss(Number(this.stateService.GetStoredActiveAccountId()), this.startDate, this.endDate, this.groupBy, "desc").subscribe((res) => {
       this.listData = res;
     });
   }

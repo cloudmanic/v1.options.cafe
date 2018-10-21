@@ -41,9 +41,12 @@ export class ReportsService
   //
   // Return profit and loss data.
   //
-  getProfitLoss(brokerAccount: number, start: string, end: string, group: string, sort: string): Observable<ProfitLoss[]> 
+  getProfitLoss(brokerAccount: number, start: Date, end: Date, group: string, sort: string): Observable<ProfitLoss[]> 
   {
-    let getParms = "sort=" + sort + "&group=" + group + "&start=" + start + "&end=" + end;
+    let startDate = moment(start).format('YYYY-MM-DD');
+    let endDate = moment(end).format('YYYY-MM-DD');
+
+    let getParms = "sort=" + sort + "&group=" + group + "&start=" + startDate + "&end=" + endDate;
 
     return this.http.get<ProfitLoss[]>(environment.app_server + '/api/v1/reports/' + brokerAccount + '/profit-loss?' + getParms)
       .map((data) => { return new ProfitLoss().fromJsonList(data); });
