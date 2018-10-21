@@ -88,7 +88,7 @@
 
         </div>
 
-<!--         <div class="article__head-group">
+        <div class="article__head-group">
 
 
           <ul class="list-actions-alt">
@@ -109,24 +109,23 @@
           <ul class="list-actions-alt list-actions-alt--primary">
 
             <li>
-              <a href="#" class="btn btn--border btn--size3">
+              <a class="btn btn--border btn--size3" (click)="exportCSV()">
                 <i class="ico-download"></i>
-
                 CSV
               </a>
             </li>
 
-            <li>
+<!--             <li>
               <a href="#" class="btn btn--border btn--size3">
                 <i class="ico-download"></i>
                 
                 PDF
               </a>
-            </li>
+            </li> -->
 
           </ul>
 
-        </div> -->
+        </div>
       </div>
 
 
@@ -148,6 +147,8 @@
         <div class="report">
           <highcharts-chart [Highcharts]="Highcharts" [constructorType]="chartConstructor" [options]="chartOptions" [(update)]="chartUpdateFlag" style="width: 100%; height: 500px; display: block;"></highcharts-chart>
         </div>
+
+
 
         <div class="table-simple table-simple--alt js-table">
 

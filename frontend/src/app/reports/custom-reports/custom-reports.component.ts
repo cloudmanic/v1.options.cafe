@@ -6,6 +6,7 @@
 
 import * as moment from 'moment-timezone';
 import * as Highcharts from 'highcharts/highstock';
+import { Angular2Csv } from 'angular2-csv/Angular2-csv';
 import { ProfitLoss } from '../../models/reports';
 import { Component, OnInit } from '@angular/core';
 import { StateService } from '../../providers/state/state.service';
@@ -311,6 +312,43 @@ export class CustomReportsComponent implements OnInit
     return total;
   }
 
+  //
+  // Export CSV
+  //
+  exportCSV()
+  {
+    let data = [];
+
+    // Build data 
+    for(let i = 0; i < this.listData.length; i++)
+    {
+      let row = this.listData[i];
+
+      data.push({
+        Date: moment(row.Date).format('YYYY-MM-DD'),
+        Profit: row.Profit,
+        TradeCount: row.TradeCount,
+        Commissions: row.Commissions,
+        ProfitPerTrade: row.ProfitPerTrade,
+        WinRatio: row.WinRatio,
+        LossCount: row.LossCount,
+        WinCount: row.WinCount        
+      });
+    }
+
+    let options = {
+      fieldSeparator: ',',
+      quoteStrings: '"',
+      decimalseparator: '.',
+      headers: ['Date', 'Profit', 'TradeCount', 'Commissions', 'ProfitPerTrade', 'WinRatio', 'LossCount', 'WinCount'],
+      showTitle: false,
+      useBom: true,
+      removeNewLines: false,
+      keys: []
+    };
+
+    new Angular2Csv(data, 'options-cafe-profit-loss', options);
+  }
 }
 
 /* End File */
