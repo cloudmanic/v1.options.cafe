@@ -8,6 +8,7 @@ import { Routing } from './app.routing';
 import { SortablejsModule } from 'angular-sortablejs';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './providers/http/token.interceptor';
+import { CeiboShare } from 'ng2-social-share';
 import { HighchartsChartComponent } from './shared/highcharts/highcharts-chart.component';
 
 // Shared
@@ -96,6 +97,7 @@ import { OptionComponent } from './trading/dashboard/positions/types/option/opti
   declarations: [
     
     AppComponent,
+    CeiboShare,
     HighchartsChartComponent,
     
     // Layout
@@ -164,7 +166,7 @@ import { OptionComponent } from './trading/dashboard/positions/types/option/opti
     FormsModule,
     BrowserModule,
     SortablejsModule,
-    HttpClientModule
+    HttpClientModule   
   ],
   
   providers: [
