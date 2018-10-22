@@ -6,7 +6,7 @@
   <div class="shell shell--fluid">
 
     <div class="banner banner--info banner--large" *ngIf="showNotice">
-      <a class="btn-close"></a>
+      <a class="btn-close" (click)="closeNotice()"></a>
       <h6 class="banner__title">
         <strong>{{ noticeTitle }}</strong>
       </h6>

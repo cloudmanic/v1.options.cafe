@@ -1,0 +1,27 @@
+<div class="centcom-table">
+
+  <table>
+    <thead>
+      <tr>
+        <th>First</th>
+        <th>Last</th>
+        <th>Email</th>
+        <th>Last Activity</th> 
+        <th>&nbsp;</th>               
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let row of users">
+        <td>{{ row.first_name }}</td>
+        <td>{{ row.last_name }}</td>
+        <td>{{ row.email }}</td>
+        <td>{{ row.last_activity | date:'shortDate' }}</td>
+        <td>
+          <a (click)="loginAsUser(row)">Login</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

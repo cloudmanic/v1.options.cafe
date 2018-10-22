@@ -753,6 +753,25 @@ func (t *DB) doPostUserRegisterStuff(user User, ipAddress string) {
 	// Tell slack about this.
 	go services.SlackNotify("#events", "New Options Cafe User Account : "+user.Email)
 
+	// Add our welcome notice.
+	title := "Welcome to Options Cafe Beta"
+	message := `Thanks for giving us a try! You are using a beta release. During our beta release we will be focusing on <a href="https://www.investopedia.com/university/optionspreadstrategies/optionspreads2.asp" target="_blank">vertical spread</a> options strategies. More strategies will roll out over the course of the next month. If you have any issues or want to give us feedback please email us at <a href="mailto:help@options.cafe">help@options.cafe</a>.`
+
+	n := Notification{
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+		UserId:      user.Id,
+		Status:      "pending",
+		Channel:     "in-app",
+		Uri:         "dashboard-notice",
+		Title:       title,
+		LongMessage: message,
+		SentTime:    time.Now(),
+		Expires:     time.Now().AddDate(0, 1, 0), // 1 month
+	}
+
+	// Store in DB
+	t.DB.New().Save(&n)
 }
 
 //

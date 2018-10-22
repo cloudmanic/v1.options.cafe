@@ -102,6 +102,8 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		apiV1.GET("/status/market", t.GetMarketStatus)
 
 		// Notifications
+		apiV1.GET("/notifications", t.GetNotifications)
+		apiV1.PUT("/notifications/:id", t.UpdateNotifications)
 		apiV1.POST("/notifications/add-channel", t.CreateNotifyChannel)
 	}
 

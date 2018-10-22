@@ -6,6 +6,7 @@
 
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { WebsocketService } from '../../providers/http/websocket.service';
+import { NotificationsService } from '../../providers/http/notifications.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,27 +15,72 @@ import { WebsocketService } from '../../providers/http/websocket.service';
 
 export class DashboardComponent implements OnInit 
 {
-  showNotice: boolean = true;
-  noticeTitle: string = "Welcome to Options Cafe Beta";
-  noticeBody: string = 'Lorem ipsum dolor sit amet, adipisicing elit. Aperiam ab id quos eos sapiente nostrum voluptatem impedit vitae repellat voluptate quam eius temporibus necessitatibus, ea eveniet molestias deserunt, suscipit magni, <a href="#">incidunt excepturi rem</a> voluptates soluta, officiis animi porro! Facilis, enim.';
+  showNotice: boolean = false;
+  noticeId: number = 0;
+  noticeTitle: string = '';
+  noticeBody: string = '';
   ws_reconnecting: boolean = false;
 
   //
   // Construct...
   //
-  constructor(private websocketService: WebsocketService, private changeDetect: ChangeDetectorRef) { }
+  constructor(private notificationsService: NotificationsService, private websocketService: WebsocketService, private changeDetect: ChangeDetectorRef) 
+  { 
+    // Load data for page.
+    this.getNotifications();
+  }
 
   //
   // On Init...
   //
-  ngOnInit() {
-    
+  ngOnInit() 
+  {  
     // Subscribe to when we are reconnecting to a websocket - Core
     this.websocketService.wsReconnecting.subscribe(data => {
       this.ws_reconnecting = data;
       this.changeDetect.detectChanges();
     });
 
+  }
+
+  //
+  // See if we have any notifications to display.
+  //
+  getNotifications()
+  {
+    this.notificationsService.get("in-app", "dashboard-notice", "pending").subscribe(data => {
+
+      // We only take one notice at a time.
+      if(data.length <= 0)
+      {
+        this.noticeId = 0;
+        this.showNotice = false;
+        this.noticeTitle = "";
+        this.noticeBody = "";        
+        return;
+      }
+
+      // Grab the first notice and display.
+      this.noticeId = data[0].Id;
+      this.noticeTitle = data[0].Title;
+      this.noticeBody = data[0].LongMessage;
+      this.showNotice = true;
+
+    });
+  }
+
+  //
+  // Close Notice 
+  //
+  closeNotice()
+  {
+    // Send API call to mark notice as seen. 
+    this.notificationsService.markSeen(this.noticeId).subscribe(data => {
+
+      // See if there is a "next" notice.
+      this.getNotifications();
+
+    });
   }
 
 }

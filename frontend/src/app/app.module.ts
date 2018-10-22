@@ -92,6 +92,10 @@ import { TradeEquityComponent } from './trade/trade-equity/trade-equity.componen
 import { SpreadComponent } from './trading/dashboard/positions/types/spread/spread.component';
 import { OptionComponent } from './trading/dashboard/positions/types/option/option.component';
 
+// Centcom
+import { CoreComponent as CentcomCoreComponent } from './centcom/layouts/core/core.component';
+import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.component';
+
 @NgModule({
   declarations: [
     
@@ -157,6 +161,8 @@ import { OptionComponent } from './trading/dashboard/positions/types/option/opti
     CustomReportsComponent,
     SpreadComponent,
     OptionComponent,
+    CentcomUsersComponent,
+    CentcomCoreComponent,
   ],
   
   imports: [

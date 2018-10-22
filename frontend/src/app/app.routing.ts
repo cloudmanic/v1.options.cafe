@@ -38,6 +38,10 @@ import { DashboardComponent } from './trading/dashboard/home.component';
 import { ScreenerComponent } from './trading/screener/home.component';
 import { AddEditComponent as ScreenerAddEditComponent } from './trading/screener/add-edit/add-edit.component';
 
+// Centcom
+import { CoreComponent as CentcomCoreComponent } from './centcom/layouts/core/core.component';
+import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.component';
+
 // Routes
 const appRoutes: Routes = [
   // Auth
@@ -77,6 +81,14 @@ const appRoutes: Routes = [
     { path: 'settings/brokers', component: BrokersComponent, canActivate: [AuthGuard], data: { section: 'settings', subSection: 'brokers', action: '' } }
     
   ] },
+
+  // Centcom App
+  {
+    path: 'centcom', component: CentcomCoreComponent, children: [
+      { path: 'users', component: CentcomUsersComponent, canActivate: [AuthGuard], data: {} },
+    ]
+  },
+
   
   // Otherwise redirect to home
   { path: '**', redirectTo: '' }  
