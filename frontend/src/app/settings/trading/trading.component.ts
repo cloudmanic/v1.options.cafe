@@ -300,5 +300,5 @@ class StrategyActiveState
   HelperVerticalSpreadLotsMsg: string = "When opening a trade from the Options Cafe screener you may have a standard number of contracts (or lots) you want to trade. You can set your default lots size here for quick ordering. Of course at the time you place your trade you can always change how many contracts you order."; 
 
   HelperVerticalSpreadCloseTitle: string = "Close Price";
-  HelperVerticalSpreadCloseMsg: string = "When closing a position many options traders have a desired price. For example you might open a put credit spread at a credit of $0.20 and want to close it at a debit of $0.03. With this setting you can set your default close price. This feature is just for one click trading. You have to place the close order yourself. Options Cafe will not close trades for you.";            
+  HelperVerticalSpreadCloseMsg: string = "When closing a position many options traders have a desired price. For example you might open a put credit spread at a credit of $0.20 and want to close it at a debit of $0.03. With this setting you can set your default close price. This feature is just for one click trading. You have to place the close order yourself. Options Cafe will not auto close trades for you.";            
 }
