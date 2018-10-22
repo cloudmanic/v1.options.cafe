@@ -5,6 +5,14 @@
 <div class="content__inner">
   <div class="shell shell--fluid">
 
+    <div class="banner banner--info banner--large" *ngIf="showNotice">
+      <a class="btn-close"></a>
+      <h6 class="banner__title">
+        <strong>{{ noticeTitle }}</strong>
+      </h6>
+      <p [innerHTML]="noticeBody"></p>
+    </div>
+
     <ul class="tables">
     	<li class="table box--bordered" app-trading-market-quotes></li>
     	<li class="table box--bordered" app-trading-ivr></li>

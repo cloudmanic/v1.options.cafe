@@ -11,9 +11,13 @@ import { WebsocketService } from '../../providers/http/websocket.service';
   selector: 'app-dashboard',
   templateUrl: './home.component.html'
 })
-export class DashboardComponent implements OnInit {
 
-  ws_reconnecting = false;
+export class DashboardComponent implements OnInit 
+{
+  showNotice: boolean = true;
+  noticeTitle: string = "Welcome to Options Cafe Beta";
+  noticeBody: string = 'Lorem ipsum dolor sit amet, adipisicing elit. Aperiam ab id quos eos sapiente nostrum voluptatem impedit vitae repellat voluptate quam eius temporibus necessitatibus, ea eveniet molestias deserunt, suscipit magni, <a href="#">incidunt excepturi rem</a> voluptates soluta, officiis animi porro! Facilis, enim.';
+  ws_reconnecting: boolean = false;
 
   //
   // Construct...
