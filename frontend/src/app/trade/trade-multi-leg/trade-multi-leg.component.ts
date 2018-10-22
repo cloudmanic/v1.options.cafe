@@ -38,14 +38,14 @@ export class TradeMultiLegComponent implements OnInit
   // OnInit.
   //
   ngOnInit() {
-
+    
     // Get and set symbols
     if(this.tradeDetails.Symbol) 
     {
       this.symbolService.getSymbol(this.tradeDetails.Symbol).subscribe(data => {
         this.symbol = data;
         this.typeAheadSymbol = data;
-
+        
         // Load expire dates
         this.loadExpireDates(false);
 
@@ -150,7 +150,8 @@ export class TradeMultiLegComponent implements OnInit
   //
   // onSearchTypeAheadClick() 
   //
-  onSearchTypeAheadClick(symbol: Symbol) {
+  onSearchTypeAheadClick(symbol: Symbol) 
+  {
     if(typeof symbol == "undefined") 
     {
       return;
@@ -163,7 +164,8 @@ export class TradeMultiLegComponent implements OnInit
   //
   // onSearchSubmit()
   //
-  onSearchSubmit() {
+  onSearchSubmit() 
+  {
     // Set the symbol
     this.symbol = this.typeAheadSymbol;
     this.tradeDetails.Symbol = this.symbol.ShortName;
@@ -178,7 +180,8 @@ export class TradeMultiLegComponent implements OnInit
   //
   // Load expire dates
   //
-  loadExpireDates(addLeg: boolean) {
+  loadExpireDates(addLeg: boolean) 
+  {
     this.symbolExpirations = [];
 
     // Make API call to get option expire dates.
@@ -206,7 +209,7 @@ export class TradeMultiLegComponent implements OnInit
   //
   loadChainForAllLegs() 
   {
-    if(! this.tradeDetails.Legs)
+    if(! this.tradeDetails.Legs.length)
     {
       return; 
     }
@@ -220,7 +223,8 @@ export class TradeMultiLegComponent implements OnInit
   //
   // On expire change.
   //
-  onExpireChange(leg: TradeOptionLegs, index: number) {
+  onExpireChange(leg: TradeOptionLegs, index: number) 
+  {
     // Api call to get the strikes for this chain.
     this.tradeService.getOptionStrikesBySymbolExpiration(this.tradeDetails.Symbol, leg.Expire).subscribe(data => {
       this.tradeDetails.Legs[index].Strikes = data;

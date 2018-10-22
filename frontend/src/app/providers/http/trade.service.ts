@@ -124,7 +124,7 @@ export class TradeService
   //
   getOptionStrikesBySymbolExpiration(symbol: string, expire: Date): Observable<number[]> 
   {
-    let expr = moment(new Date(expire)).format("YYYY-MM-DD"); 
+    let expr = moment(expire).format("YYYY-MM-DD"); 
 
     return this.http.get<number[]>(environment.app_server + '/api/v1/quotes/options/strikes/' + symbol + '/' + expr).map(
       (data) => {
@@ -132,8 +132,11 @@ export class TradeService
         let strikes: number[] = []
 
         // Build data
-        for (let i = 0; i < data.length; i++) {
-          strikes.push(data[i]);
+        if (data)
+        {
+          for (let i = 0; i < data.length; i++) {
+            strikes.push(data[i]);
+          }
         }
 
         return strikes;

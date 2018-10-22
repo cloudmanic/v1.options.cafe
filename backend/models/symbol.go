@@ -25,7 +25,7 @@ type Symbol struct {
 	Type             string    `sql:"not null;type:ENUM('Equity', 'Option', 'Other');default:'Equity'" json:"type"`
 	OptionUnderlying string    `json:"option_underlying"`
 	OptionType       string    `json:"option_type"`
-	OptionExpire     time.Time `gorm:"type:date" json:"option_expire"`
+	OptionExpire     Date      `gorm:"type:date" json:"option_expire"`
 	OptionStrike     float64   `json:"option_strike"`
 }
 
@@ -103,7 +103,7 @@ func (t *DB) CreateNewSymbol(short string, name string, sType string) (Symbol, e
 			// Add in options data.
 			symb.OptionUnderlying = parts.Symbol
 			symb.OptionType = parts.Type
-			symb.OptionExpire = parts.Expire
+			symb.OptionExpire = Date{parts.Expire}
 			symb.OptionStrike = parts.Strike
 		}
 
