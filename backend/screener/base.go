@@ -9,9 +9,13 @@ package screener
 import (
 	"errors"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
+	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
 
@@ -35,6 +39,55 @@ func init() {
 	broker = tradier.Api{
 		DB:     nil,
 		ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN"),
+	}
+
+}
+
+//
+// Loop through all screeners and store them in cache.
+//
+func PrimeAllScreenerCaches(db models.Datastore) {
+
+	for {
+
+		screeners := []models.Screener{}
+		db.New().Find(&screeners)
+
+		for _, row := range screeners {
+
+			// Get screen with screen items
+			screen, err := db.GetScreenerByIdAndUserId(row.Id, row.UserId)
+
+			if err != nil {
+				services.BetterError(err)
+				continue
+			}
+
+			// Run screen
+			switch row.Strategy {
+
+			// Put Credit Spread
+			case "put-credit-spread":
+
+				result, err := RunPutCreditSpread(screen, db)
+
+				if err != nil {
+					services.BetterError(err)
+					continue
+				}
+
+				// Store result in cache.
+				cache.SetExpire("oc-screener-result-"+strconv.Itoa(int(row.Id)), (time.Minute * 5), result)
+
+				break
+
+			}
+
+		}
+
+		// Sleep for 5 mins.
+		time.Sleep(time.Second * 60 * 5)
+
 	}
 
 }

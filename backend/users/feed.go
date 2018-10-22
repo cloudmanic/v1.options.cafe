@@ -40,6 +40,7 @@ func (t *Base) StartFeeds() {
 
 //
 // Expire users from Trials
+//
 func (t *Base) DoExpireTrails() {
 
 	for {

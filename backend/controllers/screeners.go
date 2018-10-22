@@ -216,6 +216,7 @@ func (t *Controller) GetScreenerResults(c *gin.Context) {
 	}
 
 	// See if we have this result in the cache.
+	// We keep the cache up to date via a feed loop started from main.go
 	cachedResult := []screener.Result{}
 
 	found, _ := cache.Get("oc-screener-result-"+strconv.Itoa(int(screen.Id)), &cachedResult)
@@ -232,9 +233,6 @@ func (t *Controller) GetScreenerResults(c *gin.Context) {
 	if t.RespondError(c, err, httpNoRecordFound) {
 		return
 	}
-
-	// Store result in cache.
-	cache.SetExpire("oc-screener-result-"+strconv.Itoa(int(screen.Id)), (time.Minute * 5), result)
 
 	// Return happy JSON
 	c.JSON(200, result)

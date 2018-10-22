@@ -9,6 +9,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/notify/websocket_push"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/screener"
 	"github.com/cloudmanic/app.options.cafe/backend/users"
 	"github.com/cloudmanic/app.options.cafe/backend/websocket"
 	_ "github.com/jpfuentes2/go-env/autoload"
@@ -72,6 +73,9 @@ func main() {
 
 	// Start market status feed
 	go w.StartMarketStatusFeed()
+
+	// Start loop through refresh screener
+	go screener.PrimeAllScreenerCaches(db)
 
 	// Start websockets & controllers
 	c.StartWebServer()
