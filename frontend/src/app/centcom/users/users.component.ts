@@ -38,7 +38,7 @@ export class UsersComponent implements OnInit
   //
   getUsers() 
   {
-    this.http.get<Object[]>(environment.app_server + '/api/admin/users').subscribe((data) => {
+    this.http.get<User[]>(environment.app_server + '/api/admin/users').subscribe((data) => {
       this.users = data;
     });
   }
@@ -46,11 +46,45 @@ export class UsersComponent implements OnInit
   //
   // Login as user.
   //
-  loginAsUser(user: Object) 
+  loginAsUser(user: User) 
   {
-    alert('adsf');
+    let post = {
+      id: user.id
+    }
+
+    this.http.post<Object>(environment.app_server + '/api/admin/users/login-as-user', post).subscribe((data) => {
+      
+      // Store old values
+      localStorage.setItem('user_id_centcom', localStorage.getItem('user_id'));
+      localStorage.setItem('access_token_centcom', localStorage.getItem('access_token'));
+      localStorage.setItem('active_account_centcom', localStorage.getItem('active_account'));
+      localStorage.setItem('active_watchlist_centcom', localStorage.getItem('active_watchlist')); 
+
+      // Remove local storage
+      localStorage.removeItem('user_id');
+      localStorage.removeItem('redirect');
+      localStorage.removeItem('broker_new_id');
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('active_account');
+      localStorage.removeItem('active_watchlist'); 
+
+      // Store access token in local storage. 
+      localStorage.setItem('user_id', data["user_id"].toString());
+      localStorage.setItem('access_token', data["access_token"]);
+
+      // Redirect to app
+      window.location.href = '/';
+    });    
   }
 
+}
+
+interface User {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  last_activity: string;
 }
 
 /* End File */

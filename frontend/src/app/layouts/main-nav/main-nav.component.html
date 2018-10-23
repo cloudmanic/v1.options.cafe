@@ -18,6 +18,10 @@
 
   <nav class="nav-utilities">
   	<ul>
+      <li>
+        <a (click)="logBackIntoCentcom()" *ngIf="showCentcom">Centcom</a>
+      </li>
+
   		<li>
   			<a (click)="onHelpClick()">Help</a>
   		</li>

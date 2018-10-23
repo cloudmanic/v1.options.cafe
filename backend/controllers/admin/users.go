@@ -7,11 +7,50 @@
 package admin
 
 import (
+	"io/ioutil"
 	"net/http"
+	"os"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/realip"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
+	"github.com/tidwall/gjson"
 )
+
+//
+// Login as a user (remember only admins can do this)
+//
+func (t *Controller) LoginAsUser(c *gin.Context) {
+
+	// Parse json body
+	body, err := ioutil.ReadAll(c.Request.Body)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	// First we validate the grant type and client id. Make sure this is a known application.
+	app, err := t.DB.ValidateClientIdGrantType(os.Getenv("CENTCOM_CLIENT_ID"), "password")
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid client_id or grant type."})
+		return
+	}
+
+	// Get user Id
+	userId := gjson.Get(string(body), "id").Int()
+
+	user, err := t.DB.LoginUserById(uint(userId), app.Id, c.Request.UserAgent(), realip.RealIP(c.Request))
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Return success json.
+	c.JSON(200, gin.H{"access_token": user.Session.AccessToken, "user_id": user.Id})
+}
 
 //
 // Return a list of all our users.
