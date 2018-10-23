@@ -17,6 +17,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/screener/put_credit_spread"
 )
 
 var (
@@ -69,7 +70,7 @@ func PrimeAllScreenerCaches(db models.Datastore) {
 			// Put Credit Spread
 			case "put-credit-spread":
 
-				result, err := RunPutCreditSpread(screen, db)
+				result, err := put_credit_spread.RunPutCreditSpread(screen, db)
 
 				if err != nil {
 					services.BetterError(err)

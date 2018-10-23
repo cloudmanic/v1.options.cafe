@@ -341,12 +341,16 @@ func (t *DB) CreateUserFromGoogle(first string, last string, email string, subId
 		return User{}, err
 	}
 
+	// Trail expire
+	now := time.Now()
+	tExpire := now.Add(time.Hour * 24 * 7)
+
 	// Install user into the database
 	var _first = template.HTMLEscapeString(first)
 	var _last = template.HTMLEscapeString(last)
 
 	// Create new user
-	user := User{FirstName: _first, LastName: _last, Email: email, GoogleSubId: subId, Status: "Trial"}
+	user := User{FirstName: _first, LastName: _last, Email: email, GoogleSubId: subId, Status: "Trial", TrialExpire: tExpire}
 	t.Create(&user)
 
 	// Log user creation.
