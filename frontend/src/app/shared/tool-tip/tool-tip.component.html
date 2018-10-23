@@ -5,5 +5,5 @@
 <div class="title-question__tooltip" *ngIf="show">
   <h5>{{ title }}</h5>
 
-  <p>{{ message }}</p>
+  <p [innerHTML]="message"></p>
 </div>

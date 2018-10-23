@@ -22,10 +22,9 @@ import (
 
 // Supported screener keys
 var screenerItemKeys = []string{
-	"min-credit",
+	"open-credit",
 	"spread-width",
-	"max-days-to-expire",
-	"min-days-to-expire",
+	"days-to-expire",
 	"short-strike-percent-away",
 }
 

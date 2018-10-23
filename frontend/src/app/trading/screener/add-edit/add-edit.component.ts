@@ -32,11 +32,25 @@ export class AddEditComponent implements OnInit
   screen: Screener = new Screener();
   itemSetttings: ScreenerItemSettings[] = [];
 
+  strategyHelpTitle: string = "Options Strategy";
+  strategyHelpBody: string = "Here you can select what type of options strategy you want to screen for. An options strategy is a trade that is betting the underlying equity moves in a certain way over the course of a define period of time. For more information on possible strategies checkout this <a href=\"https://www.investopedia.com/articles/active-trading/040915/guide-option-trading-strategies-beginners.asp\" target=\"_blank\">post</a>.";
+
+  underlyingSymbolHelpTitle: string = "Underlying Symbol";
+  underlyingSymbolHelpBody: string = "Options Cafe screeners are limited to screening for only one underlying symbol (or equity) at a time. If you would like to keep an eye on more than one underlying symbols simply create and save more than one screener.";
+
+  toolTips: Map<string, ToolTipItem> = new Map<string, ToolTipItem>();
 
   //
   // Construct.
   //
-  constructor(private stateService: StateService, private router: Router, private route: ActivatedRoute, private screenerService: ScreenerService) { }
+  constructor(private stateService: StateService, private router: Router, private route: ActivatedRoute, private screenerService: ScreenerService) 
+  { 
+    // Add the helper text to the tool tip map
+    this.toolTips.set("spread-width", new ToolTipItem("Spread Width", "Set how wide you want your spreads to be. For example with a put credit spread where the short strike is 200 and the long strike is 195 this spread width would be 5."));
+    this.toolTips.set("open-credit", new ToolTipItem("Open Credit", "In most cases we are only interested in spreads that give at least a set minimum for the opening credit. For example if you wanted to open a put credit spread with an opening credit of $0.15 you would receive $15 for each lot."));
+    this.toolTips.set("days-to-expire", new ToolTipItem("Days To Expire", "Days to expire is the number of days until the trade would expire. Often times we are not interested in trades that expire too far into the future or trades that expire too soon."));
+    this.toolTips.set("short-strike-percent-away", new ToolTipItem("Short Strike % Away", "To help define our risk we might only be interested in trades where the current underlying stock is some percentage away from your short options leg. For example if we are trading put credit spreads on the SPY and the SPY is currently trading at $100. We could set this value to 5.0 and we would only be presented with trades where the short leg strike price is $95 or less."));            
+  }
 
   //
   // Ng Init
@@ -111,7 +125,7 @@ export class AddEditComponent implements OnInit
   // 
   addFilter()
   {
-    this.screen.Items.push(new ScreenerItem(0, 0, '', '=', '', 2.0, this.itemSetttings[0]));    
+    this.screen.Items.push(new ScreenerItem(0, 0, 'open-credit', '>', '', 2.0, this.itemSetttings[0]));    
   }
 
   //
@@ -249,6 +263,39 @@ export class AddEditComponent implements OnInit
       this.stateService.SetScreens(null);
       this.router.navigate(['/screener'], { queryParams: { deleted: this.screen.Name } });
     });
+  }
+
+  //
+  // Show helper tool tips
+  //
+  openToolTip(key: string)
+  {
+    if(this.toolTips.get(key).Show) 
+    {
+      this.toolTips.get(key).Show = false;
+    } else
+    {
+      this.toolTips.get(key).Show = true;
+    }
+  }
+}
+
+//
+// Tool tip Item
+//
+export class ToolTipItem 
+{
+  Title: string = "";
+  Body: string = "";
+  Show: boolean = false;
+
+  //
+  // Construct.
+  //
+  constructor(title: string, body: string)
+  {
+    this.Title = title;
+    this.Body = body;
   }
 }
 

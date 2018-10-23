@@ -83,10 +83,11 @@
                     <input type="text" class="field" placeholder="Symbol..." [ngClass]="{ 'field-error': symbolError}" [(ngModel)]="screen.Symbol" (keyup)="filterChange()" />
                   </div>
 
-                  <div class="question">
-                    <a href="#" class="link-question">
-                      <i class="ico-question"></i>
-                    </a>
+                  <div class="question title-question">
+                    <app-shared-tool-tip
+                      [show]="false" 
+                      [title]="underlyingSymbolHelpTitle" 
+                      [message]="underlyingSymbolHelpBody"></app-shared-tool-tip>
                   </div>
                 </div>
 
@@ -120,10 +121,11 @@
                     </select>
                   </div>
 
-                  <div class="question">
-                    <a href="#" class="link-question">
-                      <i class="ico-question"></i>
-                    </a>
+                  <div class="question title-question">
+                    <app-shared-tool-tip
+                      [show]="false" 
+                      [title]="strategyHelpTitle" 
+                      [message]="strategyHelpBody"></app-shared-tool-tip>
                   </div>
                 </div>
 
@@ -164,10 +166,18 @@
                       <input type="number" class="field" placeholder="" [(ngModel)]="row.ValueNumber" (keyup)="filterChange()" step="{{ row.Settings.Step }}" />
                     </div>
 
-                    <div class="question">
-                      <a href="#" class="link-question">
+                    <div class="question title-question">
+
+                      <a class="link-question" (click)="openToolTip(row.Settings.Key)">
                         <i class="ico-question"></i>
                       </a>
+
+                      <div class="title-question__tooltip" *ngIf="toolTips.get(row.Settings.Key).Show">
+                        <h5>{{ toolTips.get(row.Settings.Key).Title }}</h5>
+
+                        <p [innerHTML]="toolTips.get(row.Settings.Key).Body"></p>
+                      </div>
+
                     </div>
                   </div>
 
