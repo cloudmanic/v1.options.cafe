@@ -49,7 +49,7 @@ func (t *Controller) UpdateNotifications(c *gin.Context) {
 	// Run the query
 	err = t.DB.Query(&result, models.QueryParam{
 		UserId: userId,
-		Debug:  true,
+		Debug:  false,
 		Wheres: []models.KeyValue{
 			{Key: "id", ValueInt: int(id)},
 		},

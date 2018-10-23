@@ -21,7 +21,6 @@ import (
 func RunPutCreditSpread(screen models.Screener, db models.Datastore) ([]Result, error) {
 
 	result := []Result{}
-	today := time.Now()
 
 	// Make call to get current quote.
 	quote, err := GetQuote(screen.Symbol)
@@ -31,7 +30,7 @@ func RunPutCreditSpread(screen models.Screener, db models.Datastore) ([]Result, 
 	}
 
 	// Set params
-	minDaysToExpire, maxDaysToExpire, minCredit, spreadWidth, minSellStrike := getPutCreditSpreadParms(screen, quote.Last)
+	spreadWidth, minSellStrike := getPutCreditSpreadParms(screen, quote.Last)
 
 	// Get all possible expire dates.
 	expires, err := broker.GetOptionsExpirationsBySymbol(screen.Symbol)
@@ -44,17 +43,11 @@ func RunPutCreditSpread(screen models.Screener, db models.Datastore) ([]Result, 
 	// Loop through the expire dates
 	for _, row := range expires {
 
-		// Days to expire.
-		then, _ := time.Parse("2006-01-02", row)
-		daysToExpire := int(today.Sub(then).Hours()/24) * -1
+		// Expire Date.
+		expireDate, _ := time.Parse("2006-01-02", row)
 
-		// Don't want to go too far out.
-		if daysToExpire > maxDaysToExpire {
-			continue
-		}
-
-		// Don't want to go too close out.
-		if daysToExpire < minDaysToExpire {
+		// Filter for expire dates
+		if !FilterDaysToExpireDaysToExpire(screen, expireDate) {
 			continue
 		}
 
@@ -88,7 +81,7 @@ func RunPutCreditSpread(screen models.Screener, db models.Datastore) ([]Result, 
 			// See if there is enough credit
 			credit := row2.Bid - buyLeg.Ask
 
-			if credit < minCredit {
+			if !FilterOpenCredit(screen, credit) {
 				continue
 			}
 
@@ -131,12 +124,9 @@ func RunPutCreditSpread(screen models.Screener, db models.Datastore) ([]Result, 
 //
 // Set Parms we need.
 //
-func getPutCreditSpreadParms(screen models.Screener, lastQuote float64) (int, int, float64, float64, float64) {
+func getPutCreditSpreadParms(screen models.Screener, lastQuote float64) (float64, float64) {
 
 	var widthIncrment float64 = 0.50
-	var minDaysToExpire int = 0
-	var maxDaysToExpire int = 10000
-	var minCredit float64 = 0.01
 	var spreadWidth float64 = 5.00
 	var minSellStrike float64 = 0.00
 
@@ -164,29 +154,8 @@ func getPutCreditSpreadParms(screen models.Screener, lastQuote float64) (int, in
 		spreadWidth = sw.ValueNumber
 	}
 
-	// See if we have a min credit
-	mc, err := FindFilterItemValue("min-credit", screen)
-
-	if err == nil {
-		minCredit = mc.ValueNumber
-	}
-
-	// See if we have max days to expire
-	mde, err := FindFilterItemValue("max-days-to-expire", screen)
-
-	if err == nil {
-		maxDaysToExpire = int(mde.ValueNumber)
-	}
-
-	// See if we have min days to expire
-	minde, err := FindFilterItemValue("min-days-to-expire", screen)
-
-	if err == nil {
-		minDaysToExpire = int(minde.ValueNumber)
-	}
-
 	// Return values
-	return minDaysToExpire, maxDaysToExpire, minCredit, spreadWidth, minSellStrike
+	return spreadWidth, minSellStrike
 }
 
 /* End File */

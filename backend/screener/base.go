@@ -17,7 +17,6 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/cloudmanic/app.options.cafe/backend/screener/put_credit_spread"
 )
 
 var (
@@ -70,7 +69,7 @@ func PrimeAllScreenerCaches(db models.Datastore) {
 			// Put Credit Spread
 			case "put-credit-spread":
 
-				result, err := put_credit_spread.RunPutCreditSpread(screen, db)
+				result, err := RunPutCreditSpread(screen, db)
 
 				if err != nil {
 					services.BetterError(err)
@@ -116,6 +115,25 @@ func GetQuote(smb string) (types.Quote, error) {
 //
 // Search filter items for a particular value.
 //
+func FindFilterItemsByKey(item string, screen models.Screener) []models.ScreenerItem {
+
+	rt := []models.ScreenerItem{}
+
+	for _, row := range screen.Items {
+
+		if row.Key == item {
+			rt = append(rt, row)
+		}
+
+	}
+
+	// Return finds
+	return rt
+}
+
+//
+// Search filter items for a particular value.
+//
 func FindFilterItemValue(item string, screen models.Screener) (models.ScreenerItem, error) {
 
 	for _, row := range screen.Items {
@@ -144,6 +162,98 @@ func FindByStrike(chain []types.OptionsChainItem, strike float64) (types.Options
 	}
 
 	return types.OptionsChainItem{}, errors.New("No leg found.")
+}
+
+// ---------------- Shared Filters --------------------- //
+
+//
+// Review trade for open credit
+//
+func FilterOpenCredit(screen models.Screener, credit float64) bool {
+
+	// Find keys related to this filter.
+	items := FindFilterItemsByKey("open-credit", screen)
+
+	// Loop through the keys. Return false if something does not match up.
+	for _, row := range items {
+
+		// Switch based on the operator
+		switch row.Operator {
+
+		// Is the credit > than this value.
+		case "<":
+			if credit > row.ValueNumber {
+				return false
+			}
+			break
+
+		// Is the credit < this value
+		case ">":
+			if credit < row.ValueNumber {
+				return false
+			}
+			break
+
+		// Is the credit = this value
+		case "=":
+			if credit != row.ValueNumber {
+				return false
+			}
+			break
+
+		}
+
+	}
+
+	// If we made it this far it is true.
+	return true
+}
+
+//
+// Review trade for days to expire.
+//
+func FilterDaysToExpireDaysToExpire(screen models.Screener, expire time.Time) bool {
+
+	// Get days to expire.
+	today := time.Now()
+	daysToExpire := int(today.Sub(expire).Hours()/24) * -1
+
+	// Find keys related to this filter.
+	items := FindFilterItemsByKey("days-to-expire", screen)
+
+	// Loop through the keys. Return false if something does not match up.
+	for _, row := range items {
+
+		// Switch based on the operator
+		switch row.Operator {
+
+		// Is this spread to far out?
+		case "<":
+			if float64(daysToExpire) > row.ValueNumber {
+				return false
+			}
+			break
+
+		// Is this spread to far in?
+		case ">":
+			if float64(daysToExpire) < row.ValueNumber {
+				return false
+			}
+			break
+
+		// Days to expire must be equal to the value we pass in.
+		case "=":
+			if float64(daysToExpire) != row.ValueNumber {
+				return false
+			}
+			break
+
+		}
+
+	}
+
+	// If we made it this far it is true.
+	return true
 }
 
 /* End File */

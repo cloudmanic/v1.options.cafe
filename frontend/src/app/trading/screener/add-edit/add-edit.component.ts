@@ -57,14 +57,14 @@ export class AddEditComponent implements OnInit
     // Setup days
     let days: number[] = [];
 
-    for (let i = 1; i <= 500; i++) {
+    for (let i = 0; i <= 500; i++) {
       days.push(i);
     }
 
     // Set item Settings
     this.itemSetttings.push(new ScreenerItemSettings('Spread Width', 'spread-width', 'select-number', ['=', '>'], widths, [], 0));
-    this.itemSetttings.push(new ScreenerItemSettings('Open Credit', 'min-credit', 'input-number', ['=', '>'], [], [], 0.1));
-    this.itemSetttings.push(new ScreenerItemSettings('Max Days To Expire', 'max-days-to-expire', 'select-number', ['='], days, [], 1.0));
+    this.itemSetttings.push(new ScreenerItemSettings('Open Credit', 'open-credit', 'input-number', ['>', '<', '='], [], [], 0.1));
+    this.itemSetttings.push(new ScreenerItemSettings('Days To Expire', 'days-to-expire', 'select-number', ['>', '<', '='], days, [], 1.0));
     this.itemSetttings.push(new ScreenerItemSettings('Short Strike % Away', 'short-strike-percent-away', 'input-number', ['=', '>'], [], [], 0.1));
 
     // Default Values
@@ -78,7 +78,7 @@ export class AddEditComponent implements OnInit
       this.screen.Items = [];
       this.screen.Items.push(new ScreenerItem(0, 0, 'spread-width', '=', '', 2.0, this.itemSetttings[0]));
       // this.screen.Items.push(new ScreenerItem(0, 0, 'min-credit', '=', '', 0.18, this.itemSetttings[1]));
-      // this.screen.Items.push(new ScreenerItem(0, 0, 'max-days-to-expire', '=', '', 45, this.itemSetttings[2]));
+      // this.screen.Items.push(new ScreenerItem(0, 0, 'days-to-expire', '<', '', 46, this.itemSetttings[2]));
       // this.screen.Items.push(new ScreenerItem(0, 0, 'short-strike-percent-away', '>', '', 4.0, this.itemSetttings[3]));
 
       // Run screen on load
