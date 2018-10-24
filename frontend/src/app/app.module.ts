@@ -92,6 +92,9 @@ import { TradeEquityComponent } from './trade/trade-equity/trade-equity.componen
 import { SpreadComponent } from './trading/dashboard/positions/types/spread/spread.component';
 import { OptionComponent } from './trading/dashboard/positions/types/option/option.component';
 
+// Research
+import { SymbolComponent } from './research/symbol/symbol.component';
+
 // Centcom
 import { CoreComponent as CentcomCoreComponent } from './centcom/layouts/core/core.component';
 import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.component';
@@ -163,6 +166,7 @@ import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.c
     OptionComponent,
     CentcomUsersComponent,
     CentcomCoreComponent,
+    SymbolComponent,
   ],
   
   imports: [

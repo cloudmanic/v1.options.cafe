@@ -37,7 +37,7 @@ export class MainNavComponent implements OnInit
     });
 
     // See if we should show the centcom link
-    if(localStorage.getItem('user_id_centcom').length > 0) 
+    if(localStorage.getItem('user_id_centcom') && (localStorage.getItem('user_id_centcom').length > 0)) 
     {
       this.showCentcom = true;
     }

@@ -38,6 +38,9 @@ import { DashboardComponent } from './trading/dashboard/home.component';
 import { ScreenerComponent } from './trading/screener/home.component';
 import { AddEditComponent as ScreenerAddEditComponent } from './trading/screener/add-edit/add-edit.component';
 
+// Research 
+import { SymbolComponent } from './research/symbol/symbol.component';
+
 // Centcom
 import { CoreComponent as CentcomCoreComponent } from './centcom/layouts/core/core.component';
 import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.component';
@@ -78,7 +81,11 @@ const appRoutes: Routes = [
     // Settings
     { path: 'settings/account', component: AccountComponent, canActivate: [AuthGuard], data: { section: 'settings', subSection: 'account', action: '' } },
     { path: 'settings/trading', component: TradingComponent, canActivate: [AuthGuard], data: { section: 'settings', subSection: 'trading', action: '' } },
-    { path: 'settings/brokers', component: BrokersComponent, canActivate: [AuthGuard], data: { section: 'settings', subSection: 'brokers', action: '' } }
+    { path: 'settings/brokers', component: BrokersComponent, canActivate: [AuthGuard], data: { section: 'settings', subSection: 'brokers', action: '' } },
+
+    // Research
+    { path: 'research/symbol', component: SymbolComponent, canActivate: [AuthGuard], data: { section: 'research', subSection: 'symbol', action: '' } },  
+
     
   ] },
 
