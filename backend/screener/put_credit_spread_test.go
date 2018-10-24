@@ -8,6 +8,10 @@ package screener
 
 import (
 	"testing"
+
+	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/davecgh/go-spew/spew"
+	"github.com/nbio/st"
 )
 
 //
@@ -18,31 +22,31 @@ import (
 //
 func TestRunPutCreditSpread01(t *testing.T) {
 
-	// // Start the db connection.
-	// db, _ := models.NewDB()
-	// defer db.Close()
+	// Start the db connection.
+	db, _ := models.NewDB()
+	defer db.Close()
 
-	// // Build screener object
-	// screen := models.Screener{
-	// 	Symbol:   "SPY",
-	// 	Strategy: "put-credit-spread",
-	// 	Items: []models.ScreenerItem{
-	// 		{Key: "short-strike-percent-away", Operator: "=", ValueNumber: 2.5},
-	// 		{Key: "spread-width", Operator: "=", ValueNumber: 2.00},
-	// 		{Key: "open-credit", Operator: ">", ValueNumber: 0.18},
-	// 		{Key: "open-credit", Operator: "<", ValueNumber: 0.20},
-	// 		{Key: "days-to-expire", Operator: "<", ValueNumber: 46},
-	// 		{Key: "days-to-expire", Operator: ">", ValueNumber: 0},
-	// 	},
-	// }
+	// Build screener object
+	screen := models.Screener{
+		Symbol:   "SPY",
+		Strategy: "put-credit-spread",
+		Items: []models.ScreenerItem{
+			{Key: "short-strike-percent-away", Operator: "<", ValueNumber: 4.0},
+			{Key: "spread-width", Operator: "=", ValueNumber: 2.00},
+			{Key: "open-credit", Operator: ">", ValueNumber: 0.18},
+			{Key: "open-credit", Operator: "<", ValueNumber: 0.20},
+			{Key: "days-to-expire", Operator: "<", ValueNumber: 46},
+			{Key: "days-to-expire", Operator: ">", ValueNumber: 0},
+		},
+	}
 
-	// // Run back test
-	// result, err := RunPutCreditSpread(screen, db)
+	// Run back test
+	result, err := RunPutCreditSpread(screen, db)
 
-	// spew.Dump(result[0])
+	spew.Dump(result)
 
-	// // Test result
-	// st.Expect(t, err, nil)
+	// Test result
+	st.Expect(t, err, nil)
 
 }
 

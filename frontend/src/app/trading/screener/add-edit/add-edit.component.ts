@@ -32,11 +32,12 @@ export class AddEditComponent implements OnInit
   screen: Screener = new Screener();
   itemSetttings: ScreenerItemSettings[] = [];
 
+  helperPost: string = "For more information checkout <a target=\"_blank\" href=\"https://cloudmanic.groovehq.com/knowledge_base/topics/using-the-options-screener\">The Options Screener</a>.";
   strategyHelpTitle: string = "Options Strategy";
-  strategyHelpBody: string = "Here you can select what type of options strategy you want to screen for. An options strategy is a trade that is betting the underlying equity moves in a certain way over the course of a define period of time. For more information on possible strategies checkout this <a href=\"https://www.investopedia.com/articles/active-trading/040915/guide-option-trading-strategies-beginners.asp\" target=\"_blank\">post</a>.";
+  strategyHelpBody: string = "Here you can select what type of options strategy you want to screen for. An options strategy is a trade that is betting the underlying equity moves in a certain way over the course of a define period of time. For more information on possible strategies checkout this <a href=\"https://www.investopedia.com/articles/active-trading/040915/guide-option-trading-strategies-beginners.asp\" target=\"_blank\">post</a>. " + this.helperPost;
 
   underlyingSymbolHelpTitle: string = "Underlying Symbol";
-  underlyingSymbolHelpBody: string = "Options Cafe screeners are limited to screening for only one underlying symbol (or equity) at a time. If you would like to keep an eye on more than one underlying symbols simply create and save more than one screener.";
+  underlyingSymbolHelpBody: string = "Options Cafe screeners are limited to screening for only one underlying symbol (or equity) at a time. If you would like to keep an eye on more than one underlying symbols simply create and save more than one screener. " + this.helperPost;
 
   toolTips: Map<string, ToolTipItem> = new Map<string, ToolTipItem>();
 
@@ -46,10 +47,10 @@ export class AddEditComponent implements OnInit
   constructor(private stateService: StateService, private router: Router, private route: ActivatedRoute, private screenerService: ScreenerService) 
   { 
     // Add the helper text to the tool tip map
-    this.toolTips.set("spread-width", new ToolTipItem("Spread Width", "Set how wide you want your spreads to be. For example with a put credit spread where the short strike is 200 and the long strike is 195 this spread width would be 5."));
-    this.toolTips.set("open-credit", new ToolTipItem("Open Credit", "In most cases we are only interested in spreads that give at least a set minimum for the opening credit. For example if you wanted to open a put credit spread with an opening credit of $0.15 you would receive $15 for each lot."));
-    this.toolTips.set("days-to-expire", new ToolTipItem("Days To Expire", "Days to expire is the number of days until the trade would expire. Often times we are not interested in trades that expire too far into the future or trades that expire too soon."));
-    this.toolTips.set("short-strike-percent-away", new ToolTipItem("Short Strike % Away", "To help define our risk we might only be interested in trades where the current underlying stock is some percentage away from your short options leg. For example if we are trading put credit spreads on the SPY and the SPY is currently trading at $100. We could set this value to 5.0 and we would only be presented with trades where the short leg strike price is $95 or less."));            
+    this.toolTips.set("spread-width", new ToolTipItem("Spread Width", "Set how wide you want your spreads to be. For example with a put credit spread where the short strike is 200 and the long strike is 195 this spread width would be 5. " + this.helperPost));
+    this.toolTips.set("open-credit", new ToolTipItem("Open Credit", "In most cases we are only interested in spreads that give at least a set minimum for the opening credit. For example if you wanted to open a put credit spread with an opening credit of $0.15 you would receive $15 for each lot. " + this.helperPost));
+    this.toolTips.set("days-to-expire", new ToolTipItem("Days To Expire", "Days to expire is the number of days until the trade would expire. Often times we are not interested in trades that expire too far into the future or trades that expire too soon. " + this.helperPost));
+    this.toolTips.set("short-strike-percent-away", new ToolTipItem("Short Strike % Away", "To help define our risk we might only be interested in trades where the current underlying stock is some percentage away from your short options leg. For example if we are trading put credit spreads on the SPY and the SPY is currently trading at $100. We could set this value to 5.0 and we would only be presented with trades where the short leg strike price is $95 or less. " + this.helperPost));            
   }
 
   //
@@ -79,7 +80,7 @@ export class AddEditComponent implements OnInit
     this.itemSetttings.push(new ScreenerItemSettings('Spread Width', 'spread-width', 'select-number', ['=', '>'], widths, [], 0));
     this.itemSetttings.push(new ScreenerItemSettings('Open Credit', 'open-credit', 'input-number', ['>', '<', '='], [], [], 0.1));
     this.itemSetttings.push(new ScreenerItemSettings('Days To Expire', 'days-to-expire', 'select-number', ['>', '<', '='], days, [], 1.0));
-    this.itemSetttings.push(new ScreenerItemSettings('Short Strike % Away', 'short-strike-percent-away', 'input-number', ['=', '>'], [], [], 0.1));
+    this.itemSetttings.push(new ScreenerItemSettings('Short Strike % Away', 'short-strike-percent-away', 'input-number', ['>', '<'], [], [], 0.1));
 
     // Default Values
     if(! this.editId) 

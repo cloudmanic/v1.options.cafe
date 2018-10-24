@@ -7,7 +7,6 @@
 package screener
 
 import (
-	"math"
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
@@ -30,7 +29,7 @@ func RunPutCreditSpread(screen models.Screener, db models.Datastore) ([]Result, 
 	}
 
 	// Set params
-	spreadWidth, minSellStrike := getPutCreditSpreadParms(screen, quote.Last)
+	spreadWidth := getPutCreditSpreadParms(screen, quote.Last)
 
 	// Get all possible expire dates.
 	expires, err := broker.GetOptionsExpirationsBySymbol(screen.Symbol)
@@ -65,9 +64,8 @@ func RunPutCreditSpread(screen models.Screener, db models.Datastore) ([]Result, 
 				continue
 			}
 
-			// Skip strikes that are higher than our min strike. If the user
-			// did not set this value minSellStrike is set to Zero
-			if row2.Strike > minSellStrike {
+			// Skip strikes that are higher than our min strike. Based on percent away.
+			if !FilterStrikeByPercentAway("short-strike-percent-away", screen, row2.Strike, quote.Last) {
 				continue
 			}
 
@@ -124,28 +122,9 @@ func RunPutCreditSpread(screen models.Screener, db models.Datastore) ([]Result, 
 //
 // Set Parms we need.
 //
-func getPutCreditSpreadParms(screen models.Screener, lastQuote float64) (float64, float64) {
+func getPutCreditSpreadParms(screen models.Screener, lastQuote float64) float64 {
 
-	var widthIncrment float64 = 0.50
 	var spreadWidth float64 = 5.00
-	var minSellStrike float64 = 0.00
-
-	// See if we have a min strike price to sell
-	percentAway, err := FindFilterItemValue("short-strike-percent-away", screen)
-
-	if err == nil {
-
-		// Figure out the strike price that is the min we can sell.
-		var tmp float64 = lastQuote - (lastQuote * (percentAway.ValueNumber / 100))
-		fraction := tmp - math.Floor(tmp)
-
-		if fraction >= widthIncrment {
-			minSellStrike = (math.Floor(tmp) + widthIncrment)
-		} else {
-			minSellStrike = math.Floor(tmp)
-		}
-
-	}
 
 	// See if we have a spread width
 	sw, err := FindFilterItemValue("spread-width", screen)
@@ -155,7 +134,7 @@ func getPutCreditSpreadParms(screen models.Screener, lastQuote float64) (float64
 	}
 
 	// Return values
-	return spreadWidth, minSellStrike
+	return spreadWidth
 }
 
 /* End File */

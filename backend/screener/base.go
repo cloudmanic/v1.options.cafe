@@ -8,6 +8,7 @@ package screener
 
 import (
 	"errors"
+	"math"
 	"os"
 	"strconv"
 	"time"
@@ -165,6 +166,62 @@ func FindByStrike(chain []types.OptionsChainItem, strike float64) (types.Options
 }
 
 // ---------------- Shared Filters --------------------- //
+
+//
+// Review trade for strike percent away
+//
+func FilterStrikeByPercentAway(key string, screen models.Screener, strike float64, lastQuote float64) bool {
+
+	var minSellStrike float64 = 0.00
+	var widthIncrment float64 = 0.50
+
+	// Find keys related to this filter.
+	items := FindFilterItemsByKey(key, screen)
+
+	// Loop through the keys. Return false if something does not match up.
+	for _, row := range items {
+
+		// Figure out the strike price that is the min we can sell.
+		var tmp float64 = lastQuote - (lastQuote * (row.ValueNumber / 100))
+		fraction := tmp - math.Floor(tmp)
+
+		if fraction >= widthIncrment {
+			minSellStrike = (math.Floor(tmp) + widthIncrment)
+		} else {
+			minSellStrike = math.Floor(tmp)
+		}
+
+		// Switch based on the operator
+		switch row.Operator {
+
+		// Is the strike > than this value.
+		case "<":
+			if strike < minSellStrike {
+				return false
+			}
+			break
+
+		// Is the strike < this value
+		case ">":
+			if strike > minSellStrike {
+				return false
+			}
+			break
+
+		// Is the strike = this value
+		case "=":
+			if strike != minSellStrike {
+				return false
+			}
+			break
+
+		}
+
+	}
+
+	// If we made it this far it is true.
+	return true
+}
 
 //
 // Review trade for open credit
