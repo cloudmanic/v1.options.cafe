@@ -438,24 +438,33 @@ export class SpreadComponent implements OnInit
   //
   // Get the total P&L for put credit spreads - Call Credit Spread
   //
-  getCallCreditSpreadProfitLoss(tradeGroup: TradeGroup): number {
-    if (typeof this.quotes[tradeGroup.Positions[0].Symbol.ShortName] == "undefined") {
+  getCallCreditSpreadProfitLoss(tradeGroup: TradeGroup): number 
+  {
+    if (typeof this.quotes[tradeGroup.Positions[0].Symbol.ShortName] == "undefined") 
+    {
       return 0.00;
     }
 
-    if (typeof this.quotes[tradeGroup.Positions[1].Symbol.ShortName] == "undefined") {
+    if (typeof this.quotes[tradeGroup.Positions[1].Symbol.ShortName] == "undefined") 
+    {
       return 0.00;
     }
 
-    return tradeGroup.Credit - ((((this.quotes[tradeGroup.Positions[1].Symbol.ShortName].ask - this.quotes[tradeGroup.Positions[0].Symbol.ShortName].bid) * 100) * Math.abs(tradeGroup.Positions[0].Qty)) * -1);
+    // Figure out what it would cost to close right now.
+    let costToClose = ((this.quotes[tradeGroup.Positions[0].Symbol.ShortName].ask - this.quotes[tradeGroup.Positions[1].Symbol.ShortName].bid) * 100) * Math.abs(tradeGroup.Positions[0].Qty);
+
+    // The credit we collected minus the cost to close. 
+    return tradeGroup.Credit - costToClose;
   }
 
   //
   // Get trade profit and loss
   //
-  getTradeProfitLoss(tradeGroup: TradeGroup): number {
+  getTradeProfitLoss(tradeGroup: TradeGroup): number 
+  {    
     // Get progress based on type.
-    switch (tradeGroup.Type) {
+    switch (tradeGroup.Type) 
+    {
       case 'Put Credit Spread':
         return this.getPutCreditSpreadProfitLoss(tradeGroup);
 
