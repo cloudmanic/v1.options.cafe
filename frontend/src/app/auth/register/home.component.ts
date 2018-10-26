@@ -40,6 +40,9 @@ export class AuthRegisterComponent implements OnInit {
   submitBtn = "Create Account";
   googleLoginState: boolean = false;
 
+  // Form
+  email = "";
+
   //
   // Constructor. 
   //
@@ -52,6 +55,12 @@ export class AuthRegisterComponent implements OnInit {
   {
     // subscribe to router event
     this.activatedRoute.queryParams.subscribe((params: Params) => {
+
+      // See if we have an email address already
+      if (params['email'])
+      {
+        this.email = params['email'];
+      }
 
       // See if we have a google_auth_success for a successful google login.
       if (params['google_auth_success']) 
