@@ -341,9 +341,12 @@ func (t *DB) CreateUserFromGoogle(first string, last string, email string, subId
 		return User{}, err
 	}
 
+	// Days to expire
+	daysToExpire := helpers.StringToInt(os.Getenv("TRIAL_DAY_COUNT"))
+
 	// Trail expire
 	now := time.Now()
-	tExpire := now.Add(time.Hour * 24 * 7)
+	tExpire := now.Add(time.Hour * 24 * time.Duration(daysToExpire))
 
 	// Install user into the database
 	var _first = template.HTMLEscapeString(first)
@@ -397,9 +400,12 @@ func (t *DB) CreateUser(first string, last string, email string, password string
 		return User{}, err
 	}
 
+	// Days to expire
+	daysToExpire := helpers.StringToInt(os.Getenv("TRIAL_DAY_COUNT"))
+
 	// Trail expire
 	now := time.Now()
-	tExpire := now.Add(time.Hour * 24 * 7)
+	tExpire := now.Add(time.Hour * 24 * time.Duration(daysToExpire))
 
 	// Install user into the database
 	var _first = template.HTMLEscapeString(first)
