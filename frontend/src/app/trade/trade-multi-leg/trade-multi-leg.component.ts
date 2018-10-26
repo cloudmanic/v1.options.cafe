@@ -329,7 +329,7 @@ export class TradeMultiLegComponent implements OnInit
             qtyDifferent = true;
           }
 
-          if(this.tradeDetails.Legs[i].Side == 'buy_to_open')
+          if((this.tradeDetails.Legs[i].Side == 'buy_to_open') || (this.tradeDetails.Legs[i].Side == 'buy_to_close'))
           {
             price = price + (this.quotes[this.tradeDetails.Legs[i].Symbol.ShortName].bid * this.tradeDetails.Legs[i].Qty);
           } else
@@ -354,7 +354,8 @@ export class TradeMultiLegComponent implements OnInit
   // 
   // Set ask price 
   //
-  getAskPrice(): number {
+  getAskPrice(): number 
+  {
     let price = 0.00;
     let qtyKnown = 0.00;
     let qtyDifferent = false;    
@@ -379,10 +380,10 @@ export class TradeMultiLegComponent implements OnInit
             qtyDifferent = true;
           }
 
-          if (this.tradeDetails.Legs[i].Side == 'buy_to_open') 
+          if ((this.tradeDetails.Legs[i].Side == 'buy_to_open') || (this.tradeDetails.Legs[i].Side == 'buy_to_close'))
           {
             price = price + (this.quotes[this.tradeDetails.Legs[i].Symbol.ShortName].ask * this.tradeDetails.Legs[i].Qty);
-          } else 
+          } else  
           {
             price = price - (this.quotes[this.tradeDetails.Legs[i].Symbol.ShortName].bid * this.tradeDetails.Legs[i].Qty);
           }
