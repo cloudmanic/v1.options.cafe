@@ -172,7 +172,7 @@ func StoreOrders(db models.Datastore, orders []types.Order, userId uint, brokerI
 	}
 
 	// Now build out our positions database table based on past orders.
-	StorePositions(db, userId, brokerId)
+	//StorePositions(db, userId, brokerId)
 
 	// Return Happy
 	return nil
