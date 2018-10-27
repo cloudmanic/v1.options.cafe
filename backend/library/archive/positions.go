@@ -138,7 +138,7 @@ func PastCreateTradeGroupFromPosition(db models.Datastore, userId uint, brokerId
 		db.CreatePosition(&newPos)
 
 		// Log success
-		services.Info("New Past TradeGroup created for user " + strconv.Itoa(int(userId)) + " TradeGroup Id: " + strconv.Itoa(int(tg.Id)))		
+		services.Info("New Past TradeGroup created for user " + strconv.Itoa(int(userId)) + " TradeGroup Id: " + strconv.Itoa(int(tg.Id)))
 	}
 
 	// Return Happy

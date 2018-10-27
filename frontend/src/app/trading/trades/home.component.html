@@ -16,7 +16,7 @@
     				<label for="field-select-trades" class="hidden">Select Trades</label>
   
     				<div class="form__controls">
-    					<div class="select field--medium">
+    					<div class="select">
     						<select name="field-select-trades" id="field-select-trades" [(ngModel)]="tradeSelect" (change)="onTradeSelect($event)" >
     							<option value="All">All Trades</option>
                                 <option value="Closed">Closed Trades</option>
@@ -28,6 +28,7 @@
                                 <option value="Put Debit Spread">Put Debit Spread Trades</option>
                                 <option value="Call Debit Spread">Call Debit Spread Trades</option>
                                 <option value="Iron Condor">Iron Condor Trades</option>
+                                <option value="Reverse Iron Condor">Reverse Iron Condor Trades</option>
     							<option value="Other">Other Trades</option>
     						</select>
     					</div><!-- /.select field-medium -->

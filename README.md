@@ -17,4 +17,15 @@ We assume the server is already setup for us. At Cloudmanic we have a different 
 
 ## Getting Up And Running
 
-- Run `go run main.go -cmd=symbol-import` to import all the possible symbols into the symbols db table.
+* Run `go run main.go -cmd=symbol-import` to import all the possible symbols into the symbols db table.
+
+
+## Process To Add A New Options Strategy 
+
+* Add a new trade type in `backend/library/archive/trade_types`
+
+* Add the new trade type in `backend/library/archive/trade_group_classify.go` both functions: ClassifyTradeGroup, and GetAmountRiskedInTrade
+
+* Update the ENUM values in `TradeGroup:type`. Typically I will update the model code, then update the ENUM locally, in testing DB, and then on production by hand.
+
+* Add option in `frontend/src/app/trading/trades/home.component.html` 

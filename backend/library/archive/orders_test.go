@@ -12,6 +12,8 @@ import (
 //
 // Test - Store orders.
 //
+// Test Trade Group: Trade #10 - Reverse Iron Condor Trade
+//
 func TestStoreOrders01(t *testing.T) {
 
 	// Start the db connection.
@@ -42,6 +44,22 @@ func TestStoreOrders01(t *testing.T) {
 
 	err := StoreOrders(db, orders, uint(1), uint(1))
 	st.Expect(t, err, nil)
+
+	// Check trade group to see if we have our test trade.
+	tg, err := db.GetTradeGroupById(10)
+	st.Expect(t, err, nil)
+
+	// Check expected
+	st.Expect(t, tg.Id, uint(10))
+	st.Expect(t, len(tg.Positions), 4)
+	st.Expect(t, tg.Risked, 2739.00)
+	st.Expect(t, tg.Credit, 0.00)
+	st.Expect(t, tg.Proceeds, 0.00)
+	st.Expect(t, tg.Profit, 0.00)
+	st.Expect(t, tg.PercentGain, 0.00)
+	st.Expect(t, tg.Commission, 15.40)
+	st.Expect(t, tg.Status, "Open")
+	st.Expect(t, tg.Name, "Trade #10 - Reverse Iron Condor Trade")
 
 }
 

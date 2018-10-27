@@ -34,6 +34,12 @@ func GetAmountRiskedInTrade(positions *[]models.Position) (float64, float64) {
 	case "Call Credit Spread":
 		return trade_types.GetCallCreditSpreadRiskProfile(positions)
 
+	case "Iron Condor":
+		return trade_types.GetIronCondorRiskProfile(positions)
+
+	case "Reverse Iron Condor":
+		return trade_types.GetReverseIronCondorRiskProfile(positions)
+
 	}
 
 	// Should never make it here
@@ -80,6 +86,16 @@ func ClassifyTradeGroup(positions *[]models.Position) string {
 	// call debit spread
 	if trade_types.IsCallDebitSpread(positions) {
 		return "Call Debit Spread"
+	}
+
+	// iron condor
+	if trade_types.IsIronCondor(positions) {
+		return "Iron Condor"
+	}
+
+	// reverse iron condor
+	if trade_types.IsReverseIronCondor(positions) {
+		return "Reverse Iron Condor"
 	}
 
 	// We could not figure out what this trade group was.

@@ -16,7 +16,7 @@ type TradeGroup struct {
 	BrokerAccountId  uint       `sql:"not null;index:BrokerAccountId" json:"_"`
 	BrokerAccountRef string     `sql:"not null;index:BrokerAccountRef" json:"broker_account_ref"`
 	Status           string     `sql:"not null;type:ENUM('Open', 'Closed');default:'Open'" json:"status"`
-	Type             string     `sql:"not null;type:ENUM('Option', 'Equity', 'Short Equity', 'Put Credit Spread', 'Call Credit Spread', 'Put Debit Spread', 'Call Debit Spread', 'Iron Condor', 'Other'); default:'Other'" json:"type"`
+	Type             string     `sql:"not null;type:ENUM('Option', 'Equity', 'Short Equity', 'Put Credit Spread', 'Call Credit Spread', 'Put Debit Spread', 'Call Debit Spread', 'Iron Condor', 'Reverse Iron Condor', 'Other'); default:'Other'" json:"type"`
 	OrderIds         string     `json:"_"`
 	Risked           float64    `sql:"type:DECIMAL(12,2)" json:"risked"`
 	Credit           float64    `sql:"type:DECIMAL(12,2)" json:"credit"`       // Before Commission
