@@ -1,0 +1,303 @@
+//
+// Date: 2018-10-27
+// Author: Spicer Matthews (spicer@cloudmanic.com)
+// Last Modified by: Spicer Matthews
+// Last Modified: 2018-10-27
+// Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
+//
+
+package screener
+
+import (
+	"time"
+
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/models"
+)
+
+//
+// Run a put credit spread screen
+//
+func RunReverseIronCondor(screen models.Screener, db models.Datastore) ([]Result, error) {
+
+	result := []Result{}
+
+	// Make call to get current quote.
+	quote, err := GetQuote(screen.Symbol)
+
+	if err != nil {
+		return result, err
+	}
+
+	// Get all possible expire dates.
+	expires, err := broker.GetOptionsExpirationsBySymbol(screen.Symbol)
+
+	if err != nil {
+		services.Warning(err)
+		return result, err
+	}
+
+	// Loop through the expire dates
+	for _, row := range expires {
+
+		// Expire Date.
+		expireDate, _ := time.Parse("2006-01-02", row)
+
+		// Filter for expire dates
+		if !FilterDaysToExpireDaysToExpire(screen, expireDate) {
+			continue
+		}
+
+		// Get options Chain
+		chain, err := broker.GetOptionsChainByExpiration(screen.Symbol, row)
+
+		if err != nil {
+			continue
+		}
+
+		// Get all possible Put Legs
+		putLegs := GetPossibleVerticalSpreads(screen, quote, chain.Puts, "put", "debit")
+
+		if len(putLegs) <= 0 {
+			continue
+		}
+
+		// Get all possible Call Legs
+		callLegs := GetPossibleVerticalSpreads(screen, quote, chain.Calls, "call", "debit")
+
+		if len(callLegs) <= 0 {
+			continue
+		}
+
+		//fmt.Println(len(putLegs), "/", len(callLegs))
+
+		trades := FindPossibleReverseIronCondorTrades(screen, putLegs, callLegs)
+
+		// Add trades to the results
+		for _, row := range trades {
+
+			// We only want the first 100
+			if len(result) >= 100 {
+				continue
+			}
+
+			// Add in Symbol Object - Put Short leg
+			symbPutShortLeg, err := db.CreateNewSymbol(row.PutShort.Symbol, row.PutShort.Description, "Option")
+
+			if err != nil {
+				continue
+			}
+
+			// Add in Symbol Object - Put Long leg
+			symbPutLongLeg, err := db.CreateNewSymbol(row.PutLong.Symbol, row.PutLong.Description, "Option")
+
+			if err != nil {
+				continue
+			}
+
+			// Add in Symbol Object - Call Long leg
+			symbCallLongLeg, err := db.CreateNewSymbol(row.CallLong.Symbol, row.CallLong.Description, "Option")
+
+			if err != nil {
+				continue
+			}
+
+			// Add in Symbol Object - Call Short leg
+			symbCallShortLeg, err := db.CreateNewSymbol(row.CallShort.Symbol, row.CallShort.Description, "Option")
+
+			if err != nil {
+				continue
+			}
+
+			// Figure out the amounts.
+			debitCost := row.PutShort.Bid + row.PutLong.Ask + row.CallLong.Ask + row.CallShort.Bid
+			creditCost := row.PutShort.Ask + row.PutLong.Bid + row.CallLong.Bid + row.CallShort.Ask
+			midPoint := (creditCost + debitCost) / 2
+
+			// We have a winner
+			result = append(result, Result{
+				Debit:    helpers.Round(debitCost, 2),
+				MidPoint: helpers.Round(midPoint, 2),
+				//PrecentAway: helpers.Round(((1 - row2.Strike/quote.Last) * 100), 2),
+				Legs: []models.Symbol{symbPutShortLeg, symbPutLongLeg, symbCallLongLeg, symbCallShortLeg},
+			})
+
+		}
+
+	}
+
+	// Return happy
+	return result, nil
+}
+
+// ------------------------ Helper Functions -------------------------- //
+
+//
+// Find possible Trades
+//
+func FindPossibleReverseIronCondorTrades(screen models.Screener, putLegs []Spread, callLegs []Spread) []IronCondor {
+
+	rt := []IronCondor{}
+	mapIndex := make(map[string]IronCondor)
+
+	// Loop through the PUT legs
+	for _, row := range putLegs {
+
+		side1Cost := row.Long.Ask - row.Short.Bid
+
+		for _, row2 := range callLegs {
+			side2Cost := row2.Long.Ask - row2.Short.Bid
+
+			// Get total cost of the trade
+			totalCost := side1Cost + side2Cost
+
+			if totalCost < 1.00 {
+
+				indexKey := helpers.FloatToString(row.Short.Strike) + "/" + helpers.FloatToString(row.Long.Strike) + "/" + helpers.FloatToString(row2.Long.Strike) + "/" + helpers.FloatToString(row2.Short.Strike)
+
+				mapIndex[indexKey] = IronCondor{
+					CallShort: row2.Short,
+					CallLong:  row2.Long,
+					PutShort:  row.Short,
+					PutLong:   row.Long,
+				}
+
+			}
+
+		}
+
+	}
+
+	// Loop through the CALL legs
+	for _, row := range callLegs {
+
+		side1Cost := row.Long.Ask - row.Short.Bid
+
+		for _, row2 := range callLegs {
+			side2Cost := row2.Long.Ask - row2.Short.Bid
+
+			// Get total cost of the trade
+			totalCost := side1Cost + side2Cost
+
+			if totalCost < 1.00 {
+
+				indexKey := helpers.FloatToString(row.Short.Strike) + "/" + helpers.FloatToString(row.Long.Strike) + "/" + helpers.FloatToString(row2.Long.Strike) + "/" + helpers.FloatToString(row2.Short.Strike)
+
+				mapIndex[indexKey] = IronCondor{
+					CallShort: row2.Short,
+					CallLong:  row2.Long,
+					PutShort:  row.Short,
+					PutLong:   row.Long,
+				}
+
+			}
+
+		}
+
+	}
+
+	// We used a hash map to remove duplicates now normalize it.
+	for _, row := range mapIndex {
+		rt = append(rt, row)
+	}
+
+	// Return happy
+	return rt
+}
+
+//
+// Get possible legs
+//
+func GetPossibleVerticalSpreads(screen models.Screener, quote types.Quote, chain []types.OptionsChainItem, legType string, openType string) []Spread {
+
+	spreads := []Spread{}
+
+	var spreadWidth float64
+
+	for _, row := range chain {
+
+		// No need to pay attention to open interest of zero
+		if row.OpenInterest == 0 {
+			continue
+		}
+
+		// Skip strikes that are higher than our min strike. Based on percent away.
+		if !FilterStrikeByPercentAway(legType+"-leg-percent-away", screen, row.Strike, quote.Last) {
+			continue
+		}
+
+		// See if we have a spread width
+		sw, err := FindFilterItemValue(legType+"-leg-width", screen)
+
+		if err == nil {
+			spreadWidth = sw.ValueNumber
+		} else {
+			continue
+		}
+
+		// Deal with the case of put leg
+		if legType == "put" {
+
+			// Find the strike that is x points away.
+			ol, err := FindByStrike(chain, (row.Strike - spreadWidth))
+
+			if err != nil {
+				continue
+			}
+
+			// Add to possible to return
+			if openType == "debit" {
+
+				spreads = append(spreads, Spread{
+					Short: ol,
+					Long:  row,
+				})
+
+			} else {
+
+				spreads = append(spreads, Spread{
+					Short: row,
+					Long:  ol,
+				})
+
+			}
+
+		} else {
+
+			// Find the strike that is x points away.
+			ol, err := FindByStrike(chain, (row.Strike + spreadWidth))
+
+			if err != nil {
+				continue
+			}
+
+			// Add to possible to return
+			if openType == "debit" {
+
+				spreads = append(spreads, Spread{
+					Short: ol,
+					Long:  row,
+				})
+
+			} else {
+
+				spreads = append(spreads, Spread{
+					Short: row,
+					Long:  ol,
+				})
+
+			}
+
+		}
+
+		//fmt.Println(row.Strike)
+
+	}
+
+	// Return happy
+	return spreads
+}
+
+/* End File */

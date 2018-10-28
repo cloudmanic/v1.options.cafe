@@ -11,6 +11,12 @@ import (
 )
 
 //
+// Float to String
+func FloatToString(fv float64) string {
+	return strconv.FormatFloat(fv, 'f', 2, 64)
+}
+
+//
 // Convert a string to a int
 //
 func StringToInt(s string) int {

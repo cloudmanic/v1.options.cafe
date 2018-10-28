@@ -29,3 +29,9 @@ We assume the server is already setup for us. At Cloudmanic we have a different 
 * Update the ENUM values in `TradeGroup:type`. Typically I will update the model code, then update the ENUM locally, in testing DB, and then on production by hand.
 
 * Add option in `frontend/src/app/trading/trades/home.component.html` 
+
+* Add new file for strategy at `backend/screener`
+
+* Update switch statement in `backend/screener/base.go::PrimeAllScreenerCaches` 
+
+* Add option to screener `frontend/src/app/trading/screener/add-edit/add-edit.component.html`

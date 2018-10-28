@@ -25,10 +25,23 @@ var (
 )
 
 type Result struct {
+	Debit       float64         `json:"debit"`
 	Credit      float64         `json:"credit"`
 	MidPoint    float64         `json:"midpoint"`
 	PrecentAway float64         `json:"percent_away"`
 	Legs        []models.Symbol `json:"legs"`
+}
+
+type Spread struct {
+	Short types.OptionsChainItem
+	Long  types.OptionsChainItem
+}
+
+type IronCondor struct {
+	CallShort types.OptionsChainItem
+	CallLong  types.OptionsChainItem
+	PutShort  types.OptionsChainItem
+	PutLong   types.OptionsChainItem
 }
 
 //
@@ -71,6 +84,21 @@ func PrimeAllScreenerCaches(db models.Datastore) {
 			case "put-credit-spread":
 
 				result, err := RunPutCreditSpread(screen, db)
+
+				if err != nil {
+					services.BetterError(err)
+					continue
+				}
+
+				// Store result in cache.
+				cache.SetExpire("oc-screener-result-"+strconv.Itoa(int(row.Id)), (time.Minute * 5), result)
+
+				break
+
+			// Reverse Iron Condor
+			case "reverse-iron-condor":
+
+				result, err := RunReverseIronCondor(screen, db)
 
 				if err != nil {
 					services.BetterError(err)
