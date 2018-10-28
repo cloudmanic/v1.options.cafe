@@ -64,8 +64,8 @@
 
                 <div class="widget__col">
                   <div class="select select--primary select-only-one">
-                    <select [(ngModel)]="screen.Strategy" disabled="disabled">
-                      <option value="put-credit-spread" selected>Underlying Symbol</option>
+                    <select disabled="disabled">
+                      <option value="symbol" selected>Underlying Symbol</option>
                     </select>
                   </div>
                 </div>
@@ -116,8 +116,9 @@
 
                 <div class="widget__col widget__col--size2">
                   <div class="select select--primary">
-                    <select name="field-1">
-                      <option value="option-1" selected>Put Credit Spread</option>
+                    <select name="Strategy" [(ngModel)]="screen.Strategy" (change)="strategyChange()">
+                      <option value="put-credit-spread">Put Credit Spread</option>
+                      <option value="reverse-iron-condor">Reverse Iron Condor</option>
                     </select>
                   </div>
 
@@ -132,7 +133,7 @@
               </div>
 
 
-              <div *ngFor="let row of screen.Items;">
+              <div *ngFor="let row of screen.Items">
 
                 <h5 class="and">And</h5>
 
@@ -141,15 +142,15 @@
 
                   <div class="widget__col">
                     <div class="select select--primary">
-                      <select [(ngModel)]="row.Settings" (change)="filterChange()">
-                        <option [ngValue]="row2" *ngFor="let row2 of itemSetttings;">{{ row2.Name }}</option>
+                      <select [(ngModel)]="row.Settings" (change)="filterChange(row)">
+                        <option [ngValue]="row2" *ngFor="let row2 of itemSetttings[screen.Strategy];">{{ row2.Name }}</option>
                       </select>
                     </div>
                   </div>
 
                   <div class="widget__col widget__col--size1">
                     <div class="select select--primary select--primary-alt">
-                      <select [(ngModel)]="row.Operator" (change)="filterChange()">
+                      <select [(ngModel)]="row.Operator" (change)="filterChange(row)">
                         <option [ngValue]="row2" *ngFor="let row2 of row.Settings.Operators;">{{ row2 }}</option>
                       </select>
                     </div>
@@ -157,13 +158,13 @@
 
                   <div class="widget__col widget__col--size2">
                     <div class="select select--primary" *ngIf="row.Settings.Type == 'select-number'">
-                      <select [(ngModel)]="row.ValueNumber" (change)="filterChange()">
+                      <select [(ngModel)]="row.ValueNumber" (change)="filterChange(row)">
                         <option [ngValue]="row2" *ngFor="let row2 of row.Settings.SelectValuesNumber;">{{ row2 }}</option>
                       </select>
                     </div>
 
                     <div class="field-container" *ngIf="row.Settings.Type == 'input-number'">
-                      <input type="number" class="field" placeholder="" [(ngModel)]="row.ValueNumber" (keyup)="filterChange()" step="{{ row.Settings.Step }}" />
+                      <input type="number" class="field" placeholder="" [(ngModel)]="row.ValueNumber" (keyup)="filterChange(row)" step="{{ row.Settings.Step }}" />
                     </div>
 
                     <div class="question title-question">

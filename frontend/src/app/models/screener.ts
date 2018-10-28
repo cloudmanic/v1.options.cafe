@@ -22,7 +22,8 @@ export class Screener
   //
   // Build from JSON list.
   //
-  fromJsonList(json: Object[]): Screener[] {
+  fromJsonList(json: Object[]): Screener[] 
+  {
     let result = [];
 
     if (!json) 
@@ -55,7 +56,7 @@ export class Screener
     // Add in the legs.
     for (let i = 0; i < json["items"].length; i++)
     {
-      obj.Items.push(new ScreenerItem(0, 0, '', '', '', 0, new ScreenerItemSettings('', '', '', [], [], [], 0)).fromJson(json["items"][i]));
+      obj.Items.push(new ScreenerItem(0, 0, '', '', '', 0);
     }
 
     return obj;
@@ -78,7 +79,7 @@ export class ScreenerItem
   //
   // Construct.
   //
-  constructor(id: number, screenerId: number, key: string, operator: string, valueString: string, valueNumber: number, settings: ScreenerItemSettings)
+  constructor(id: number, screenerId: number, key: string, operator: string, valueString: string, valueNumber: number)
   {
     this.Id = id;
     this.ScreenerId = screenerId;
@@ -86,14 +87,14 @@ export class ScreenerItem
     this.Operator = operator;
     this.ValueString = valueString;
     this.ValueNumber = valueNumber;
-    this.Settings = settings;
   }
 
   //
   // Json to Object.
   //
-  fromJson(json: Object): ScreenerItem {
-    let obj = new ScreenerItem(0, 0, '', '', '', 0, new ScreenerItemSettings('', '', '', [], [], [], 0));
+  fromJson(json: Object): ScreenerItem 
+  {
+    let obj = new ScreenerItem(0, 0, '', '', '', 0);
 
     obj.Id = json["id"];
     obj.Key = json["key"];
@@ -109,7 +110,8 @@ export class ScreenerItem
 //
 // Screener Item Settings
 //
-export class ScreenerItemSettings {
+export class ScreenerItemSettings 
+{
   Key: string;
   Name: string;
   Type: string;
@@ -121,7 +123,8 @@ export class ScreenerItemSettings {
   //
   // Construct.
   //
-  constructor(name: string, key: string, type: string, operators: string[], selectValuesNumber: number[], selectValues: string[], step: number) {
+  constructor(name: string, key: string, type: string, operators: string[], selectValuesNumber: number[], selectValues: string[], step: number) 
+  {
     this.Name = name;
     this.Key = key;
     this.Type = type;

@@ -86,7 +86,7 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
 import { TradeComponent } from './trade/trade.component';
 import { TradeMultiLegComponent } from './trade/trade-multi-leg/trade-multi-leg.component';
 import { DropdownSelectComponent } from './shared/dropdown-select/dropdown-select.component';
-import { AddEditComponent as ScreenerAddEditComponent } from './trading/screener/add-edit/add-edit.component';
+import { AddEditComponent as ScreenerAddEditComponent, SettingsStrategyPipe } from './trading/screener/add-edit/add-edit.component';
 import { EquityComponent } from './trading/dashboard/positions/types/equity/equity.component';
 import { TradeEquityComponent } from './trade/trade-equity/trade-equity.component';
 import { SpreadComponent } from './trading/dashboard/positions/types/spread/spread.component';
@@ -167,6 +167,7 @@ import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.c
     CentcomUsersComponent,
     CentcomCoreComponent,
     SymbolComponent,
+    SettingsStrategyPipe,
   ],
   
   imports: [

@@ -5,12 +5,43 @@
 //
 
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Pipe, PipeTransform } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StateService } from '../../../providers/state/state.service';
 import { ScreenerService } from '../../../providers/http/screener.service';
 import { Screener, ScreenerItem, ScreenerItemSettings } from '../../../models/screener';
 import { ScreenerResult } from '../../../models/screener-result';
+
+@Pipe({
+  name: 'settingsStrategy',
+  pure: false
+})
+
+export class SettingsStrategyPipe implements PipeTransform 
+{
+  //
+  // Run filter function.
+  //
+  transform(items: any[], filter: Object): any {
+
+    if (!items || !filter) 
+    {
+      return items;
+    }
+
+    let rt: ScreenerItemSettings[] = [];
+
+    for(let i = 0; i < items.length; i++)
+    {
+      if(items[i].Settings.Strategy == filter) 
+      {
+        rt.push(items[i]);
+      }
+    }
+
+    return rt;
+  }
+}
 
 @Component({
   selector: 'app-add-edit',
@@ -30,7 +61,8 @@ export class AddEditComponent implements OnInit
   showDeleteScreener: boolean = false;
   results: ScreenerResult[] = [];
   screen: Screener = new Screener();
-  itemSetttings: ScreenerItemSettings[] = [];
+
+  itemSetttings: Map<string, ScreenerItemSettings[]> = new Map<string, ScreenerItemSettings[]>();
 
   helperPost: string = "For more information checkout <a target=\"_blank\" href=\"https://cloudmanic.groovehq.com/knowledge_base/topics/using-the-options-screener\">The Options Screener</a>.";
   strategyHelpTitle: string = "Options Strategy";
@@ -46,11 +78,8 @@ export class AddEditComponent implements OnInit
   //
   constructor(private stateService: StateService, private router: Router, private route: ActivatedRoute, private screenerService: ScreenerService) 
   { 
-    // Add the helper text to the tool tip map
-    this.toolTips.set("spread-width", new ToolTipItem("Spread Width", "Set how wide you want your spreads to be. For example with a put credit spread where the short strike is 200 and the long strike is 195 this spread width would be 5. " + this.helperPost));
-    this.toolTips.set("open-credit", new ToolTipItem("Open Credit", "In most cases we are only interested in spreads that give at least a set minimum for the opening credit. For example if you wanted to open a put credit spread with an opening credit of $0.15 you would receive $15 for each lot. " + this.helperPost));
-    this.toolTips.set("days-to-expire", new ToolTipItem("Days To Expire", "Days to expire is the number of days until the trade would expire. Often times we are not interested in trades that expire too far into the future or trades that expire too soon. " + this.helperPost));
-    this.toolTips.set("short-strike-percent-away", new ToolTipItem("Short Strike % Away", "To help define our risk we might only be interested in trades where the current underlying stock is some percentage away from your short options leg. For example if we are trading put credit spreads on the SPY and the SPY is currently trading at $100. We could set this value to 5.0 and we would only be presented with trades where the short leg strike price is $95 or less. " + this.helperPost));            
+    this.setupToolTips();
+    this.setupItemSettings();
   }
 
   //
@@ -61,27 +90,6 @@ export class AddEditComponent implements OnInit
     // Is this an edit action?
     this.editId = this.route.snapshot.params['id'];
 
-    // Setup widths
-    let widths: number[] = [];
-
-    for (let i = 0.5; i <= 500; i = i + .5)
-    {
-      widths.push(i);
-    }
-
-    // Setup days
-    let days: number[] = [];
-
-    for (let i = 0; i <= 500; i++) {
-      days.push(i);
-    }
-
-    // Set item Settings
-    this.itemSetttings.push(new ScreenerItemSettings('Spread Width', 'spread-width', 'select-number', ['=', '>'], widths, [], 0));
-    this.itemSetttings.push(new ScreenerItemSettings('Open Credit', 'open-credit', 'input-number', ['>', '<', '='], [], [], 0.1));
-    this.itemSetttings.push(new ScreenerItemSettings('Days To Expire', 'days-to-expire', 'select-number', ['>', '<', '='], days, [], 1.0));
-    this.itemSetttings.push(new ScreenerItemSettings('Short Strike % Away', 'short-strike-percent-away', 'input-number', ['>', '<'], [], [], 0.1));
-
     // Default Values
     if(! this.editId) 
     {
@@ -91,10 +99,10 @@ export class AddEditComponent implements OnInit
 
       // Screen
       this.screen.Items = [];
-      this.screen.Items.push(new ScreenerItem(0, 0, 'spread-width', '=', '', 2.0, this.itemSetttings[0]));
-      // this.screen.Items.push(new ScreenerItem(0, 0, 'min-credit', '=', '', 0.18, this.itemSetttings[1]));
-      // this.screen.Items.push(new ScreenerItem(0, 0, 'days-to-expire', '<', '', 46, this.itemSetttings[2]));
-      // this.screen.Items.push(new ScreenerItem(0, 0, 'short-strike-percent-away', '>', '', 4.0, this.itemSetttings[3]));
+      //this.screen.Items.push(new ScreenerItem(0, 0, 'spread-width', '=', '', 2.0));
+      // this.screen.Items.push(new ScreenerItem(0, 0, 'min-credit', '=', '', 0.18));
+      // this.screen.Items.push(new ScreenerItem(0, 0, 'days-to-expire', '<', '', 46));
+      // this.screen.Items.push(new ScreenerItem(0, 0, 'short-strike-percent-away', '>', '', 4.0);
 
       // Run screen on load
       //this.runScreen();      
@@ -104,13 +112,15 @@ export class AddEditComponent implements OnInit
       this.screenerService.getById(this.editId).subscribe((res) => {
         this.screen = res;
 
+        console.log(res);
+
         for(let i = 0; i < this.screen.Items.length; i++)
         {
-          for (let r = 0; r < this.itemSetttings.length; r++)
+          for(let r = 0; r < this.itemSetttings[this.screen.Strategy].length; r++)
           {
-            if (this.screen.Items[i].Key == this.itemSetttings[r].Key)
+            if(this.screen.Items[i].Key == this.itemSetttings[this.screen.Strategy][r].Key)
             {
-              this.screen.Items[i].Settings = this.itemSetttings[r];
+              this.screen.Items[i].Settings = this.itemSetttings[this.screen.Strategy][r];
             }
           } 
         }
@@ -126,16 +136,36 @@ export class AddEditComponent implements OnInit
   // 
   addFilter()
   {
-    this.screen.Items.push(new ScreenerItem(0, 0, 'open-credit', '>', '', 2.0, this.itemSetttings[0]));    
+    let newRow: ScreenerItem = new ScreenerItem(0, 0, 'spread-width', '>', '', 2.0);
+    newRow.Settings = this.itemSetttings[this.screen.Strategy][0];
+    newRow.Operator = newRow.Settings.Operators[0];
+    this.screen.Items.push(newRow);    
+  }
+
+  //
+  // Strategy Change
+  //
+  strategyChange()
+  {
+    this.screen.Items = [];
   }
 
   //
   // Filter change.
   //
-  filterChange()
+  filterChange(row: ScreenerItem)
   {
+    for(let i = 0; i < this.itemSetttings[this.screen.Strategy].length; i++)
+    {
+      if(this.itemSetttings[this.screen.Strategy][i].Key == row.Settings.Key)
+      {
+        row.Operator = this.itemSetttings[this.screen.Strategy][i].Operators[0];
+      }
+    }
+
     this.runFirst = true;
     this.nameError = false;
+
   }
 
   //
@@ -153,11 +183,11 @@ export class AddEditComponent implements OnInit
       this.symbolError = false;
     }
 
-    // Set the keys
-    for(let i = 0; i < this.screen.Items.length; i++)
-    {
-      this.screen.Items[i].Key = this.screen.Items[i].Settings.Key;
-    }
+    // // Set the keys
+    // for(let i = 0; i < this.screen.Items.length; i++)
+    // {
+    //   this.screen.Items[i].Key = this.screen.Items[i].Settings.Key;
+    // }
 
     return true;
   }
@@ -278,6 +308,56 @@ export class AddEditComponent implements OnInit
     {
       this.toolTips.get(key).Show = true;
     }
+  }
+
+  //
+  // Setup tool tips.
+  //
+  setupToolTips()
+  {
+    // Add the helper text to the tool tip map
+    this.toolTips.set("open-debit", new ToolTipItem("Open Debit", "Coming soon..." + this.helperPost));
+
+    this.toolTips.set("spread-width", new ToolTipItem("Spread Width", "Set how wide you want your spreads to be. For example with a put credit spread where the short strike is 200 and the long strike is 195 this spread width would be 5. " + this.helperPost));
+    this.toolTips.set("open-credit", new ToolTipItem("Open Credit", "In most cases we are only interested in spreads that give at least a set minimum for the opening credit. For example if you wanted to open a put credit spread with an opening credit of $0.15 you would receive $15 for each lot. " + this.helperPost));
+    this.toolTips.set("days-to-expire", new ToolTipItem("Days To Expire", "Days to expire is the number of days until the trade would expire. Often times we are not interested in trades that expire too far into the future or trades that expire too soon. " + this.helperPost));
+    this.toolTips.set("short-strike-percent-away", new ToolTipItem("Short Strike % Away", "To help define our risk we might only be interested in trades where the current underlying stock is some percentage away from your short options leg. For example if we are trading put credit spreads on the SPY and the SPY is currently trading at $100. We could set this value to 5.0 and we would only be presented with trades where the short leg strike price is $95 or less. " + this.helperPost));  
+  }
+
+  //
+  // Setup item settings
+  //
+  setupItemSettings()
+  {
+    // Setup widths
+    let widths: number[] = [];
+
+    for (let i = 0.5; i <= 500; i = i + .5) 
+    {
+      widths.push(i);
+    }
+
+    // Setup days
+    let days: number[] = [];
+
+    for (let i = 0; i <= 500; i++) 
+    {
+      days.push(i);
+    }
+
+    // Set item Settings: put-credit-spread
+    let pcs: ScreenerItemSettings[] = [];
+    pcs.push(new ScreenerItemSettings('Spread Width', 'spread-width', 'select-number', ['='], widths, [], 0));
+    pcs.push(new ScreenerItemSettings('Open Credit', 'open-credit', 'input-number', ['>', '<', '='], [], [], 0.1));
+    pcs.push(new ScreenerItemSettings('Days To Expire', 'days-to-expire', 'select-number', ['<', '>', '='], days, [], 1.0));
+    pcs.push(new ScreenerItemSettings('Short Strike % Away', 'short-strike-percent-away', 'input-number', ['>', '<'], [], [], 0.1));
+    this.itemSetttings["put-credit-spread"] = pcs;
+
+    // Set item Settings: reverse-iron-condor
+    let ric: ScreenerItemSettings[] = [];
+    ric.push(new ScreenerItemSettings('Spread Width', 'spread-width', 'select-number', ['='], widths, [], 0));
+    ric.push(new ScreenerItemSettings('Open Debit', 'open-debit', 'input-number', ['<', '>', '='], [], [], 1.00));
+    this.itemSetttings["reverse-iron-condor"] = ric;
   }
 }
 

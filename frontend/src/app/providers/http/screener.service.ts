@@ -58,6 +58,7 @@ export class ScreenerService
   // Submit screen to be saved.
   //
   submitScreen(screen: Screener): Observable<Screener> {
+
     let body = {
       name: screen.Name,
       strategy: screen.Strategy,
@@ -68,7 +69,7 @@ export class ScreenerService
     for (let i = 0; i < screen.Items.length; i++) 
     {
       body.items.push({
-        key: screen.Items[i].Key,
+        key: screen.Items[i].Settings.Key,
         operator: screen.Items[i].Operator,
         value_number: screen.Items[i].ValueNumber,
         value_string: screen.Items[i].ValueString
