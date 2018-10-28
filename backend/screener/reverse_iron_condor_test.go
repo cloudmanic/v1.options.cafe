@@ -2,17 +2,17 @@
 // Date: 2018-10-27
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-10-27
+// Last Modified: 2018-10-28
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
 package screener
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/nbio/st"
 )
 
@@ -36,9 +36,9 @@ func TestRunReverseIronCondor01(t *testing.T) {
 			{Key: "put-leg-width", Operator: "=", ValueNumber: 2.00},
 			{Key: "call-leg-width", Operator: "=", ValueNumber: 2.00},
 			{Key: "put-leg-percent-away", Operator: ">", ValueNumber: 4.0},
-			{Key: "call-leg-percent-away", Operator: "<", ValueNumber: 4.0},
-			{Key: "open-credit", Operator: ">", ValueNumber: 0.18},
-			{Key: "open-credit", Operator: "<", ValueNumber: 6.00},
+			{Key: "call-leg-percent-away", Operator: ">", ValueNumber: 4.0},
+			{Key: "open-debit", Operator: ">", ValueNumber: 0.50},
+			{Key: "open-debit", Operator: "<", ValueNumber: 3.00},
 			{Key: "days-to-expire", Operator: "<", ValueNumber: 46},
 			{Key: "days-to-expire", Operator: ">", ValueNumber: 0},
 		},
@@ -47,7 +47,9 @@ func TestRunReverseIronCondor01(t *testing.T) {
 	// Run back test
 	result, err := RunReverseIronCondor(screen, db)
 
-	spew.Dump(result)
+	for _, row := range result {
+		fmt.Println(row.Debit)
+	}
 
 	// Test result
 	st.Expect(t, err, nil)

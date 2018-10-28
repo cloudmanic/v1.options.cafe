@@ -65,7 +65,7 @@ func RunPutCreditSpread(screen models.Screener, db models.Datastore) ([]Result, 
 			}
 
 			// Skip strikes that are higher than our min strike. Based on percent away.
-			if !FilterStrikeByPercentAway("short-strike-percent-away", screen, row2.Strike, quote.Last) {
+			if !FilterStrikeByPercentDown("short-strike-percent-away", screen, row2.Strike, quote.Last) {
 				continue
 			}
 

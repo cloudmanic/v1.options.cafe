@@ -196,9 +196,69 @@ func FindByStrike(chain []types.OptionsChainItem, strike float64) (types.Options
 // ---------------- Shared Filters --------------------- //
 
 //
-// Review trade for strike percent away
+// Review trade for strike percent up
 //
-func FilterStrikeByPercentAway(key string, screen models.Screener, strike float64, lastQuote float64) bool {
+func FilterStrikeByPercentUp(key string, screen models.Screener, strike float64, lastQuote float64) bool {
+
+	var minStrike float64 = 0.00
+	var widthIncrment float64 = 0.50
+
+	// Find keys related to this filter.
+	items := FindFilterItemsByKey(key, screen)
+
+	// Loop through the keys. Return false if something does not match up.
+	for _, row := range items {
+
+		// Figure out the strike price that is the min we can sell.
+		var tmp float64 = lastQuote + (lastQuote * (row.ValueNumber / 100))
+		fraction := tmp - math.Floor(tmp)
+
+		if fraction >= widthIncrment {
+			minStrike = (math.Floor(tmp) + widthIncrment)
+		} else {
+			minStrike = math.Floor(tmp)
+		}
+
+		// Switch based on the operator
+		switch row.Operator {
+
+		// Is the strike > than this value.
+		case "<":
+			if strike > minStrike {
+				return false
+			}
+			break
+
+		// Is the strike < this value
+		case ">":
+			if strike < minStrike {
+				return false
+			}
+			break
+
+		// Is the strike = this value
+		case "=":
+			if strike != minStrike {
+				return false
+			}
+			break
+
+		}
+
+	}
+
+	// If we made it this far it is true.
+	return true
+}
+
+//
+// Review trade for strike percent down
+//
+func FilterStrikeByPercentDown(key string, screen models.Screener, strike float64, lastQuote float64) bool {
+
+	if strike > lastQuote {
+		return false
+	}
 
 	var minSellStrike float64 = 0.00
 	var widthIncrment float64 = 0.50
@@ -222,14 +282,14 @@ func FilterStrikeByPercentAway(key string, screen models.Screener, strike float6
 		// Switch based on the operator
 		switch row.Operator {
 
-		// Is the strike > than this value.
+		// Is the strike < than this value.
 		case "<":
 			if strike < minSellStrike {
 				return false
 			}
 			break
 
-		// Is the strike < this value
+		// Is the strike > this value
 		case ">":
 			if strike > minSellStrike {
 				return false
@@ -282,6 +342,49 @@ func FilterOpenCredit(screen models.Screener, credit float64) bool {
 		// Is the credit = this value
 		case "=":
 			if credit != row.ValueNumber {
+				return false
+			}
+			break
+
+		}
+
+	}
+
+	// If we made it this far it is true.
+	return true
+}
+
+//
+// Review trade for open debit
+//
+func FilterOpenDebit(screen models.Screener, debit float64) bool {
+
+	// Find keys related to this filter.
+	items := FindFilterItemsByKey("open-debit", screen)
+
+	// Loop through the keys. Return false if something does not match up.
+	for _, row := range items {
+
+		// Switch based on the operator
+		switch row.Operator {
+
+		// Is the debit > than this value.
+		case "<":
+			if debit > row.ValueNumber {
+				return false
+			}
+			break
+
+		// Is the debit < this value
+		case ">":
+			if debit < row.ValueNumber {
+				return false
+			}
+			break
+
+		// Is the debit = this value
+		case "=":
+			if debit != row.ValueNumber {
 				return false
 			}
 			break

@@ -2,7 +2,7 @@
 // Date: 2018-10-27
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-10-27
+// Last Modified: 2018-10-28
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -71,8 +71,6 @@ func RunReverseIronCondor(screen models.Screener, db models.Datastore) ([]Result
 			continue
 		}
 
-		//fmt.Println(len(putLegs), "/", len(callLegs))
-
 		trades := FindPossibleReverseIronCondorTrades(screen, putLegs, callLegs)
 
 		// Add trades to the results
@@ -112,16 +110,25 @@ func RunReverseIronCondor(screen models.Screener, db models.Datastore) ([]Result
 			}
 
 			// Figure out the amounts.
-			debitCost := row.PutShort.Bid + row.PutLong.Ask + row.CallLong.Ask + row.CallShort.Bid
-			creditCost := row.PutShort.Ask + row.PutLong.Bid + row.CallLong.Bid + row.CallShort.Ask
+			debitCost := (row.PutLong.Ask - row.PutShort.Bid) + (row.CallLong.Ask - row.CallShort.Bid)
+			creditCost := (row.PutLong.Bid - row.PutShort.Ask) + (row.CallLong.Bid - row.CallShort.Ask)
 			midPoint := (creditCost + debitCost) / 2
+
+			// Percent away - We show the lowest percent away
+			putPercentAway := ((1 - (row.PutLong.Strike / quote.Last)) * 100)
+			callPercentAway := ((1 - (quote.Last / row.CallLong.Strike)) * 100)
+			precentAway := putPercentAway
+
+			if callPercentAway < putPercentAway {
+				precentAway = callPercentAway
+			}
 
 			// We have a winner
 			result = append(result, Result{
-				Debit:    helpers.Round(debitCost, 2),
-				MidPoint: helpers.Round(midPoint, 2),
-				//PrecentAway: helpers.Round(((1 - row2.Strike/quote.Last) * 100), 2),
-				Legs: []models.Symbol{symbPutShortLeg, symbPutLongLeg, symbCallLongLeg, symbCallShortLeg},
+				Debit:       helpers.Round(debitCost, 2),
+				MidPoint:    helpers.Round(midPoint, 2),
+				PrecentAway: helpers.Round(precentAway, 2),
+				Legs:        []models.Symbol{symbPutShortLeg, symbPutLongLeg, symbCallLongLeg, symbCallShortLeg},
 			})
 
 		}
@@ -148,22 +155,24 @@ func FindPossibleReverseIronCondorTrades(screen models.Screener, putLegs []Sprea
 		side1Cost := row.Long.Ask - row.Short.Bid
 
 		for _, row2 := range callLegs {
+
 			side2Cost := row2.Long.Ask - row2.Short.Bid
 
 			// Get total cost of the trade
 			totalCost := side1Cost + side2Cost
 
-			if totalCost < 1.00 {
+			if !FilterOpenDebit(screen, totalCost) {
+				continue
+			}
 
-				indexKey := helpers.FloatToString(row.Short.Strike) + "/" + helpers.FloatToString(row.Long.Strike) + "/" + helpers.FloatToString(row2.Long.Strike) + "/" + helpers.FloatToString(row2.Short.Strike)
+			// if we made it here store as possible trade
+			indexKey := helpers.FloatToString(row.Short.Strike) + "/" + helpers.FloatToString(row.Long.Strike) + "/" + helpers.FloatToString(row2.Long.Strike) + "/" + helpers.FloatToString(row2.Short.Strike)
 
-				mapIndex[indexKey] = IronCondor{
-					CallShort: row2.Short,
-					CallLong:  row2.Long,
-					PutShort:  row.Short,
-					PutLong:   row.Long,
-				}
-
+			mapIndex[indexKey] = IronCondor{
+				CallShort: row2.Short,
+				CallLong:  row2.Long,
+				PutShort:  row.Short,
+				PutLong:   row.Long,
 			}
 
 		}
@@ -175,23 +184,24 @@ func FindPossibleReverseIronCondorTrades(screen models.Screener, putLegs []Sprea
 
 		side1Cost := row.Long.Ask - row.Short.Bid
 
-		for _, row2 := range callLegs {
+		for _, row2 := range putLegs {
 			side2Cost := row2.Long.Ask - row2.Short.Bid
 
 			// Get total cost of the trade
 			totalCost := side1Cost + side2Cost
 
-			if totalCost < 1.00 {
+			if !FilterOpenDebit(screen, totalCost) {
+				continue
+			}
 
-				indexKey := helpers.FloatToString(row.Short.Strike) + "/" + helpers.FloatToString(row.Long.Strike) + "/" + helpers.FloatToString(row2.Long.Strike) + "/" + helpers.FloatToString(row2.Short.Strike)
+			// if we made it here store as possible trade
+			indexKey := helpers.FloatToString(row.Short.Strike) + "/" + helpers.FloatToString(row.Long.Strike) + "/" + helpers.FloatToString(row2.Long.Strike) + "/" + helpers.FloatToString(row2.Short.Strike)
 
-				mapIndex[indexKey] = IronCondor{
-					CallShort: row2.Short,
-					CallLong:  row2.Long,
-					PutShort:  row.Short,
-					PutLong:   row.Long,
-				}
-
+			mapIndex[indexKey] = IronCondor{
+				CallShort: row.Short,
+				CallLong:  row.Long,
+				PutShort:  row2.Short,
+				PutLong:   row2.Long,
 			}
 
 		}
@@ -224,8 +234,18 @@ func GetPossibleVerticalSpreads(screen models.Screener, quote types.Quote, chain
 		}
 
 		// Skip strikes that are higher than our min strike. Based on percent away.
-		if !FilterStrikeByPercentAway(legType+"-leg-percent-away", screen, row.Strike, quote.Last) {
-			continue
+		if legType == "put" {
+
+			if !FilterStrikeByPercentDown(legType+"-leg-percent-away", screen, row.Strike, quote.Last) {
+				continue
+			}
+
+		} else {
+
+			if !FilterStrikeByPercentUp(legType+"-leg-percent-away", screen, row.Strike, quote.Last) {
+				continue
+			}
+
 		}
 
 		// See if we have a spread width
