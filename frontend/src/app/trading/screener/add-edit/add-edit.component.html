@@ -325,6 +325,13 @@
           <div class="widget__body">
             <div class="table-simple table-simple--size3 js-table">
 
+              <div class="banner banner--info banner--large" *ngIf="results.length >= 100" style="max-width: unset;">
+                <h6 class="banner__title">
+                  <strong>You Have More Than 100 Results</strong>
+                </h6>
+                <p>We suggest tightening up your filters as we only display up to 100 results.</p>
+              </div>
+
               <table>
                 <thead>
                   <tr>
@@ -337,7 +344,8 @@
                     </th>
 
                     <th>
-                      <ins>Spread</ins>
+                      <ins *ngIf="(screen.Strategy == 'put-credit-spread')">Spread</ins>
+                      <ins *ngIf="(screen.Strategy == 'reverse-iron-condor')">Condor</ins>
                     </th>
 
                     <th>
@@ -345,7 +353,8 @@
                     </th>
 
                     <th>
-                      <ins>Credit</ins>
+                      <ins *ngIf="(screen.Strategy == 'put-credit-spread')">Credit</ins>
+                      <ins *ngIf="(screen.Strategy == 'reverse-iron-condor')">Debit</ins>
                     </th>
 
                     <th>
@@ -364,18 +373,24 @@
                     
                     <td>{{ row.Legs[0].OptionExpire | date:'shortDate' }}</td>
                     
-                    <td>{{ row.Legs[0].OptionStrike }} / {{ row.Legs[1].OptionStrike }}</td>
+                    <td *ngIf="(screen.Strategy == 'put-credit-spread')">
+                      {{ row.Legs[0].OptionStrike }} / {{ row.Legs[1].OptionStrike }}
+                    </td>
                     
+                    <td *ngIf="(screen.Strategy == 'reverse-iron-condor')">
+                      {{ row.Legs[0].OptionStrike }} / {{ row.Legs[1].OptionStrike }} <br /> 
+                      {{ row.Legs[2].OptionStrike }} / {{ row.Legs[3].OptionStrike }}
+                    </td>                    
+
                     <td>{{ row.PrecentAway | number:'1.2-2' }}%</td>
                     
-                    <td>{{ row.Credit | currency:'USD':'symbol':'1.2-2' }}</td>
-                    
+                    <td *ngIf="(screen.Strategy == 'put-credit-spread')">{{ row.Credit | currency:'USD':'symbol':'1.2-2' }}</td>
+                    <td *ngIf="(screen.Strategy == 'reverse-iron-condor')">{{ row.Debit | currency:'USD':'symbol':'1.2-2' }}</td>                    
+
                     <td>{{ row.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
                     
                     <td>
-                      <a href="#" class="btn-square">
-                        <i class="ico-triangle"></i>
-                      </a>
+                      <app-dropdown-select [actions]="actions" [data]="row"></app-dropdown-select>
                     </td>
                   </tr>
                 </tbody>

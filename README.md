@@ -35,3 +35,7 @@ We assume the server is already setup for us. At Cloudmanic we have a different 
 * Update switch statement in `backend/screener/base.go::PrimeAllScreenerCaches` 
 
 * Add option to screener `frontend/src/app/trading/screener/add-edit/add-edit.component.html`
+
+* Update `backend/controllers/screeners.go` to include any new screener keys. The var at the top `screenerItemKeys`.
+
+* `GetScreenerResults` in `backend/controllers/screeners.go` to include the new strategy. And `GetScreenerResultsFromFilters`

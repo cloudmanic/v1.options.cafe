@@ -12,7 +12,8 @@ import { Symbol } from './symbol';
 //
 export class ScreenerResult 
 {
-  Credit: number;
+  Debit: number;
+  Credit: number;  
   MidPoint: number;
   PrecentAway: number;
   Legs: Symbol[];
@@ -42,6 +43,7 @@ export class ScreenerResult
   {
     let obj = new ScreenerResult();
 
+    obj.Debit = json["debit"];
     obj.Credit = json["credit"];
     obj.MidPoint = json["midpoint"];
     obj.PrecentAway = json["percent_away"];

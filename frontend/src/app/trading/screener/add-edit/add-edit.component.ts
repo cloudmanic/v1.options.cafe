@@ -5,43 +5,16 @@
 //
 
 
-import { Component, OnInit, Pipe, PipeTransform } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Settings } from '../../../models/settings';
 import { StateService } from '../../../providers/state/state.service';
 import { ScreenerService } from '../../../providers/http/screener.service';
 import { Screener, ScreenerItem, ScreenerItemSettings } from '../../../models/screener';
 import { ScreenerResult } from '../../../models/screener-result';
-
-@Pipe({
-  name: 'settingsStrategy',
-  pure: false
-})
-
-export class SettingsStrategyPipe implements PipeTransform 
-{
-  //
-  // Run filter function.
-  //
-  transform(items: any[], filter: Object): any {
-
-    if (!items || !filter) 
-    {
-      return items;
-    }
-
-    let rt: ScreenerItemSettings[] = [];
-
-    for(let i = 0; i < items.length; i++)
-    {
-      if(items[i].Settings.Strategy == filter) 
-      {
-        rt.push(items[i]);
-      }
-    }
-
-    return rt;
-  }
-}
+import { SettingsService } from '../../../providers/http/settings.service';
+import { DropdownAction } from '../../../shared/dropdown-select/dropdown-select.component';
+import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../../../providers/http/trade.service';
 
 @Component({
   selector: 'app-add-edit',
@@ -61,6 +34,9 @@ export class AddEditComponent implements OnInit
   showDeleteScreener: boolean = false;
   results: ScreenerResult[] = [];
   screen: Screener = new Screener();
+  settings: Settings = new Settings();
+
+  actions: DropdownAction[] = null;     
 
   itemSetttings: Map<string, ScreenerItemSettings[]> = new Map<string, ScreenerItemSettings[]>();
 
@@ -76,10 +52,11 @@ export class AddEditComponent implements OnInit
   //
   // Construct.
   //
-  constructor(private stateService: StateService, private router: Router, private route: ActivatedRoute, private screenerService: ScreenerService) 
+  constructor(private tradeService: TradeService, private stateService: StateService, private router: Router, private route: ActivatedRoute, private screenerService: ScreenerService, private settingsService: SettingsService) 
   { 
     this.setupToolTips();
     this.setupItemSettings();
+    this.settings = this.stateService.GetSettings();
   }
 
   //
@@ -87,6 +64,12 @@ export class AddEditComponent implements OnInit
   //
   ngOnInit() 
   {
+    // Setup Dropdown actions
+    this.setupDropdownActions();
+
+    // Load settings data
+    this.loadSettingsData();    
+
     // Is this an edit action?
     this.editId = this.route.snapshot.params['id'];
 
@@ -112,8 +95,6 @@ export class AddEditComponent implements OnInit
       this.screenerService.getById(this.editId).subscribe((res) => {
         this.screen = res;
 
-        console.log(res);
-
         for(let i = 0; i < this.screen.Items.length; i++)
         {
           for(let r = 0; r < this.itemSetttings[this.screen.Strategy].length; r++)
@@ -130,6 +111,113 @@ export class AddEditComponent implements OnInit
     }
 
   }
+
+  //
+  // Load settings data.
+  //
+  loadSettingsData() 
+  {
+    this.settingsService.get().subscribe((res) => {
+      this.settings = res;
+
+      console.log(this.settings);
+      this.stateService.SetSettings(res);
+    });
+  } 
+
+  //
+  // Setup Drop down actions.
+  //
+  setupDropdownActions() {
+    let das = []
+
+    // First action
+    let da1 = new DropdownAction();
+    da1.title = "Place Trade";
+
+    // Place order action
+    da1.click = (result: ScreenerResult) => {
+      this.trade(this.screen, result);
+
+    };
+
+    das.push(da1);
+
+    this.actions = das;
+  }   
+
+  //
+  // Place trade from result
+  //
+  trade(screen: Screener, result: ScreenerResult) {
+
+    // Just a double check
+    if (result.Legs.length <= 0) 
+    {
+      return;
+    }
+
+    // Set values
+    let tradeDetails = new TradeDetails();
+    tradeDetails.Symbol = result.Legs[0].OptionUnderlying;
+    tradeDetails.Class = "multileg";
+
+    if (result.Credit > 0) 
+    {
+      tradeDetails.OrderType = "credit";
+    } else 
+    {
+      tradeDetails.OrderType = "debit";
+    }
+
+    // TODO: Add configuration around this.
+    tradeDetails.Duration = "gtc";
+
+    // Default Price
+    tradeDetails.Price = result.MidPoint;
+
+    // Build legs
+    tradeDetails.Legs = [];
+
+    // Figure out side based on strategy
+    let qty = 1;
+    let sides: string[] = ["buy_to_open", "sell_to_open", "sell_to_open", "buy_to_open"];
+
+    switch (screen.Strategy) 
+    {
+      case "reverse-iron-condor":
+        sides = ["sell_to_open", "buy_to_open", "buy_to_open", "sell_to_open"];
+      break;
+
+      case "put-credit-spread":
+        qty = this.settings.StrategyPcsLots;
+        sides = ["buy_to_open", "sell_to_open", "sell_to_open", "buy_to_open"];
+
+        // TODO: Make this work. 
+
+        // if(this.settings.StrategyPcsOpenPrice == "mid-point") 
+        // {
+        //   tradeDetails.Price = result.MidPoint;
+        // }
+
+        // if(this.settings.StrategyPcsOpenPrice == "ask") 
+        // {
+        //   tradeDetails.Price = result.MidPoint;
+        // }        
+      break;     
+    }
+
+    for (let i = 0; i < result.Legs.length; i++) 
+    {
+      let side: string = sides[i];
+      tradeDetails.Legs.push(new TradeOptionLegs().createNew(result.Legs[i], result.Legs[i].OptionExpire, result.Legs[i].OptionType, result.Legs[i].OptionStrike, side, qty));
+    }
+
+    // Open builder to place trade.
+    this.tradeService.tradeEvent.emit(new TradeEvent().createNew("toggle-trade-builder", tradeDetails));
+
+
+  }  
 
   //
   // Add 
@@ -155,17 +243,8 @@ export class AddEditComponent implements OnInit
   //
   filterChange(row: ScreenerItem)
   {
-    for(let i = 0; i < this.itemSetttings[this.screen.Strategy].length; i++)
-    {
-      if(this.itemSetttings[this.screen.Strategy][i].Key == row.Settings.Key)
-      {
-        row.Operator = this.itemSetttings[this.screen.Strategy][i].Operators[0];
-      }
-    }
-
     this.runFirst = true;
     this.nameError = false;
-
   }
 
   //
@@ -182,12 +261,6 @@ export class AddEditComponent implements OnInit
     {
       this.symbolError = false;
     }
-
-    // // Set the keys
-    // for(let i = 0; i < this.screen.Items.length; i++)
-    // {
-    //   this.screen.Items[i].Key = this.screen.Items[i].Settings.Key;
-    // }
 
     return true;
   }
@@ -308,7 +381,7 @@ export class AddEditComponent implements OnInit
     {
       this.toolTips.get(key).Show = true;
     }
-  }
+  } 
 
   //
   // Setup tool tips.
@@ -316,7 +389,11 @@ export class AddEditComponent implements OnInit
   setupToolTips()
   {
     // Add the helper text to the tool tip map
-    this.toolTips.set("open-debit", new ToolTipItem("Open Debit", "Coming soon..." + this.helperPost));
+    this.toolTips.set("open-debit", new ToolTipItem("Open Debit", "This is how much you are willing to pay to open this trade. " + this.helperPost));
+    this.toolTips.set("put-leg-width", new ToolTipItem("Put Leg Width", "Set how wide you want your put leg to spread. " + this.helperPost));
+    this.toolTips.set("call-leg-width", new ToolTipItem("Call Leg Width", "Set how wide you want your call leg to spread. " + this.helperPost));   
+    this.toolTips.set("put-leg-percent-away", new ToolTipItem("Put Leg Percent Away", "How far away from the current stock price should your first put leg should be. This is a percentage. " + this.helperPost));
+    this.toolTips.set("call-leg-percent-away", new ToolTipItem("Call Leg Percent Away", "How far away from the current stock price should your first call leg should be. This is a percentage. " + this.helperPost));
 
     this.toolTips.set("spread-width", new ToolTipItem("Spread Width", "Set how wide you want your spreads to be. For example with a put credit spread where the short strike is 200 and the long strike is 195 this spread width would be 5. " + this.helperPost));
     this.toolTips.set("open-credit", new ToolTipItem("Open Credit", "In most cases we are only interested in spreads that give at least a set minimum for the opening credit. For example if you wanted to open a put credit spread with an opening credit of $0.15 you would receive $15 for each lot. " + this.helperPost));
@@ -343,20 +420,24 @@ export class AddEditComponent implements OnInit
     for (let i = 0; i <= 500; i++) 
     {
       days.push(i);
-    }
+    }    
 
     // Set item Settings: put-credit-spread
     let pcs: ScreenerItemSettings[] = [];
     pcs.push(new ScreenerItemSettings('Spread Width', 'spread-width', 'select-number', ['='], widths, [], 0));
     pcs.push(new ScreenerItemSettings('Open Credit', 'open-credit', 'input-number', ['>', '<', '='], [], [], 0.1));
-    pcs.push(new ScreenerItemSettings('Days To Expire', 'days-to-expire', 'select-number', ['<', '>', '='], days, [], 1.0));
-    pcs.push(new ScreenerItemSettings('Short Strike % Away', 'short-strike-percent-away', 'input-number', ['>', '<'], [], [], 0.1));
+    pcs.push(new ScreenerItemSettings('Days To Expire', 'days-to-expire', 'select-number', ['<', '>', '='], days, [], 30));
+    pcs.push(new ScreenerItemSettings('Short Strike % Away', 'short-strike-percent-away', 'input-number', ['>', '<'], [], [], 4.0));
     this.itemSetttings["put-credit-spread"] = pcs;
 
     // Set item Settings: reverse-iron-condor
     let ric: ScreenerItemSettings[] = [];
-    ric.push(new ScreenerItemSettings('Spread Width', 'spread-width', 'select-number', ['='], widths, [], 0));
+    ric.push(new ScreenerItemSettings('Days To Expire', 'days-to-expire', 'select-number', ['<', '>', '='], days, [], 30));
     ric.push(new ScreenerItemSettings('Open Debit', 'open-debit', 'input-number', ['<', '>', '='], [], [], 1.00));
+    ric.push(new ScreenerItemSettings('Put Leg Width', 'put-leg-width', 'select-number', ['='], widths, [], 2.00));
+    ric.push(new ScreenerItemSettings('Call Leg Width', 'call-leg-width', 'select-number', ['='], widths, [], 2.00));
+    ric.push(new ScreenerItemSettings('Put Leg % Away', 'put-leg-percent-away', 'input-number', ['>', '<'], [], [], 4.0));
+    ric.push(new ScreenerItemSettings('Call Leg % Away', 'call-leg-percent-away', 'input-number', ['>', '<'], [], [], 4.0));
     this.itemSetttings["reverse-iron-condor"] = ric;
   }
 }

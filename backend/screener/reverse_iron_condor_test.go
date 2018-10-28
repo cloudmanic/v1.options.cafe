@@ -30,7 +30,7 @@ func TestRunReverseIronCondor01(t *testing.T) {
 
 	// Build screener object
 	screen := models.Screener{
-		Symbol:   "SPY",
+		Symbol:   "VXX",
 		Strategy: "reverse-iron-condor",
 		Items: []models.ScreenerItem{
 			{Key: "put-leg-width", Operator: "=", ValueNumber: 2.00},

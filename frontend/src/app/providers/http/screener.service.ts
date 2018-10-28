@@ -95,7 +95,7 @@ export class ScreenerService
     for (let i = 0; i < screen.Items.length; i++) 
     {
       body.items.push({
-        key: screen.Items[i].Key,
+        key: screen.Items[i].Settings.Key,
         operator: screen.Items[i].Operator,
         value_number: screen.Items[i].ValueNumber,
         value_string: screen.Items[i].ValueString
@@ -109,6 +109,7 @@ export class ScreenerService
   // Submit screen not saved in system.
   //
   submitScreenForResults(screen: Screener): Observable<ScreenerResult[]> {
+
     let body = {
       name: 'One Time',
       strategy: screen.Strategy,
@@ -119,7 +120,7 @@ export class ScreenerService
     for (let i = 0; i < screen.Items.length; i++) 
     {
       body.items.push({
-        key: screen.Items[i].Key,
+        key: screen.Items[i].Settings.Key,
         operator: screen.Items[i].Operator,
         value_number: screen.Items[i].ValueNumber,
         value_string: screen.Items[i].ValueString
