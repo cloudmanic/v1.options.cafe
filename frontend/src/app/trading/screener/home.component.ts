@@ -185,7 +185,6 @@ export class ScreenerComponent implements OnInit
       if (i == 1) 
       {
         side = "sell_to_open";
-        qty = qty * -1;
       } else 
       {
         side = "buy_to_open"

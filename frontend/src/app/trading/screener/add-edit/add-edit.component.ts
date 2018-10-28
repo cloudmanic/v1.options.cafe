@@ -241,7 +241,7 @@ export class AddEditComponent implements OnInit
   //
   // Filter change.
   //
-  filterChange(row: ScreenerItem)
+  filterChange()
   {
     this.runFirst = true;
     this.nameError = false;

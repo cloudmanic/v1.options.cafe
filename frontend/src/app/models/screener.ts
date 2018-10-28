@@ -56,7 +56,7 @@ export class Screener
     // Add in the legs.
     for (let i = 0; i < json["items"].length; i++)
     {
-      obj.Items.push(new ScreenerItem(json["items"][i].id, json["items"][i].screener_id, json["items"][i].key, json["items"][i].operator, json["items"][i].value_string, json["items"][i].value_number);
+      obj.Items.push(new ScreenerItem(json["items"][i].id, json["items"][i].screener_id, json["items"][i].key, json["items"][i].operator, json["items"][i].value_string, json["items"][i].value_number));
     }
 
     return obj;

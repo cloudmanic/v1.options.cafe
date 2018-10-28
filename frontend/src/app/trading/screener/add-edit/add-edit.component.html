@@ -142,7 +142,7 @@
 
                   <div class="widget__col">
                     <div class="select select--primary">
-                      <select [(ngModel)]="row.Settings" (change)="filterChange(row)">
+                      <select [(ngModel)]="row.Settings" (change)="filterChange()">
                         <option [ngValue]="row2" *ngFor="let row2 of itemSetttings[screen.Strategy];">{{ row2.Name }}</option>
                       </select>
                     </div>
@@ -150,7 +150,7 @@
 
                   <div class="widget__col widget__col--size1">
                     <div class="select select--primary select--primary-alt">
-                      <select [(ngModel)]="row.Operator" (change)="filterChange(row)">
+                      <select [(ngModel)]="row.Operator" (change)="filterChange()">
                         <option [ngValue]="row2" *ngFor="let row2 of row.Settings.Operators;">{{ row2 }}</option>
                       </select>
                     </div>
@@ -158,13 +158,13 @@
 
                   <div class="widget__col widget__col--size2">
                     <div class="select select--primary" *ngIf="row.Settings.Type == 'select-number'">
-                      <select [(ngModel)]="row.ValueNumber" (change)="filterChange(row)">
+                      <select [(ngModel)]="row.ValueNumber" (change)="filterChange()">
                         <option [ngValue]="row2" *ngFor="let row2 of row.Settings.SelectValuesNumber;">{{ row2 }}</option>
                       </select>
                     </div>
 
                     <div class="field-container" *ngIf="row.Settings.Type == 'input-number'">
-                      <input type="number" class="field" placeholder="" [(ngModel)]="row.ValueNumber" (keyup)="filterChange(row)" step="{{ row.Settings.Step }}" />
+                      <input type="number" class="field" placeholder="" [(ngModel)]="row.ValueNumber" (keyup)="filterChange()" step="{{ row.Settings.Step }}" />
                     </div>
 
                     <div class="question title-question">
