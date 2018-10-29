@@ -36,6 +36,51 @@ func (t *Base) StartFeeds() {
 
 	// Expire Trials
 	go t.DoExpireTrails()
+
+	// Do expired Sessions
+	go t.ClearExpiredSessions()
+}
+
+//
+// Clear expired sessions (access tokens)
+//
+func (t *Base) ClearExpiredSessions() {
+
+	for {
+
+		// Find the Centcom app
+		centcomApp := models.Application{}
+		t.DB.New().Where("name <= ?", "Centcom").Find(&centcomApp)
+
+		if centcomApp.Id > 0 {
+
+			// Delete expired centcom sessions
+			t.DB.New().Where("last_activity <= ? AND application_id = ?", time.Now().AddDate(0, 0, -1), centcomApp.Id).Delete(&models.Session{})
+
+			// Just cleared Centcom sessions
+			services.Info("Centcom sessions cleared.")
+
+		}
+
+		// Find the Personal app
+		personalApp := models.Application{}
+		t.DB.New().Where("name <= ?", "Personal Access Token").Find(&personalApp)
+
+		if personalApp.Id > 0 {
+
+			// Clear all sessions that have not had activity in the last 14 days (2 weeks)
+			t.DB.New().Where("last_activity <= ? AND application_id != ?", time.Now().AddDate(0, 0, -14), personalApp.Id).Delete(&models.Session{})
+
+			// Log cleared sessions.
+			services.Info("All expired sessions cleared.")
+
+		}
+
+		// Sleep for 12 hours
+		time.Sleep(time.Second * 60 * 60 * 12)
+
+	}
+
 }
 
 //
