@@ -10,8 +10,10 @@ package screener
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/nbio/st"
 )
@@ -44,8 +46,17 @@ func TestRunReverseIronCondor01(t *testing.T) {
 		},
 	}
 
+	// Setup the broker
+	broker := tradier.Api{
+		DB:     nil,
+		ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN"),
+	}
+
+	// New screener instance
+	s := NewScreen(db, &broker)
+
 	// Run back test
-	result, err := RunReverseIronCondor(screen, db)
+	result, err := s.RunReverseIronCondor(screen)
 
 	for _, row := range result {
 		fmt.Println(row.Debit)

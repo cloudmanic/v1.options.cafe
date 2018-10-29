@@ -8,9 +8,11 @@ package controllers
 
 import (
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
@@ -231,8 +233,14 @@ func (t *Controller) GetScreenerResults(c *gin.Context) {
 		return
 	}
 
+	// Setup the broker
+	broker := tradier.Api{DB: nil, ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN")}
+
+	// New screener instance
+	s := screener.NewScreen(t.DB, &broker)
+
 	// Run the screen based from our function map
-	result, err := screener.ScreenFuncs[screen.Strategy](screen, t.DB)
+	result, err := s.ScreenFuncs[screen.Strategy](screen)
 
 	if t.RespondError(c, err, httpNoRecordFound) {
 		return
@@ -274,8 +282,14 @@ func (t *Controller) GetScreenerResultsFromFilters(c *gin.Context) {
 		return
 	}
 
+	// Setup the broker
+	broker := tradier.Api{DB: nil, ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN")}
+
+	// New screener instance
+	s := screener.NewScreen(t.DB, &broker)
+
 	// Run the screen based from our function map
-	result, err := screener.ScreenFuncs[screen.Strategy](screen, t.DB)
+	result, err := s.ScreenFuncs[screen.Strategy](screen)
 
 	if t.RespondError(c, err, httpNoRecordFound) {
 		return

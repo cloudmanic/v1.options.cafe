@@ -21,6 +21,7 @@ type Api interface {
 	GetQuotes([]string) ([]types.Quote, error)
 	GetUserProfile() (types.UserProfile, error)
 	DoRefreshAccessTokenIfNeeded(models.User) error
+	GetOptionsExpirationsBySymbol(symb string) ([]string, error)
 	GetOptionsChainByExpiration(symbol string, expireDate string) (types.OptionsChain, error)
 	GetTimeSalesQuotes(symbol string, start time.Time, end time.Time, interval string) ([]types.HistoryQuote, error)
 	GetHistoricalQuotes(symbol string, start time.Time, end time.Time, interval string) ([]types.HistoryQuote, error)

@@ -4,6 +4,7 @@ import (
 	"os"
 	"runtime"
 
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/cmd"
 	"github.com/cloudmanic/app.options.cafe/backend/controllers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/notify/websocket_push"
@@ -75,7 +76,8 @@ func main() {
 	go w.StartMarketStatusFeed()
 
 	// Start loop through refresh screener
-	go screener.PrimeAllScreenerCaches(db)
+	t := screener.NewScreen(db, &tradier.Api{DB: nil, ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN")})
+	go t.PrimeAllScreenerCaches()
 
 	// Start websockets & controllers
 	c.StartWebServer()

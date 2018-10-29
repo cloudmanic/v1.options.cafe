@@ -7,8 +7,10 @@
 package screener
 
 import (
+	"os"
 	"testing"
 
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/nbio/st"
@@ -40,8 +42,17 @@ func TestRunPutCreditSpread01(t *testing.T) {
 		},
 	}
 
+	// Setup the broker
+	broker := tradier.Api{
+		DB:     nil,
+		ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN"),
+	}
+
+	// New screener instance
+	s := NewScreen(db, &broker)
+
 	// Run back test
-	result, err := RunPutCreditSpread(screen, db)
+	result, err := s.RunPutCreditSpread(screen)
 
 	spew.Dump(result)
 

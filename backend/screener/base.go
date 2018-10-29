@@ -9,23 +9,21 @@ package screener
 import (
 	"errors"
 	"math"
-	"os"
 	"strconv"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
+	"github.com/cloudmanic/app.options.cafe/backend/brokers"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
 
-var (
-	broker tradier.Api
-
-	// Screens to functions (populated in the init function)
-	ScreenFuncs map[string]func(models.Screener, models.Datastore) ([]Result, error)
-)
+type Base struct {
+	Broker      brokers.Api
+	DB          models.Datastore
+	ScreenFuncs map[string]func(models.Screener) ([]Result, error)
+}
 
 type Result struct {
 	Debit       float64         `json:"debit"`
@@ -48,38 +46,39 @@ type IronCondor struct {
 }
 
 //
-// Init.
+// New Screen
 //
-func init() {
+func NewScreen(db models.Datastore, broker brokers.Api) Base {
+
+	// New screener instance
+	t := Base{
+		Broker: broker,
+		DB:     db,
+	}
 
 	// Build screener function.
-	ScreenFuncs = map[string]func(models.Screener, models.Datastore) ([]Result, error){
-		"put-credit-spread":   RunPutCreditSpread,
-		"reverse-iron-condor": RunReverseIronCondor,
+	t.ScreenFuncs = map[string]func(models.Screener) ([]Result, error){
+		"put-credit-spread":   t.RunPutCreditSpread,
+		"reverse-iron-condor": t.RunReverseIronCondor,
 	}
 
-	// Setup the broker
-	broker = tradier.Api{
-		DB:     nil,
-		ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN"),
-	}
-
+	return t
 }
 
 //
 // Loop through all screeners and store them in cache.
 //
-func PrimeAllScreenerCaches(db models.Datastore) {
+func (t *Base) PrimeAllScreenerCaches() {
 
 	for {
 
 		screeners := []models.Screener{}
-		db.New().Find(&screeners)
+		t.DB.New().Find(&screeners)
 
 		for _, row := range screeners {
 
 			// Get screen with screen items
-			screen, err := db.GetScreenerByIdAndUserId(row.Id, row.UserId)
+			screen, err := t.DB.GetScreenerByIdAndUserId(row.Id, row.UserId)
 
 			if err != nil {
 				services.BetterError(err)
@@ -87,7 +86,7 @@ func PrimeAllScreenerCaches(db models.Datastore) {
 			}
 
 			// Run the screen based from our function map
-			result, err := ScreenFuncs[row.Strategy](screen, db)
+			result, err := t.ScreenFuncs[row.Strategy](screen)
 
 			if err != nil {
 				services.BetterError(err)
@@ -109,10 +108,10 @@ func PrimeAllScreenerCaches(db models.Datastore) {
 //
 // Get last quote for a symbol we are screening.
 //
-func GetQuote(smb string) (types.Quote, error) {
+func (t *Base) GetQuote(smb string) (types.Quote, error) {
 
 	// Make call to get a current quote.
-	q, err := broker.GetQuotes([]string{smb})
+	q, err := t.Broker.GetQuotes([]string{smb})
 
 	if err != nil {
 		return types.Quote{}, err
@@ -129,7 +128,7 @@ func GetQuote(smb string) (types.Quote, error) {
 //
 // Search filter items for a particular value.
 //
-func FindFilterItemsByKey(item string, screen models.Screener) []models.ScreenerItem {
+func (t *Base) FindFilterItemsByKey(item string, screen models.Screener) []models.ScreenerItem {
 
 	rt := []models.ScreenerItem{}
 
@@ -148,7 +147,7 @@ func FindFilterItemsByKey(item string, screen models.Screener) []models.Screener
 //
 // Search filter items for a particular value.
 //
-func FindFilterItemValue(item string, screen models.Screener) (models.ScreenerItem, error) {
+func (t *Base) FindFilterItemValue(item string, screen models.Screener) (models.ScreenerItem, error) {
 
 	for _, row := range screen.Items {
 
@@ -165,7 +164,7 @@ func FindFilterItemValue(item string, screen models.Screener) (models.ScreenerIt
 //
 // Find a strike price that is X number of strikes below.
 //
-func FindByStrike(chain []types.OptionsChainItem, strike float64) (types.OptionsChainItem, error) {
+func (t *Base) FindByStrike(chain []types.OptionsChainItem, strike float64) (types.OptionsChainItem, error) {
 
 	for _, row := range chain {
 
@@ -183,13 +182,13 @@ func FindByStrike(chain []types.OptionsChainItem, strike float64) (types.Options
 //
 // Review trade for strike percent up
 //
-func FilterStrikeByPercentUp(key string, screen models.Screener, strike float64, lastQuote float64) bool {
+func (t *Base) FilterStrikeByPercentUp(key string, screen models.Screener, strike float64, lastQuote float64) bool {
 
 	var minStrike float64 = 0.00
 	var widthIncrment float64 = 0.50
 
 	// Find keys related to this filter.
-	items := FindFilterItemsByKey(key, screen)
+	items := t.FindFilterItemsByKey(key, screen)
 
 	// Loop through the keys. Return false if something does not match up.
 	for _, row := range items {
@@ -239,7 +238,7 @@ func FilterStrikeByPercentUp(key string, screen models.Screener, strike float64,
 //
 // Review trade for strike percent down
 //
-func FilterStrikeByPercentDown(key string, screen models.Screener, strike float64, lastQuote float64) bool {
+func (t *Base) FilterStrikeByPercentDown(key string, screen models.Screener, strike float64, lastQuote float64) bool {
 
 	if strike > lastQuote {
 		return false
@@ -249,7 +248,7 @@ func FilterStrikeByPercentDown(key string, screen models.Screener, strike float6
 	var widthIncrment float64 = 0.50
 
 	// Find keys related to this filter.
-	items := FindFilterItemsByKey(key, screen)
+	items := t.FindFilterItemsByKey(key, screen)
 
 	// Loop through the keys. Return false if something does not match up.
 	for _, row := range items {
@@ -299,10 +298,10 @@ func FilterStrikeByPercentDown(key string, screen models.Screener, strike float6
 //
 // Review trade for open credit
 //
-func FilterOpenCredit(screen models.Screener, credit float64) bool {
+func (t *Base) FilterOpenCredit(screen models.Screener, credit float64) bool {
 
 	// Find keys related to this filter.
-	items := FindFilterItemsByKey("open-credit", screen)
+	items := t.FindFilterItemsByKey("open-credit", screen)
 
 	// Loop through the keys. Return false if something does not match up.
 	for _, row := range items {
@@ -342,10 +341,10 @@ func FilterOpenCredit(screen models.Screener, credit float64) bool {
 //
 // Review trade for open debit
 //
-func FilterOpenDebit(screen models.Screener, debit float64) bool {
+func (t *Base) FilterOpenDebit(screen models.Screener, debit float64) bool {
 
 	// Find keys related to this filter.
-	items := FindFilterItemsByKey("open-debit", screen)
+	items := t.FindFilterItemsByKey("open-debit", screen)
 
 	// Loop through the keys. Return false if something does not match up.
 	for _, row := range items {
@@ -385,14 +384,14 @@ func FilterOpenDebit(screen models.Screener, debit float64) bool {
 //
 // Review trade for days to expire.
 //
-func FilterDaysToExpireDaysToExpire(screen models.Screener, expire time.Time) bool {
+func (t *Base) FilterDaysToExpireDaysToExpire(screen models.Screener, expire time.Time) bool {
 
 	// Get days to expire.
 	today := time.Now()
 	daysToExpire := int(today.Sub(expire).Hours()/24) * -1
 
 	// Find keys related to this filter.
-	items := FindFilterItemsByKey("days-to-expire", screen)
+	items := t.FindFilterItemsByKey("days-to-expire", screen)
 
 	// Loop through the keys. Return false if something does not match up.
 	for _, row := range items {

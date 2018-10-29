@@ -17,27 +17,27 @@ import (
 //
 // Run a put credit spread screen
 //
-func RunPutCreditSpread(screen models.Screener, db models.Datastore) ([]Result, error) {
+func (t *Base) RunPutCreditSpread(screen models.Screener) ([]Result, error) {
 
 	result := []Result{}
 
 	// Make call to get current quote.
-	quote, err := GetQuote(screen.Symbol)
+	quote, err := t.GetQuote(screen.Symbol)
 
 	if err != nil {
 		return result, err
 	}
 
-	// Set params
-	spreadWidth := getPutCreditSpreadParms(screen, quote.Last)
-
 	// Get all possible expire dates.
-	expires, err := broker.GetOptionsExpirationsBySymbol(screen.Symbol)
+	expires, err := t.Broker.GetOptionsExpirationsBySymbol(screen.Symbol)
 
 	if err != nil {
 		services.Warning(err)
 		return result, err
 	}
+
+	// Set params
+	spreadWidth := t.getPutCreditSpreadParms(screen, quote.Last)
 
 	// Loop through the expire dates
 	for _, row := range expires {
@@ -46,12 +46,12 @@ func RunPutCreditSpread(screen models.Screener, db models.Datastore) ([]Result, 
 		expireDate, _ := time.Parse("2006-01-02", row)
 
 		// Filter for expire dates
-		if !FilterDaysToExpireDaysToExpire(screen, expireDate) {
+		if !t.FilterDaysToExpireDaysToExpire(screen, expireDate) {
 			continue
 		}
 
 		// Get options Chain
-		chain, err := broker.GetOptionsChainByExpiration(screen.Symbol, row)
+		chain, err := t.Broker.GetOptionsChainByExpiration(screen.Symbol, row)
 
 		if err != nil {
 			continue
@@ -65,7 +65,7 @@ func RunPutCreditSpread(screen models.Screener, db models.Datastore) ([]Result, 
 			}
 
 			// Skip strikes that are higher than our min strike. Based on percent away.
-			if !FilterStrikeByPercentDown("short-strike-percent-away", screen, row2.Strike, quote.Last) {
+			if !t.FilterStrikeByPercentDown("short-strike-percent-away", screen, row2.Strike, quote.Last) {
 				continue
 			}
 
@@ -75,7 +75,7 @@ func RunPutCreditSpread(screen models.Screener, db models.Datastore) ([]Result, 
 			}
 
 			// Find the strike that is x points away.
-			buyLeg, err := FindByStrike(chain.Puts, (row2.Strike - spreadWidth))
+			buyLeg, err := t.FindByStrike(chain.Puts, (row2.Strike - spreadWidth))
 
 			if err != nil {
 				continue
@@ -84,7 +84,7 @@ func RunPutCreditSpread(screen models.Screener, db models.Datastore) ([]Result, 
 			// See if there is enough credit
 			credit := row2.Bid - buyLeg.Ask
 
-			if !FilterOpenCredit(screen, credit) {
+			if !t.FilterOpenCredit(screen, credit) {
 				continue
 			}
 
@@ -93,14 +93,14 @@ func RunPutCreditSpread(screen models.Screener, db models.Datastore) ([]Result, 
 			midPoint := (credit + buyCost) / 2
 
 			// Add in Symbol Object - Buy leg
-			symbBuyLeg, err := db.CreateNewSymbol(buyLeg.Symbol, buyLeg.Description, "Option")
+			symbBuyLeg, err := t.DB.CreateNewSymbol(buyLeg.Symbol, buyLeg.Description, "Option")
 
 			if err != nil {
 				continue
 			}
 
 			// Add in Symbol Object - Sell leg
-			symbSellLeg, err := db.CreateNewSymbol(row2.Symbol, row2.Description, "Option")
+			symbSellLeg, err := t.DB.CreateNewSymbol(row2.Symbol, row2.Description, "Option")
 
 			if err != nil {
 				continue
@@ -127,12 +127,12 @@ func RunPutCreditSpread(screen models.Screener, db models.Datastore) ([]Result, 
 //
 // Set Parms we need.
 //
-func getPutCreditSpreadParms(screen models.Screener, lastQuote float64) float64 {
+func (t *Base) getPutCreditSpreadParms(screen models.Screener, lastQuote float64) float64 {
 
 	var spreadWidth float64 = 5.00
 
 	// See if we have a spread width
-	sw, err := FindFilterItemValue("spread-width", screen)
+	sw, err := t.FindFilterItemValue("spread-width", screen)
 
 	if err == nil {
 		spreadWidth = sw.ValueNumber

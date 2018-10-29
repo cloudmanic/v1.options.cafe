@@ -20,19 +20,19 @@ import (
 //
 // Run a put credit spread screen
 //
-func RunReverseIronCondor(screen models.Screener, db models.Datastore) ([]Result, error) {
+func (t *Base) RunReverseIronCondor(screen models.Screener) ([]Result, error) {
 
 	result := []Result{}
 
 	// Make call to get current quote.
-	quote, err := GetQuote(screen.Symbol)
+	quote, err := t.GetQuote(screen.Symbol)
 
 	if err != nil {
 		return result, err
 	}
 
 	// Get all possible expire dates.
-	expires, err := broker.GetOptionsExpirationsBySymbol(screen.Symbol)
+	expires, err := t.Broker.GetOptionsExpirationsBySymbol(screen.Symbol)
 
 	if err != nil {
 		services.Warning(err)
@@ -46,32 +46,32 @@ func RunReverseIronCondor(screen models.Screener, db models.Datastore) ([]Result
 		expireDate, _ := time.Parse("2006-01-02", row)
 
 		// Filter for expire dates
-		if !FilterDaysToExpireDaysToExpire(screen, expireDate) {
+		if !t.FilterDaysToExpireDaysToExpire(screen, expireDate) {
 			continue
 		}
 
 		// Get options Chain
-		chain, err := broker.GetOptionsChainByExpiration(screen.Symbol, row)
+		chain, err := t.Broker.GetOptionsChainByExpiration(screen.Symbol, row)
 
 		if err != nil {
 			continue
 		}
 
 		// Get all possible Put Legs
-		putLegs := GetPossibleVerticalSpreads(screen, quote, chain.Puts, "put", "debit")
+		putLegs := t.GetPossibleVerticalSpreads(screen, quote, chain.Puts, "put", "debit")
 
 		if len(putLegs) <= 0 {
 			continue
 		}
 
 		// Get all possible Call Legs
-		callLegs := GetPossibleVerticalSpreads(screen, quote, chain.Calls, "call", "debit")
+		callLegs := t.GetPossibleVerticalSpreads(screen, quote, chain.Calls, "call", "debit")
 
 		if len(callLegs) <= 0 {
 			continue
 		}
 
-		trades := FindPossibleReverseIronCondorTrades(screen, putLegs, callLegs)
+		trades := t.FindPossibleReverseIronCondorTrades(screen, putLegs, callLegs)
 
 		// Add trades to the results
 		for _, row := range trades {
@@ -82,28 +82,28 @@ func RunReverseIronCondor(screen models.Screener, db models.Datastore) ([]Result
 			}
 
 			// Add in Symbol Object - Put Short leg
-			symbPutShortLeg, err := db.CreateNewSymbol(row.PutShort.Symbol, row.PutShort.Description, "Option")
+			symbPutShortLeg, err := t.DB.CreateNewSymbol(row.PutShort.Symbol, row.PutShort.Description, "Option")
 
 			if err != nil {
 				continue
 			}
 
 			// Add in Symbol Object - Put Long leg
-			symbPutLongLeg, err := db.CreateNewSymbol(row.PutLong.Symbol, row.PutLong.Description, "Option")
+			symbPutLongLeg, err := t.DB.CreateNewSymbol(row.PutLong.Symbol, row.PutLong.Description, "Option")
 
 			if err != nil {
 				continue
 			}
 
 			// Add in Symbol Object - Call Long leg
-			symbCallLongLeg, err := db.CreateNewSymbol(row.CallLong.Symbol, row.CallLong.Description, "Option")
+			symbCallLongLeg, err := t.DB.CreateNewSymbol(row.CallLong.Symbol, row.CallLong.Description, "Option")
 
 			if err != nil {
 				continue
 			}
 
 			// Add in Symbol Object - Call Short leg
-			symbCallShortLeg, err := db.CreateNewSymbol(row.CallShort.Symbol, row.CallShort.Description, "Option")
+			symbCallShortLeg, err := t.DB.CreateNewSymbol(row.CallShort.Symbol, row.CallShort.Description, "Option")
 
 			if err != nil {
 				continue
@@ -144,7 +144,7 @@ func RunReverseIronCondor(screen models.Screener, db models.Datastore) ([]Result
 //
 // Find possible Trades
 //
-func FindPossibleReverseIronCondorTrades(screen models.Screener, putLegs []Spread, callLegs []Spread) []IronCondor {
+func (t *Base) FindPossibleReverseIronCondorTrades(screen models.Screener, putLegs []Spread, callLegs []Spread) []IronCondor {
 
 	rt := []IronCondor{}
 	mapIndex := make(map[string]IronCondor)
@@ -161,7 +161,7 @@ func FindPossibleReverseIronCondorTrades(screen models.Screener, putLegs []Sprea
 			// Get total cost of the trade
 			totalCost := side1Cost + side2Cost
 
-			if !FilterOpenDebit(screen, totalCost) {
+			if !t.FilterOpenDebit(screen, totalCost) {
 				continue
 			}
 
@@ -190,7 +190,7 @@ func FindPossibleReverseIronCondorTrades(screen models.Screener, putLegs []Sprea
 			// Get total cost of the trade
 			totalCost := side1Cost + side2Cost
 
-			if !FilterOpenDebit(screen, totalCost) {
+			if !t.FilterOpenDebit(screen, totalCost) {
 				continue
 			}
 
@@ -220,7 +220,7 @@ func FindPossibleReverseIronCondorTrades(screen models.Screener, putLegs []Sprea
 //
 // Get possible legs
 //
-func GetPossibleVerticalSpreads(screen models.Screener, quote types.Quote, chain []types.OptionsChainItem, legType string, openType string) []Spread {
+func (t *Base) GetPossibleVerticalSpreads(screen models.Screener, quote types.Quote, chain []types.OptionsChainItem, legType string, openType string) []Spread {
 
 	spreads := []Spread{}
 
@@ -236,20 +236,20 @@ func GetPossibleVerticalSpreads(screen models.Screener, quote types.Quote, chain
 		// Skip strikes that are higher than our min strike. Based on percent away.
 		if legType == "put" {
 
-			if !FilterStrikeByPercentDown(legType+"-leg-percent-away", screen, row.Strike, quote.Last) {
+			if !t.FilterStrikeByPercentDown(legType+"-leg-percent-away", screen, row.Strike, quote.Last) {
 				continue
 			}
 
 		} else {
 
-			if !FilterStrikeByPercentUp(legType+"-leg-percent-away", screen, row.Strike, quote.Last) {
+			if !t.FilterStrikeByPercentUp(legType+"-leg-percent-away", screen, row.Strike, quote.Last) {
 				continue
 			}
 
 		}
 
 		// See if we have a spread width
-		sw, err := FindFilterItemValue(legType+"-leg-width", screen)
+		sw, err := t.FindFilterItemValue(legType+"-leg-width", screen)
 
 		if err == nil {
 			spreadWidth = sw.ValueNumber
@@ -261,7 +261,7 @@ func GetPossibleVerticalSpreads(screen models.Screener, quote types.Quote, chain
 		if legType == "put" {
 
 			// Find the strike that is x points away.
-			ol, err := FindByStrike(chain, (row.Strike - spreadWidth))
+			ol, err := t.FindByStrike(chain, (row.Strike - spreadWidth))
 
 			if err != nil {
 				continue
@@ -287,7 +287,7 @@ func GetPossibleVerticalSpreads(screen models.Screener, quote types.Quote, chain
 		} else {
 
 			// Find the strike that is x points away.
-			ol, err := FindByStrike(chain, (row.Strike + spreadWidth))
+			ol, err := t.FindByStrike(chain, (row.Strike + spreadWidth))
 
 			if err != nil {
 				continue
@@ -311,8 +311,6 @@ func GetPossibleVerticalSpreads(screen models.Screener, quote types.Quote, chain
 			}
 
 		}
-
-		//fmt.Println(row.Strike)
 
 	}
 
