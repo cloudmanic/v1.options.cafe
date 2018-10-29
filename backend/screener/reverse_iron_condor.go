@@ -78,7 +78,7 @@ func RunReverseIronCondor(screen models.Screener, db models.Datastore) ([]Result
 
 			// We only want the first 100
 			if len(result) >= 100 {
-				continue
+				return result, nil
 			}
 
 			// Add in Symbol Object - Put Short leg

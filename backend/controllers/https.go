@@ -27,8 +27,8 @@ import (
 func StartSecureServer(r http.Handler, getCertificate func(clientHello *tls.ClientHelloInfo) (*tls.Certificate, error)) {
 	s := &http.Server{
 		Addr:         ":7043",
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		ReadTimeout:  120 * time.Second,
+		WriteTimeout: 120 * time.Second,
 		IdleTimeout:  120 * time.Second,
 		Handler:      MiddlewareHSTS(r),
 		TLSConfig: &tls.Config{

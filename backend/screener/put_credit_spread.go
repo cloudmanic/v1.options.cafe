@@ -69,6 +69,11 @@ func RunPutCreditSpread(screen models.Screener, db models.Datastore) ([]Result, 
 				continue
 			}
 
+			// We only want the first 100
+			if len(result) >= 100 {
+				return result, nil
+			}
+
 			// Find the strike that is x points away.
 			buyLeg, err := FindByStrike(chain.Puts, (row2.Strike - spreadWidth))
 
