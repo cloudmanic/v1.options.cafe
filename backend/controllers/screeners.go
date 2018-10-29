@@ -9,11 +9,14 @@ package controllers
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/cloudmanic/app.options.cafe/backend/screener"
+	"github.com/cnf/structhash"
 	"github.com/gin-gonic/gin"
 )
 
@@ -228,31 +231,11 @@ func (t *Controller) GetScreenerResults(c *gin.Context) {
 		return
 	}
 
-	// Run back test
-	var result []screener.Result
+	// Run the screen based from our function map
+	result, err := screener.ScreenFuncs[screen.Strategy](screen, t.DB)
 
-	switch screen.Strategy {
-
-	// Reverse Iron Condor
-	case "reverse-iron-condor":
-		r, err := screener.RunReverseIronCondor(screen, t.DB)
-
-		if t.RespondError(c, err, httpNoRecordFound) {
-			return
-		}
-
-		result = r
-
-	// Put Credit Spread
-	case "put-credit-spread":
-		r, err := screener.RunPutCreditSpread(screen, t.DB)
-
-		if t.RespondError(c, err, httpNoRecordFound) {
-			return
-		}
-
-		result = r
-
+	if t.RespondError(c, err, httpNoRecordFound) {
+		return
 	}
 
 	// Return happy JSON
@@ -272,54 +255,34 @@ func (t *Controller) GetScreenerResultsFromFilters(c *gin.Context) {
 		return
 	}
 
-	// // Take md5 of the status
-	// hash, err := structhash.Hash(screen, 1)
+	// Take md5 of the status
+	hash, err := structhash.Hash(screen, 1)
 
-	// if t.RespondError(c, err, httpNoRecordFound) {
-	// 	services.Warning(err)
-	// 	return
-	// }
+	if t.RespondError(c, err, httpNoRecordFound) {
+		services.Warning(err)
+		return
+	}
 
-	// // See if we have this result in the cache.
-	// cachedResult := []screener.Result{}
+	// See if we have this result in the cache.
+	cachedResult := []screener.Result{}
 
-	// found, _ := cache.Get("oc-screener-result-"+hash, &cachedResult)
+	found, _ := cache.Get("oc-screener-result-"+hash, &cachedResult)
 
-	// // Return happy JSON
-	// if found {
-	// 	c.JSON(200, cachedResult)
-	// 	return
-	// }
+	// Return happy JSON
+	if found {
+		c.JSON(200, cachedResult)
+		return
+	}
 
-	// Run back test
-	var result []screener.Result
+	// Run the screen based from our function map
+	result, err := screener.ScreenFuncs[screen.Strategy](screen, t.DB)
 
-	switch screen.Strategy {
-
-	// Reverse Iron Condor
-	case "reverse-iron-condor":
-		r, err := screener.RunReverseIronCondor(screen, t.DB)
-
-		if t.RespondError(c, err, httpNoRecordFound) {
-			return
-		}
-
-		result = r
-
-	// Put Credit Spread
-	case "put-credit-spread":
-		r, err := screener.RunPutCreditSpread(screen, t.DB)
-
-		if t.RespondError(c, err, httpNoRecordFound) {
-			return
-		}
-
-		result = r
-
+	if t.RespondError(c, err, httpNoRecordFound) {
+		return
 	}
 
 	// Store result in cache.
-	//cache.SetExpire("oc-screener-result-"+hash, (time.Minute * 5), result)
+	cache.SetExpire("oc-screener-result-"+hash, (time.Minute * 5), result)
 
 	// Return happy JSON
 	c.JSON(200, result)

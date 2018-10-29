@@ -22,6 +22,9 @@ import (
 
 var (
 	broker tradier.Api
+
+	// Screens to functions (populated in the init function)
+	ScreenFuncs map[string]func(models.Screener, models.Datastore) ([]Result, error)
 )
 
 type Result struct {
@@ -48,6 +51,12 @@ type IronCondor struct {
 // Init.
 //
 func init() {
+
+	// Build screener function.
+	ScreenFuncs = map[string]func(models.Screener, models.Datastore) ([]Result, error){
+		"put-credit-spread":   RunPutCreditSpread,
+		"reverse-iron-condor": RunReverseIronCondor,
+	}
 
 	// Setup the broker
 	broker = tradier.Api{
@@ -77,40 +86,16 @@ func PrimeAllScreenerCaches(db models.Datastore) {
 				continue
 			}
 
-			// Run screen
-			switch row.Strategy {
+			// Run the screen based from our function map
+			result, err := ScreenFuncs[row.Strategy](screen, db)
 
-			// Put Credit Spread
-			case "put-credit-spread":
-
-				result, err := RunPutCreditSpread(screen, db)
-
-				if err != nil {
-					services.BetterError(err)
-					continue
-				}
-
-				// Store result in cache.
-				cache.SetExpire("oc-screener-result-"+strconv.Itoa(int(row.Id)), (time.Minute * 5), result)
-
-				break
-
-			// Reverse Iron Condor
-			case "reverse-iron-condor":
-
-				result, err := RunReverseIronCondor(screen, db)
-
-				if err != nil {
-					services.BetterError(err)
-					continue
-				}
-
-				// Store result in cache.
-				cache.SetExpire("oc-screener-result-"+strconv.Itoa(int(row.Id)), (time.Minute * 5), result)
-
-				break
-
+			if err != nil {
+				services.BetterError(err)
+				continue
 			}
+
+			// Store result in cache.
+			cache.SetExpire("oc-screener-result-"+strconv.Itoa(int(row.Id)), (time.Minute * 5), result)
 
 		}
 
