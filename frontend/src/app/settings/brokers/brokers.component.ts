@@ -127,10 +127,29 @@ export class BrokersComponent implements OnInit
   //
   // Unlink broker
   //
-  unlinkBroker() {
+  unlinkBroker() 
+  {
     alert("Please contact us via the help section or email help@options.cafe and we can unlink this broker for you.");
     this.showEditBroker = false;
   } 
+
+  //
+  // Relink broker
+  //
+  relinkBroker(broker: Broker)
+  {
+    // Set redirect for after auth with brpker
+    localStorage.setItem('redirect', '/settings/brokers');
+    localStorage.setItem('broker_new_id', String(broker.Id));
+
+    // Switch based on broker selected - Redirect to login to broker and get access token.
+    switch(broker.Name)
+    {
+      case 'Tradier':
+        window.location.href = environment.app_server + '/tradier/authorize?user=' + localStorage.getItem('user_id') + '&broker_id=' + broker.Id;
+      break;
+    }
+  }
 
   //
   // Add broker

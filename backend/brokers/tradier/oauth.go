@@ -262,6 +262,7 @@ func (t *Api) DoRefreshAccessTokenIfNeeded(user models.User) error {
 				services.Info("Refreshed Tradier token : " + user.Email)
 
 			} else {
+				services.Info("Refreshed Tradier error : " + msg)
 				services.BetterError(err)
 			}
 
@@ -283,7 +284,7 @@ func (t *Api) DoRefreshAccessToken(broker models.Broker) (error, string) {
 	decryptRefreshToken, err := helpers.Decrypt(broker.RefreshToken)
 
 	if err != nil {
-		return err, "Tradier - DoRefreshAccessToken - FUnable to decrypt message (#1)"
+		return err, "Tradier - DoRefreshAccessToken - Unable to decrypt message (#1)"
 	}
 
 	// Request and get an access token.
@@ -307,16 +308,16 @@ func (t *Api) DoRefreshAccessToken(broker models.Broker) (error, string) {
 
 	defer resp.Body.Close()
 
-	// Make sure we got a good status code
-	if resp.StatusCode != http.StatusOK {
-		return err, "Tradier - DoRefreshAccessToken - Failed to get access token. (#3)"
-	}
-
 	// Get the json out of the body.
 	jsonBody, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {
 		return err, "Tradier - DoRefreshAccessToken - Failed to get access token. (#4)"
+	}
+
+	// Make sure we got a good status code
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("Tradier - DoRefreshAccessToken - Failed to get access token. (#3)"), string(jsonBody)
 	}
 
 	// Put json into an object.
