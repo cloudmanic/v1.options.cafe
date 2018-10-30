@@ -65,7 +65,7 @@ func (t *Api) GetUserProfile() (types.UserProfile, error) {
 }
 
 func (t *Api) DoRefreshAccessTokenIfNeeded(models.User) error {
-	return models.User{}, nil
+	return nil
 }
 
 func (t *Api) GetOptionsExpirationsBySymbol(symb string) ([]string, error) {
