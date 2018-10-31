@@ -13,8 +13,33 @@ package eod
 import (
 	"testing"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/nbio/st"
 )
+
+//
+// Test - GetGetOptionsBySymbol01
+//
+func TestGetOptionsBySymbol01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create broker object
+	o := Api{
+		DB:  db,
+		Day: helpers.ParseDateNoError("2018-10-18").UTC(),
+	}
+
+	// Get options
+	options, err := o.GetOptionsBySymbol("spy")
+
+	// Test result
+	st.Expect(t, err, nil)
+	st.Expect(t, len(options), 6262)
+
+}
 
 //
 // Test - GetTradeDatesBySymbols01
