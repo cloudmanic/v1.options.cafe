@@ -91,6 +91,7 @@ import { EquityComponent } from './trading/dashboard/positions/types/equity/equi
 import { TradeEquityComponent } from './trade/trade-equity/trade-equity.component';
 import { SpreadComponent } from './trading/dashboard/positions/types/spread/spread.component';
 import { OptionComponent } from './trading/dashboard/positions/types/option/option.component';
+import { ReverseIronCondorComponent } from './trading/dashboard/positions/types/reverse-iron-condor/reverse-iron-condor.component';
 
 // Research
 import { SymbolComponent } from './research/symbol/symbol.component';
@@ -166,7 +167,8 @@ import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.c
     OptionComponent,
     CentcomUsersComponent,
     CentcomCoreComponent,
-    SymbolComponent
+    SymbolComponent,
+    ReverseIronCondorComponent
   ],
   
   imports: [

@@ -68,3 +68,13 @@
     [tradeGroups]="tradeGroups?.PutDebitSpread">
   </app-trading-positions-types-spread>
 </li>
+
+<!-- Reverse Iron Condors -->
+<li class="box--bordered" *ngIf="tradeGroups?.ReverseIronCondor.length">
+  <app-trading-positions-types-reverse-iron-condor 
+    [quotes]="quotes" 
+    [orders]="orders" 
+    [title]="'Reverse Iron Condors'" 
+    [tradeGroups]="tradeGroups?.ReverseIronCondor">
+  </app-trading-positions-types-reverse-iron-condor>
+</li>

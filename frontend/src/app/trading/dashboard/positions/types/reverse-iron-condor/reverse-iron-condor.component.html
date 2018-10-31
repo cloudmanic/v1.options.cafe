@@ -1,0 +1,57 @@
+<div class="box__head box__head--relative">
+  <h5 class="box__title">{{ title }}</h5>
+
+  <div class="box__absolute">
+    <p>
+      <span>Total Debit</span>
+      <strong>{{ getTradeGroupWidgetTotal(tradeGroups) | currency }}</strong>
+    </p>
+  </div>
+</div>
+
+<div class="box__body box__body--small">
+
+  <div class="box__inner" *ngFor="let row of tradeGroups; let key = index;">
+    <div class="table table--large">
+      <div class="table__inner">
+        <table>
+          <tr *ngIf="key == 0">
+            <td><ins>Contracts</ins></td>
+            <td><ins>Open</ins></td>
+            <td><ins>Lots</ins></td>
+            <td><ins>Days</ins></td>
+            <td><ins>Cost Basis</ins></td>
+            <td><ins>P&amp;L</ins></td>
+          </tr>
+
+          <tr *ngFor="let row2 of row.Positions; let key2 = index;">
+            <td><strong class="table__surrounded">{{ row2.Symbol.Name }}</strong></td>
+            
+            <td *ngIf="key2 == 0"><strong>{{ row2.OpenDate | date:'shortDate' }}</strong></td>
+            <td *ngIf="key2 != 0">&nbsp;</td>
+            
+            <td *ngIf="key2 == 0"><strong>{{ getTradeGroupLotCount(row) }}</strong></td>
+            <td *ngIf="key2 != 0">&nbsp;</td>
+
+            <td *ngIf="key2 == 0"><strong>{{ getTradeGroupDaysToExpire(row) }}</strong></td>
+            <td *ngIf="key2 != 0">&nbsp;</td>  
+
+            <td *ngIf="key2 == 0"><strong>{{ row.Risked | currency }}</strong></td>
+            <td *ngIf="key2 != 0">&nbsp;</td>
+
+            <td *ngIf="(key2 == 0)">
+              <strong [ngClass]="{'title-red': (getTradeProfitLoss(row) < 0), 'title-green': (getTradeProfitLoss(row) > 0)}">{{ getTradeProfitLoss(row) | currency }}</strong>
+            </td>
+            <td *ngIf="key2 != 0">&nbsp;</td>
+
+          </tr>
+        </table>
+      </div>
+
+      <app-dropdown-select [actions]="actions" [data]="row"></app-dropdown-select>
+
+    </div>
+
+  </div>
+
+</div>

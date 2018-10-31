@@ -10,7 +10,8 @@ import { Position } from './position';
 //
 // TradeGroup Model
 //
-export class TradeGroup {
+export class TradeGroup 
+{
   public Id: number;
   public Name: string;
   public Status: string;
@@ -64,7 +65,8 @@ export class TradeGroup {
   //
   // Build object for emitting to the app.
   //
-  public static buildForEmit(data) : TradeGroup[]  {
+  public static buildForEmit(data) : TradeGroup[]  
+  {
 
     let tg = [];
 
@@ -120,17 +122,16 @@ export class TradeGroup {
 //
 export class TradeGroupsCont 
 {
-  constructor(
-    public Equity: TradeGroup[],
-    public ShortEquity: TradeGroup[],
-    public Option: TradeGroup[],
-    public PutCreditSpread: TradeGroup[],
-    public CallCreditSpread: TradeGroup[], 
-    public PutDebitSpread: TradeGroup[], 
-    public CallDebitSpread: TradeGroup[], 
-    public IronCondor: TradeGroup[], 
-    public Other: TradeGroup[],         
-  ){}  
+  public Equity: TradeGroup[] = []; 
+  public ShortEquity: TradeGroup[] = []; 
+  public Option: TradeGroup[] = []; 
+  public PutCreditSpread: TradeGroup[] = []; 
+  public CallCreditSpread: TradeGroup[] = []; 
+  public PutDebitSpread: TradeGroup[] = []; 
+  public CallDebitSpread: TradeGroup[] = []; 
+  public IronCondor: TradeGroup[] = []; 
+  public ReverseIronCondor: TradeGroup[] = []; 
+  public Other: TradeGroup[] = []; 
 }
 
 /* End Find */

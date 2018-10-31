@@ -50,12 +50,12 @@ export class CardComponent implements OnInit
   //
   ngOnInit() 
   {
-    this.form.Number = '4242424242424242';
-    this.form.CVC = '123';
+    this.form.Number = '';
+    this.form.CVC = '';
     this.form.ExpMonth = '12';
-    this.form.ExpYear = '2019';
-    this.form.ZipCode = '97132';
-    this.form.Coupon = 'Go7s5ivW';               
+    this.form.ExpYear = '2021';
+    this.form.ZipCode = '';
+    this.form.Coupon = '';               
   }
 
   //

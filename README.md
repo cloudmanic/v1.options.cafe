@@ -39,3 +39,5 @@ We assume the server is already setup for us. At Cloudmanic we have a different 
 * Update `backend/controllers/screeners.go` to include any new screener keys. The var at the top `screenerItemKeys`.
 
 * Update the screener type in `ScreenFuncs` in `backend/screener/base.go` in init()
+
+* Add new tradegroup to `frontend/src/app/models/trade-group.ts` in `TradeGroupsCont`
