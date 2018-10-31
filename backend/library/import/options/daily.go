@@ -112,7 +112,7 @@ func DoEodOptionsImport() {
 		// Log file
 		services.Info("Finished uploading " + row.Name + " to Dropbox.")
 
-		// // Delete file we uploaded to Dropbox
+		// Delete file we uploaded to Dropbox
 		err = os.Remove(filePath)
 
 		if err != nil {

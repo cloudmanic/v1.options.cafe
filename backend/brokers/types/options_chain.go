@@ -10,6 +10,7 @@ package types
 
 type OptionsChain struct {
 	Underlying     string             `json:"underlying"`
+	UnderlyingLast float64            `json:"lunderlying_last"`
 	ExpirationDate Date               `json:"expiration_date"`
 	Puts           []OptionsChainItem `json:"puts"`
 	Calls          []OptionsChainItem `json:"calls"`

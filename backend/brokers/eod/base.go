@@ -53,9 +53,10 @@ func init() {
 // Get options by Symbol. We do not return a chain. We more or less
 // return the data in our CSV files as Go structs
 //
-func (t *Api) GetOptionsBySymbol(symbol string) ([]types.OptionsChainItem, error) {
+func (t *Api) GetOptionsBySymbol(symbol string) ([]types.OptionsChainItem, float64, error) {
 
 	symb := strings.ToUpper(symbol)
+	underlyingLast := 0.00
 	options := []types.OptionsChainItem{}
 
 	// Set the cache dir.
@@ -69,21 +70,21 @@ func (t *Api) GetOptionsBySymbol(symbol string) ([]types.OptionsChainItem, error
 
 	// Make sure we have this file
 	if _, err := os.Stat(zipFile); os.IsNotExist(err) {
-		return options, err
+		return options, underlyingLast, err
 	}
 
 	// Unzip option chain
 	f, err := files.Unzip(zipFile, "/tmp/"+symb)
 
 	if err != nil {
-		return options, err
+		return options, underlyingLast, err
 	}
 
 	// Open CSV file
 	csvFile, err := os.Open(f[0])
 
 	if err != nil {
-		return options, err
+		return options, underlyingLast, err
 	}
 
 	defer csvFile.Close()
@@ -92,8 +93,11 @@ func (t *Api) GetOptionsBySymbol(symbol string) ([]types.OptionsChainItem, error
 	lines, err := csv.NewReader(csvFile).ReadAll()
 
 	if err != nil {
-		return options, err
+		return options, underlyingLast, err
 	}
+
+	// Set underlyingLast
+	underlyingLast = helpers.StringToFloat64(lines[0][1])
 
 	// Loop through the different lines of the CSV and Store in chain
 	for _, row := range lines {
@@ -102,7 +106,7 @@ func (t *Api) GetOptionsBySymbol(symbol string) ([]types.OptionsChainItem, error
 		parts, err := helpers.OptionParse(row[3])
 
 		if err != nil {
-			return options, err
+			return options, underlyingLast, err
 		}
 
 		// Build Item
@@ -129,7 +133,14 @@ func (t *Api) GetOptionsBySymbol(symbol string) ([]types.OptionsChainItem, error
 		options = append(options, op)
 	}
 
-	return options, nil
+	// // Delete csv file
+	err = os.Remove(f[0])
+
+	if err != nil {
+		services.FatalMsg(err, "Could not delete file - "+f[0])
+	}
+
+	return options, underlyingLast, nil
 }
 
 //

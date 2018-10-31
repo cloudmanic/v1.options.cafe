@@ -33,10 +33,11 @@ func TestGetOptionsBySymbol01(t *testing.T) {
 	}
 
 	// Get options
-	options, err := o.GetOptionsBySymbol("spy")
+	options, underlyingLast, err := o.GetOptionsBySymbol("spy")
 
 	// Test result
 	st.Expect(t, err, nil)
+	st.Expect(t, underlyingLast, 276.39)
 	st.Expect(t, len(options), 6262)
 
 }

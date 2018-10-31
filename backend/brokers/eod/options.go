@@ -25,7 +25,7 @@ func (t *Api) GetOptionsExpirationsBySymbol(symbol string) ([]string, error) {
 	tmpExpires := make(map[string]bool)
 
 	// Get a list of all options
-	options, err := t.GetOptionsBySymbol(symb)
+	options, _, err := t.GetOptionsBySymbol(symb)
 
 	if err != nil {
 		return expires, err
@@ -55,13 +55,14 @@ func (t *Api) GetOptionsChainByExpiration(symbol string, expireStr string) (type
 	// New chain to return
 	chain := types.OptionsChain{
 		Underlying:     symb,
+		UnderlyingLast: 0.00,
 		ExpirationDate: expireDate,
 		Puts:           []types.OptionsChainItem{},
 		Calls:          []types.OptionsChainItem{},
 	}
 
 	// Get a list of all options
-	options, err := t.GetOptionsBySymbol(symb)
+	options, _, err := t.GetOptionsBySymbol(symb)
 
 	if err != nil {
 		return chain, err
