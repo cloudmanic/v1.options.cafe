@@ -2,7 +2,7 @@
 // Date: 2018-04-03
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-07-22
+// Last Modified: 2018-10-30
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -37,6 +37,11 @@ type OptionsChainItem struct {
 	Ask              float64 `json:"ask"`
 	AskSize          int     `json:"ask_size""`
 	OpenInterest     int     `json:"open_interest"`
+	ImpliedVol       float64 `json:"implied_vol""`
+	Delta            float64 `json:"delta""`
+	Gamma            float64 `json:"gamma""`
+	Theta            float64 `json:"theta""`
+	Vega             float64 `json:"vega""`
 }
 
 /* End File */

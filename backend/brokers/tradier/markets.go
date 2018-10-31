@@ -19,49 +19,6 @@ import (
 )
 
 //
-// Make an API call to Tradier to get an option chain by expiration.
-//
-func (t *Api) GetOptionsChainByExpiration(symbol string, expireDate string) (types.OptionsChain, error) {
-
-	// Get JSON data from Tradier.
-	jsonResponse, err := t.SendGetRequest("/markets/options/chains?symbol=" + symbol + "&expiration=" + expireDate)
-
-	if err != nil {
-		return types.OptionsChain{}, err
-	}
-
-	// Loop through the chain (NOTE: we assume this chain has more than one option, this could be a source of bugs)
-	chainJson := gjson.Get(string(jsonResponse), "options.option").String()
-
-	// Build an array of option chain items.
-	chainItems := []types.OptionsChainItem{}
-
-	if err := json.Unmarshal([]byte(chainJson), &chainItems); err != nil {
-		return types.OptionsChain{}, err
-	}
-
-	// Build the chain
-	chain := types.OptionsChain{
-		Underlying:     chainItems[0].Underlying,
-		ExpirationDate: chainItems[0].ExpirationDate,
-	}
-
-	for _, row := range chainItems {
-
-		// Put or a call?
-		if row.OptionType == "put" {
-			chain.Puts = append(chain.Puts, row)
-		} else if row.OptionType == "call" {
-			chain.Calls = append(chain.Calls, row)
-		}
-
-	}
-
-	// Return happy JSON
-	return chain, nil
-}
-
-//
 // Get time sale quotes
 // Interval : tick, 1min, 5min or 15min (default: tick)
 //
@@ -72,12 +29,12 @@ func (t *Api) GetTimeSalesQuotes(symbol string, start time.Time, end time.Time, 
 	// Setup http client
 	client := &http.Client{}
 
-  // Get url to api
-  apiUrl := apiBaseUrl
+	// Get url to api
+	apiUrl := apiBaseUrl
 
-  if t.Sandbox {
-    apiUrl = sandBaseUrl
-  }
+	if t.Sandbox {
+		apiUrl = sandBaseUrl
+	}
 
 	// Setup api request
 	req, _ := http.NewRequest("GET", apiUrl+"/markets/timesales", nil)
@@ -179,51 +136,6 @@ func (t *Api) GetHistoricalQuotes(symbol string, start time.Time, end time.Time,
 	// Return happy
 	return quotes, nil
 
-}
-
-//
-// Get option expirations by date (this is not part of the interface)
-//
-func (t *Api) GetOptionsExpirationsBySymbol(symb string) ([]string, error) {
-
-	var result []string
-
-	// Create client
-	client := &http.Client{}
-
-	// Create request
-	req, err := http.NewRequest("GET", apiBaseUrl+"/markets/options/expirations?symbol="+symb, nil)
-
-	// Headers
-	req.Header.Set("Authorization", fmt.Sprint("Bearer ", t.ApiKey))
-	req.Header.Add("Accept", "application/json")
-
-	// Fetch Request
-	res, err := client.Do(req)
-
-	if err != nil {
-		return result, err
-	}
-
-	// Close Body
-	defer res.Body.Close()
-
-	// Read Response Body
-	json, _ := ioutil.ReadAll(res.Body)
-
-	// Make sure the api responded with a 200
-	if res.StatusCode != 200 {
-		return result, errors.New("Failed response from Tradier.")
-	}
-
-	// Loop through the dates
-	dates := gjson.Get(string(json), "expirations.date")
-	for _, row := range dates.Array() {
-		result = append(result, row.String())
-	}
-
-	// Return happy
-	return result, nil
 }
 
 /* End File */

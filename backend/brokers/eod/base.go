@@ -24,12 +24,14 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/store/object"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	env "github.com/jpfuentes2/go-env"
+	minio "github.com/minio/minio-go"
 )
 
 const workerCount int = 100
 
 type Api struct {
-	DB models.Datastore
+	DB  models.Datastore
+	Day time.Time // This is the day we pull EOD data for
 }
 
 type Job struct {
@@ -118,6 +120,8 @@ func DownloadEodSymbol(symbol string, debug bool) []string {
 	var total int = 0
 	var allFiles []string
 
+	cacheKey := "oc-brokers-eod-symbol-objects-" + strings.ToUpper(symbol)
+
 	// Log if we are debug
 	if debug {
 		fmt.Println("Starting download of all " + symbol + " daily options data.")
@@ -132,12 +136,30 @@ func DownloadEodSymbol(symbol string, debug bool) []string {
 		go DownloadWorker(jobs, results)
 	}
 
-	// List files we need to download.
-	list, err := object.ListObjects("options-eod/" + strings.ToUpper(symbol) + "/")
+	var list []minio.ObjectInfo
 
-	if err != nil {
-		services.Warning(err)
-		return allFiles
+	// See if we have this result in the cache.
+	cachedObjectInfo := []minio.ObjectInfo{}
+	found, _ := cache.Get(cacheKey, &cachedObjectInfo)
+
+	// Store cache
+	if found {
+
+		list = cachedObjectInfo
+
+	} else {
+
+		// List files we need to download.
+		list, err := object.ListObjects("options-eod/" + strings.ToUpper(symbol) + "/")
+
+		if err != nil {
+			services.Warning(err)
+			return allFiles
+		}
+
+		// Store dates in cache - 3 hours
+		cache.SetExpire(cacheKey, (time.Minute * 60 * 3), list)
+
 	}
 
 	// Send all files to workers.

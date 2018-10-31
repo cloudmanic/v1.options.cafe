@@ -42,4 +42,17 @@ func StringToUint(s string) uint {
 	return uint(idInt)
 }
 
+//
+// Convert a string to a float64
+//
+func StringToFloat64(s string) float64 {
+	num, err := strconv.ParseFloat(s, 64)
+
+	if err != nil {
+		return 0
+	}
+
+	return num
+}
+
 /* End File */
