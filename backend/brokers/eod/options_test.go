@@ -16,7 +16,6 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/nbio/st"
 )
 
@@ -62,11 +61,9 @@ func TestGetOptionsExpirationsBySymbol01(t *testing.T) {
 	// Get dates from S3 store
 	dates, err := o.GetOptionsExpirationsBySymbol("spy")
 
-	spew.Dump(dates)
-
 	// Test result
 	st.Expect(t, err, nil)
-	//st.Expect(t, (len(dates) >= 3477), true)
+	st.Expect(t, len(dates), 33)
 
 }
 
