@@ -2,7 +2,7 @@
 // Date: 2018-10-29
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-10-30
+// Last Modified: 2018-11-01
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 // About: Just placeholder for functions we do not care about.
@@ -54,10 +54,6 @@ func (t *Api) GetPositions() ([]types.Position, error) {
 
 func (t *Api) GetAllOrders() ([]types.Order, error) {
 	return []types.Order{}, nil
-}
-
-func (t *Api) GetQuotes([]string) ([]types.Quote, error) {
-	return []types.Quote{}, nil
 }
 
 func (t *Api) GetUserProfile() (types.UserProfile, error) {
