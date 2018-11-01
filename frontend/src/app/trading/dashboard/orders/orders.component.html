@@ -112,7 +112,6 @@
               <td *ngIf="row.Status == 'partially_filled'" class="title-grey">{{ row.Status }}</td>
 
               <td>
-
                 <app-dropdown-select [actions]="actions" [data]="row" *ngIf="row.Status != 'pending'"></app-dropdown-select>
 
               </td>

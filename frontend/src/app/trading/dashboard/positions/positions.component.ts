@@ -13,6 +13,7 @@ import { ChangeDetected } from '../../../models/change-detected';
 import { TradeGroup, TradeGroupsCont } from '../../../models/trade-group';
 import { WebsocketService } from '../../../providers/http/websocket.service';
 import { StateService } from '../../../providers/state/state.service';
+import { BrokerService } from '../../../providers/http/broker.service';
 import { SettingsService } from '../../../providers/http/settings.service';
 import { TradeGroupService } from '../../../providers/http/trade-group.service';
 
@@ -24,7 +25,7 @@ import { TradeGroupService } from '../../../providers/http/trade-group.service';
 export class PositionsComponent implements OnInit 
 {  
   quotes = {}
-  orders: Order[];
+  orders: Order[] = [];
   tradeGroups: TradeGroupsCont;
   settings: Settings = new Settings();
   destory: Subject<boolean> = new Subject<boolean>();
@@ -32,7 +33,7 @@ export class PositionsComponent implements OnInit
   //
   // Constructor....
   //
-  constructor(private websocketService: WebsocketService, private stateService: StateService, private tradeGroupService: TradeGroupService, private settingsService: SettingsService) 
+  constructor(private websocketService: WebsocketService, private stateService: StateService, private tradeGroupService: TradeGroupService, private settingsService: SettingsService, private brokerService: BrokerService) 
   { 
     this.settings = this.stateService.GetSettings();
   }
@@ -42,11 +43,14 @@ export class PositionsComponent implements OnInit
   //
   ngOnInit() 
   {
+    // Load settings data
+    this.loadSettingsData();
+
     // Get the Positions
     this.getPositions();
 
-    // Load settings data
-    this.loadSettingsData();
+    // Set orders
+    this.orders = this.stateService.GetActiveOrders();    
 
     // Get Data from cache
     this.quotes = this.stateService.GetQuotes();    
@@ -62,6 +66,11 @@ export class PositionsComponent implements OnInit
       this.manageChangeDetection(data);
     }); 
 
+    // Subscribe to changes in the selected broker.
+    this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
+      this.getOrders();
+    });
+
     // Subscribe to data updates from the quotes - Market Quotes
     this.websocketService.quotePushData.takeUntil(this.destory).subscribe(data => {
       this.quotes[data.symbol] = data;
@@ -75,6 +84,41 @@ export class PositionsComponent implements OnInit
   {
     this.destory.next();
     this.destory.complete();
+  }
+
+  //
+  // Get Orders
+  //
+  getOrders() {
+    // Get balance data
+    this.brokerService.getOrders(this.stateService.GetActiveBrokerAccount().BrokerId).subscribe((data) => {
+      this.setOrders(data);
+    });
+  }    
+
+  //
+  // Set the orders.
+  //
+  setOrders(orders: Order[]) {
+    var rt = []
+
+    // This data has not come in yet.
+    if (!this.stateService.GetActiveBrokerAccount()) {
+      return;
+    }
+
+    // Filter - We only one the accounts that are active.
+    for (var i = 0; i < orders.length; i++) {
+      if (orders[i].AccountId == this.stateService.GetActiveBrokerAccount().AccountNumber) {
+        rt.push(orders[i]);
+      }
+    }
+
+    // Set order data
+    this.orders = rt;
+
+    // Add orders to state manager
+    this.stateService.SetActiveOrders(this.orders);
   }
 
   //

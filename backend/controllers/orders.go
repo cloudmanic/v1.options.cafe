@@ -12,11 +12,32 @@ import (
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
+	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
 )
+
+//
+// Get a brokers active orders.
+//
+func (t *Controller) GetBrokerActiveOrders(c *gin.Context) {
+
+	// Build cache key
+	key := "oc-orders-active-" + strconv.Itoa(int(c.MustGet("userId").(uint))) + "-" + string(c.Param("id"))
+
+	// Get a value we know we do not have
+	result := []types.Order{}
+	_, err := cache.Get(key, &result)
+
+	if t.RespondError(c, err, httpNoRecordFound) {
+		return
+	}
+
+	// Return happy.
+	c.JSON(200, result)
+}
 
 //
 // Cancel an order
@@ -97,6 +118,12 @@ func (t *Controller) PreviewOrder(c *gin.Context) {
 		return
 	}
 
+	// Make sure we have more than one leg for a multi leg order
+	if (order.Class == "multileg") && (len(order.Legs) <= 1) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "A multileg order must have more than one leg."})
+		return
+	}
+
 	// Send preview request to broker
 	preview, err := brokerCont.PreviewOrder(brokerAccount.AccountNumber, order)
 
@@ -123,6 +150,12 @@ func (t *Controller) SubmitOrder(c *gin.Context) {
 
 	if err != nil {
 		services.Warning(err)
+		return
+	}
+
+	// Make sure we have more than one leg for a multi leg order
+	if (order.Class == "multileg") && (len(order.Legs) <= 1) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "A multileg order must have more than one leg."})
 		return
 	}
 

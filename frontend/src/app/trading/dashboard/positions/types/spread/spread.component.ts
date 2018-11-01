@@ -4,13 +4,14 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-import { Order } from '../../../../../models/order';
-import { TradeGroup } from '../../../../../models/trade-group';
+import { Component, OnInit, Input } from '@angular/core';
+import { DropdownAction } from '../../../../../shared/dropdown-select/dropdown-select.component';
 import { Position } from '../../../../../models/position';
 import { Settings } from '../../../../../models/settings';
+import { TradeGroup } from '../../../../../models/trade-group';
 import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../../../../../providers/http/trade.service';
-import { DropdownAction } from '../../../../../shared/dropdown-select/dropdown-select.component';
-import { Component, OnInit, Input, Output, OnChanges, EventEmitter } from '@angular/core';
+import { Order } from '../../../../../models/order';
+
 
 @Component({
   selector: 'app-trading-positions-types-spread',
@@ -215,8 +216,10 @@ export class SpreadComponent implements OnInit
   //
   // Get trade group days to expire
   //
-  getTradeGroupDaysToExpire(tradeGroup: TradeGroup): number {
-    if (typeof this.quotes[tradeGroup.Positions[0].Symbol.ShortName] == "undefined") {
+  getTradeGroupDaysToExpire(tradeGroup: TradeGroup): number 
+  {
+    if (typeof this.quotes[tradeGroup.Positions[0].Symbol.ShortName] == "undefined") 
+    {
       return 0;
     }
 
@@ -281,7 +284,8 @@ export class SpreadComponent implements OnInit
   getCreditSpreadWidgetProfitLoss(tradeGroups: TradeGroup[]): number {
     let total = 0.00;
 
-    for (var i = 0; i < tradeGroups.length; i++) {
+    for (var i = 0; i < tradeGroups.length; i++) 
+    {
       total = total + tradeGroups[i].Credit;
     }
 
@@ -343,42 +347,12 @@ export class SpreadComponent implements OnInit
   }
 
   //
-  // Progress bar for a Option trade
-  //
-  getProgressOptionsTrade(tradeGroup: TradeGroup): number {
-    if (typeof this.quotes[tradeGroup.Positions[0].Symbol.ShortName] == "undefined") {
-      return 0.00;
-    }
-
-    var order: Order = null;
-
-    // Loop through open orders and find this trade
-    for (let i = 0; i < this.orders.length; i++) {
-      if (this.orders[i].OptionSymbol == tradeGroup.Positions[0].Symbol.ShortName) {
-        order = this.orders[i];
-      }
-    }
-
-    if (order) {
-      // Short or long?
-      if (tradeGroup.Positions[0].Qty > 0) {
-        let open_price = (tradeGroup.Positions[0].CostBasis / tradeGroup.Positions[0].Qty) / 100;
-        let top = (this.quotes[tradeGroup.Positions[0].Symbol.ShortName].bid - open_price)
-        return (top / order.Price) * 100;
-      }
-    }
-
-    return 0.00;
-  }
-
-  //
   // Get trade progress
   //
-  getTradeProgress(tradeGroup: TradeGroup): number {
-    switch (tradeGroup.Type) {
-      case 'Option':
-        return this.getProgressOptionsTrade(tradeGroup);
-
+  getTradeProgress(tradeGroup: TradeGroup): number 
+  {
+    switch (tradeGroup.Type) 
+    {
       case 'Put Credit Spread':
         return (this.getPutCreditSpreadProfitLoss(tradeGroup) / tradeGroup.Credit) * 100;
 
@@ -404,10 +378,6 @@ export class SpreadComponent implements OnInit
       case 'Call Credit Spread':
         p = (this.getCallCreditSpreadProfitLoss(tradeGroup) / tradeGroup.Credit) * 100;
         break;
-
-      case 'Option':
-        p = this.getProgressOptionsTrade(tradeGroup);
-        break;
     }
 
     // keep it within a range
@@ -423,17 +393,22 @@ export class SpreadComponent implements OnInit
   //
   // Get the total P&L for put credit spreads
   //
-  getPutCreditSpreadProfitLoss(tradeGroup: TradeGroup): number {
-    if (typeof this.quotes[tradeGroup.Positions[0].Symbol.ShortName] == "undefined") {
+  getPutCreditSpreadProfitLoss(tradeGroup: TradeGroup): number 
+  {
+    if (typeof this.quotes[tradeGroup.Positions[0].Symbol.ShortName] == "undefined") 
+    {
       return 0.00;
     }
 
-    if (typeof this.quotes[tradeGroup.Positions[1].Symbol.ShortName] == "undefined") {
+    if (typeof this.quotes[tradeGroup.Positions[1].Symbol.ShortName] == "undefined") 
+    {
       return 0.00;
     }
 
     return tradeGroup.Credit - (((this.quotes[tradeGroup.Positions[1].Symbol.ShortName].ask - this.quotes[tradeGroup.Positions[0].Symbol.ShortName].bid) * 100) * Math.abs(tradeGroup.Positions[0].Qty));
   }
+
+
 
   //
   // Get the total P&L for put credit spreads - Call Credit Spread

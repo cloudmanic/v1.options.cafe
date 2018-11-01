@@ -59,7 +59,8 @@ export class TradeMultiLegComponent implements OnInit
   //
   // Submit Trade
   //
-  submitTrade() {
+  submitTrade() 
+  {
     // Ajax call to submit trade.
     this.tradeService.submitTrade(this.tradeDetails, this.stateService.GetStoredActiveAccountId()).subscribe(
 
