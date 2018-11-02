@@ -12,6 +12,7 @@ import (
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/notify/websocket_push"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
@@ -166,6 +167,9 @@ func (t *Controller) UpdateBrokerAccount(c *gin.Context) {
 
 	// Update BrokerAccount
 	t.DB.New().Save(&o)
+
+	// Send websocket with broker change
+	websocket_push.Push(o.UserId, "change-detected", `{ "type": "brokers" }`)
 
 	// Return success.
 	c.JSON(202, o)

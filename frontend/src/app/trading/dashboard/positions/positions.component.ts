@@ -43,11 +43,8 @@ export class PositionsComponent implements OnInit
   //
   ngOnInit() 
   {
-    // Load settings data
+    // Load settings data (and positions)
     this.loadSettingsData();
-
-    // Get the Positions
-    this.getPositions();
 
     // Set orders
     this.orders = this.stateService.GetActiveOrders();    
@@ -58,6 +55,7 @@ export class PositionsComponent implements OnInit
 
     // Subscribe to changes in the selected broker.
     this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
+      this.getOrders();
       this.getPositions();
     });
 
@@ -65,11 +63,6 @@ export class PositionsComponent implements OnInit
     this.websocketService.changedDetectedPush.takeUntil(this.destory).subscribe(data => {
       this.manageChangeDetection(data);
     }); 
-
-    // Subscribe to changes in the selected broker.
-    this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
-      this.getOrders();
-    });
 
     // Subscribe to data updates from the quotes - Market Quotes
     this.websocketService.quotePushData.takeUntil(this.destory).subscribe(data => {
@@ -89,8 +82,9 @@ export class PositionsComponent implements OnInit
   //
   // Get Orders
   //
-  getOrders() {
-    // Get balance data
+  getOrders() 
+  {
+    // Get orders data
     this.brokerService.getOrders(this.stateService.GetActiveBrokerAccount().BrokerId).subscribe((data) => {
       this.setOrders(data);
     });
@@ -129,6 +123,9 @@ export class PositionsComponent implements OnInit
     this.settingsService.get().subscribe((res) => {
       this.settings = res;
       this.stateService.SetSettings(res);
+
+      // Get the Positions
+      this.getPositions();      
     });
   }    
 
@@ -139,6 +136,7 @@ export class PositionsComponent implements OnInit
   {
     if(data.Type == "orders") 
     {
+      this.getOrders();
       this.getPositions();
     }
   }
