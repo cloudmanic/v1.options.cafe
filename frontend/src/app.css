@@ -86,6 +86,7 @@
 .trade-builder .net-quote { display: flex; font-size: 14px; margin-top: 15px; text-align: center; }
 
 /* Screener */
+.sort-label { margin: auto 0; padding-right: 10px; font-size: 18px; }
 .list-actions a { color: inherit; }
 .screen-preview-first-run { width: 513px; }
 .article__head .dropdown { min-width: unset !important; }

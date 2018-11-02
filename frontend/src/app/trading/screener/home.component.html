@@ -23,19 +23,19 @@
         <h5>{{ row.Name }}</h5>
 
         <div class="article__head-aside">
-<!--           <div class="select select--primary">
+<!--           <label class="sort-label">Sort: </label>
+          <div class="select select--primary">
             <select name="select-1">
-              <option value="option-1" selected>SPREAD</option>
-
-              <option value="option-2">Spread</option>
+              <option value="expire">Expire</option>
+              <option value="strike">Short Strike</option>
             </select>
           </div> -->
 
           <a routerLink="/screener/edit/{{ row.Id }}" class="btn-square">
             <i class="ico-settings"></i>
           </a>
-        </div><!-- /.article__head-aside -->
-      </div><!-- /.article__head -->
+        </div>
+      </div>
 
 
 
