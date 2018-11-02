@@ -428,4 +428,105 @@ func (t *Base) FilterDaysToExpireDaysToExpire(screen models.Screener, expire tim
 	return true
 }
 
+//
+// Get possible legs
+//
+func (t *Base) GetPossibleVerticalSpreads(screen models.Screener, quote types.Quote, chain []types.OptionsChainItem, legType string, openType string) []Spread {
+
+	spreads := []Spread{}
+
+	var spreadWidth float64
+
+	for _, row := range chain {
+
+		// No need to pay attention to open interest of zero
+		if row.OpenInterest == 0 {
+			continue
+		}
+
+		// Skip strikes that are higher than our min strike. Based on percent away.
+		if legType == "put" {
+
+			if !t.FilterStrikeByPercentDown(legType+"-leg-percent-away", screen, row.Strike, quote.Last) {
+				continue
+			}
+
+		} else {
+
+			if !t.FilterStrikeByPercentUp(legType+"-leg-percent-away", screen, row.Strike, quote.Last) {
+				continue
+			}
+
+		}
+
+		// See if we have a spread width
+		sw, err := t.FindFilterItemValue(legType+"-leg-width", screen)
+
+		if err == nil {
+			spreadWidth = sw.ValueNumber
+		} else {
+			continue
+		}
+
+		// Deal with the case of put leg
+		if legType == "put" {
+
+			// Find the strike that is x points away.
+			ol, err := t.FindByStrike(chain, (row.Strike - spreadWidth))
+
+			if err != nil {
+				continue
+			}
+
+			// Add to possible to return
+			if openType == "debit" {
+
+				spreads = append(spreads, Spread{
+					Short: ol,
+					Long:  row,
+				})
+
+			} else {
+
+				spreads = append(spreads, Spread{
+					Short: row,
+					Long:  ol,
+				})
+
+			}
+
+		} else {
+
+			// Find the strike that is x points away.
+			ol, err := t.FindByStrike(chain, (row.Strike + spreadWidth))
+
+			if err != nil {
+				continue
+			}
+
+			// Add to possible to return
+			if openType == "debit" {
+
+				spreads = append(spreads, Spread{
+					Short: ol,
+					Long:  row,
+				})
+
+			} else {
+
+				spreads = append(spreads, Spread{
+					Short: row,
+					Long:  ol,
+				})
+
+			}
+
+		}
+
+	}
+
+	// Return happy
+	return spreads
+}
+
 /* End File */

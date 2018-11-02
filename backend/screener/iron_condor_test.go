@@ -14,7 +14,6 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/eod"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/nbio/st"
 )
 
@@ -34,10 +33,10 @@ func TestRunIronCondor01(t *testing.T) {
 		Items: []models.ScreenerItem{
 			{Key: "put-leg-width", Operator: "=", ValueNumber: 2.00},
 			{Key: "call-leg-width", Operator: "=", ValueNumber: 2.00},
-			{Key: "put-leg-percent-away", Operator: ">", ValueNumber: 4.0},
-			{Key: "call-leg-percent-away", Operator: ">", ValueNumber: 4.0},
-			{Key: "open-debit", Operator: ">", ValueNumber: 0.50},
-			{Key: "open-debit", Operator: "<", ValueNumber: 3.00},
+			{Key: "put-leg-percent-away", Operator: ">", ValueNumber: 4.5},
+			{Key: "call-leg-percent-away", Operator: ">", ValueNumber: 4.5},
+			{Key: "open-credit", Operator: ">", ValueNumber: 0.50},
+			{Key: "open-credit", Operator: "<", ValueNumber: 3.00},
 			{Key: "days-to-expire", Operator: "<", ValueNumber: 46},
 			{Key: "days-to-expire", Operator: ">", ValueNumber: 0},
 		},
@@ -61,14 +60,33 @@ func TestRunIronCondor01(t *testing.T) {
 	// Run back test
 	result, err := s.RunIronCondor(screen)
 
-	spew.Dump(result)
+	//spew.Dump(result)
 
 	// for _, row := range result {
-	// 	fmt.Println(row.Debit)
+	// 	fmt.Println(row.Credit, " : ", row.Legs[0].OptionExpire.Format("2006-01-02"), " - ", helpers.FloatToString(row.Legs[0].OptionStrike), "/", helpers.FloatToString(row.Legs[1].OptionStrike), "/", helpers.FloatToString(row.Legs[2].OptionStrike), "/", helpers.FloatToString(row.Legs[3].OptionStrike))
 	// }
 
-	// Test result
+	// Test result - ORDER seems to be different each time
 	st.Expect(t, err, nil)
+	st.Expect(t, len(result), 3)
+
+	// Result #1
+	st.Expect(t, result[0].Legs[0].OptionExpire.Format("2006-01-02"), "2018-11-30")
+	st.Expect(t, result[0].Legs[1].OptionExpire.Format("2006-01-02"), "2018-11-30")
+	st.Expect(t, result[0].Legs[2].OptionExpire.Format("2006-01-02"), "2018-11-30")
+	st.Expect(t, result[0].Legs[3].OptionExpire.Format("2006-01-02"), "2018-11-30")
+
+	// Result #2
+	st.Expect(t, result[1].Legs[0].OptionExpire.Format("2006-01-02"), "2018-11-30")
+	st.Expect(t, result[1].Legs[1].OptionExpire.Format("2006-01-02"), "2018-11-30")
+	st.Expect(t, result[1].Legs[2].OptionExpire.Format("2006-01-02"), "2018-11-30")
+	st.Expect(t, result[1].Legs[3].OptionExpire.Format("2006-01-02"), "2018-11-30")
+
+	// Result #3
+	st.Expect(t, result[2].Legs[0].OptionExpire.Format("2006-01-02"), "2018-11-30")
+	st.Expect(t, result[2].Legs[1].OptionExpire.Format("2006-01-02"), "2018-11-30")
+	st.Expect(t, result[2].Legs[2].OptionExpire.Format("2006-01-02"), "2018-11-30")
+	st.Expect(t, result[2].Legs[3].OptionExpire.Format("2006-01-02"), "2018-11-30")
 
 }
 
