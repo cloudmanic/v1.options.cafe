@@ -10,12 +10,46 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/realip"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 )
+
+//
+// Delete a user's account. User will be deleted forever.
+//
+func (t *Controller) DeleteUser(c *gin.Context) {
+
+	// Set as int
+	id, err := strconv.ParseInt(c.Param("id"), 10, 32)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Get User by id.
+	user, err := t.DB.GetUserById(uint(id))
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Delete a user
+	err = t.DB.DeleteUser(&user)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Return happy
+	c.JSON(204, nil)
+}
 
 //
 // Login as a user (remember only admins can do this)

@@ -101,7 +101,7 @@ func (t *Controller) CreateBroker(c *gin.Context) {
 
 	// Update Sendy with this new fact.
 	go services.SendyUnsubscribe("no-brokers", user.Email)
-	go services.SendySubscribe("subscribers", user.Email, user.FirstName, user.LastName, "No", name, "")
+	go services.SendySubscribe("subscribers", user.Email, user.FirstName, user.LastName, "No", name, "", "No")
 
 	// Create Screen
 	err = t.DB.CreateNewRecord(&o, models.InsertParam{})

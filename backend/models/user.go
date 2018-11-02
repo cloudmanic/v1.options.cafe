@@ -116,6 +116,38 @@ func (t *DB) ValidateUserEmail(userId uint, email string) error {
 }
 
 //
+// Delete a user and all the data that goes with that user.
+//
+func (t *DB) DeleteUser(user *User) error {
+
+	// Start deleting data for this user
+	t.DB.New().Where("user_id = ?", user.Id).Delete(Watchlist{})
+	t.DB.New().Where("user_id = ?", user.Id).Delete(WatchlistSymbol{})
+	t.DB.New().Where("user_id = ?", user.Id).Delete(TradeGroup{})
+	t.DB.New().Where("user_id = ?", user.Id).Delete(Settings{})
+	t.DB.New().Where("user_id = ?", user.Id).Delete(Session{})
+	t.DB.New().Where("user_id = ?", user.Id).Delete(Screener{})
+	t.DB.New().Where("user_id = ?", user.Id).Delete(Position{})
+	t.DB.New().Where("user_id = ?", user.Id).Delete(Order{})
+	t.DB.New().Where("user_id = ?", user.Id).Delete(OrderLeg{})
+	t.DB.New().Where("user_id = ?", user.Id).Delete(NotifyChannel{})
+	t.DB.New().Where("user_id = ?", user.Id).Delete(Notification{})
+	t.DB.New().Where("user_id = ?", user.Id).Delete(ForgotPassword{})
+	t.DB.New().Where("user_id = ?", user.Id).Delete(Broker{})
+	t.DB.New().Where("user_id = ?", user.Id).Delete(BrokerEvent{})
+	t.DB.New().Where("user_id = ?", user.Id).Delete(BrokerAccount{})
+	t.DB.New().Where("user_id = ?", user.Id).Delete(BalanceHistory{})
+	t.DB.New().Where("user_id = ?", user.Id).Delete(ActiveSymbol{})
+	t.DB.New().Where("id = ?", user.Id).Delete(User{})
+
+	// At Sendy make sure this user is in a canceled state
+	go services.SendySubscribe("subscribers", user.Email, user.FirstName, user.LastName, "", "", "", "Yes")
+
+	// Return happy.
+	return nil
+}
+
+//
 // Update user.
 //
 func (t *DB) UpdateUser(user *User) error {
@@ -500,7 +532,7 @@ func (t *DB) CreateNewUserWithStripe(user User, plan string, token string, coupo
 		// Update Sendy with this new fact.
 		go services.SendyUnsubscribe("trial", user.Email)
 		go services.SendyUnsubscribe("expired", user.Email)
-		go services.SendySubscribe("subscribers", user.Email, user.FirstName, user.LastName, "Yes", "", "")
+		go services.SendySubscribe("subscribers", user.Email, user.FirstName, user.LastName, "Yes", "", "", "No")
 
 	} else {
 
@@ -756,9 +788,9 @@ func (t *DB) GetInvoiceHistoryWithStripe(user User) ([]UserInvoice, error) {
 func (t *DB) doPostUserRegisterStuff(user User, ipAddress string) {
 
 	// Subscribe new user to mailing lists.
-	go services.SendySubscribe("trial", user.Email, user.FirstName, user.LastName, "", "", ipAddress)
-	go services.SendySubscribe("no-brokers", user.Email, user.FirstName, user.LastName, "No", "", ipAddress)
-	go services.SendySubscribe("subscribers", user.Email, user.FirstName, user.LastName, "No", "", ipAddress)
+	go services.SendySubscribe("trial", user.Email, user.FirstName, user.LastName, "", "", ipAddress, "No")
+	go services.SendySubscribe("no-brokers", user.Email, user.FirstName, user.LastName, "No", "", ipAddress, "No")
+	go services.SendySubscribe("subscribers", user.Email, user.FirstName, user.LastName, "No", "", ipAddress, "No")
 
 	// Tell slack about this.
 	go services.SlackNotify("#events", "New Options Cafe User Account : "+user.Email)

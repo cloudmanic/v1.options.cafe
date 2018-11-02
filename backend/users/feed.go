@@ -100,7 +100,7 @@ func (t *Base) DoExpireTrails() {
 			services.Info("Free trial has just expired : " + row.Email)
 			go services.SlackNotify("#events", "New Options Cafe User Free Trial Expired : "+row.Email)
 			go services.SendyUnsubscribe("trial", row.Email)
-			go services.SendySubscribe("expired", row.Email, row.FirstName, row.LastName, "", "", "")
+			go services.SendySubscribe("expired", row.Email, row.FirstName, row.LastName, "", "", "", "No")
 
 		}
 

@@ -18,7 +18,8 @@
         <td>{{ row.email }}</td>
         <td>{{ row.last_activity | date:'shortDate' }}</td>
         <td>
-          <a (click)="loginAsUser(row)">Login</a>
+          <a (click)="deleteUser(row)">Delete</a> |
+          <a (click)="loginAsUser(row)">Login</a> 
         </td>
       </tr>
     </tbody>

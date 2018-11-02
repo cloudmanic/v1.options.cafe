@@ -8,15 +8,60 @@ package services
 
 import (
 	"errors"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
 )
 
 //
+// Get a subscriber's status
+//
+func SendyIsUnSubscribed(listId string, email string) (bool, error) {
+
+	listIdString := GetListId(listId)
+
+	// Build form request
+	form := url.Values{
+		"api_key": {os.Getenv("SENDY_API_KEY")},
+		"list_id": {listIdString},
+		"email":   {email},
+	}
+
+	// Send request.
+	resp, err := http.PostForm("https://sendy.cloudmanic.com/api/subscribers/subscription-status.php", form)
+
+	if err != nil {
+		BetterError(errors.New("SendySubscriberStatus - Unable to get subscribe status " + email + " to Sendy Subscriber list. (" + err.Error() + ")"))
+		return false, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		BetterError(errors.New("SendySubscriberStatus (no 200) - Unable to get subscribe status " + email + " to Sendy Subscriber list. (" + err.Error() + ")"))
+		return false, err
+	}
+
+	defer resp.Body.Close()
+
+	// Read the data we got.
+	body, err := ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+		return false, err
+	}
+
+	if string(body) == "Unsubscribed" {
+		return true, nil
+	}
+
+	// Return happy
+	return false, nil
+}
+
+//
 // Subscribe to a sendy newsletter list
 //
-func SendySubscribe(listId string, email string, first string, last string, paid string, broker string, ip string) {
+func SendySubscribe(listId string, email string, first string, last string, paid string, broker string, ip string, canceled string) {
 
 	listIdString := GetListId(listId)
 
@@ -44,6 +89,18 @@ func SendySubscribe(listId string, email string, first string, last string, paid
 		form["Paid"] = []string{paid}
 	}
 
+	// Is this a canceled user
+	if len(canceled) > 0 {
+		form["Canceled"] = []string{canceled}
+	}
+
+	// Check to see if this user is unsubscripted.
+	unsubscribed, err := SendyIsUnSubscribed(listId, email)
+
+	if err != nil {
+		BetterError(errors.New("SendySubscribe - Unable to check if unsubscribed " + email + " to Sendy Subscriber list. (" + err.Error() + ")"))
+	}
+
 	// Log
 	Info("Subscribing " + email + " to Sendy List - " + listIdString)
 
@@ -56,6 +113,11 @@ func SendySubscribe(listId string, email string, first string, last string, paid
 
 	if resp.StatusCode != http.StatusOK {
 		BetterError(errors.New("SendySubscribe (no 200) - Unable to subscribe " + email + " to Sendy Subscriber list. (" + err.Error() + ")"))
+	}
+
+	// If the user was already unsubscripted set it back to unsubbed. We often just want to update a var with the subscriber. The action above will subscribe them.
+	if unsubscribed {
+		SendyUnsubscribe(listId, email)
 	}
 
 	defer resp.Body.Close()

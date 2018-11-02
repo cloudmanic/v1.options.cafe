@@ -76,6 +76,7 @@ type Datastore interface {
 	// Users
 	GetAllUsers() []User
 	GetAllActiveUsers() []User
+	DeleteUser(user *User) error
 	UpdateUser(user *User) error
 	GetUserById(id uint) (User, error)
 	ValidatePassword(password string) error

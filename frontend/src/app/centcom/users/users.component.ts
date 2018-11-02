@@ -6,7 +6,7 @@
 
 import { Observable } from 'rxjs/Observable';
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Component, OnInit } from '@angular/core';
 
@@ -41,6 +41,34 @@ export class UsersComponent implements OnInit
     this.http.get<User[]>(environment.app_server + '/api/admin/users').subscribe((data) => {
       this.users = data;
     });
+  }
+
+  //
+  // Delete a user.
+  //
+  deleteUser(user: User) 
+  {
+    let c = confirm("Are you sure you want to delete " + user.email + "? MAKE SURE YOU TOOK A DB BACKUP!!!!");
+
+    if(! c)
+    {
+      return
+    }
+
+    // Send request to delete the user for good.
+    this.http.delete<boolean>(environment.app_server + '/api/admin/users/' + user.id).subscribe(
+
+      (data) => {
+        this.getUsers();
+        return true;
+      },
+
+       // Error
+      (err: HttpErrorResponse) => {
+        alert(err);
+      }
+
+    );    
   }
 
   //
