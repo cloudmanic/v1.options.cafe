@@ -439,6 +439,16 @@ export class AddEditComponent implements OnInit
     ric.push(new ScreenerItemSettings('Put Leg % Away', 'put-leg-percent-away', 'input-number', ['>', '<'], [], [], 4.0));
     ric.push(new ScreenerItemSettings('Call Leg % Away', 'call-leg-percent-away', 'input-number', ['>', '<'], [], [], 4.0));
     this.itemSetttings["reverse-iron-condor"] = ric;
+
+    // Set item Settings: iron-condor
+    let ic: ScreenerItemSettings[] = [];
+    ic.push(new ScreenerItemSettings('Days To Expire', 'days-to-expire', 'select-number', ['<', '>', '='], days, [], 30));
+    ic.push(new ScreenerItemSettings('Open Credit', 'open-credit', 'input-number', ['<', '>', '='], [], [], 1.00));
+    ic.push(new ScreenerItemSettings('Put Leg Width', 'put-leg-width', 'select-number', ['='], widths, [], 2.00));
+    ic.push(new ScreenerItemSettings('Call Leg Width', 'call-leg-width', 'select-number', ['='], widths, [], 2.00));
+    ic.push(new ScreenerItemSettings('Put Leg % Away', 'put-leg-percent-away', 'input-number', ['>', '<'], [], [], 4.0));
+    ic.push(new ScreenerItemSettings('Call Leg % Away', 'call-leg-percent-away', 'input-number', ['>', '<'], [], [], 4.0));
+    this.itemSetttings["iron-condor"] = ic;  
   }
 }
 

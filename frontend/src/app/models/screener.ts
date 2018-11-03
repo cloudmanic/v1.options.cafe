@@ -16,6 +16,7 @@ export class Screener
   Name: string;
   Strategy: string;
   Symbol: string;
+  View: string = "grid";
   Items: ScreenerItem[];
   Results: ScreenerResult[];
 

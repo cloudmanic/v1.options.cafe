@@ -2,7 +2,7 @@
 // Date: 2018-10-27
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-01
+// Last Modified: 2018-11-02
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -59,8 +59,6 @@ func TestRunIronCondor01(t *testing.T) {
 
 	// Run back test
 	result, err := s.RunIronCondor(screen)
-
-	//spew.Dump(result)
 
 	// for _, row := range result {
 	// 	fmt.Println(row.Credit, " : ", row.Legs[0].OptionExpire.Format("2006-01-02"), " - ", helpers.FloatToString(row.Legs[0].OptionStrike), "/", helpers.FloatToString(row.Legs[1].OptionStrike), "/", helpers.FloatToString(row.Legs[2].OptionStrike), "/", helpers.FloatToString(row.Legs[3].OptionStrike))

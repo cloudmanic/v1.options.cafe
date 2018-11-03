@@ -58,6 +58,7 @@ func NewScreen(db models.Datastore, broker brokers.Api) Base {
 
 	// Build screener function.
 	t.ScreenFuncs = map[string]func(models.Screener) ([]Result, error){
+		"iron-condor":         t.RunIronCondor,
 		"put-credit-spread":   t.RunPutCreditSpread,
 		"reverse-iron-condor": t.RunReverseIronCondor,
 	}

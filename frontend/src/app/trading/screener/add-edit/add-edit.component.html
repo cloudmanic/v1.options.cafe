@@ -118,6 +118,7 @@
                   <div class="select select--primary">
                     <select name="Strategy" [(ngModel)]="screen.Strategy" (change)="strategyChange()">
                       <option value="put-credit-spread">Put Credit Spread</option>
+                      <option value="iron-condor">Iron Condor</option>
                       <option value="reverse-iron-condor">Reverse Iron Condor</option>
                     </select>
                   </div>
@@ -345,7 +346,7 @@
 
                     <th>
                       <ins *ngIf="(screen.Strategy == 'put-credit-spread')">Spread</ins>
-                      <ins *ngIf="(screen.Strategy == 'reverse-iron-condor')">Condor</ins>
+                      <ins *ngIf="(screen.Strategy == 'reverse-iron-condor') || (screen.Strategy == 'iron-condor')">Condor</ins>
                     </th>
 
                     <th>
@@ -353,7 +354,7 @@
                     </th>
 
                     <th>
-                      <ins *ngIf="(screen.Strategy == 'put-credit-spread')">Credit</ins>
+                      <ins *ngIf="(screen.Strategy == 'put-credit-spread') || (screen.Strategy == 'iron-condor')">Credit</ins>
                       <ins *ngIf="(screen.Strategy == 'reverse-iron-condor')">Debit</ins>
                     </th>
 
@@ -377,15 +378,20 @@
                       {{ row.Legs[0].OptionStrike }} / {{ row.Legs[1].OptionStrike }}
                     </td>
                     
-                    <td *ngIf="(screen.Strategy == 'reverse-iron-condor')">
+                    <td *ngIf="(screen.Strategy == 'reverse-iron-condor') || (screen.Strategy == 'iron-condor')">
                       {{ row.Legs[0].OptionStrike }} / {{ row.Legs[1].OptionStrike }} <br /> 
                       {{ row.Legs[2].OptionStrike }} / {{ row.Legs[3].OptionStrike }}
                     </td>                    
 
                     <td>{{ row.PrecentAway | number:'1.2-2' }}%</td>
                     
-                    <td *ngIf="(screen.Strategy == 'put-credit-spread')">{{ row.Credit | currency:'USD':'symbol':'1.2-2' }}</td>
-                    <td *ngIf="(screen.Strategy == 'reverse-iron-condor')">{{ row.Debit | currency:'USD':'symbol':'1.2-2' }}</td>                    
+                    <td *ngIf="(screen.Strategy == 'put-credit-spread') || (screen.Strategy == 'iron-condor')">
+                      {{ row.Credit | currency:'USD':'symbol':'1.2-2' }}
+                    </td>
+                    
+                    <td *ngIf="(screen.Strategy == 'reverse-iron-condor')">
+                      {{ row.Debit | currency:'USD':'symbol':'1.2-2' }}
+                    </td>                    
 
                     <td>{{ row.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
                     

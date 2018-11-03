@@ -23,6 +23,15 @@
         <h5>{{ row.Name }}</h5>
 
         <div class="article__head-aside">
+
+          <div class="select select--primary">
+            <select name="view" [(ngModel)]="row.View">
+              <option value="grid">Grid</option>
+              <option value="table">Table</option>
+            </select>
+          </div>
+
+
 <!--           <label class="sort-label">Sort: </label>
           <div class="select select--primary">
             <select name="select-1">
@@ -39,14 +48,97 @@
 
 
 
-      <div class="article__body article__body--size2">
+
+      <div class="screener-table" *ngIf="row.View == 'table'">
+
+        <table>
+          <thead>
+            <tr>
+              <th class="darker">
+                <ins>Symbol</ins>
+              </th>
+
+              <th>
+                <ins>Expire</ins>
+              </th>
+
+              <th>
+                <ins *ngIf="(row.Strategy == 'put-credit-spread')">Spread</ins>
+                <ins *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor')">Condor</ins>
+              </th>
+
+              <th>
+                <ins>% Away</ins>
+              </th>
+
+              <th>
+                <ins *ngIf="(row.Strategy == 'put-credit-spread') || (row.Strategy == 'iron-condor')">Credit</ins>
+                <ins *ngIf="(row.Strategy == 'reverse-iron-condor')">Debit</ins>
+              </th>
+
+              <th>
+                <ins>Midpoint</ins>
+              </th>
+
+              <th>&nbsp;</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let row2 of row.Results;">
+              <td>{{ row2.Legs[0].OptionUnderlying }}</td>
+              
+              <td>{{ row2.Legs[0].OptionExpire | date:'shortDate' }}</td>
+              
+              <td *ngIf="(row.Strategy == 'put-credit-spread')">
+                {{ row2.Legs[0].OptionStrike }} / {{ row2.Legs[1].OptionStrike }}
+              </td>
+              
+              <td *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor')">
+                {{ row2.Legs[0].OptionStrike }} / {{ row2.Legs[1].OptionStrike }} /
+                {{ row2.Legs[2].OptionStrike }} / {{ row2.Legs[3].OptionStrike }}
+              </td>                    
+
+              <td>{{ row2.PrecentAway | number:'1.2-2' }}%</td>
+              
+              <td *ngIf="(row.Strategy == 'put-credit-spread') || (row.Strategy == 'iron-condor')">
+                {{ row2.Credit | currency:'USD':'symbol':'1.2-2' }}
+              </td>
+              
+              <td *ngIf="(row.Strategy == 'reverse-iron-condor')">
+                {{ row2.Debit | currency:'USD':'symbol':'1.2-2' }}
+              </td>                    
+
+              <td>{{ row2.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
+              
+              <td>
+                <a class="btn" (click)="trade(row, row2)">Trade</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <div class="article__body article__body--size2" *ngIf="row.View == 'grid'">
         <div class="features features--small" *ngIf="row.Results && (row.Results.length > 0)">
           
           <div class="feature feature--small" *ngFor="let row2 of row.Results;">
             <div class="feature__inner">
               <div class="feature__head">
                 <h6>{{ row.Symbol }}</h6>
-
                 <!-- <i class="ico-check-circle feature__ico"></i> -->
               </div>
 
@@ -102,15 +194,16 @@
                       </tr>
                     </tbody>
                   </table>
-                </div><!-- /.table -->
-              </div><!-- /.feature__body -->
+                </div>
+              </div>
 
               <div class="feature__actions">
                 <a class="btn btn--size4" (click)="trade(row, row2)">Place Trade</a>
                 <!-- <a href="#" class="btn btn--border-blue">View Your Position</a> -->
-              </div><!-- /.feature__actions -->
-            </div><!-- /.feature__inner -->
-          </div><!-- /.feature feature-/-small -->
+              </div>
+
+            </div>
+          </div>
         </div>
 
 
