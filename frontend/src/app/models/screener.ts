@@ -16,7 +16,9 @@ export class Screener
   Name: string;
   Strategy: string;
   Symbol: string;
-  View: string = "grid";
+  View: string;
+  ListSort: string = "PercentAway";
+  ListOrder: number = 1;
   Items: ScreenerItem[];
   Results: ScreenerResult[];
 

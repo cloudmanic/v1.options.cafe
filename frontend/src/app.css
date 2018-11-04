@@ -6,6 +6,9 @@
 .link { text-decoration: none; }
 .red { color: #ce4260; }
 .blue { color: #2a9eca; }
+.cursor-pointer { cursor: pointer; }
+.text-align-right { text-align: right; }
+.text-align-center { text-align: center; }
 
 .font-14 { font-size: 14px; }
 .font-16 { font-size: 16px; }
@@ -22,11 +25,16 @@
 
 .ml-3 { margin-left: 3px !important; }
 .ml-5 { margin-left: 5px !important; }
+.ml-10 { margin-left: 10px !important; }
 .ml-20 { margin-left: 20px !important; }
 
 .mr-3 { margin-right: 3px !important; }
 .mr-5 { margin-right: 5px !important; }
 .mr-20 { margin-right: 20px !important; }
+
+/* Icons */
+.btn-square.active { background-color: #cfd0d0; }
+.btn-square .fa { position: absolute; top: 50%; left: 50%; -webkit-transform: translate(-50%, -50%); transform: translate(-50%, -50%); }
 
 /* Widths */
 .width-95 { width: 95px !important; }

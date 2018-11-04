@@ -24,12 +24,20 @@
 
         <div class="article__head-aside">
 
-          <div class="select select--primary">
+          <a (click)="viewChange(row, 'grid')" class="btn-square text-align-center ml-10" [ngClass]="{ 'active': (row.View == 'grid') }">
+            <fa-icon [icon]="listGrid" class="fa fa-lg"></fa-icon>
+          </a>
+
+          <a (click)="viewChange(row, 'list')" class="btn-square text-align-center ml-10" [ngClass]="{ 'active': (row.View == 'list') }">
+            <fa-icon [icon]="listIcon" class="fa fa-lg"></fa-icon>
+          </a>
+
+<!--           <div class="select select--primary">
             <select name="view" [(ngModel)]="row.View">
               <option value="grid">Grid</option>
               <option value="table">Table</option>
             </select>
-          </div>
+          </div> -->
 
 
 <!--           <label class="sort-label">Sort: </label>
@@ -40,7 +48,7 @@
             </select>
           </div> -->
 
-          <a routerLink="/screener/edit/{{ row.Id }}" class="btn-square">
+          <a routerLink="/screener/edit/{{ row.Id }}" class="btn-square ml-10">
             <i class="ico-settings"></i>
           </a>
         </div>
@@ -49,7 +57,7 @@
 
 
 
-      <div class="screener-table" *ngIf="row.View == 'table'">
+      <div class="screener-table" *ngIf="row.View == 'list'">
 
         <table>
           <thead>
@@ -67,16 +75,26 @@
                 <ins *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor')">Condor</ins>
               </th>
 
-              <th>
+              <th (click)="sortClick(row, 'PrecentAway')" class="cursor-pointer">
                 <ins>% Away</ins>
               </th>
 
-              <th>
-                <ins *ngIf="(row.Strategy == 'put-credit-spread') || (row.Strategy == 'iron-condor')">Credit</ins>
+              <th 
+              (click)="sortClick(row, 'Credit')" 
+              class="cursor-pointer" 
+              *ngIf="(row.Strategy == 'put-credit-spread') || (row.Strategy == 'iron-condor')">
+                <ins>Credit</ins>
                 <ins *ngIf="(row.Strategy == 'reverse-iron-condor')">Debit</ins>
               </th>
 
-              <th>
+              <th 
+              (click)="sortClick(row, 'Debit')" 
+              class="cursor-pointer" 
+              *ngIf="(row.Strategy == 'reverse-iron-condor')">
+                <ins>Debit</ins>
+              </th>
+
+              <th (click)="sortClick(row, 'Midpoint')" class="cursor-pointer" >
                 <ins>Midpoint</ins>
               </th>
 
@@ -85,7 +103,7 @@
           </thead>
 
           <tbody>
-            <tr *ngFor="let row2 of row.Results;">
+            <tr *ngFor="let row2 of row.Results | tableSort:row.ListSort:row.ListOrder">
               <td>{{ row2.Legs[0].OptionUnderlying }}</td>
               
               <td>{{ row2.Legs[0].OptionExpire | date:'shortDate' }}</td>
@@ -111,7 +129,7 @@
 
               <td>{{ row2.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
               
-              <td>
+              <td class="text-align-right">
                 <a class="btn" (click)="trade(row, row2)">Trade</a>
               </td>
             </tr>

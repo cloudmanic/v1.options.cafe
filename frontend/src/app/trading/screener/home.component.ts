@@ -13,16 +13,20 @@ import { Screener } from '../../models/screener';
 import { ScreenerResult } from '../../models/screener-result';
 import { StateService } from '../../providers/state/state.service';
 import { ScreenerService } from '../../providers/http/screener.service';
+import { faListAlt, faTh } from '@fortawesome/free-solid-svg-icons';
 import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../../providers/http/trade.service';
 
 @Component({
   selector: 'app-screener',
   templateUrl: './home.component.html'
 })
+
 export class ScreenerComponent implements OnInit 
 {
   screeners: Screener[] = [];
   destory: Subject<boolean> = new Subject<boolean>();
+  listGrid = faTh;
+  listIcon = faListAlt;
 
   //
   // Constructor....
@@ -61,6 +65,60 @@ export class ScreenerComponent implements OnInit
   }  
 
   //
+  // Sort click
+  //
+  sortClick(screen: Screener, col: string) 
+  {
+    if(screen.ListSort == col)
+    {
+      screen.ListOrder = screen.ListOrder * -1;
+    }
+
+    screen.ListSort = col;
+  }
+
+  //
+  // View change
+  //
+  viewChange(screen: Screener, type: string)
+  {
+    screen.View = type; 
+    this.storePerferedView(); 
+  }
+
+  //
+  // Save our preferred views into local storage.
+  //
+  storePerferedView()
+  {
+    let obj = {}
+
+    for(let i = 0; i < this.screeners.length; i++)
+    {
+      obj[this.screeners[i].Id] = this.screeners[i].View;
+    }
+
+    localStorage.setItem("screener-view", JSON.stringify(obj));
+  }
+
+  //
+  // Get and set preferred views. 
+  //
+  getSetpreferedViews() 
+  {
+    let obj = JSON.parse(localStorage.getItem("screener-view"));
+
+    for(let i = 0; i < this.screeners.length; i++)
+    {
+      if(typeof obj[this.screeners[i].Id] != "undefined")
+      {
+        this.screeners[i].View = obj[this.screeners[i].Id];
+      }
+    }
+
+  }
+
+  //
   // Get screeners.
   //
   getScreeners()
@@ -69,7 +127,12 @@ export class ScreenerComponent implements OnInit
     this.screenerService.get().subscribe(
 
       (res) => {
+
+        // Assign the screeners. 
         this.screeners = res;
+        
+        // Set the preferred views.
+        this.getSetpreferedViews();
 
         // Make sure we have at least one screener
         if(this.screeners.length <= 0)

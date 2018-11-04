@@ -8,6 +8,7 @@ import { Routing } from './app.routing';
 import { SortablejsModule } from 'angular-sortablejs';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './providers/http/token.interceptor';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { HighchartsChartComponent } from './shared/highcharts/highcharts-chart.component';
 
 // Shared
@@ -93,6 +94,10 @@ import { SpreadComponent } from './trading/dashboard/positions/types/spread/spre
 import { OptionComponent } from './trading/dashboard/positions/types/option/option.component';
 import { ReverseIronCondorComponent } from './trading/dashboard/positions/types/reverse-iron-condor/reverse-iron-condor.component';
 
+// Pipes
+import { TableSortPipe } from './pipes/table-sort.pipe'; 
+
+
 // Research
 import { SymbolComponent } from './research/symbol/symbol.component';
 
@@ -102,10 +107,13 @@ import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.c
 
 @NgModule({
   declarations: [
-    
+
     AppComponent,
     HighchartsChartComponent,
     
+    // Pipes 
+    TableSortPipe,    
+
     // Layout
     SidebarComponent,
     MainNavComponent,
@@ -176,7 +184,8 @@ import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.c
     FormsModule,
     BrowserModule,
     SortablejsModule,
-    HttpClientModule   
+    HttpClientModule,
+    FontAwesomeModule   
   ],
   
   providers: [
