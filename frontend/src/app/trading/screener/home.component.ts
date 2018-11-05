@@ -106,13 +106,27 @@ export class ScreenerComponent implements OnInit
   //
   getSetpreferedViews() 
   {
-    let obj = JSON.parse(localStorage.getItem("screener-view"));
+    let json = localStorage.getItem("screener-view");
+
+    if(! json)
+    {
+      for(let i = 0; i < this.screeners.length; i++)
+      {
+        this.screeners[i].View = "grid";
+      }
+      return;
+    }
+
+    let obj = JSON.parse(json);
 
     for(let i = 0; i < this.screeners.length; i++)
     {
       if(typeof obj[this.screeners[i].Id] != "undefined")
       {
         this.screeners[i].View = obj[this.screeners[i].Id];
+      } else
+      {
+        this.screeners[i].View = "grid";
       }
     }
 
