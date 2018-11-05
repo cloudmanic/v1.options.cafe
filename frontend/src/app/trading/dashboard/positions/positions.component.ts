@@ -93,17 +93,21 @@ export class PositionsComponent implements OnInit
   //
   // Set the orders.
   //
-  setOrders(orders: Order[]) {
+  setOrders(orders: Order[]) 
+  {
     var rt = []
 
     // This data has not come in yet.
-    if (!this.stateService.GetActiveBrokerAccount()) {
+    if (!this.stateService.GetActiveBrokerAccount()) 
+    {
       return;
     }
 
     // Filter - We only one the accounts that are active.
-    for (var i = 0; i < orders.length; i++) {
-      if (orders[i].AccountId == this.stateService.GetActiveBrokerAccount().AccountNumber) {
+    for (var i = 0; i < orders.length; i++) 
+    {
+      if (orders[i].AccountId == this.stateService.GetActiveBrokerAccount().AccountNumber) 
+      {
         rt.push(orders[i]);
       }
     }

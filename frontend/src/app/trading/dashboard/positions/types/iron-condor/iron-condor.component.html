@@ -1,9 +1,9 @@
 <div class="box__head box__head--relative">
-  <h5 class="box__title">{{ title }}</h5>
+  <h5 class="box__title">Iron Condors</h5>
 
   <div class="box__absolute">
     <p>
-      <span [innerHTML]="getTradeGroupTotalHeaderTitle(tradeGroups)"></span>
+      <span>Total Credit</span>
       <strong>{{ getTradeGroupWidgetTotal(tradeGroups) | currency }}</strong>
     </p>
   </div>
@@ -19,15 +19,8 @@
             <td><ins>Contracts</ins></td>
             <td><ins>Open</ins></td>
             <td><ins>Lots</ins></td>
-
             <td><ins>Days</ins></td>
-
-            <td *ngIf="(row.Type == 'Option')"><ins>Cost Basis</ins></td>            
-            <td *ngIf="(row.Type == 'Put Credit Spread') || (row.Type == 'Call Credit Spread')"><ins>Away</ins></td>
-            
-            <td *ngIf="(row.Type == 'Option')"><ins>Value</ins></td>
-            <td *ngIf="(row.Type == 'Put Credit Spread') || (row.Type == 'Call Credit Spread')"><ins>Credit</ins></td>
-
+            <td><ins>Credit</ins></td>
             <td><ins>P&amp;L</ins></td>
           </tr>
 
@@ -43,14 +36,7 @@
             <td *ngIf="key2 == 0"><strong>{{ getTradeGroupDaysToExpire(row) }}</strong></td>
             <td *ngIf="key2 != 0">&nbsp;</td>  
 
-            <td *ngIf="(key2 == 0) && (row.Type == 'Option')"><strong>{{ row.Risked | currency }}</strong></td>
-            <td *ngIf="(key2 == 0) && ((row.Type == 'Put Credit Spread') || (row.Type == 'Call Credit Spread'))">
-              <strong [ngClass]="{ 'title-red': (getTradeGroupPercentAway(row) < 0) }">{{ getTradeGroupPercentAway(row) | number:'1.2-2' }}%</strong>
-            </td>
-            <td *ngIf="key2 != 0">&nbsp;</td>
-          
-            <td *ngIf="(key2 == 0) && (row.Type == 'Option')"><strong>{{ getSingleValue(row2) | currency }}</strong></td>
-            <td *ngIf="(key2 == 0) && ((row.Type == 'Put Credit Spread') || (row.Type == 'Call Credit Spread'))"><strong>{{ row.Credit | currency }}</strong></td>
+            <td *ngIf="key2 == 0"><strong>{{ row.Credit | currency }}</strong></td>
             <td *ngIf="key2 != 0">&nbsp;</td>
 
             <td *ngIf="(key2 == 0)">
@@ -64,15 +50,8 @@
 
       <app-dropdown-select [actions]="actions" [data]="row"></app-dropdown-select>
 
-    </div><!-- /.table table-large -->
+    </div>
 
-    <div class="progress" *ngIf="showProgressbar()">
-      <strong class="progress__number">{{ getTradeProgress(row) | number:'1.2-2' }}%</strong>
-
-      <div class="progress__bar">
-        <div class="progress__amount" [ngStyle]="{ 'width': getTradeProgressBar(row) + '%' }"></div>
-      </div><!-- /.progress__bar -->
-    </div><!-- /.progress -->
-  </div><!-- /.box__inner -->
+  </div>
 
 </div>

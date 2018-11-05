@@ -70,7 +70,7 @@ func GetIronCondorRiskProfile(positions *[]models.Position) (float64, float64) {
 	}
 
 	// Return happy.
-	return maxRisk + cost, cost
+	return maxRisk + cost, (cost * -1.00)
 }
 
 //
@@ -181,8 +181,8 @@ func IsIronCondor(positions *[]models.Position) bool {
 		return false
 	}
 
-	// Total cost must be negative (the trade was a debit)
-	if tradeCost <= 0 {
+	// Total cost must be positive (the trade was a credit)
+	if tradeCost > 0 {
 		return false
 	}
 

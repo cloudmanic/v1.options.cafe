@@ -68,6 +68,15 @@
   </app-trading-positions-types-spread>
 </li>
 
+<!-- Iron Condors -->
+<li class="box--bordered" *ngIf="tradeGroups?.IronCondor.length">
+  <app-trading-positions-types-iron-condor 
+    [quotes]="quotes" 
+    [orders]="orders"
+    [tradeGroups]="tradeGroups?.IronCondor">
+  </app-trading-positions-types-iron-condor>
+</li>
+
 <!-- Reverse Iron Condors -->
 <li class="box--bordered" *ngIf="tradeGroups?.ReverseIronCondor.length">
   <app-trading-positions-types-reverse-iron-condor 

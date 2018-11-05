@@ -204,7 +204,7 @@ export class SpreadComponent implements OnInit
     {
       case 'Put Credit Spreads':
       case 'Call Credit Spreads':
-        return "Credit";
+        return "Total Credit";
 
       case 'Options':
         return "P&amp;L";
