@@ -15,7 +15,6 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/cron/data_import"
 	"github.com/cloudmanic/app.options.cafe/backend/library/import/options"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/cloudmanic/app.options.cafe/backend/paper_trade"
 )
 
 //
@@ -64,12 +63,6 @@ func Run(db *models.DB) bool {
 	// Start cron server
 	case "cron":
 		cron.Start(db)
-		return true
-		break
-
-	// Start paper trade
-	case "paper-trade":
-		paper_trade.Start()
 		return true
 		break
 

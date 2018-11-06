@@ -6,10 +6,11 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-package paper_trade
+package main
 
 import (
 	"os"
+	"runtime"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/paper_trade/controllers"
@@ -17,9 +18,12 @@ import (
 )
 
 //
-// Start....
+// Main....
 //
-func Start() {
+func main() {
+
+	// Setup CPU stuff.
+	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	// Lets get started
 	services.Critical("Paper Trade Started: " + os.Getenv("APP_ENV"))
