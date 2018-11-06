@@ -110,6 +110,9 @@ func (t *Controller) CancelOrder(c *gin.Context) {
 //
 func (t *Controller) PreviewOrder(c *gin.Context) {
 
+	// Get the user id.
+	userId := c.MustGet("userId").(uint)
+
 	// Build request
 	order, brokerCont, brokerAccount, err := orderBuildRequest(t, c)
 
@@ -122,6 +125,13 @@ func (t *Controller) PreviewOrder(c *gin.Context) {
 	if (order.Class == "multileg") && (len(order.Legs) <= 1) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "A multileg order must have more than one leg."})
 		return
+	}
+
+	// Make sure these symbols are part of the active symbols.
+	t.DB.CreateActiveSymbol(userId, order.Symbol)
+
+	for _, row := range order.Legs {
+		t.DB.CreateActiveSymbol(userId, row.OptionSymbol)
 	}
 
 	// Send preview request to broker
@@ -157,6 +167,13 @@ func (t *Controller) SubmitOrder(c *gin.Context) {
 	if (order.Class == "multileg") && (len(order.Legs) <= 1) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "A multileg order must have more than one leg."})
 		return
+	}
+
+	// Make sure these symbols are part of the active symbols.
+	t.DB.CreateActiveSymbol(userId, order.Symbol)
+
+	for _, row := range order.Legs {
+		t.DB.CreateActiveSymbol(userId, row.OptionSymbol)
 	}
 
 	// Send order request to broker

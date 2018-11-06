@@ -54,7 +54,7 @@ services:
       BACKUP_DB_STORE_DIR: app.options.cafe      
       HOURS_BETWEEN_BACKUPS: 4     
       DB_SIZE_CHECK_LOW: 3000000     
-      DB_SIZE_CHECK_HIGH: 10000000      
+      DB_SIZE_CHECK_HIGH: 50000000      
       PING_SUCCESS_URL: https://hchk.io/2e4c75f5-ab9d-4a08-84d4-d8c6b78d3e27
 
     networks:
