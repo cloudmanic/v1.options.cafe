@@ -26,11 +26,13 @@ type Base struct {
 }
 
 type Result struct {
-	Debit       float64         `json:"debit"`
-	Credit      float64         `json:"credit"`
-	MidPoint    float64         `json:"midpoint"`
-	PrecentAway float64         `json:"percent_away"`
-	Legs        []models.Symbol `json:"legs"`
+	Debit           float64         `json:"debit"`
+	Credit          float64         `json:"credit"`
+	MidPoint        float64         `json:"midpoint"`
+	Expired         models.Date     `gorm:"type:expired" json:"expired"` // Used when all legs have the same expire
+	CallPrecentAway float64         `json:"call_percent_away"`
+	PutPrecentAway  float64         `json:"put_percent_away"`
+	Legs            []models.Symbol `json:"legs"`
 }
 
 type Spread struct {
@@ -385,10 +387,9 @@ func (t *Base) FilterOpenDebit(screen models.Screener, debit float64) bool {
 //
 // Review trade for days to expire.
 //
-func (t *Base) FilterDaysToExpireDaysToExpire(screen models.Screener, expire time.Time) bool {
+func (t *Base) FilterDaysToExpireDaysToExpire(today time.Time, screen models.Screener, expire time.Time) bool {
 
 	// Get days to expire.
-	today := time.Now()
 	daysToExpire := int(today.Sub(expire).Hours()/24) * -1
 
 	// Find keys related to this filter.

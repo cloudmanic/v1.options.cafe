@@ -2,13 +2,14 @@
 // Date: 2018-10-30
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-10-30
+// Last Modified: 2018-11-07
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
 package eod
 
 import (
+	"sort"
 	"strings"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
@@ -40,6 +41,9 @@ func (t *Api) GetOptionsExpirationsBySymbol(symbol string) ([]string, error) {
 	for key := range tmpExpires {
 		expires = append(expires, key)
 	}
+
+	// Sort the results date in asc order.
+	sort.Strings(expires)
 
 	return expires, nil
 }
@@ -84,6 +88,16 @@ func (t *Api) GetOptionsChainByExpiration(symbol string, expireStr string) (type
 		}
 
 	}
+
+	// Sort Strikes. - Calls
+	sort.Slice(chain.Calls, func(i, j int) bool {
+		return chain.Calls[i].Strike < chain.Calls[j].Strike
+	})
+
+	// Sort Strikes. - Puts
+	sort.Slice(chain.Puts, func(i, j int) bool {
+		return chain.Puts[i].Strike < chain.Puts[j].Strike
+	})
 
 	// Return Chain
 	return chain, nil

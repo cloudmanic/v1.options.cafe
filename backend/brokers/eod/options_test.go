@@ -2,7 +2,7 @@
 // Date: 2018-10-29
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-10-30
+// Last Modified: 2018-11-07
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 // About: This is a broker that brings in data from eod archived data. Useful for back testing, and unit testing.
@@ -40,6 +40,8 @@ func TestGetOptionsChainByExpiration01(t *testing.T) {
 	st.Expect(t, err, nil)
 	st.Expect(t, len(chain.Calls), 195)
 	st.Expect(t, len(chain.Puts), 195)
+	st.Expect(t, chain.Puts[50].Strike, 222.00)
+	st.Expect(t, chain.Calls[60].Strike, 232.00)
 	st.Expect(t, chain.Puts[50].ExpirationDate, types.Date{helpers.ParseDateNoError("2018-10-19").UTC()})
 	st.Expect(t, chain.Calls[60].ExpirationDate, types.Date{helpers.ParseDateNoError("2018-10-19").UTC()})
 }
@@ -64,6 +66,7 @@ func TestGetOptionsExpirationsBySymbol01(t *testing.T) {
 	// Test result
 	st.Expect(t, err, nil)
 	st.Expect(t, len(dates), 33)
+	st.Expect(t, dates[22], "2019-06-21")
 
 }
 

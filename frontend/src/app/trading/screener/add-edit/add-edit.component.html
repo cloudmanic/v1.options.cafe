@@ -336,9 +336,6 @@
               <table>
                 <thead>
                   <tr>
-                    <th class="darker">
-                      <ins>Symbol</ins>
-                    </th>
 
                     <th>
                       <ins>Expire</ins>
@@ -350,7 +347,11 @@
                     </th>
 
                     <th>
-                      <ins>% Away</ins>
+                      <ins>Put % Away</ins>
+                    </th>
+
+                    <th>
+                      <ins>Call % Away</ins>
                     </th>
 
                     <th>
@@ -362,15 +363,12 @@
                       <ins>Midpoint</ins>
                     </th>
 
-                    <th>
-                      
-                    </th>
+                    <th>&nbsp;</th>
                   </tr>
                 </thead>
 
                 <tbody>
                   <tr *ngFor="let row of results;">
-                    <td>{{ row.Legs[0].OptionUnderlying }}</td>
                     
                     <td>{{ row.Legs[0].OptionExpire | date:'shortDate' }}</td>
                     
@@ -383,7 +381,9 @@
                       {{ row.Legs[2].OptionStrike }} / {{ row.Legs[3].OptionStrike }}
                     </td>                    
 
-                    <td>{{ row.PrecentAway | number:'1.2-2' }}%</td>
+                    <td>{{ row.PutPrecentAway | number:'1.2-2' }}%</td>
+
+                    <td>{{ row.CallPrecentAway | number:'1.2-2' }}%</td>
                     
                     <td *ngIf="(screen.Strategy == 'put-credit-spread') || (screen.Strategy == 'iron-condor')">
                       {{ row.Credit | currency:'USD':'symbol':'1.2-2' }}

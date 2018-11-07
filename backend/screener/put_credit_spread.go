@@ -7,6 +7,7 @@
 package screener
 
 import (
+	"flag"
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
@@ -20,6 +21,14 @@ import (
 func (t *Base) RunPutCreditSpread(screen models.Screener) ([]Result, error) {
 
 	result := []Result{}
+
+	// Set today's date
+	today := time.Now()
+
+	// Change today's date for unit testing.
+	if flag.Lookup("test.v") != nil {
+		today = helpers.ParseDateNoError("2018-10-18").UTC()
+	}
 
 	// Make call to get current quote.
 	quote, err := t.GetQuote(screen.Symbol)
@@ -46,7 +55,7 @@ func (t *Base) RunPutCreditSpread(screen models.Screener) ([]Result, error) {
 		expireDate, _ := time.Parse("2006-01-02", row)
 
 		// Filter for expire dates
-		if !t.FilterDaysToExpireDaysToExpire(screen, expireDate) {
+		if !t.FilterDaysToExpireDaysToExpire(today, screen, expireDate) {
 			continue
 		}
 
@@ -108,10 +117,10 @@ func (t *Base) RunPutCreditSpread(screen models.Screener) ([]Result, error) {
 
 			// We have a winner
 			result = append(result, Result{
-				Credit:      helpers.Round(credit, 2),
-				MidPoint:    helpers.Round(midPoint, 2),
-				PrecentAway: helpers.Round(((1 - row2.Strike/quote.Last) * 100), 2),
-				Legs:        []models.Symbol{symbBuyLeg, symbSellLeg},
+				Credit:         helpers.Round(credit, 2),
+				MidPoint:       helpers.Round(midPoint, 2),
+				PutPrecentAway: helpers.Round(((1 - row2.Strike/quote.Last) * 100), 2),
+				Legs:           []models.Symbol{symbBuyLeg, symbSellLeg},
 			})
 
 		}

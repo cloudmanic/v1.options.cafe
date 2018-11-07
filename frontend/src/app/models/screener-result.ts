@@ -46,7 +46,8 @@ export class ScreenerResult
     obj.Debit = json["debit"];
     obj.Credit = json["credit"];
     obj.MidPoint = json["midpoint"];
-    obj.PrecentAway = json["percent_away"];
+    obj.PutPrecentAway = json["put_percent_away"];
+    obj.CallPrecentAway = json["call_percent_away"];    
     obj.Legs = [];
 
     // Add in the legs.

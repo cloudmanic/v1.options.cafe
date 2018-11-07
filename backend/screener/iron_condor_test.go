@@ -2,7 +2,7 @@
 // Date: 2018-10-27
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-02
+// Last Modified: 2018-11-07
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -60,27 +60,29 @@ func TestRunIronCondor01(t *testing.T) {
 	// Run back test
 	result, err := s.RunIronCondor(screen)
 
-	// for _, row := range result {
-	// 	fmt.Println(row.Credit, " : ", row.Legs[0].OptionExpire.Format("2006-01-02"), " - ", helpers.FloatToString(row.Legs[0].OptionStrike), "/", helpers.FloatToString(row.Legs[1].OptionStrike), "/", helpers.FloatToString(row.Legs[2].OptionStrike), "/", helpers.FloatToString(row.Legs[3].OptionStrike))
-	// }
-
 	// Test result - ORDER seems to be different each time
 	st.Expect(t, err, nil)
 	st.Expect(t, len(result), 3)
 
 	// Result #1
+	st.Expect(t, result[0].PutPrecentAway, 4.84)
+	st.Expect(t, result[0].CallPrecentAway, 4.69)
 	st.Expect(t, result[0].Legs[0].OptionExpire.Format("2006-01-02"), "2018-11-30")
 	st.Expect(t, result[0].Legs[1].OptionExpire.Format("2006-01-02"), "2018-11-30")
 	st.Expect(t, result[0].Legs[2].OptionExpire.Format("2006-01-02"), "2018-11-30")
 	st.Expect(t, result[0].Legs[3].OptionExpire.Format("2006-01-02"), "2018-11-30")
 
 	// Result #2
+	st.Expect(t, result[1].PutPrecentAway, 5.21)
+	st.Expect(t, result[1].CallPrecentAway, 4.36)
 	st.Expect(t, result[1].Legs[0].OptionExpire.Format("2006-01-02"), "2018-11-30")
 	st.Expect(t, result[1].Legs[1].OptionExpire.Format("2006-01-02"), "2018-11-30")
 	st.Expect(t, result[1].Legs[2].OptionExpire.Format("2006-01-02"), "2018-11-30")
 	st.Expect(t, result[1].Legs[3].OptionExpire.Format("2006-01-02"), "2018-11-30")
 
 	// Result #3
+	st.Expect(t, result[2].PutPrecentAway, 4.84)
+	st.Expect(t, result[2].CallPrecentAway, 4.36)
 	st.Expect(t, result[2].Legs[0].OptionExpire.Format("2006-01-02"), "2018-11-30")
 	st.Expect(t, result[2].Legs[1].OptionExpire.Format("2006-01-02"), "2018-11-30")
 	st.Expect(t, result[2].Legs[2].OptionExpire.Format("2006-01-02"), "2018-11-30")

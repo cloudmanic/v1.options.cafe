@@ -2,13 +2,15 @@
 // Date: 2018-10-27
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-01
+// Last Modified: 2018-11-07
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
 package screener
 
 import (
+	"flag"
+	"sort"
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
@@ -22,6 +24,14 @@ import (
 func (t *Base) RunIronCondor(screen models.Screener) ([]Result, error) {
 
 	result := []Result{}
+
+	// Set today's date
+	today := time.Now()
+
+	// Change today's date for unit testing.
+	if flag.Lookup("test.v") != nil {
+		today = helpers.ParseDateNoError("2018-10-18").UTC()
+	}
 
 	// Make call to get current quote.
 	quote, err := t.GetQuote(screen.Symbol)
@@ -38,6 +48,9 @@ func (t *Base) RunIronCondor(screen models.Screener) ([]Result, error) {
 		return result, err
 	}
 
+	// Add default values
+	t.IronCondorFillDefault(&screen)
+
 	// Loop through the expire dates
 	for _, row := range expires {
 
@@ -45,7 +58,7 @@ func (t *Base) RunIronCondor(screen models.Screener) ([]Result, error) {
 		expireDate, _ := time.Parse("2006-01-02", row)
 
 		// Filter for expire dates
-		if !t.FilterDaysToExpireDaysToExpire(screen, expireDate) {
+		if !t.FilterDaysToExpireDaysToExpire(today, screen, expireDate) {
 			continue
 		}
 
@@ -116,29 +129,74 @@ func (t *Base) RunIronCondor(screen models.Screener) ([]Result, error) {
 			// Percent away - We show the lowest percent away
 			putPercentAway := ((1 - (row.PutShort.Strike / quote.Last)) * 100)
 			callPercentAway := ((1 - (quote.Last / row.CallShort.Strike)) * 100)
-			precentAway := putPercentAway
-
-			if callPercentAway < putPercentAway {
-				precentAway = callPercentAway
-			}
 
 			// We have a winner
 			result = append(result, Result{
-				Credit:      helpers.Round(openCost, 2),
-				MidPoint:    helpers.Round(midPoint, 2),
-				PrecentAway: helpers.Round(precentAway, 2),
-				Legs:        []models.Symbol{symbPutLongLeg, symbPutShortLeg, symbCallShortLeg, symbCallLongLeg},
+				Expired:         symbPutLongLeg.OptionExpire,
+				Credit:          helpers.Round(openCost, 2),
+				MidPoint:        helpers.Round(midPoint, 2),
+				PutPrecentAway:  helpers.Round(putPercentAway, 2),
+				CallPrecentAway: helpers.Round(callPercentAway, 2),
+				Legs:            []models.Symbol{symbPutLongLeg, symbPutShortLeg, symbCallShortLeg, symbCallLongLeg},
 			})
 
 		}
 
 	}
 
+	// Sort the results expire in asc order.
+	sort.Slice(result, func(i, j int) bool {
+
+		// Deal with tied sorts
+		if result[i].Expired.Unix() == result[j].Expired.Unix() {
+			return result[i].MidPoint < result[j].MidPoint
+		}
+
+		return result[i].Expired.Unix() < result[j].Expired.Unix()
+	})
+
 	// Return happy
 	return result, nil
 }
 
 // ------------------------ Helper Functions -------------------------- //
+
+//
+// Setup default values. We need to make sure we have at least these params to run a backtest.
+//
+func (t *Base) IronCondorFillDefault(screen *models.Screener) {
+
+	// Map found
+	found := map[string]bool{}
+
+	// Fields that are required
+	required := map[string]models.ScreenerItem{
+		"open-credit":           {Key: "open-credit", Operator: ">", ValueNumber: 0.10},
+		"put-leg-width":         {Key: "put-leg-width", Operator: "=", ValueNumber: 2.00},
+		"call-leg-width":        {Key: "call-leg-width", Operator: "=", ValueNumber: 2.00},
+		"put-leg-percent-away":  {Key: "put-leg-percent-away", Operator: ">", ValueNumber: 2.00},
+		"call-leg-percent-away": {Key: "call-leg-percent-away", Operator: ">", ValueNumber: 2.00},
+	}
+
+	// Loop through and identify items we already have
+	for _, row := range screen.Items {
+
+		if _, ok := required[row.Key]; ok {
+			found[row.Key] = true
+		}
+
+	}
+
+	// Add default values
+	for key, row := range required {
+
+		if _, ok := found[key]; !ok {
+			screen.Items = append(screen.Items, row)
+		}
+
+	}
+
+}
 
 //
 // Find possible Trades
