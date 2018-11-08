@@ -20,7 +20,15 @@
 
     <div class="article"  *ngFor="let row of screeners;">
       <div class="article__head">
-        <h5>{{ row.Name }}</h5>
+
+        <h5>
+          <a class="link" (click)="viewToggle(row)" [ngClass]="{ 'active': (row.View == 'grid') }">
+            <fa-icon [icon]="faCaretDown" class="fa fa-lg" *ngIf="row.Expanded"></fa-icon>
+            <fa-icon [icon]="faCaretRight" class="fa fa-lg" *ngIf="(! row.Expanded)"></fa-icon>            
+          </a>
+
+          {{ row.Name }}
+        </h5>
 
         <div class="article__head-aside">
 
@@ -57,7 +65,7 @@
 
 
 
-      <div class="screener-table" *ngIf="row.View == 'list'">
+      <div class="screener-table hidden" *ngIf="row.View == 'list'" [ngClass]="{ 'hidden': (! row.Expanded) }">
 
         <table>
           <thead>
@@ -75,16 +83,19 @@
                 <ins *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor')">Condor</ins>
               </th>
 
-              <th (click)="sortClick(row, 'PrecentAway')" class="cursor-pointer">
-                <ins>% Away</ins>
+              <th (click)="sortClick(row, 'PutPrecentAway')" class="cursor-pointer" *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor') || (row.Strategy == 'put-credit-spread')">
+                <ins>Put % Away</ins>
+              </th>
+
+              <th (click)="sortClick(row, 'CallPrecentAway')" class="cursor-pointer" *ngIf="(row.Strategy == 'reverse-iron-condor') ||  (row.Strategy == 'iron-condor')">
+                <ins>Call % Away</ins>
               </th>
 
               <th 
               (click)="sortClick(row, 'Credit')" 
               class="cursor-pointer" 
               *ngIf="(row.Strategy == 'put-credit-spread') || (row.Strategy == 'iron-condor')">
-                <ins>Credit</ins>
-                <ins *ngIf="(row.Strategy == 'reverse-iron-condor')">Debit</ins>
+                <ins>Credit</ins> 
               </th>
 
               <th 
@@ -113,12 +124,18 @@
               </td>
               
               <td *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor')">
-                {{ row2.Legs[0].OptionStrike }} / {{ row2.Legs[1].OptionStrike }} /
+                {{ row2.Legs[0].OptionStrike }} / {{ row2.Legs[1].OptionStrike }} <br />
                 {{ row2.Legs[2].OptionStrike }} / {{ row2.Legs[3].OptionStrike }}
               </td>                    
 
-              <td>{{ row2.PrecentAway | number:'1.2-2' }}%</td>
+              <td *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor') || (row.Strategy == 'put-credit-spread')">
+                {{ row2.PutPrecentAway | number:'1.2-2' }}%
+              </td>
               
+              <td *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor')">
+                {{ row2.CallPrecentAway | number:'1.2-2' }}%
+              </td>
+
               <td *ngIf="(row.Strategy == 'put-credit-spread') || (row.Strategy == 'iron-condor')">
                 {{ row2.Credit | currency:'USD':'symbol':'1.2-2' }}
               </td>
@@ -150,7 +167,7 @@
 
 
 
-      <div class="article__body article__body--size2" *ngIf="row.View == 'grid'">
+      <div class="article__body article__body--size2" *ngIf="row.View == 'grid'" [ngClass]="{ 'hidden': (! row.Expanded) }">
         <div class="features features--small" *ngIf="row.Results && (row.Results.length > 0)">
           
           <div class="feature feature--small" *ngFor="let row2 of row.Results;">
@@ -170,7 +187,8 @@
                         </th>
 
                         <th>
-                          <ins>Spread</ins>
+                          <ins *ngIf="(row.Strategy == 'put-credit-spread')">Spread</ins>
+                          <ins *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor')">Condor</ins>
                         </th>
                       </tr>
                     </thead>
@@ -185,16 +203,26 @@
                   </table>
                 </div><!-- /.table -->
 
-                <div class="table-simple table-simple--small table-simple--small-size1">
+                <div class="table-simple table-simple--small table-simple--small-size1a">
                   <table>
                     <thead>
                       <tr>
-                        <th>
-                          <ins>% Away</ins>
+
+                        <th *ngIf="(row.Strategy == 'put-credit-spread') || (row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor')">
+                          <ins>Put % Away</ins>
+                        </th>
+
+                        <th *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor')">
+                          <ins>Call % Away</ins>
                         </th>
 
                         <th>
-                          <ins>Credit</ins>
+                          <ins *ngIf="(row.Strategy == 'iron-condor') || (row.Strategy == 'put-credit-spread')">
+                            Credit
+                          </ins>
+                          <ins *ngIf="(row.Strategy == 'reverse-iron-condor')">
+                            Debit
+                          </ins>                          
                         </th>
 
                         <th>
@@ -205,9 +233,22 @@
 
                     <tbody>
                       <tr>
-                        <td>{{ row2.PrecentAway | number:'1.2-2' }}%</td>
-                        
-                        <td>{{ row2.Credit | currency:'USD':'symbol':'1.2-2' }}</td>
+                        <td *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor') || (row.Strategy == 'put-credit-spread')">
+                          {{ row2.PutPrecentAway | number:'1.2-2' }}%
+                        </td>
+
+                        <td *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor')">
+                          {{ row2.CallPrecentAway | number:'1.2-2' }}%
+                        </td>                        
+
+                        <td *ngIf="(row.Strategy == 'iron-condor') || (row.Strategy == 'put-credit-spread')">
+                          {{ row2.Credit | currency:'USD':'symbol':'1.2-2' }}
+                        </td>
+
+                        <td *ngIf="(row.Strategy == 'reverse-iron-condor')">
+                          {{ row2.Debit | currency:'USD':'symbol':'1.2-2' }}
+                        </td>
+
                         <td>{{ row2.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
                       </tr>
                     </tbody>

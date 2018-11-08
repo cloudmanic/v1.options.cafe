@@ -148,7 +148,7 @@ func (t *Base) FindFilterItemsByKey(item string, screen models.Screener) []model
 }
 
 //
-// Search filter items for a particular value.
+// Search filter items for a particular value. Used when we only want one value. Mostly used with the "=" operator
 //
 func (t *Base) FindFilterItemValue(item string, screen models.Screener) (models.ScreenerItem, error) {
 
@@ -183,6 +183,47 @@ func (t *Base) FindByStrike(chain []types.OptionsChainItem, strike float64) (typ
 // ---------------- Shared Filters --------------------- //
 
 //
+// Screen final results by percent away.
+//
+func (t *Base) FilterPercentAwayResults(keyItem string, screen models.Screener, percentAway float64) bool {
+
+	awayItems := t.FindFilterItemsByKey(keyItem, screen)
+
+	// Loop over percent aways
+	for _, row := range awayItems {
+
+		// Switch based on the operator
+		switch row.Operator {
+
+		// If Percent Away > value passed in
+		case "<":
+			if percentAway > row.ValueNumber {
+				return false
+			}
+			break
+
+		// If Percent Away is less than value passed in
+		case ">":
+			if percentAway < row.ValueNumber {
+				return false
+			}
+			break
+
+		// If Percent Away is equal to values passed in
+		case "=":
+			if percentAway != row.ValueNumber {
+				return false
+			}
+			break
+
+		}
+
+	}
+
+	return true
+}
+
+//
 // Review trade for strike percent up
 //
 func (t *Base) FilterStrikeByPercentUp(key string, screen models.Screener, strike float64, lastQuote float64) bool {
@@ -197,7 +238,8 @@ func (t *Base) FilterStrikeByPercentUp(key string, screen models.Screener, strik
 	for _, row := range items {
 
 		// Figure out the strike price that is the min we can sell.
-		var tmp float64 = lastQuote + (lastQuote * (row.ValueNumber / 100))
+		var tmp float64 = lastQuote + (lastQuote * (1 * (row.ValueNumber / 100)))
+
 		fraction := tmp - math.Floor(tmp)
 
 		if fraction >= widthIncrment {

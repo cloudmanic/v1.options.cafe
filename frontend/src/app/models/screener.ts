@@ -17,6 +17,7 @@ export class Screener
   Strategy: string;
   Symbol: string;
   View: string;
+  Expanded: boolean = true;  
   ListSort: string = "PercentAway";
   ListOrder: number = 1;
   Items: ScreenerItem[];

@@ -346,11 +346,11 @@
                       <ins *ngIf="(screen.Strategy == 'reverse-iron-condor') || (screen.Strategy == 'iron-condor')">Condor</ins>
                     </th>
 
-                    <th>
+                    <th *ngIf="(screen.Strategy == 'reverse-iron-condor') || (screen.Strategy == 'iron-condor') || (screen.Strategy == 'put-credit-spread')">
                       <ins>Put % Away</ins>
                     </th>
 
-                    <th>
+                    <th *ngIf="(screen.Strategy == 'reverse-iron-condor') || (screen.Strategy == 'iron-condor')">
                       <ins>Call % Away</ins>
                     </th>
 
@@ -381,9 +381,13 @@
                       {{ row.Legs[2].OptionStrike }} / {{ row.Legs[3].OptionStrike }}
                     </td>                    
 
-                    <td>{{ row.PutPrecentAway | number:'1.2-2' }}%</td>
+                    <td *ngIf="(screen.Strategy == 'reverse-iron-condor') || (screen.Strategy == 'iron-condor') || (screen.Strategy == 'put-credit-spread')">
+                      {{ row.PutPrecentAway | number:'1.2-2' }}%
+                    </td>
 
-                    <td>{{ row.CallPrecentAway | number:'1.2-2' }}%</td>
+                    <td *ngIf="(screen.Strategy == 'reverse-iron-condor') || (screen.Strategy == 'iron-condor')">>
+                      {{ row.CallPrecentAway | number:'1.2-2' }}%
+                    </td>
                     
                     <td *ngIf="(screen.Strategy == 'put-credit-spread') || (screen.Strategy == 'iron-condor')">
                       {{ row.Credit | currency:'USD':'symbol':'1.2-2' }}

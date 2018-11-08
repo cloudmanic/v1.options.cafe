@@ -66,7 +66,7 @@ func TestRunIronCondor01(t *testing.T) {
 
 	// Result #1
 	st.Expect(t, result[0].PutPrecentAway, 4.84)
-	st.Expect(t, result[0].CallPrecentAway, 4.69)
+	st.Expect(t, result[0].CallPrecentAway, 4.92)
 	st.Expect(t, result[0].Legs[0].OptionExpire.Format("2006-01-02"), "2018-11-30")
 	st.Expect(t, result[0].Legs[1].OptionExpire.Format("2006-01-02"), "2018-11-30")
 	st.Expect(t, result[0].Legs[2].OptionExpire.Format("2006-01-02"), "2018-11-30")
@@ -74,7 +74,7 @@ func TestRunIronCondor01(t *testing.T) {
 
 	// Result #2
 	st.Expect(t, result[1].PutPrecentAway, 5.21)
-	st.Expect(t, result[1].CallPrecentAway, 4.36)
+	st.Expect(t, result[1].CallPrecentAway, 4.56)
 	st.Expect(t, result[1].Legs[0].OptionExpire.Format("2006-01-02"), "2018-11-30")
 	st.Expect(t, result[1].Legs[1].OptionExpire.Format("2006-01-02"), "2018-11-30")
 	st.Expect(t, result[1].Legs[2].OptionExpire.Format("2006-01-02"), "2018-11-30")
@@ -82,7 +82,7 @@ func TestRunIronCondor01(t *testing.T) {
 
 	// Result #3
 	st.Expect(t, result[2].PutPrecentAway, 4.84)
-	st.Expect(t, result[2].CallPrecentAway, 4.36)
+	st.Expect(t, result[2].CallPrecentAway, 4.56)
 	st.Expect(t, result[2].Legs[0].OptionExpire.Format("2006-01-02"), "2018-11-30")
 	st.Expect(t, result[2].Legs[1].OptionExpire.Format("2006-01-02"), "2018-11-30")
 	st.Expect(t, result[2].Legs[2].OptionExpire.Format("2006-01-02"), "2018-11-30")

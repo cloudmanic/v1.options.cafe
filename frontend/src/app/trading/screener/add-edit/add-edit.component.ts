@@ -236,6 +236,7 @@ export class AddEditComponent implements OnInit
   strategyChange()
   {
     this.screen.Items = [];
+     this.runScreen();
   }
 
   //

@@ -75,6 +75,14 @@
   .nav-centered li + li { margin-left: 56px; }
 }
 
+/*  Table Simple Small Size1a  */
+.table-simple--small-size1a { overflow: hidden; }
+.table-simple--small-size1a ins { display: inline-block; margin: 0; padding: 0; }
+.table-simple--small-size1a th:nth-child(1),
+.table-simple--small-size1a td:nth-child(1) { width: 100px; }
+.table-simple--small-size1a th:nth-child(2),
+.table-simple--small-size1a td:nth-child(2) { width: 100px; }
+
 /* Settings */
 .article--size2 { max-width: 350px; }
 

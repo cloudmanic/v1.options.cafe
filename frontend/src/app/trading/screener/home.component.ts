@@ -13,7 +13,7 @@ import { Screener } from '../../models/screener';
 import { ScreenerResult } from '../../models/screener-result';
 import { StateService } from '../../providers/state/state.service';
 import { ScreenerService } from '../../providers/http/screener.service';
-import { faListAlt, faTh } from '@fortawesome/free-solid-svg-icons';
+import { faListAlt, faTh, faCaretRight, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../../providers/http/trade.service';
 
 @Component({
@@ -27,6 +27,8 @@ export class ScreenerComponent implements OnInit
   destory: Subject<boolean> = new Subject<boolean>();
   listGrid = faTh;
   listIcon = faListAlt;
+  faCaretDown = faCaretDown;  
+  faCaretRight = faCaretRight;  
 
   //
   // Constructor....
@@ -78,6 +80,22 @@ export class ScreenerComponent implements OnInit
   }
 
   //
+  // Toggle expanded.
+  //
+  viewToggle(screen: Screener) 
+  {
+    if(screen.Expanded)
+    {
+      screen.Expanded = false;
+    } else
+    {
+      screen.Expanded = true;      
+    }
+
+    this.storePerferedView();    
+  }
+
+  //
   // View change
   //
   viewChange(screen: Screener, type: string)
@@ -95,7 +113,7 @@ export class ScreenerComponent implements OnInit
 
     for(let i = 0; i < this.screeners.length; i++)
     {
-      obj[this.screeners[i].Id] = this.screeners[i].View;
+      obj[this.screeners[i].Id] = { View: this.screeners[i].View, Expanded: this.screeners[i].Expanded };
     }
 
     localStorage.setItem("screener-view", JSON.stringify(obj));
@@ -123,7 +141,8 @@ export class ScreenerComponent implements OnInit
     {
       if(typeof obj[this.screeners[i].Id] != "undefined")
       {
-        this.screeners[i].View = obj[this.screeners[i].Id];
+        this.screeners[i].View = obj[this.screeners[i].Id].View;
+        this.screeners[i].Expanded = obj[this.screeners[i].Id].Expanded;
       } else
       {
         this.screeners[i].View = "grid";

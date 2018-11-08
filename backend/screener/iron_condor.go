@@ -128,7 +128,16 @@ func (t *Base) RunIronCondor(screen models.Screener) ([]Result, error) {
 
 			// Percent away - We show the lowest percent away
 			putPercentAway := ((1 - (row.PutShort.Strike / quote.Last)) * 100)
-			callPercentAway := ((1 - (quote.Last / row.CallShort.Strike)) * 100)
+			callPercentAway := ((row.CallShort.Strike - quote.Last) / quote.Last) * 100
+
+			// Because of the rounding we do to find the closest .5 strike price some spreads will slip in we do one last filter.
+			if !t.FilterPercentAwayResults("put-leg-percent-away", screen, putPercentAway) {
+				continue
+			}
+
+			if !t.FilterPercentAwayResults("call-leg-percent-away", screen, callPercentAway) {
+				continue
+			}
 
 			// We have a winner
 			result = append(result, Result{
