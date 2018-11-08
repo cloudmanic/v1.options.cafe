@@ -77,7 +77,6 @@ import { CardComponent } from './settings/account/card/card.component';
 import { IvrComponent } from './trading/dashboard/ivr/ivr.component';
 import { TradesComponent } from './trading/trades/home.component';
 import { WatchlistComponent } from './trading/dashboard/watchlist/watchlist.component';
-import { ScreenerComponent } from './trading/screener/home.component';
 import { DashboardComponent } from './trading/dashboard/home.component';
 import { OrdersComponent } from './trading/dashboard/orders/orders.component';
 import { PositionsComponent } from './trading/dashboard/positions/positions.component';
@@ -87,13 +86,17 @@ import { TypeaheadSymbolsComponent } from './shared/typeahead-symbols/typeahead-
 import { TradeComponent } from './trade/trade.component';
 import { TradeMultiLegComponent } from './trade/trade-multi-leg/trade-multi-leg.component';
 import { DropdownSelectComponent } from './shared/dropdown-select/dropdown-select.component';
-import { AddEditComponent as ScreenerAddEditComponent } from './trading/screener/add-edit/add-edit.component';
 import { EquityComponent } from './trading/dashboard/positions/types/equity/equity.component';
 import { TradeEquityComponent } from './trade/trade-equity/trade-equity.component';
 import { SpreadComponent } from './trading/dashboard/positions/types/spread/spread.component';
 import { OptionComponent } from './trading/dashboard/positions/types/option/option.component';
 import { IronCondorComponent } from './trading/dashboard/positions/types/iron-condor/iron-condor.component';
 import { ReverseIronCondorComponent } from './trading/dashboard/positions/types/reverse-iron-condor/reverse-iron-condor.component';
+
+// Screener
+import { ScreenerComponent } from './trading/screener/home.component';
+import { AddEditComponent as ScreenerAddEditComponent } from './trading/screener/add-edit/add-edit.component';
+
 
 // Pipes
 import { TableSortPipe } from './pipes/table-sort.pipe'; 
@@ -178,7 +181,7 @@ import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.c
     CentcomCoreComponent,
     SymbolComponent,
     IronCondorComponent,
-    ReverseIronCondorComponent
+    ReverseIronCondorComponent,
   ],
   
   imports: [

@@ -15,20 +15,23 @@ export class ScreenerResult
   Debit: number;
   Credit: number;  
   MidPoint: number;
-  PrecentAway: number;
+  PutPrecentAway: number;
+  CallPrecentAway: number;  
   Legs: Symbol[];
 
   //
   // Build from JSON list.
   //
-  fromJsonList(json: Object[]): ScreenerResult[] {
+  fromJsonList(json: Object[]): ScreenerResult[] 
+  {
     let result = [];
 
     if (!json) {
       return result;
     }
 
-    for (let i = 0; i < json.length; i++) {
+    for (let i = 0; i < json.length; i++) 
+    {
       result.push(new ScreenerResult().fromJson(json[i]));
     }
 
