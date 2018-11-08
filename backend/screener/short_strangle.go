@@ -133,6 +133,11 @@ func (t *Base) RunShortStrangle(screen models.Screener) ([]Result, error) {
 					Legs:            []models.Symbol{symbPutShortLeg, symbCallShortLeg},
 				})
 
+				// We only want the first 100
+				if len(result) >= 100 {
+					return result, nil
+				}
+
 			}
 
 		}
@@ -167,11 +172,10 @@ func (t *Base) ShortStrangleFillDefault(screen *models.Screener) {
 
 	// Fields that are required
 	required := map[string]models.ScreenerItem{
-		// "open-credit":           {Key: "open-credit", Operator: ">", ValueNumber: 0.10},
-		// "put-leg-width":         {Key: "put-leg-width", Operator: "=", ValueNumber: 2.00},
-		// "call-leg-width":        {Key: "call-leg-width", Operator: "=", ValueNumber: 2.00},
-		// "put-leg-percent-away":  {Key: "put-leg-percent-away", Operator: ">", ValueNumber: 2.00},
-		// "call-leg-percent-away": {Key: "call-leg-percent-away", Operator: ">", ValueNumber: 2.00},
+		"open-credit":           {Key: "open-credit", Operator: ">", ValueNumber: 1.50},
+		"put-leg-percent-away":  {Key: "put-leg-percent-away", Operator: ">", ValueNumber: 4.00},
+		"call-leg-percent-away": {Key: "call-leg-percent-away", Operator: ">", ValueNumber: 4.00},
+		"days-to-expire":        {Key: "days-to-expire", Operator: "<", ValueNumber: 30},
 	}
 
 	// Loop through and identify items we already have

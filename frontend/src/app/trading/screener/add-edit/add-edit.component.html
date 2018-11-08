@@ -118,6 +118,7 @@
                   <div class="select select--primary">
                     <select name="Strategy" [(ngModel)]="screen.Strategy" (change)="strategyChange()">
                       <option value="put-credit-spread">Put Credit Spread</option>
+                      <option value="short-strangle">Short Strangle</option>
                       <option value="iron-condor">Iron Condor</option>
                       <option value="reverse-iron-condor">Reverse Iron Condor</option>
                     </select>
@@ -333,78 +334,115 @@
                 <p>We suggest tightening up your filters as we only display up to 100 results.</p>
               </div>
 
-              <table>
-                <thead>
-                  <tr>
+              <!-- Short Strangle -->
+              <ng-container *ngIf="screen.Strategy == 'short-strangle'">
 
-                    <th>
-                      <ins>Expire</ins>
-                    </th>
+                <table>
+                  <thead>
+                    <tr>
+                      <th><ins>Expire</ins></th>
+                      <th><ins>Strangle</ins></th>
+                      <th><ins>Put % Away</ins></th>
+                      <th><ins>Call % Away</ins></th>
+                      <th><ins>Credit</ins></th>
+                      <th><ins>Midpoint</ins></th>
+                      <th>&nbsp;</th>
+                    </tr>
+                  </thead>
 
-                    <th>
-                      <ins *ngIf="(screen.Strategy == 'put-credit-spread')">Spread</ins>
-                      <ins *ngIf="(screen.Strategy == 'reverse-iron-condor') || (screen.Strategy == 'iron-condor')">Condor</ins>
-                    </th>
+                  <tbody>
+                    <tr *ngFor="let row of results;">
+                      <td>{{ row.Legs[0].OptionExpire | date:'shortDate' }}</td>
+                      <td>{{ row.Legs[0].OptionStrike }} / {{ row.Legs[1].OptionStrike }}</td>
+                      <td>{{ row.PutPrecentAway | number:'1.2-2' }}%</td>
+                      <td>{{ row.CallPrecentAway | number:'1.2-2' }}%</td>
+                      <td>{{ row.Credit | currency:'USD':'symbol':'1.2-2' }}</td>
+                      <td>{{ row.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
+                      <td><app-dropdown-select [actions]="actions" [data]="row"></app-dropdown-select></td>
+                    </tr>
+                  </tbody>
+                </table>
 
-                    <th *ngIf="(screen.Strategy == 'reverse-iron-condor') || (screen.Strategy == 'iron-condor') || (screen.Strategy == 'put-credit-spread')">
-                      <ins>Put % Away</ins>
-                    </th>
+              </ng-container>
 
-                    <th *ngIf="(screen.Strategy == 'reverse-iron-condor') || (screen.Strategy == 'iron-condor')">
-                      <ins>Call % Away</ins>
-                    </th>
 
-                    <th>
-                      <ins *ngIf="(screen.Strategy == 'put-credit-spread') || (screen.Strategy == 'iron-condor')">Credit</ins>
-                      <ins *ngIf="(screen.Strategy == 'reverse-iron-condor')">Debit</ins>
-                    </th>
+              <!-- Everything Else -->
+              <ng-container *ngIf="screen.Strategy != 'short-strangle'">
+              
+                <table>
+                  <thead>
+                    <tr>
 
-                    <th>
-                      <ins>Midpoint</ins>
-                    </th>
+                      <th>
+                        <ins>Expire</ins>
+                      </th>
 
-                    <th>&nbsp;</th>
-                  </tr>
-                </thead>
+                      <th>
+                        <ins *ngIf="(screen.Strategy == 'put-credit-spread')">Spread</ins>
+                        <ins *ngIf="(screen.Strategy == 'reverse-iron-condor') || (screen.Strategy == 'iron-condor')">Condor</ins>
+                      </th>
 
-                <tbody>
-                  <tr *ngFor="let row of results;">
-                    
-                    <td>{{ row.Legs[0].OptionExpire | date:'shortDate' }}</td>
-                    
-                    <td *ngIf="(screen.Strategy == 'put-credit-spread')">
-                      {{ row.Legs[0].OptionStrike }} / {{ row.Legs[1].OptionStrike }}
-                    </td>
-                    
-                    <td *ngIf="(screen.Strategy == 'reverse-iron-condor') || (screen.Strategy == 'iron-condor')">
-                      {{ row.Legs[0].OptionStrike }} / {{ row.Legs[1].OptionStrike }} <br /> 
-                      {{ row.Legs[2].OptionStrike }} / {{ row.Legs[3].OptionStrike }}
-                    </td>                    
+                      <th *ngIf="(screen.Strategy == 'reverse-iron-condor') || (screen.Strategy == 'iron-condor') || (screen.Strategy == 'put-credit-spread')">
+                        <ins>Put % Away</ins>
+                      </th>
 
-                    <td *ngIf="(screen.Strategy == 'reverse-iron-condor') || (screen.Strategy == 'iron-condor') || (screen.Strategy == 'put-credit-spread')">
-                      {{ row.PutPrecentAway | number:'1.2-2' }}%
-                    </td>
+                      <th *ngIf="(screen.Strategy == 'reverse-iron-condor') || (screen.Strategy == 'iron-condor')">
+                        <ins>Call % Away</ins>
+                      </th>
 
-                    <td *ngIf="(screen.Strategy == 'reverse-iron-condor') || (screen.Strategy == 'iron-condor')">
-                      {{ row.CallPrecentAway | number:'1.2-2' }}%
-                    </td>
-                    
-                    <td *ngIf="(screen.Strategy == 'put-credit-spread') || (screen.Strategy == 'iron-condor')">
-                      {{ row.Credit | currency:'USD':'symbol':'1.2-2' }}
-                    </td>
-                    
-                    <td *ngIf="(screen.Strategy == 'reverse-iron-condor')">
-                      {{ row.Debit | currency:'USD':'symbol':'1.2-2' }}
-                    </td>                    
+                      <th>
+                        <ins *ngIf="(screen.Strategy == 'put-credit-spread') || (screen.Strategy == 'iron-condor')">Credit</ins>
+                        <ins *ngIf="(screen.Strategy == 'reverse-iron-condor')">Debit</ins>
+                      </th>
 
-                    <td>{{ row.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
-                    
-                    <td>
-                      <app-dropdown-select [actions]="actions" [data]="row"></app-dropdown-select>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                      <th>
+                        <ins>Midpoint</ins>
+                      </th>
+
+                      <th>&nbsp;</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr *ngFor="let row of results;">
+                      
+                      <td>{{ row.Legs[0].OptionExpire | date:'shortDate' }}</td>
+                      
+                      <td *ngIf="(screen.Strategy == 'put-credit-spread')">
+                        {{ row.Legs[0].OptionStrike }} / {{ row.Legs[1].OptionStrike }}
+                      </td>
+                      
+                      <td *ngIf="(screen.Strategy == 'reverse-iron-condor') || (screen.Strategy == 'iron-condor')">
+                        {{ row.Legs[0].OptionStrike }} / {{ row.Legs[1].OptionStrike }} <br /> 
+                        {{ row.Legs[2].OptionStrike }} / {{ row.Legs[3].OptionStrike }}
+                      </td>                    
+
+                      <td *ngIf="(screen.Strategy == 'reverse-iron-condor') || (screen.Strategy == 'iron-condor') || (screen.Strategy == 'put-credit-spread')">
+                        {{ row.PutPrecentAway | number:'1.2-2' }}%
+                      </td>
+
+                      <td *ngIf="(screen.Strategy == 'reverse-iron-condor') || (screen.Strategy == 'iron-condor')">
+                        {{ row.CallPrecentAway | number:'1.2-2' }}%
+                      </td>
+                      
+                      <td *ngIf="(screen.Strategy == 'put-credit-spread') || (screen.Strategy == 'iron-condor')">
+                        {{ row.Credit | currency:'USD':'symbol':'1.2-2' }}
+                      </td>
+                      
+                      <td *ngIf="(screen.Strategy == 'reverse-iron-condor')">
+                        {{ row.Debit | currency:'USD':'symbol':'1.2-2' }}
+                      </td>                    
+
+                      <td>{{ row.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
+                      
+                      <td>
+                        <app-dropdown-select [actions]="actions" [data]="row"></app-dropdown-select>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+              </ng-container>
 
             </div><!-- /.table -->
           </div><!-- /.widget__body -->

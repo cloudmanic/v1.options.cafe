@@ -431,6 +431,14 @@ export class AddEditComponent implements OnInit
     pcs.push(new ScreenerItemSettings('Short Strike % Away', 'short-strike-percent-away', 'input-number', ['>', '<'], [], [], 4.0));
     this.itemSetttings["put-credit-spread"] = pcs;
 
+    // Set item Settings: short-strangle
+    let ss: ScreenerItemSettings[] = [];
+    ss.push(new ScreenerItemSettings('Days To Expire', 'days-to-expire', 'select-number', ['<', '>', '='], days, [], 30));
+    ss.push(new ScreenerItemSettings('Open Credit', 'open-credit', 'input-number', ['<', '>', '='], [], [], 1.00));
+    ss.push(new ScreenerItemSettings('Put Leg % Away', 'put-leg-percent-away', 'input-number', ['>', '<'], [], [], 4.0));
+    ss.push(new ScreenerItemSettings('Call Leg % Away', 'call-leg-percent-away', 'input-number', ['>', '<'], [], [], 4.0));
+    this.itemSetttings["short-strangle"] = ss;  
+
     // Set item Settings: reverse-iron-condor
     let ric: ScreenerItemSettings[] = [];
     ric.push(new ScreenerItemSettings('Days To Expire', 'days-to-expire', 'select-number', ['<', '>', '='], days, [], 30));

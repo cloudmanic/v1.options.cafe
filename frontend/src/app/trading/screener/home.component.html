@@ -99,6 +99,36 @@
         </ng-container>
 
 
+        <!-- Short Strangle - List -->
+        <ng-container *ngIf="row.Strategy == 'short-strangle'">
+
+          <table>
+            <thead>
+              <tr>
+                <th><ins>Symbol</ins></th>
+                <th><ins>Expire</ins></th>
+                <th><ins>Strangle</ins></th>
+                <th (click)="sortClick(row, 'PutPrecentAway')" class="cursor-pointer"><ins>Put % Away</ins></th>
+                <th (click)="sortClick(row, 'Credit')" class="cursor-pointer"><ins>Credit</ins></th>
+                <th (click)="sortClick(row, 'Midpoint')" class="cursor-pointer"><ins>Midpoint</ins></th>
+                <th>&nbsp;</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let row2 of row.Results | tableSort:row.ListSort:row.ListOrder">
+                <td>{{ row2.Legs[0].OptionUnderlying }}</td>
+                <td>{{ row2.Legs[0].OptionExpire | date:'shortDate' }}</td>
+                <td>{{ row2.Legs[0].OptionStrike }} / {{ row2.Legs[1].OptionStrike }}</td>                    
+                <td>{{ row2.PutPrecentAway | number:'1.2-2' }}%</td>
+                <td>{{ row2.Credit | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td>{{ row2.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td class="text-align-right"><a class="btn" (click)="trade(row, row2)">Trade</a></td>
+              </tr>
+            </tbody>
+          </table>
+
+        </ng-container>
 
 
         <!-- Iron Condor - List -->
@@ -251,6 +281,54 @@
               </ng-container>
 
 
+
+
+              <!-- Short Strangle - Grid -->
+              <ng-container *ngIf="row.Strategy == 'short-strangle'">
+
+                <div class="feature__body">
+
+                  <div class="table-simple table-simple--small">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th><ins>Expire</ins></th>
+                          <th><ins>Strangle</ins></th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td>{{ row2.Legs[0].OptionExpire | date:'shortDate' }}</td>
+                          <td>{{ row2.Legs[0].OptionStrike }} / {{ row2.Legs[1].OptionStrike }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="table-simple table-simple--small table-simple--small-size1a">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th><ins>Put % Away</ins></th>
+                          <th><ins>Credit</ins></th>
+                          <th><ins>Midpoint</ins></th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td>{{ row2.PutPrecentAway | number:'1.2-2' }}%</td>
+                          <td>{{ row2.Credit | currency:'USD':'symbol':'1.2-2' }}</td>
+                          <td>{{ row2.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+
+              </ng-container>
 
 
 
