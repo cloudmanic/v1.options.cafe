@@ -64,94 +64,118 @@
 
 
 
-
+      <!-- List View -->
       <div class="screener-table hidden" *ngIf="row.View == 'list'" [ngClass]="{ 'hidden': (! row.Expanded) }">
 
-        <table>
-          <thead>
-            <tr>
-              <th class="darker">
-                <ins>Symbol</ins>
-              </th>
+        <!-- Put Credit Spread - List -->
+        <ng-container *ngIf="row.Strategy == 'put-credit-spread'">
 
-              <th>
-                <ins>Expire</ins>
-              </th>
+          <table>
+            <thead>
+              <tr>
+                <th><ins>Symbol</ins></th>
+                <th><ins>Expire</ins></th>
+                <th><ins>Spread</ins></th>
+                <th (click)="sortClick(row, 'PutPrecentAway')" class="cursor-pointer"><ins>Put % Away</ins></th>
+                <th (click)="sortClick(row, 'Credit')" class="cursor-pointer"><ins>Credit</ins></th>
+                <th (click)="sortClick(row, 'Midpoint')" class="cursor-pointer"><ins>Midpoint</ins></th>
+                <th>&nbsp;</th>
+              </tr>
+            </thead>
 
-              <th>
-                <ins *ngIf="(row.Strategy == 'put-credit-spread')">Spread</ins>
-                <ins *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor')">Condor</ins>
-              </th>
+            <tbody>
+              <tr *ngFor="let row2 of row.Results | tableSort:row.ListSort:row.ListOrder">
+                <td>{{ row2.Legs[0].OptionUnderlying }}</td>
+                <td>{{ row2.Legs[0].OptionExpire | date:'shortDate' }}</td>
+                <td>{{ row2.Legs[0].OptionStrike }} / {{ row2.Legs[1].OptionStrike }}</td>                    
+                <td>{{ row2.PutPrecentAway | number:'1.2-2' }}%</td>
+                <td>{{ row2.Credit | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td>{{ row2.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td class="text-align-right"><a class="btn" (click)="trade(row, row2)">Trade</a></td>
+              </tr>
+            </tbody>
+          </table>
 
-              <th (click)="sortClick(row, 'PutPrecentAway')" class="cursor-pointer" *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor') || (row.Strategy == 'put-credit-spread')">
-                <ins>Put % Away</ins>
-              </th>
+        </ng-container>
 
-              <th (click)="sortClick(row, 'CallPrecentAway')" class="cursor-pointer" *ngIf="(row.Strategy == 'reverse-iron-condor') ||  (row.Strategy == 'iron-condor')">
-                <ins>Call % Away</ins>
-              </th>
 
-              <th 
-              (click)="sortClick(row, 'Credit')" 
-              class="cursor-pointer" 
-              *ngIf="(row.Strategy == 'put-credit-spread') || (row.Strategy == 'iron-condor')">
-                <ins>Credit</ins> 
-              </th>
 
-              <th 
-              (click)="sortClick(row, 'Debit')" 
-              class="cursor-pointer" 
-              *ngIf="(row.Strategy == 'reverse-iron-condor')">
-                <ins>Debit</ins>
-              </th>
 
-              <th (click)="sortClick(row, 'Midpoint')" class="cursor-pointer" >
-                <ins>Midpoint</ins>
-              </th>
+        <!-- Iron Condor - List -->
+        <ng-container *ngIf="row.Strategy == 'iron-condor'">
 
-              <th>&nbsp;</th>
-            </tr>
-          </thead>
+          <table>
+            <thead>
+              <tr>
+                <th><ins>Symbol</ins></th>
+                <th><ins>Expire</ins></th>
+                <th><ins>Condor</ins></th>
+                <th (click)="sortClick(row, 'PutPrecentAway')" class="cursor-pointer"><ins>Put % Away</ins></th>
+                <th (click)="sortClick(row, 'CallPrecentAway')" class="cursor-pointer"><ins>Call % Away</ins></th>
+                <th (click)="sortClick(row, 'Credit')" class="cursor-pointer"><ins>Credit</ins></th>
+                <th (click)="sortClick(row, 'Midpoint')" class="cursor-pointer"><ins>Midpoint</ins></th>
+                <th>&nbsp;</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            <tr *ngFor="let row2 of row.Results | tableSort:row.ListSort:row.ListOrder">
-              <td>{{ row2.Legs[0].OptionUnderlying }}</td>
-              
-              <td>{{ row2.Legs[0].OptionExpire | date:'shortDate' }}</td>
-              
-              <td *ngIf="(row.Strategy == 'put-credit-spread')">
-                {{ row2.Legs[0].OptionStrike }} / {{ row2.Legs[1].OptionStrike }}
-              </td>
-              
-              <td *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor')">
-                {{ row2.Legs[0].OptionStrike }} / {{ row2.Legs[1].OptionStrike }} <br />
-                {{ row2.Legs[2].OptionStrike }} / {{ row2.Legs[3].OptionStrike }}
-              </td>                    
+            <tbody>
+              <tr *ngFor="let row2 of row.Results | tableSort:row.ListSort:row.ListOrder">
+                <td>{{ row2.Legs[0].OptionUnderlying }}</td>
+                <td>{{ row2.Legs[0].OptionExpire | date:'shortDate' }}</td>
+                <td>
+                  {{ row2.Legs[0].OptionStrike }} / {{ row2.Legs[1].OptionStrike }} <br />
+                  {{ row2.Legs[2].OptionStrike }} / {{ row2.Legs[3].OptionStrike }}
+                </td>                    
+                <td>{{ row2.PutPrecentAway | number:'1.2-2' }}%</td>
+                <td>{{ row2.CallPrecentAway | number:'1.2-2' }}%</td>
+                <td>{{ row2.Credit | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td>{{ row2.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td class="text-align-right"><a class="btn" (click)="trade(row, row2)">Trade</a></td>
+              </tr>
+            </tbody>
+          </table>
 
-              <td *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor') || (row.Strategy == 'put-credit-spread')">
-                {{ row2.PutPrecentAway | number:'1.2-2' }}%
-              </td>
-              
-              <td *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor')">
-                {{ row2.CallPrecentAway | number:'1.2-2' }}%
-              </td>
+        </ng-container>
 
-              <td *ngIf="(row.Strategy == 'put-credit-spread') || (row.Strategy == 'iron-condor')">
-                {{ row2.Credit | currency:'USD':'symbol':'1.2-2' }}
-              </td>
-              
-              <td *ngIf="(row.Strategy == 'reverse-iron-condor')">
-                {{ row2.Debit | currency:'USD':'symbol':'1.2-2' }}
-              </td>                    
 
-              <td>{{ row2.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
-              
-              <td class="text-align-right">
-                <a class="btn" (click)="trade(row, row2)">Trade</a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+
+
+        <!-- Reverse Iron Condor - List -->
+        <ng-container *ngIf="row.Strategy == 'reverse-iron-condor'">
+
+          <table>
+            <thead>
+              <tr>
+                <th><ins>Symbol</ins></th>
+                <th><ins>Expire</ins></th>
+                <th><ins>Condor</ins></th>
+                <th (click)="sortClick(row, 'PutPrecentAway')" class="cursor-pointer"><ins>Put % Away</ins></th>
+                <th (click)="sortClick(row, 'CallPrecentAway')" class="cursor-pointer"><ins>Call % Away</ins></th>
+                <th (click)="sortClick(row, 'Debit')" class="cursor-pointer"><ins>Debit</ins></th>
+                <th (click)="sortClick(row, 'Midpoint')" class="cursor-pointer"><ins>Midpoint</ins></th>
+                <th>&nbsp;</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let row2 of row.Results | tableSort:row.ListSort:row.ListOrder">
+                <td>{{ row2.Legs[0].OptionUnderlying }}</td>
+                <td>{{ row2.Legs[0].OptionExpire | date:'shortDate' }}</td>
+                <td>
+                  {{ row2.Legs[0].OptionStrike }} / {{ row2.Legs[1].OptionStrike }} <br />
+                  {{ row2.Legs[2].OptionStrike }} / {{ row2.Legs[3].OptionStrike }}
+                </td>                    
+                <td>{{ row2.PutPrecentAway | number:'1.2-2' }}%</td>
+                <td>{{ row2.CallPrecentAway | number:'1.2-2' }}%</td>
+                <td>{{ row2.Debit | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td>{{ row2.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td class="text-align-right"><a class="btn" (click)="trade(row, row2)">Trade</a></td>
+              </tr>
+            </tbody>
+          </table>
+
+        </ng-container>
+
 
       </div>
 
@@ -166,95 +190,173 @@
 
 
 
-
+      <!-- Grid View -->
       <div class="article__body article__body--size2" *ngIf="row.View == 'grid'" [ngClass]="{ 'hidden': (! row.Expanded) }">
         <div class="features features--small" *ngIf="row.Results && (row.Results.length > 0)">
           
+
           <div class="feature feature--small" *ngFor="let row2 of row.Results;">
             <div class="feature__inner">
               <div class="feature__head">
                 <h6>{{ row.Symbol }}</h6>
                 <!-- <i class="ico-check-circle feature__ico"></i> -->
               </div>
+              
 
-              <div class="feature__body">
-                <div class="table-simple table-simple--small">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>
-                          <ins>Expire</ins>
-                        </th>
+              <!-- Put Credit Spread - Grid -->
+              <ng-container *ngIf="row.Strategy == 'put-credit-spread'">
 
-                        <th>
-                          <ins *ngIf="(row.Strategy == 'put-credit-spread')">Spread</ins>
-                          <ins *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor')">Condor</ins>
-                        </th>
-                      </tr>
-                    </thead>
+                <div class="feature__body">
 
-                    <tbody>
-                      <tr>
-                        <td>{{ getExpire(row2) | date:'shortDate' }}</td>
-                        
-                        <td>{{ getSpread(row2) }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div><!-- /.table -->
+                  <div class="table-simple table-simple--small">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th><ins>Expire</ins></th>
+                          <th><ins>Spread</ins></th>
+                        </tr>
+                      </thead>
 
-                <div class="table-simple table-simple--small table-simple--small-size1a">
-                  <table>
-                    <thead>
-                      <tr>
+                      <tbody>
+                        <tr>
+                          <td>{{ row2.Legs[0].OptionExpire | date:'shortDate' }}</td>
+                          <td>{{ row2.Legs[0].OptionStrike }} / {{ row2.Legs[1].OptionStrike }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
 
-                        <th *ngIf="(row.Strategy == 'put-credit-spread') || (row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor')">
-                          <ins>Put % Away</ins>
-                        </th>
+                  <div class="table-simple table-simple--small table-simple--small-size1a">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th><ins>Put % Away</ins></th>
+                          <th><ins>Credit</ins></th>
+                          <th><ins>Midpoint</ins></th>
+                        </tr>
+                      </thead>
 
-                        <th *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor')">
-                          <ins>Call % Away</ins>
-                        </th>
+                      <tbody>
+                        <tr>
+                          <td>{{ row2.PutPrecentAway | number:'1.2-2' }}%</td>
+                          <td>{{ row2.Credit | currency:'USD':'symbol':'1.2-2' }}</td>
+                          <td>{{ row2.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
 
-                        <th>
-                          <ins *ngIf="(row.Strategy == 'iron-condor') || (row.Strategy == 'put-credit-spread')">
-                            Credit
-                          </ins>
-                          <ins *ngIf="(row.Strategy == 'reverse-iron-condor')">
-                            Debit
-                          </ins>                          
-                        </th>
-
-                        <th>
-                          <ins>Midpoint</ins>
-                        </th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      <tr>
-                        <td *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor') || (row.Strategy == 'put-credit-spread')">
-                          {{ row2.PutPrecentAway | number:'1.2-2' }}%
-                        </td>
-
-                        <td *ngIf="(row.Strategy == 'reverse-iron-condor') || (row.Strategy == 'iron-condor')">
-                          {{ row2.CallPrecentAway | number:'1.2-2' }}%
-                        </td>                        
-
-                        <td *ngIf="(row.Strategy == 'iron-condor') || (row.Strategy == 'put-credit-spread')">
-                          {{ row2.Credit | currency:'USD':'symbol':'1.2-2' }}
-                        </td>
-
-                        <td *ngIf="(row.Strategy == 'reverse-iron-condor')">
-                          {{ row2.Debit | currency:'USD':'symbol':'1.2-2' }}
-                        </td>
-
-                        <td>{{ row2.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
                 </div>
-              </div>
+
+              </ng-container>
+
+
+
+
+
+
+              <!-- Iron Condor - Grid -->
+              <ng-container *ngIf="row.Strategy == 'iron-condor'">
+
+                <div class="feature__body">
+
+                  <div class="table-simple table-simple--small">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th><ins>Expire</ins></th>
+                          <th><ins>Condor</ins></th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td>{{ row2.Legs[0].OptionExpire | date:'shortDate' }}</td>
+                          <td>{{ row2.Legs[0].OptionStrike }} / {{ row2.Legs[1].OptionStrike }} / {{ row2.Legs[2].OptionStrike }} / {{ row2.Legs[3].OptionStrike }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="table-simple table-simple--small table-simple--small-size1a">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th><ins>Put % Away</ins></th>
+                          <th><ins>Call % Away</ins></th>
+                          <th><ins>Credit</ins></th>
+                          <th><ins>Midpoint</ins></th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td>{{ row2.PutPrecentAway | number:'1.2-2' }}%</td>
+                          <td>{{ row2.CallPrecentAway | number:'1.2-2' }}%</td>                          
+                          <td>{{ row2.Credit | currency:'USD':'symbol':'1.2-2' }}</td>
+                          <td>{{ row2.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+
+              </ng-container>
+
+
+
+
+
+              <!-- Reverse Iron Condor - Grid -->
+              <ng-container *ngIf="row.Strategy == 'reverse-iron-condor'">
+
+                <div class="feature__body">
+
+                  <div class="table-simple table-simple--small">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th><ins>Expire</ins></th>
+                          <th><ins>Condor</ins></th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td>{{ row2.Legs[0].OptionExpire | date:'shortDate' }}</td>
+                          <td>{{ row2.Legs[0].OptionStrike }} / {{ row2.Legs[1].OptionStrike }} / {{ row2.Legs[2].OptionStrike }} / {{ row2.Legs[3].OptionStrike }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="table-simple table-simple--small table-simple--small-size1a">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th><ins>Put % Away</ins></th>
+                          <th><ins>Call % Away</ins></th>
+                          <th><ins>Debit</ins></th>
+                          <th><ins>Midpoint</ins></th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td>{{ row2.PutPrecentAway | number:'1.2-2' }}%</td>
+                          <td>{{ row2.CallPrecentAway | number:'1.2-2' }}%</td>                          
+                          <td>{{ row2.Debit | currency:'USD':'symbol':'1.2-2' }}</td>
+                          <td>{{ row2.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+
+              </ng-container>
+
 
               <div class="feature__actions">
                 <a class="btn btn--size4" (click)="trade(row, row2)">Place Trade</a>
