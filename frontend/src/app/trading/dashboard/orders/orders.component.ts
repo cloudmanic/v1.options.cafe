@@ -119,7 +119,10 @@ export class OrdersComponent implements OnInit {
   getOrders()
   {
     // Get balance data
-    this.brokerService.getOrders(this.stateService.GetActiveBrokerAccount().BrokerId).subscribe((data) => {    
+    this.brokerService.getOrders(this.stateService.GetActiveBrokerAccount().BrokerId).subscribe((data) => {  
+
+      console.log(data);
+
       this.setOrders(data);
     });
   }  

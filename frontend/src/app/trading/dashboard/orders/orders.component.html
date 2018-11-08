@@ -90,7 +90,9 @@
               <!-- Price -->            
               <td *ngIf="row.Type == 'stop_limit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</td>
               <td *ngIf="row.Type == 'stop'">{{ row.StopPrice | currency:'USD':'symbol':'1.2-2' }}</td>
-              <td *ngIf="row.Type == 'limit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</td> 
+              <td *ngIf="row.Type == 'limit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</td>
+              <td *ngIf="row.Type == 'credit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</td> 
+              <td *ngIf="row.Type == 'debit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</td>               
               <td *ngIf="row.Type == 'market'">---</td>              
             
               <!-- Filled -->
@@ -179,27 +181,33 @@
             <!-- Multi Leg Order -->
             <ng-container *ngIf="row.Class == 'multileg'">
               <tr *ngFor="let row2 of row.Legs; let i = index" [ngClass]="{ 'table__row--bordered': (k != 0) && (i == 0) }">
+                
+                <!-- Description -->
                 <td><strong>{{ quotes[row2.OptionSymbol]?.description }}</strong></td>
               
+                <!-- OptionSymbol -->
                 <td>{{ quotes[row2.OptionSymbol]?.last | currency:'USD':'symbol':'1.2-2' }}</td>
               
+                <!-- Quantity -->
                 <td>{{ row2.Quantity }}</td>
               
+                <!-- Duration -->
                 <td *ngIf="i == 0">{{ row.Duration }}</td>
                 <td *ngIf="i > 0">&nbsp;</td>
               
+                <!-- Type -->
                 <td *ngIf="i == 0">{{ row.Type }}</td>
                 <td *ngIf="i > 0">&nbsp;</td>
               
-                <td *ngIf="i == 0">
-                  <span [hidden]="row2.Type != 'debit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</span>
-                  <span [hidden]="row2.Type != 'credit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</span>
-                  <span [hidden]="row2.Type != 'stop'">{{ row.StopPrice | currency:'USD':'symbol':'1.2-2' }}</span>
-                  <span [hidden]="row2.Type != 'limit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</span> 
-                  <span [hidden]="row2.Type != 'market'">---</span>     					
-                </td>
+                <!-- Price -->
+                <td *ngIf="(i == 0) && (row.Type == 'debit')">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td *ngIf="(i == 0) && (row.Type == 'credit')">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td *ngIf="(i == 0) && (row.Type == 'stop')">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td *ngIf="(i == 0) && (row.Type == 'limit')">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</td>                                
+                <td *ngIf="(i == 0) && (row.Type == 'market')">---</td>  
                 <td *ngIf="i > 0">&nbsp;</td>
               
+                <!-- Filled -->
                 <td *ngIf="i == 0">
                   <span [hidden]="row2.Status != 'filled'">{{ row.AvgFillPrice | currency:'USD':'symbol':'1.2-2' }}</span>
                   <span [hidden]="row2.Status != 'open'">---</span>
@@ -211,6 +219,7 @@
                 </td>        
                 <td *ngIf="i > 0">&nbsp;</td>
               
+                <!-- Status -->
                 <td *ngIf="i == 0">
                   <span [hidden]="row.Status != 'filled'"><strong class="title-green">{{ row.Status }}</strong></span>
                   <span [hidden]="row.Status != 'open'"><strong class="title-grey">{{ row.Status }}</strong></span>
@@ -222,6 +231,7 @@
                 </td>
                 <td *ngIf="i > 0">&nbsp;</td>
 
+                <!-- Action Button -->
                 <td *ngIf="i == 0">
 
                   <app-dropdown-select [actions]="actions" [data]="row" *ngIf="row.Status != 'pending'"></app-dropdown-select>
