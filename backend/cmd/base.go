@@ -8,7 +8,6 @@ package cmd
 
 import (
 	"flag"
-	"fmt"
 
 	"github.com/cloudmanic/app.options.cafe/backend/cmd/actions"
 	"github.com/cloudmanic/app.options.cafe/backend/cron"
@@ -23,6 +22,8 @@ import (
 func Run(db *models.DB) bool {
 
 	// Grab flags
+	userId := flag.Int("user_id", 0, "")
+	brokerAccountId := flag.Int("broker_account_id", 0, "")
 	action := flag.String("cmd", "none", "")
 	name := flag.String("name", "", "")
 	flag.Parse()
@@ -66,9 +67,9 @@ func Run(db *models.DB) bool {
 		return true
 		break
 
-	// Just a test
-	case "test":
-		fmt.Println("CMD Works....")
+	// Return the json a broker give us by a userid
+	case "broker-json-history":
+		actions.GetJsonBrokerHistory(db, *userId, *brokerAccountId)
 		return true
 		break
 

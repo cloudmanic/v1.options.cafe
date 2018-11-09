@@ -2,7 +2,7 @@
 // Date: 2018-10-27
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-07
+// Last Modified: 2018-11-08
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -10,7 +10,6 @@ package screener
 
 import (
 	"flag"
-	"sort"
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
@@ -90,6 +89,10 @@ func (t *Base) RunIronCondor(screen models.Screener) ([]Result, error) {
 
 			// We only want the first 100
 			if len(result) >= 100 {
+
+				// Sort the results
+				t.SortResults(result)
+
 				return result, nil
 			}
 
@@ -153,16 +156,8 @@ func (t *Base) RunIronCondor(screen models.Screener) ([]Result, error) {
 
 	}
 
-	// Sort the results expire in asc order.
-	sort.Slice(result, func(i, j int) bool {
-
-		// Deal with tied sorts
-		if result[i].Expired.Unix() == result[j].Expired.Unix() {
-			return result[i].MidPoint < result[j].MidPoint
-		}
-
-		return result[i].Expired.Unix() < result[j].Expired.Unix()
-	})
+	// Sort the results
+	t.SortResults(result)
 
 	// Return happy
 	return result, nil

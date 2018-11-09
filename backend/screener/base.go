@@ -9,6 +9,7 @@ package screener
 import (
 	"errors"
 	"math"
+	"sort"
 	"strconv"
 	"time"
 
@@ -106,6 +107,24 @@ func (t *Base) PrimeAllScreenerCaches() {
 		time.Sleep(time.Second * 60 * 5)
 
 	}
+
+}
+
+//
+// Sort results
+//
+func (t *Base) SortResults(result []Result) {
+
+	// Sort the results expire in asc order.
+	sort.Slice(result, func(i, j int) bool {
+
+		// Deal with tied sorts
+		if result[i].Expired.Unix() == result[j].Expired.Unix() {
+			return result[i].MidPoint < result[j].MidPoint
+		}
+
+		return result[i].Expired.Unix() < result[j].Expired.Unix()
+	})
 
 }
 
