@@ -23,6 +23,7 @@ func TestStoreOrders01(t *testing.T) {
 	db.Exec("TRUNCATE TABLE orders;")
 	db.Exec("TRUNCATE TABLE trade_groups;")
 	db.Exec("TRUNCATE TABLE positions;")
+	db.Exec("TRUNCATE TABLE symbols;")
 
 	// Build test user
 	db.Exec("TRUNCATE TABLE users;")
@@ -73,8 +74,9 @@ func TestStoreOrders02(t *testing.T) {
 
 	// Truncate the tables we are going to populate.
 	db.Exec("TRUNCATE TABLE orders;")
-	db.Exec("TRUNCATE TABLE trade_groups;")
 	db.Exec("TRUNCATE TABLE positions;")
+	db.Exec("TRUNCATE TABLE trade_groups;")
+	db.Exec("TRUNCATE TABLE symbols;")
 
 	// Build test user
 	db.Exec("TRUNCATE TABLE users;")

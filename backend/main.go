@@ -4,12 +4,14 @@ import (
 	"os"
 	"runtime"
 
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/polling"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/cmd"
 	"github.com/cloudmanic/app.options.cafe/backend/controllers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/notify/websocket_push"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/queue/broker_feed"
 	"github.com/cloudmanic/app.options.cafe/backend/screener"
 	"github.com/cloudmanic/app.options.cafe/backend/users"
 	"github.com/cloudmanic/app.options.cafe/backend/websocket"
@@ -78,6 +80,12 @@ func main() {
 	// Start loop through refresh screener
 	t := screener.NewScreen(db, &tradier.Api{DB: nil, ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN")})
 	go t.PrimeAllScreenerCaches()
+
+	// Start broker feed consumer
+	go broker_feed.Start(db)
+
+	// Start polling brokers
+	go polling.Start(db)
 
 	// Start websockets & controllers
 	c.StartWebServer()

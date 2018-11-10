@@ -265,6 +265,24 @@ func (t *DB) GetAllActiveUsers() []User {
 }
 
 //
+// Return an array of all active or Trial users.
+//
+func (t *DB) GetAllActiveOrTrialUsers() []User {
+
+	var users []User
+
+	t.Where("status = ? OR status = ?", "Active", "Trial").Find(&users)
+
+	// Add in our one to many look ups
+	for i := range users {
+		t.Model(users[i]).Related(&users[i].Brokers)
+	}
+
+	return users
+
+}
+
+//
 // Login a user by ID
 //
 func (t *DB) LoginUserById(id uint, appId uint, userAgent string, ipAddress string) (User, error) {
