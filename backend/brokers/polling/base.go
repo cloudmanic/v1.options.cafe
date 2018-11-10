@@ -2,7 +2,7 @@
 // Date: 2018-11-09
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-09
+// Last Modified: 2018-11-10
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -10,25 +10,30 @@ package polling
 
 import (
 	"os"
+	"runtime"
 	"strconv"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/queue/broker_feed"
 	nsq "github.com/nsqio/go-nsq"
 )
 
 var nsqConn *nsq.Producer
 
 //
-// Init
+// Start broker polling. We really should only have
+// one machine that does the broker polling.
+// Via the ENV files we determine if this machine should
+// do the broker polling or not.
 //
-func init() {
+func Start(db models.Datastore) {
 
 	// NSQ config
 	config := nsq.NewConfig()
 
 	// Build producer object
-	c, err := nsq.NewProducer(os.Getenv("NSQ_HOST"), config)
+	c, err := nsq.NewProducer(os.Getenv("NSQD_HOST"), config)
 
 	if err != nil {
 		services.FatalMsg(err, "PollOrders (NewProducer): NSQ Could not connect.")
@@ -36,13 +41,23 @@ func init() {
 
 	// Set package global
 	nsqConn = c
-}
 
-//
-// Start broker polling
-//
-func Start(db models.Datastore) {
+	// Start broker feed consumer???
+	// If this app is in local DEV mode we do our broker feed
+	// consumption in the same binary. On a production machine we used different
+	// we call this via the "--cmd=broker-feed-worker" command line flag
+	if os.Getenv("APP_ENV") == "local" {
+		go broker_feed.Start(db)
+	}
+
+	// Start polling
 	go PollOrders(db)
+
+	// When we call this from the CLI via "-cmd=broker-feed-poller". Only used in production.
+	// GoExit will exit after all go routines exit
+	if os.Getenv("APP_ENV") != "local" {
+		runtime.Goexit()
+	}
 }
 
 //

@@ -9,11 +9,13 @@ package cmd
 import (
 	"flag"
 
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/polling"
 	"github.com/cloudmanic/app.options.cafe/backend/cmd/actions"
 	"github.com/cloudmanic/app.options.cafe/backend/cron"
 	"github.com/cloudmanic/app.options.cafe/backend/cron/data_import"
 	"github.com/cloudmanic/app.options.cafe/backend/library/import/options"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/queue/broker_feed"
 )
 
 //
@@ -24,11 +26,23 @@ func Run(db *models.DB) bool {
 	// Grab flags
 	userId := flag.Int("user_id", 0, "")
 	brokerAccountId := flag.Int("broker_account_id", 0, "")
-	action := flag.String("cmd", "none", "")
+	action := flag.String("cmd", "none", "--cmd={action}")
 	name := flag.String("name", "", "")
 	flag.Parse()
 
 	switch *action {
+
+	// This is a broker feed worker
+	case "broker-feed-worker":
+		broker_feed.Start(db)
+		return true
+		break
+
+	// This is a broker feed poller
+	case "broker-feed-poller":
+		polling.Start(db)
+		return true
+		break
 
 	// Go to Angular
 	case "go-to-angular":

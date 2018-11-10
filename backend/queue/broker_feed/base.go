@@ -2,7 +2,7 @@
 // Date: 2018-11-09
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-09
+// Last Modified: 2018-11-10
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -67,12 +67,15 @@ func Start(db models.Datastore) {
 	}))
 
 	// Connect
-	err := q.ConnectToNSQD(os.Getenv("NSQ_HOST"))
+	err := q.ConnectToNSQD(os.Getenv("NSQD_HOST"))
 
 	if err != nil {
 		log.Panic("Could not connect")
 	}
 
+	services.Critical("Broker Feed Worker Started...")
+
+	// Wait for messages
 	wg.Wait()
 
 }

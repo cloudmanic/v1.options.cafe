@@ -47,6 +47,108 @@ services:
     networks:
       - shared 
 
+  # Broker Feed Worker 1
+  brokerfeedworker1:
+           
+    hostname: broker-feed-worker-1.options.cafe
+
+    container_name: broker-feed-worker-1.options.cafe
+
+    build:
+      context: ./build
+      dockerfile: Dockerfile
+      args:
+        P_UID: 1002
+        P_GID: 1002     
+    
+    image: app.options.cafe/golang:1.8.1-alpine
+
+    command: /app --cmd=broker-feed-worker
+
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: tcp+tls://logs6.papertrailapp.com:49242
+        tag: broker-feed-worker-1.options.cafe                    
+
+    restart: always
+    
+    env_file:
+      - .env      
+                      
+    networks:
+      - shared 
+
+  # Broker Feed Worker 1
+  brokerfeedworker1:
+           
+    hostname: broker-feed-worker-1.options.cafe
+
+    container_name: broker-feed-worker-1.options.cafe
+
+    build:
+      context: ./build
+      dockerfile: Dockerfile
+      args:
+        P_UID: 1002
+        P_GID: 1002     
+    
+    image: app.options.cafe/golang:1.8.1-alpine
+
+    command: /app --cmd=broker-feed-worker
+
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: tcp+tls://logs6.papertrailapp.com:49242
+        tag: broker-feed-worker-1.options.cafe                    
+
+    restart: always
+    
+    env_file:
+      - .env 
+
+    depends_on:
+      - nsqd            
+                      
+    networks:
+      - shared
+
+  # Broker Feed Poller
+  brokerfeedpoller:
+           
+    hostname: broker-feed-poller.options.cafe
+
+    container_name: broker-feed-poller.options.cafe
+
+    build:
+      context: ./build
+      dockerfile: Dockerfile
+      args:
+        P_UID: 1002
+        P_GID: 1002     
+    
+    image: app.options.cafe/golang:1.8.1-alpine
+
+    command: /app --cmd=broker-feed-poller
+
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: tcp+tls://logs6.papertrailapp.com:49242
+        tag: broker-feed-poller.options.cafe                    
+
+    restart: always
+    
+    env_file:
+      - .env 
+
+    depends_on:
+      - nsqd            
+                      
+    networks:
+      - shared                   
+
   # Cron
   cron:
            
@@ -103,6 +205,68 @@ services:
     networks:
       - shared         
   
+  # nsqlookupd    
+  nsqlookupd:
+  
+    image: nsqio/nsq
+    
+    container_name: nsqlookupd.options.cafe
+    
+    hostname: nsqlookupd.options.cafe
+
+    user: 1002:1002    
+      
+    restart: always 
+    
+    command: /nsqlookupd 
+    
+    networks:
+      - shared
+
+
+  # nsqd    
+  nsqd:
+  
+    image: nsqio/nsq
+    
+    container_name: nsqd.options.cafe
+    
+    hostname: nsqd.options.cafe
+
+    user: 1002:1002
+      
+    restart: always 
+    
+    command: /nsqd --lookupd-tcp-address=nsqlookupd:4160 --data-path=/tmp
+    
+    networks:
+      - shared
+
+
+  # nsqadmin    
+  nsqadmin:
+  
+    image: nsqio/nsq
+    
+    container_name: nsqadmin.options.cafe
+    
+    hostname: nsqadmin.options.cafe
+
+    user: 1002:1002    
+      
+    restart: always 
+    
+    command: /nsqadmin --lookupd-http-address=nsqlookupd:4161
+
+    depends_on:
+      - nsqlookupd  
+
+    ports:
+      - 127.0.0.1:4171:4171      
+ 
+    networks:
+      - shared
+
 networks:
   shared:
     external:
