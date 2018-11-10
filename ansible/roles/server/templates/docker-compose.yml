@@ -63,7 +63,7 @@ services:
     
     image: app.options.cafe/golang:1.8.1-alpine
 
-    command: /app --cmd=broker-feed-worker
+    command: ./app --cmd=broker-feed-worker
 
     logging:
       driver: "syslog"
@@ -95,7 +95,7 @@ services:
     
     image: app.options.cafe/golang:1.8.1-alpine
 
-    command: /app --cmd=broker-feed-worker
+    command: ./app --cmd=broker-feed-worker
 
     logging:
       driver: "syslog"
@@ -130,7 +130,7 @@ services:
     
     image: app.options.cafe/golang:1.8.1-alpine
 
-    command: /app --cmd=broker-feed-poller
+    command: ./app --cmd=broker-feed-poller
 
     logging:
       driver: "syslog"
@@ -158,12 +158,14 @@ services:
     
     build:
       context: ./build
-      dockerfile: Dockerfile-cron
+      dockerfile: Dockerfile
       args:
         P_UID: 1002
-        P_GID: 1002      
+        P_GID: 1002       
     
-    image: cron.options.cafe/golang:1.8.1-alpine           
+    image: cron.options.cafe/golang:1.8.1-alpine
+
+    command: ./app --cmd=cron              
 
     logging:
       driver: "syslog"

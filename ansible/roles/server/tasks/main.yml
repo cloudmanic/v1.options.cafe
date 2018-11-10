@@ -24,10 +24,6 @@
 - name: Install Dockerfile
   template: src=Dockerfile dest=/sites/optionscafe/app.options.cafe/docker/build/Dockerfile owner=optionscafe group=optionscafe mode=0644
 
-# Install Dockerfile-cron
-- name: Install Dockerfile-cron
-  template: src=Dockerfile-cron dest=/sites/optionscafe/app.options.cafe/docker/build/Dockerfile-cron owner=optionscafe group=optionscafe mode=0644
-
 # Install ENV File
 - name: Install ENV File
   template: src=env dest=/sites/optionscafe/app.options.cafe/docker/.env owner=optionscafe group=optionscafe mode=0644
