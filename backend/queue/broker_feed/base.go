@@ -42,6 +42,7 @@ func init() {
 	// Build out the action functions
 	brokerFeedActions = map[string]func(models.Datastore, brokers.Api, models.User, models.Broker) error{
 		"get-orders": pull.DoGetOrders,
+		"get-quotes": pull.DoGetQuotes,
 	}
 
 }
@@ -107,13 +108,13 @@ func HandleRequest(db models.Datastore, msg string) {
 	}
 
 	// Make sure the action we went in is known
-	if _, ok := brokerFeedActions["get-orders"]; !ok {
+	if _, ok := brokerFeedActions[ac.Action]; !ok {
 		services.BetterError(errors.New("Unknown broker feed action."))
 		return
 	}
 
 	// Based on the action sent in call broker API.
-	err = brokerFeedActions["get-orders"](db, api, user, broker)
+	err = brokerFeedActions[ac.Action](db, api, user, broker)
 
 	if err != nil {
 		services.BetterError(err)

@@ -2,7 +2,7 @@
 // Date: 2018-11-09
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-09
+// Last Modified: 2018-11-10
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -18,8 +18,7 @@ import (
 )
 
 //
-// Do get orders. Returns a hash of the orders. Main thing
-// we are doing here is populating the cache with the results
+// Do get orders. Main thing we are doing here is populating the cache with the results
 //
 func DoGetOrders(db models.Datastore, api brokers.Api, user models.User, broker models.Broker) error {
 

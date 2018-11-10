@@ -1,5 +1,5 @@
 //
-// Date: 2018-11-09
+// Date: 2018-11-10
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
 // Last Modified: 2018-11-10
@@ -15,19 +15,19 @@ import (
 )
 
 //
-// Poll for orders by sending requests to our message queue.
-// Every 3 seconds we send a request for more current order data.
+// Poll for quotes by sending requests to our message queue.
+// Every 1 second we send a request for more current quote data.
 //
-func PollOrders(db models.Datastore) {
+func PollQuotes(db models.Datastore) {
 
 	// Start polling
 	for {
 
 		// Send action to all users
-		SendActionToAllUsers(db, "get-orders")
+		SendActionToAllUsers(db, "get-quotes")
 
-		// Sleep for 3 seconds
-		time.Sleep(time.Second * 3)
+		// Sleep for 1 seconds
+		time.Sleep(time.Second * 1)
 	}
 
 }

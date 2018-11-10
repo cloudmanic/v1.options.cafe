@@ -52,12 +52,16 @@ func Start(db models.Datastore) {
 
 	// Start polling
 	go PollOrders(db)
+	go PollQuotes(db)
 
 	// When we call this from the CLI via "-cmd=broker-feed-poller". Only used in production.
 	// GoExit will exit after all go routines exit
 	if os.Getenv("APP_ENV") != "local" {
 		runtime.Goexit()
 	}
+
+	// Log
+	services.Critical("Broker Feed Poller Started...")
 }
 
 //

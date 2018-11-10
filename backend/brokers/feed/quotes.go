@@ -6,87 +6,80 @@
 
 package feed
 
-import (
-	"fmt"
-	"time"
+// //
+// // Ticker - Get DetailedQuotes : 1 second
+// //
+// func (t *Base) DoGetDetailedQuotes() {
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-)
+// 	// Store quotes we need for the site.
+// 	t.DB.CreateActiveSymbol(t.User.Id, "$DJI")
+// 	t.DB.CreateActiveSymbol(t.User.Id, "SPX")
+// 	t.DB.CreateActiveSymbol(t.User.Id, "COMP")
+// 	t.DB.CreateActiveSymbol(t.User.Id, "VIX")
+// 	t.DB.CreateActiveSymbol(t.User.Id, "SPY")
 
-//
-// Ticker - Get DetailedQuotes : 1 second
-//
-func (t *Base) DoGetDetailedQuotes() {
+// 	for {
 
-	// Store quotes we need for the site.
-	t.DB.CreateActiveSymbol(t.User.Id, "$DJI")
-	t.DB.CreateActiveSymbol(t.User.Id, "SPX")
-	t.DB.CreateActiveSymbol(t.User.Id, "COMP")
-	t.DB.CreateActiveSymbol(t.User.Id, "VIX")
-	t.DB.CreateActiveSymbol(t.User.Id, "SPY")
+// 		// Do we break out ?
+// 		t.MuPolling.Lock()
+// 		breakOut := t.Polling
+// 		t.MuPolling.Unlock()
 
-	for {
+// 		if !breakOut {
+// 			break
+// 		}
 
-		// Do we break out ?
-		t.MuPolling.Lock()
-		breakOut := t.Polling
-		t.MuPolling.Unlock()
+// 		// Load up our DetailedQuotes
+// 		err := t.GetActiveSymbolsDetailedQuotes()
 
-		if !breakOut {
-			break
-		}
+// 		if err != nil {
+// 			services.Warning(err)
+// 		}
 
-		// Load up our DetailedQuotes
-		err := t.GetActiveSymbolsDetailedQuotes()
+// 		// Sleep for 1 second
+// 		time.Sleep(time.Second * 1)
 
-		if err != nil {
-			services.Warning(err)
-		}
+// 	}
 
-		// Sleep for 1 second
-		time.Sleep(time.Second * 1)
+// 	services.Info("Stopping DoGetDetailedQuotes() : " + t.User.Email)
+// }
 
-	}
+// //
+// // Do get quotes - more details from the streaming - activeSymbols
+// //
+// func (t *Base) GetActiveSymbolsDetailedQuotes() error {
 
-	services.Info("Stopping DoGetDetailedQuotes() : " + t.User.Email)
-}
+// 	var symbols []string
 
-//
-// Do get quotes - more details from the streaming - activeSymbols
-//
-func (t *Base) GetActiveSymbolsDetailedQuotes() error {
+// 	// Build active symbols array.
+// 	results, err := t.DB.GetActiveSymbolsByUser(t.User.Id)
 
-	var symbols []string
+// 	for _, row := range results {
+// 		symbols = append(symbols, row.Symbol)
+// 	}
 
-	// Build active symbols array.
-	results, err := t.DB.GetActiveSymbolsByUser(t.User.Id)
+// 	//symbols := t.GetActiveSymbols()
+// 	detailedQuotes, err := t.Api.GetQuotes(symbols)
 
-	for _, row := range results {
-		symbols = append(symbols, row.Symbol)
-	}
+// 	if err != nil {
+// 		return err
+// 	}
 
-	//symbols := t.GetActiveSymbols()
-	detailedQuotes, err := t.Api.GetQuotes(symbols)
+// 	// Loop through the quotes sending them up the websocket channel
+// 	for _, row := range detailedQuotes {
 
-	if err != nil {
-		return err
-	}
+// 		// Send up websocket.
+// 		err = t.WriteDataChannel("quote", row)
 
-	// Loop through the quotes sending them up the websocket channel
-	for _, row := range detailedQuotes {
+// 		if err != nil {
+// 			return fmt.Errorf("GetActiveSymbolsDetailedQuotes() WriteDataChannel : ", err)
+// 		}
 
-		// Send up websocket.
-		err = t.WriteDataChannel("quote", row)
+// 	}
 
-		if err != nil {
-			return fmt.Errorf("GetActiveSymbolsDetailedQuotes() WriteDataChannel : ", err)
-		}
+// 	// Return happy
+// 	return nil
 
-	}
-
-	// Return happy
-	return nil
-
-}
+// }
 
 /* End File */

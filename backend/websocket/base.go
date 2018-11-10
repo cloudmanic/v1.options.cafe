@@ -28,8 +28,8 @@ type WebsocketConnection struct {
 }
 
 type SendStruct struct {
-	Body   string
-	UserId uint
+	Body   string `json:"body"`
+	UserId uint   `json:"user_id"`
 }
 
 //
