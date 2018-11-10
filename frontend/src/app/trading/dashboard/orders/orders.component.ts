@@ -57,13 +57,8 @@ export class OrdersComponent implements OnInit {
       this.getOrders();
     });
 
-    // Subscribe to when changes are detected at the server.
-    this.websocketService.changedDetectedPush.takeUntil(this.destory).subscribe(data => {
-      this.manageChangeDetection(data);
-    });     
-
-    // This is useful for when the change detection was not caught (say laptop sleeping) Also make an ajax call 2 seconds after page load.
-    Observable.timer((1000 * 2), (1000 * 60)).takeUntil(this.destory).subscribe(x => { this.getOrders(); });       
+    // This is useful for when the change detection was not caught (say laptop sleeping) Also make an ajax call 1 second after page load.
+    Observable.timer((1000 * 1), (1000 * 1)).takeUntil(this.destory).subscribe(x => { this.getOrders(); });       
   }
 
   //
@@ -103,26 +98,12 @@ export class OrdersComponent implements OnInit {
   }  
 
   //
-  // Manage change detection.
-  //
-  private manageChangeDetection(data: ChangeDetected)
-  {
-    if(data.Type == "orders") 
-    {
-      this.getOrders();
-    }
-  }
-
-  //
   // Get Orders
   //
   getOrders()
   {
     // Get balance data
-    this.brokerService.getOrders(this.stateService.GetActiveBrokerAccount().BrokerId).subscribe((data) => {  
-
-      console.log(data);
-
+    this.brokerService.getOrders(this.stateService.GetActiveBrokerAccount().BrokerId).subscribe((data) => {
       this.setOrders(data);
     });
   }  
@@ -148,6 +129,12 @@ export class OrdersComponent implements OnInit {
       }
     }
     
+    // See if anything changed if not no need to update the UI
+    if(JSON.stringify(rt) == JSON.stringify(this.orders))
+    {
+      return;
+    }
+
     // Set order data
     this.orders = rt;
 
