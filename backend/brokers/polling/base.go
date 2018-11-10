@@ -12,6 +12,7 @@ import (
 	"os"
 	"runtime"
 	"strconv"
+	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
@@ -19,7 +20,21 @@ import (
 	nsq "github.com/nsqio/go-nsq"
 )
 
-var nsqConn *nsq.Producer
+var (
+	nsqConn *nsq.Producer
+
+	// Here we set the different type of polls and how often we poll them
+	polls []Poll = []Poll{
+		{Name: "get-quotes", Sleep: 1},
+		{Name: "get-orders", Sleep: 3},
+		{Name: "get-balances", Sleep: 5},
+	}
+)
+
+type Poll struct {
+	Name  string
+	Sleep time.Duration // seconds
+}
 
 //
 // Start broker polling. We really should only have
@@ -50,9 +65,10 @@ func Start(db models.Datastore) {
 		go broker_feed.Start(db)
 	}
 
-	// Start polling
-	go PollOrders(db)
-	go PollQuotes(db)
+	// Start different types of polls.
+	for _, row := range polls {
+		go StartPoll(db, row)
+	}
 
 	// When we call this from the CLI via "-cmd=broker-feed-poller". Only used in production.
 	// GoExit will exit after all go routines exit
@@ -62,6 +78,25 @@ func Start(db models.Datastore) {
 
 	// Log
 	services.Critical("Broker Feed Poller Started...")
+}
+
+//
+// Start a poll
+//
+func StartPoll(db models.Datastore, poll Poll) {
+
+	services.Info("Starting polling for " + poll.Name + ".")
+
+	// Start polling
+	for {
+
+		// Send action to all users
+		SendActionToAllUsers(db, poll.Name)
+
+		// Sleep for 3 seconds
+		time.Sleep(time.Second * poll.Sleep)
+	}
+
 }
 
 //

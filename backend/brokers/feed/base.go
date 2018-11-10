@@ -44,7 +44,7 @@ func (t *Base) Start() {
 	go t.DoOrdersTicker()
 	go t.DoGetHistoryTicker()
 	go t.DoUserProfileTicker()
-	go t.DoGetBalancesTicker()
+	//go t.DoGetBalancesTicker()
 	go t.DoAccessTokenRefresh()
 }
 

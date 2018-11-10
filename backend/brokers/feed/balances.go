@@ -6,78 +6,70 @@
 
 package feed
 
-import (
-	"fmt"
-	"time"
+// //
+// // Ticker - Get GetBalances : 5 seconds
+// //
+// func (t *Base) DoGetBalancesTicker() {
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/archive"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-)
+// 	var err error
+// 	count := 720
 
-//
-// Ticker - Get GetBalances : 5 seconds
-//
-func (t *Base) DoGetBalancesTicker() {
+// 	for {
 
-	var err error
-	count := 720
+// 		// Do we break out ?
+// 		t.MuPolling.Lock()
+// 		breakOut := t.Polling
+// 		t.MuPolling.Unlock()
 
-	for {
+// 		if !breakOut {
+// 			break
+// 		}
 
-		// Do we break out ?
-		t.MuPolling.Lock()
-		breakOut := t.Polling
-		t.MuPolling.Unlock()
+// 		// Load up balances. Every 3600 (1 hour) laps we log to the archive.
+// 		if count > 720 {
+// 			count = 0
+// 			err = t.GetBalances(true)
+// 		} else {
+// 			count++
+// 			err = t.GetBalances(false)
+// 		}
 
-		if !breakOut {
-			break
-		}
+// 		if err != nil {
+// 			services.Warning(err)
+// 		}
 
-		// Load up balances. Every 3600 (1 hour) laps we log to the archive.
-		if count > 720 {
-			count = 0
-			err = t.GetBalances(true)
-		} else {
-			count++
-			err = t.GetBalances(false)
-		}
+// 		// Sleep for 5 second.
+// 		time.Sleep(time.Second * 5)
+// 	}
 
-		if err != nil {
-			services.Warning(err)
-		}
+// 	services.Info("Stopping DoGetBalancesTicker() : " + t.User.Email)
 
-		// Sleep for 5 second.
-		time.Sleep(time.Second * 5)
-	}
+// }
 
-	services.Info("Stopping DoGetBalancesTicker() : " + t.User.Email)
+// //
+// // Do get Balances
+// //
+// func (t *Base) GetBalances(achive bool) error {
+// 	balances, err := t.Api.GetBalances()
 
-}
+// 	if err != nil {
+// 		return err
+// 	}
 
-//
-// Do get Balances
-//
-func (t *Base) GetBalances(achive bool) error {
-	balances, err := t.Api.GetBalances()
+// 	// Store balances in database.
+// 	if achive {
+// 		archive.StoreBalance(t.DB, balances, t.User.Id, t.BrokerId)
+// 	}
 
-	if err != nil {
-		return err
-	}
+// 	// Send up websocket.
+// 	err = t.WriteDataChannel("balances", balances)
 
-	// Store balances in database.
-	if achive {
-		archive.StoreBalance(t.DB, balances, t.User.Id, t.BrokerId)
-	}
+// 	if err != nil {
+// 		return fmt.Errorf("GetBalances() WriteDataChannel : ", err)
+// 	}
 
-	// Send up websocket.
-	err = t.WriteDataChannel("balances", balances)
-
-	if err != nil {
-		return fmt.Errorf("GetBalances() WriteDataChannel : ", err)
-	}
-
-	// Return Happy
-	return nil
-}
+// 	// Return Happy
+// 	return nil
+// }
 
 /* End File */
