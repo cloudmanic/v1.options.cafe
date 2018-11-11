@@ -29,6 +29,7 @@ var (
 		{Name: "get-orders", Sleep: 3},
 		{Name: "get-balances", Sleep: 5},
 		{Name: "get-user-profile", Sleep: 20},
+		{Name: "do-access-token-refresh", Sleep: 60},
 	}
 )
 

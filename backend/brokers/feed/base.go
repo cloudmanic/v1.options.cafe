@@ -43,7 +43,6 @@ func (t *Base) Start() {
 	// Setup tickers for broker polling.
 	go t.DoOrdersTicker()
 	go t.DoGetHistoryTicker()
-	go t.DoAccessTokenRefresh()
 }
 
 /* End File */
