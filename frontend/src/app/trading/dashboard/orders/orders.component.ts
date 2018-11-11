@@ -37,7 +37,8 @@ export class OrdersComponent implements OnInit {
   //
   // OnInit....
   //
-  ngOnInit() {
+  ngOnInit() 
+  {
     // Setup Dropdown actions
     this.setupDropdownActions();
 
@@ -48,17 +49,19 @@ export class OrdersComponent implements OnInit {
     this.quotes = this.stateService.GetQuotes();
             
     // Subscribe to data updates from the quotes - Market Quotes
-    this.websocketService.quotePushData.subscribe(data => {
+    this.websocketService.quotePushData.takeUntil(this.destory).subscribe(data => {
       this.quotes[data.symbol] = data;
     });     
   
+    // Subscribe to data updates from the broker - Orders
+    this.websocketService.ordersPush.takeUntil(this.destory).subscribe(data => {
+      this.doOrders(data);
+    }); 
+
     // Subscribe to changes in the selected broker.
     this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
       this.getOrders();
-    });
-
-    // This is useful for when the change detection was not caught (say laptop sleeping) Also make an ajax call 1 second after page load.
-    Observable.timer((1000 * 1), (1000 * 1)).takeUntil(this.destory).subscribe(x => { this.getOrders(); });       
+    });      
   }
 
   //
@@ -73,7 +76,8 @@ export class OrdersComponent implements OnInit {
   //
   // Setup Drop down actions.
   //
-  setupDropdownActions() {
+  setupDropdownActions() 
+  {
     let das = []
 
     // First action
@@ -98,20 +102,21 @@ export class OrdersComponent implements OnInit {
   }  
 
   //
-  // Get Orders
+  // Get Orders - Used for broker change
   //
   getOrders()
   {
     // Get balance data
     this.brokerService.getOrders(this.stateService.GetActiveBrokerAccount().BrokerId).subscribe((data) => {
-      this.setOrders(data);
+      this.doOrders(data);
     });
   }  
 
   //
   // Set the orders.
   //
-  private setOrders(orders: Order[]) {
+  doOrders(orders: Order[]) 
+  {
     var rt = []
 
     // This data has not come in yet.

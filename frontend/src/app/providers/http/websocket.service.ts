@@ -14,6 +14,7 @@ import { Balance } from '../../models/balance';
 import { OrderLeg } from '../../models/order-leg';
 import { ChangeDetected } from '../../models/change-detected';
 import { MarketQuote } from '../../models/market-quote';
+import { MarketStatus } from '../../models/market-status';
 import { StateService } from '../state/state.service';
 
 declare var ClientJS: any;
@@ -30,7 +31,9 @@ export class WebsocketService
   
   // Emitters - Pushers
   wsReconnecting = new EventEmitter<boolean>();
+  ordersPush = new EventEmitter<Order[]>();
   balancesPush = new EventEmitter<Balance[]>();
+  marketStatusPush = new EventEmitter<MarketStatus>();
   changedDetectedPush = new EventEmitter<ChangeDetected>();
   quotePushData = new EventEmitter<MarketQuote>();    
 
@@ -53,27 +56,33 @@ export class WebsocketService
   // Process incoming data.
   //
   private processIncomingData(msg)
-  {
-    let msg_data = JSON.parse(msg.body);
-
-    // console.log(msg_data);
-        
+  {        
     // Send quote to angular component
     switch(msg.uri)
     {  
       // Quote refresh
       case 'quote':
-        this.doQuote(msg_data);
+        this.doQuote(msg.body);
+      break;
+
+      // Orders refresh
+      case 'orders':
+        this.ordersPush.emit(Order.buildForEmit(msg.body));
       break;
 
       // Balances refresh
       case 'balances':
-        this.balancesPush.emit(Balance.buildForEmit(msg_data));
+        this.balancesPush.emit(Balance.buildForEmit(msg.body));
       break;      
+
+      // Market status
+      case 'market-status':
+        this.marketStatusPush.emit(MarketStatus.buildForEmit(msg.body));              
+      break;
 
       // Change detected
       case 'change-detected':      
-        this.changedDetectedPush.emit(new ChangeDetected(msg_data.type));              
+        this.changedDetectedPush.emit(new ChangeDetected(msg.type));              
       break;              
     }
   }

@@ -17,6 +17,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/notify"
+	"github.com/cloudmanic/app.options.cafe/backend/library/queue"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/library/worker"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
@@ -31,63 +32,6 @@ type MarketStatus struct {
 	Description string `json:"description"`
 	NextState   string `json:"next_state"`
 }
-
-// //
-// // Monitor the market status via the Tradier
-// // admin account and send updates to all connected clients.
-// //
-// func (t *Controller) StartMarketStatusFeed() {
-
-// 	storedHash := ""
-
-// 	for {
-// 		// Api call to Trader to get status
-// 		status, err := CheckMarketStatus()
-// 		services.Warning(err)
-
-// 		// Take md5 of the status
-// 		hash, err := structhash.Hash(status, 1)
-// 		services.Warning(err)
-
-// 		// If the hashes do not match we know the market status has changed
-// 		if hash != storedHash {
-
-// 			// Build json to send
-// 			json, err := t.WsSendJsonBuild("change-detected", `{ "type": "market-status" }`)
-// 			services.Warning(err)
-
-// 			// Send status to all connections
-// 			t.WsDispatchToAll(json)
-
-// 			// Log event
-// 			services.Info("StartMarketStatusFeed() : Market status has changed to " + status.State)
-
-// 			// Just with this special case do we not go through the notify package.
-// 			s := status.State
-
-// 			if status.State == "postmarket" {
-// 				s = "closed"
-// 			}
-
-// 			// Some times s is empty.
-// 			if (status.NextState != "premarket") && ((s == "closed") || (s == "open")) {
-// 				tDate := helpers.ParseDateNoError(status.Date)
-// 				msg := tDate.Format("1/2/2006") + " - The market is now " + s + "."
-// 				notify.Push(t.DB, notify.NotifyRequest{Uri: "market-status-" + s, ShortMsg: msg, UserId: 0, Date: tDate})
-// 			}
-// 		}
-
-// 		// Store hash
-// 		storedHash = hash
-
-// 		// Save the market status in our cache.
-// 		cache.Set("oc-market-status", status)
-
-// 		// Sleep for 2 second.
-// 		time.Sleep(time.Second * 2)
-// 	}
-
-// }
 
 //
 // Get market status.
@@ -129,6 +73,9 @@ func GetMarketStatus(job worker.JobRequest) error {
 
 	// Set the status we return.
 	status = ws["clock"]
+
+	// Send message to websocket
+	queue.Write("oc-websocket-write", `{"uri":"market-status","user_id":0,"body":`+helpers.JsonEncode(status)+`}`)
 
 	// Save the market status in our cache.
 	cache.Set("oc-market-status", status)

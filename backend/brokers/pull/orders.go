@@ -2,7 +2,7 @@
 // Date: 2018-11-09
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-10
+// Last Modified: 2018-11-11
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -16,6 +16,8 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/archive"
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/queue"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
 
@@ -71,6 +73,9 @@ func DoGetOrders(db models.Datastore, api brokers.Api, user models.User, broker 
 		}
 
 	}
+
+	// Send message to websocket
+	queue.Write("oc-websocket-write", `{"uri":"orders","user_id":`+strconv.Itoa(int(user.Id))+`,"body":`+helpers.JsonEncode(orders)+`}`)
 
 	// Store the orders in our database
 	err = archive.StoreOrders(db, orders, user.Id, broker.Id)

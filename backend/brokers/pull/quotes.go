@@ -2,16 +2,18 @@
 // Date: 2018-11-09
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-10
+// Last Modified: 2018-11-11
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
 package pull
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/queue"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
 
@@ -39,12 +41,8 @@ func DoGetQuotes(db models.Datastore, api brokers.Api, user models.User, broker 
 	// Loop through the quotes sending them up the websocket channel
 	for _, row := range detailedQuotes {
 
-		// Send up websocket.
-		err = WriteWebsocket(user, "quote", row)
-
-		if err != nil {
-			return fmt.Errorf("GetActiveSymbolsDetailedQuotes() WriteWebsocket : ", err)
-		}
+		// Send message to websocket
+		queue.Write("oc-websocket-write", `{"uri":"quote","user_id":`+strconv.Itoa(int(user.Id))+`,"body":`+helpers.JsonEncode(row)+`}`)
 
 	}
 

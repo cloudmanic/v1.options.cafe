@@ -2,17 +2,19 @@
 // Date: 2018-11-09
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-10
+// Last Modified: 2018-11-11
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
 package pull
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/archive"
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/queue"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
 
@@ -30,12 +32,8 @@ func DoGetBalances(db models.Datastore, api brokers.Api, user models.User, broke
 	// Store balances in database.
 	go archive.StoreBalance(db, balances, user.Id, broker.Id)
 
-	// Send up websocket.
-	err = WriteWebsocket(user, "balances", balances)
-
-	if err != nil {
-		return fmt.Errorf("DoGetBalances() WriteWebsocket : ", err)
-	}
+	// Send message to websocket
+	queue.Write("oc-websocket-write", `{"uri":"balances","user_id":`+strconv.Itoa(int(user.Id))+`,"body":`+helpers.JsonEncode(balances)+`}`)
 
 	// Return Happy
 	return nil

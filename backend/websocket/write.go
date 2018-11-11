@@ -15,6 +15,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/gorilla/websocket"
 	nsq "github.com/nsqio/go-nsq"
+	"github.com/tidwall/gjson"
 )
 
 //
@@ -66,19 +67,14 @@ func (t *Controller) DoWsDispatch() {
 	// Conection handler.
 	q.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
 
-		// Convert JSON to Struct
-		ss := SendStruct{}
-
-		if err = json.Unmarshal(message.Body, &ss); err != nil {
-			services.BetterError(err)
-			return nil // If we return error will stay in the queue.
-		}
+		// Get user id.
+		userId := gjson.Get(string(message.Body), "user_id").Int()
 
 		// loop through the connections and send data
 		for i := range t.Connections {
 
-			// We only care about the user we passed in.
-			if t.Connections[i].userId == ss.UserId {
+			// We only care about the user we passed in. If the user is 0 we send to everyone
+			if (userId == 0) || (t.Connections[i].userId == uint(userId)) {
 				t.Connections[i].WriteChan <- string(message.Body)
 			}
 

@@ -39,8 +39,7 @@ export class SidebarComponent implements OnInit {
   { 
     // Load data to start
     this.brokerAccountList = []; 
-    this.getBrokers();
-    this.getMarketStatus();   
+    this.getBrokers();  
   }
 
   //
@@ -57,13 +56,15 @@ export class SidebarComponent implements OnInit {
       this.doBalanaces(data);
     });  
 
+    // Subscribe to data updates from the broker - Market Status
+    this.websocketService.marketStatusPush.subscribe(data => {
+      this.doMarketStatus(data);
+    }); 
+
     // Subscribe to when changes are detected at the server.
     this.websocketService.changedDetectedPush.takeUntil(this.destory).subscribe(data => {
       this.manageChangeDetection(data);
-    }); 
-
-    // Poll for market status
-    Observable.timer(0, (1000 * 2)).takeUntil(this.destory).subscribe(x => { this.getMarketStatus(); });           
+    });          
   }
 
   //
@@ -87,14 +88,16 @@ export class SidebarComponent implements OnInit {
   }
 
   //
-  // Get market status.
+  // Do market status.
   //
-  getMarketStatus()
-  {
-    this.statusService.getMarketStatus().subscribe(data => {
-      this.marketStatus = data
-    });
-  }  
+  doMarketStatus(status: MarketStatus) {
+
+    // Only update on change
+    if JSON.stringify(status) != JSON.stringify(this.marketStatus) {
+      this.marketStatus = status;
+    }
+
+  }
 
   //
   // Get balances
