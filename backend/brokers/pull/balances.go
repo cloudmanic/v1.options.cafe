@@ -12,6 +12,7 @@ import (
 	"fmt"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/archive"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
 
@@ -20,36 +21,21 @@ import (
 //
 func DoGetBalances(db models.Datastore, api brokers.Api, user models.User, broker models.Broker) error {
 
-	fmt.Println(user.Email)
+	balances, err := api.GetBalances()
 
-	// // Make API call
-	// orders, err := api.GetOrders()
+	if err != nil {
+		return err
+	}
 
-	// if err != nil {
-	// 	return err
-	// }
+	// Store balances in database.
+	go archive.StoreBalance(db, balances, user.Id, broker.Id)
 
-	// // Store result in cache.
-	// cache.Set("oc-orders-active-"+strconv.Itoa(int(user.Id))+"-"+strconv.Itoa(int(broker.Id)), orders)
+	// Send up websocket.
+	err = WriteWebsocket(user, "balances", balances)
 
-	// // Store symbols we use in orders
-	// for _, row := range orders {
-
-	// 	db.CreateActiveSymbol(user.Id, row.Symbol)
-
-	// 	for _, row2 := range row.Legs {
-	// 		db.CreateActiveSymbol(user.Id, row2.Symbol)
-	// 		db.CreateActiveSymbol(user.Id, row2.OptionSymbol)
-	// 	}
-
-	// }
-
-	// // Store the orders in our database
-	// err = archive.StoreOrders(db, orders, user.Id, broker.Id)
-
-	// if err != nil {
-	// 	return err
-	// }
+	if err != nil {
+		return fmt.Errorf("DoGetBalances() WriteWebsocket : ", err)
+	}
 
 	// Return Happy
 	return nil

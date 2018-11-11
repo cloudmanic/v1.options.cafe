@@ -41,9 +41,10 @@ func init() {
 
 	// Build out the action functions
 	brokerFeedActions = map[string]func(models.Datastore, brokers.Api, models.User, models.Broker) error{
-		"get-orders":   pull.DoGetOrders,
-		"get-quotes":   pull.DoGetQuotes,
-		"get-balances": pull.DoGetBalances,
+		"get-orders":       pull.DoGetOrders,
+		"get-quotes":       pull.DoGetQuotes,
+		"get-balances":     pull.DoGetBalances,
+		"get-user-profile": pull.DoGetUserProfile,
 	}
 
 }

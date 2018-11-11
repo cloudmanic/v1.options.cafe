@@ -28,6 +28,7 @@ var (
 		{Name: "get-quotes", Sleep: 1},
 		{Name: "get-orders", Sleep: 3},
 		{Name: "get-balances", Sleep: 5},
+		{Name: "get-user-profile", Sleep: 20},
 	}
 )
 
