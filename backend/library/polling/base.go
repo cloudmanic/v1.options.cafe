@@ -24,19 +24,21 @@ var (
 
 	// Here we set the different type of polls and how often we poll them
 	polls []Poll = []Poll{
-		{Name: "get-quotes", Sleep: 1, Delay: 0},
-		{Name: "get-orders", Sleep: 3, Delay: 0},
-		{Name: "get-all-orders", Sleep: 86400, Delay: 0}, // 24 hours
-		{Name: "get-balances", Sleep: 5, Delay: 0},
-		{Name: "get-user-profile", Sleep: 20, Delay: 0},
-		{Name: "get-history", Sleep: 43200, Delay: 0},  // 12 hours
-		{Name: "get-positions", Sleep: 3600, Delay: 5}, // 1 hour, 5 seconds delay (we want all orders to complete first)
-		{Name: "do-access-token-refresh", Sleep: 60, Delay: 0},
+		{Name: "get-market-status", Sleep: 2, Delay: 0, Type: "simple"},
+		{Name: "get-quotes", Sleep: 1, Delay: 0, Type: "all-users"},
+		{Name: "get-orders", Sleep: 3, Delay: 0, Type: "all-users"},
+		{Name: "get-all-orders", Sleep: 86400, Delay: 0, Type: "all-users"}, // 24 hours
+		{Name: "get-balances", Sleep: 5, Delay: 0, Type: "all-users"},
+		{Name: "get-user-profile", Sleep: 20, Delay: 0, Type: "all-users"},
+		{Name: "get-history", Sleep: 43200, Delay: 0, Type: "all-users"},  // 12 hours
+		{Name: "get-positions", Sleep: 3600, Delay: 5, Type: "all-users"}, // 1 hour, 5 seconds delay (we want all orders to complete first)
+		{Name: "do-access-token-refresh", Sleep: 60, Delay: 0, Type: "all-users"},
 	}
 )
 
 type Poll struct {
 	Name  string
+	Type  string
 	Delay time.Duration // seconds
 	Sleep time.Duration // seconds
 }
@@ -92,8 +94,17 @@ func StartPoll(db models.Datastore, poll Poll) {
 	// Start polling
 	for {
 
+		switch poll.Type {
+
 		// Send action to all users
-		SendActionToAllUsers(db, poll.Name)
+		case "simple":
+			SendSimpleAction(poll.Name)
+
+		// Just send one request
+		case "all-users":
+			SendActionToAllUsers(db, poll.Name)
+
+		}
 
 		// Sleep for 3 seconds
 		time.Sleep(time.Second * poll.Sleep)
@@ -113,6 +124,20 @@ func GetActiveUserList(db models.Datastore) []models.User {
 
 	// Return the user list
 	return users
+}
+
+//
+// Send a simple message
+//
+func SendSimpleAction(action string) {
+
+	// Send message to message queue
+	err := nsqConn.Publish("oc-job", []byte(`{"action":"`+action+`"}`))
+
+	if err != nil {
+		services.FatalMsg(err, "SendSimpleAction: NSQ Could not connect. - "+action)
+	}
+
 }
 
 //

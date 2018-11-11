@@ -4,14 +4,14 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/polling"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/cmd"
 	"github.com/cloudmanic/app.options.cafe/backend/controllers"
 	"github.com/cloudmanic/app.options.cafe/backend/cron"
 	"github.com/cloudmanic/app.options.cafe/backend/library/notify/websocket_push"
+	"github.com/cloudmanic/app.options.cafe/backend/library/polling"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/library/worker"
+	"github.com/cloudmanic/app.options.cafe/backend/library/worker/jobs"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/cloudmanic/app.options.cafe/backend/screener"
 	"github.com/cloudmanic/app.options.cafe/backend/websocket"
@@ -60,9 +60,6 @@ func main() {
 	// Startup controller & websockets
 	c := &controllers.Controller{DB: db, WebsocketController: w}
 
-	// Start market status feed
-	go w.StartMarketStatusFeed()
-
 	// Start loop through refresh screener
 	t := screener.NewScreen(db, &tradier.Api{DB: nil, ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN")})
 	go t.PrimeAllScreenerCaches()
@@ -74,7 +71,7 @@ func main() {
 	if os.Getenv("APP_ENV") == "local" {
 		polling.Start(db)
 		go cron.Start(db)
-		go worker.Start(db)
+		go jobs.Start(db)
 	}
 
 	// Start websockets & controllers

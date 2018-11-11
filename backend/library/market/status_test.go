@@ -4,7 +4,7 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-package websocket
+package market
 
 import (
 	"testing"
@@ -14,9 +14,9 @@ import (
 )
 
 //
-// Test - CheckMarketStatus
+// Test - GetMarketStatus
 //
-func TestCheckMarketStatus01(t *testing.T) {
+func TestGetMarketStatus01(t *testing.T) {
 
 	// Flush pending mocks after test execution
 	defer gock.Off()

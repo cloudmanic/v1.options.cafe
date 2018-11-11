@@ -8,7 +8,7 @@ package controllers
 
 import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
-	"github.com/cloudmanic/app.options.cafe/backend/websocket"
+	"github.com/cloudmanic/app.options.cafe/backend/library/market"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,7 +18,7 @@ import (
 func (t *Controller) GetMarketStatus(c *gin.Context) {
 
 	// Get value from our cache
-	result := websocket.MarketStatus{}
+	result := market.MarketStatus{}
 	_, err := cache.Get("oc-market-status", &result)
 
 	if t.RespondError(c, err, httpNoRecordFound) {
