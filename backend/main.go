@@ -11,6 +11,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/cron"
 	"github.com/cloudmanic/app.options.cafe/backend/library/notify/websocket_push"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"github.com/cloudmanic/app.options.cafe/backend/library/worker"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/cloudmanic/app.options.cafe/backend/screener"
 	"github.com/cloudmanic/app.options.cafe/backend/websocket"
@@ -68,10 +69,12 @@ func main() {
 
 	// Stuff we start a as a different process in production using --cmd. In local dev we start here
 	// "-cmd=cron"
+	// --cmd=worker
 	// "-cmd=broker-feed-poller"
 	if os.Getenv("APP_ENV") == "local" {
 		polling.Start(db)
 		go cron.Start(db)
+		go worker.Start(db)
 	}
 
 	// Start websockets & controllers

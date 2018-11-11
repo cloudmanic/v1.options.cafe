@@ -47,12 +47,12 @@ services:
     networks:
       - shared 
 
-  # Broker Feed Worker 1
-  brokerfeedworker1:
+  # Worker 1
+  worker1:
            
-    hostname: broker-feed-worker-1.options.cafe
+    hostname: worker1.options.cafe
 
-    container_name: broker-feed-worker-1.options.cafe
+    container_name: worker1.options.cafe
 
     build:
       context: ./build
@@ -63,13 +63,13 @@ services:
     
     image: app.options.cafe/golang:1.8.1-alpine
 
-    command: ./app --cmd=broker-feed-worker
+    command: ./app --cmd=worker
 
     logging:
       driver: "syslog"
       options:
         syslog-address: tcp+tls://logs6.papertrailapp.com:49242
-        tag: broker-feed-worker-1.options.cafe                    
+        tag: worker1.options.cafe                    
 
     restart: always
     
@@ -78,41 +78,6 @@ services:
                       
     networks:
       - shared 
-
-  # Broker Feed Worker 1
-  brokerfeedworker1:
-           
-    hostname: broker-feed-worker-1.options.cafe
-
-    container_name: broker-feed-worker-1.options.cafe
-
-    build:
-      context: ./build
-      dockerfile: Dockerfile
-      args:
-        P_UID: 1002
-        P_GID: 1002     
-    
-    image: app.options.cafe/golang:1.8.1-alpine
-
-    command: ./app --cmd=broker-feed-worker
-
-    logging:
-      driver: "syslog"
-      options:
-        syslog-address: tcp+tls://logs6.papertrailapp.com:49242
-        tag: broker-feed-worker-1.options.cafe                    
-
-    restart: always
-    
-    env_file:
-      - .env 
-
-    depends_on:
-      - nsqd            
-                      
-    networks:
-      - shared
 
   # Broker Feed Poller
   brokerfeedpoller:

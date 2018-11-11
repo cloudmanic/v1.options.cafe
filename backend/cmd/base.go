@@ -14,8 +14,8 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/cron"
 	"github.com/cloudmanic/app.options.cafe/backend/cron/data_import"
 	"github.com/cloudmanic/app.options.cafe/backend/library/import/options"
+	"github.com/cloudmanic/app.options.cafe/backend/library/worker"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/cloudmanic/app.options.cafe/backend/queue/broker_feed"
 )
 
 //
@@ -32,9 +32,9 @@ func Run(db *models.DB) bool {
 
 	switch *action {
 
-	// This is a broker feed worker
-	case "broker-feed-worker":
-		broker_feed.Start(db)
+	// This is a worker
+	case "worker":
+		worker.Start(db)
 		return true
 		break
 

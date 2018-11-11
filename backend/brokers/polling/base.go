@@ -2,7 +2,7 @@
 // Date: 2018-11-09
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-10
+// Last Modified: 2018-11-11
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -16,7 +16,6 @@ import (
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/cloudmanic/app.options.cafe/backend/queue/broker_feed"
 	nsq "github.com/nsqio/go-nsq"
 )
 
@@ -62,14 +61,6 @@ func Start(db models.Datastore) {
 
 	// Set package global
 	nsqConn = c
-
-	// Start broker feed consumer???
-	// If this app is in local DEV mode we do our broker feed
-	// consumption in the same binary. On a production machine we used different
-	// we call this via the "--cmd=broker-feed-worker" command line flag
-	if os.Getenv("APP_ENV") == "local" {
-		go broker_feed.Start(db)
-	}
 
 	// Start different types of polls.
 	for _, row := range polls {
@@ -147,7 +138,7 @@ func SendActionToAllUsers(db models.Datastore, action string) {
 			rawJson := `{"action":"` + action + `","user_id":` + strconv.Itoa(int(row.Id)) + `,"broker_id":` + strconv.Itoa(int(row2.Id)) + `}`
 
 			// Send message to message queue
-			err := nsqConn.Publish("oc-broker-feed-request", []byte(rawJson))
+			err := nsqConn.Publish("oc-job", []byte(rawJson))
 
 			if err != nil {
 				services.FatalMsg(err, "SendActionToAllUsers: NSQ Could not connect. - "+action)

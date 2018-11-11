@@ -2,11 +2,11 @@
 // Date: 2018-11-09
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-10
+// Last Modified: 2018-11-11
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-package broker_feed
+package worker
 
 import (
 	"encoding/json"
@@ -65,7 +65,7 @@ func Start(db models.Datastore) {
 	config := nsq.NewConfig()
 
 	// New consumer hander
-	q, _ := nsq.NewConsumer("oc-broker-feed-request", "oc-broker-feed-worker", config)
+	q, _ := nsq.NewConsumer("oc-job", "oc-worker", config)
 
 	// Conection handler.
 	q.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
@@ -80,7 +80,7 @@ func Start(db models.Datastore) {
 		log.Panic("Could not connect")
 	}
 
-	services.Critical("Broker Feed Worker Started...")
+	services.Critical("Worker Started...")
 
 	// Wait for messages
 	wg.Wait()
