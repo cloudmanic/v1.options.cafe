@@ -14,13 +14,12 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/queue"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	nsq "github.com/nsqio/go-nsq"
 )
 
 var (
-	nsqConn *nsq.Producer
 
 	// Here we set the different type of polls and how often we poll them
 	polls []Poll = []Poll{
@@ -50,19 +49,6 @@ type Poll struct {
 // do the broker polling or not.
 //
 func Start(db models.Datastore) {
-
-	// NSQ config
-	config := nsq.NewConfig()
-
-	// Build producer object
-	c, err := nsq.NewProducer(os.Getenv("NSQD_HOST"), config)
-
-	if err != nil {
-		services.FatalMsg(err, "PollOrders (NewProducer): NSQ Could not connect.")
-	}
-
-	// Set package global
-	nsqConn = c
 
 	// Start different types of polls.
 	for _, row := range polls {
@@ -132,11 +118,7 @@ func GetActiveUserList(db models.Datastore) []models.User {
 func SendSimpleAction(action string) {
 
 	// Send message to message queue
-	err := nsqConn.Publish("oc-job", []byte(`{"action":"`+action+`"}`))
-
-	if err != nil {
-		services.FatalMsg(err, "SendSimpleAction: NSQ Could not connect. - "+action)
-	}
+	queue.Write("oc-job", `{"action":"`+action+`"}`)
 
 }
 
@@ -159,15 +141,8 @@ func SendActionToAllUsers(db models.Datastore, action string) {
 				continue
 			}
 
-			// Build raw json
-			rawJson := `{"action":"` + action + `","user_id":` + strconv.Itoa(int(row.Id)) + `,"broker_id":` + strconv.Itoa(int(row2.Id)) + `}`
-
 			// Send message to message queue
-			err := nsqConn.Publish("oc-job", []byte(rawJson))
-
-			if err != nil {
-				services.FatalMsg(err, "SendActionToAllUsers: NSQ Could not connect. - "+action)
-			}
+			queue.Write("oc-job", `{"action":"`+action+`","user_id":`+strconv.Itoa(int(row.Id))+`,"broker_id":`+strconv.Itoa(int(row2.Id))+`}`)
 
 		}
 

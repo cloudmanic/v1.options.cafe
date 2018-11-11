@@ -20,9 +20,9 @@ var (
 )
 
 //
-// Init
+// Just start the connect to the queue.
 //
-func init() {
+func Start() {
 
 	// NSQ config
 	config := nsq.NewConfig()

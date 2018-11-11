@@ -9,6 +9,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/controllers"
 	"github.com/cloudmanic/app.options.cafe/backend/cron"
 	"github.com/cloudmanic/app.options.cafe/backend/library/polling"
+	"github.com/cloudmanic/app.options.cafe/backend/library/queue"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/library/worker/jobs"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
@@ -31,6 +32,9 @@ func main() {
 	if err != nil {
 		services.Fatal(err)
 	}
+
+	// Fire up the queue connection
+	queue.Start()
 
 	// See if this a command. If so run the command and do not start the app.
 	status := cmd.Run(db)

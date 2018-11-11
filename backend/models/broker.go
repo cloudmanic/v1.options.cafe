@@ -1,14 +1,12 @@
 package models
 
 import (
-	"bytes"
 	"errors"
-	"net/http"
-	"os"
 	"strconv"
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/queue"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 )
 
@@ -147,13 +145,8 @@ func (t *DB) KickStartBroker(user User, broker Broker) {
 	// Loop through the required actions to get started
 	for _, row := range actions {
 
-		// We do not test for error. We just assume this works.
-		var jsonStr = []byte(`{"action":"` + row + `","user_id":` + strconv.Itoa(int(user.Id)) + `,"broker_id":` + strconv.Itoa(int(broker.Id)) + `}`)
-		req, _ := http.NewRequest("POST", os.Getenv("NSQD_HOST_HTTP")+"/pub?topic=oc-job", bytes.NewBuffer(jsonStr))
-		req.Header.Set("Content-Type", "application/json")
-		client := &http.Client{}
-		resp, _ := client.Do(req)
-		resp.Body.Close()
+		// Send message to websocket
+		queue.Write("oc-job", `{"action":"`+row+`","user_id":`+strconv.Itoa(int(user.Id))+`,"broker_id":`+strconv.Itoa(int(broker.Id))+`}`)
 
 	}
 
