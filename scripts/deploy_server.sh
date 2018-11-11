@@ -13,4 +13,7 @@ cd ../scripts
 # Login as myself and build and restart
 ssh web2.cloudmanic.com "cd /sites/optionscafe/app.options.cafe/docker && docker-compose build && docker-compose down && docker-compose up -d"
 
+# Deploy app
+./deploy.sh
+
 ## TODO: make an api call to papertail and output the current logs just to see if anything went wrong during deploy

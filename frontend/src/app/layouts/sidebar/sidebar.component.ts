@@ -45,7 +45,8 @@ export class SidebarComponent implements OnInit {
   //
   // Oninit...
   //
-  ngOnInit() {          
+  ngOnInit() 
+  {          
     // Subscribe to changes in the selected broker.
     this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
       this.getBalances();
@@ -93,7 +94,8 @@ export class SidebarComponent implements OnInit {
   doMarketStatus(status: MarketStatus) {
 
     // Only update on change
-    if JSON.stringify(status) != JSON.stringify(this.marketStatus) {
+    if (JSON.stringify(status) != JSON.stringify(this.marketStatus)) 
+    {
       this.marketStatus = status;
     }
 
