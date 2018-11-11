@@ -8,11 +8,11 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/cmd"
 	"github.com/cloudmanic/app.options.cafe/backend/controllers"
+	"github.com/cloudmanic/app.options.cafe/backend/cron"
 	"github.com/cloudmanic/app.options.cafe/backend/library/notify/websocket_push"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/cloudmanic/app.options.cafe/backend/screener"
-	"github.com/cloudmanic/app.options.cafe/backend/users"
 	"github.com/cloudmanic/app.options.cafe/backend/websocket"
 	_ "github.com/jpfuentes2/go-env/autoload"
 )
@@ -50,28 +50,14 @@ func main() {
 	// Setup shared channels
 	WsWriteChan := make(chan websocket.SendStruct, 1000)
 
-	// Actions for users feed channel
-	userActionChan := make(chan users.UserFeedAction, 1000)
-
 	// Setup the notification channel
 	websocket_push.SetWebsocketChannel(WsWriteChan)
-
-	// Setup users object & Start users feeds
-	u := &users.Base{
-		DB:          db,
-		Users:       make(map[uint]*users.UserFeed),
-		ActionChan:  userActionChan,
-		WsWriteChan: WsWriteChan,
-	}
-
-	// Start user feed
-	u.StartFeeds()
 
 	// Create new websocket
 	w := websocket.NewController(db, WsWriteChan)
 
 	// Startup controller & websockets
-	c := &controllers.Controller{DB: db, WebsocketController: w, UserActionChan: userActionChan}
+	c := &controllers.Controller{DB: db, WebsocketController: w}
 
 	// Start market status feed
 	go w.StartMarketStatusFeed()
@@ -80,10 +66,12 @@ func main() {
 	t := screener.NewScreen(db, &tradier.Api{DB: nil, ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN")})
 	go t.PrimeAllScreenerCaches()
 
-	// If this is a local dev we start Start polling brokers if not
-	// in production we start this with a CLI CMD "-cmd=broker-feed-poller"
+	// Stuff we start a as a different process in production using --cmd. In local dev we start here
+	// "-cmd=cron"
+	// "-cmd=broker-feed-poller"
 	if os.Getenv("APP_ENV") == "local" {
 		polling.Start(db)
+		go cron.Start(db)
 	}
 
 	// Start websockets & controllers

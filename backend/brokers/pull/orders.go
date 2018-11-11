@@ -9,13 +9,41 @@
 package pull
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers"
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/archive"
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
+
+//
+// Do get All orders. Here is where we archive historical orders.
+//
+func DoGetAllOrders(db models.Datastore, api brokers.Api, user models.User, broker models.Broker) error {
+
+	var orders []types.Order
+
+	// Make API call
+	orders, err := api.GetAllOrders()
+
+	if err != nil {
+		return fmt.Errorf("pull.GetAllOrders() : ", err)
+	}
+
+	// Store the orders in our database
+	err = archive.StoreOrders(db, orders, user.Id, broker.Id)
+
+	if err != nil {
+		return fmt.Errorf("pull.GetAllOrders() - StoreOrders() : ", err)
+	}
+
+	// Return Happy
+	return nil
+
+}
 
 //
 // Do get orders. Main thing we are doing here is populating the cache with the results

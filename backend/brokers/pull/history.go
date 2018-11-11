@@ -9,24 +9,33 @@
 package pull
 
 import (
+	"fmt"
+
 	"github.com/cloudmanic/app.options.cafe/backend/brokers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/archive"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
 
 //
-// See if we need to refresh access tokens
+// Do get history.
 //
-func DoAccessTokenRefresh(db models.Datastore, api brokers.Api, user models.User, broker models.Broker) error {
+func DoGetHistory(db models.Datastore, api brokers.Api, user models.User, broker models.Broker) error {
 
-	err := api.DoRefreshAccessTokenIfNeeded(user)
+	history, err := api.GetAllHistory()
 
 	if err != nil {
 		return err
 	}
 
+	if err != nil {
+		return fmt.Errorf("pull.DoGetHistory(): ", err)
+	}
+
+	// Store the history in our database
+	err = archive.StoreBrokerEvents(db, history, user.Id, broker.Id)
+
 	// Return Happy
 	return nil
-
 }
 
 /* End File */

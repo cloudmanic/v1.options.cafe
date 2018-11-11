@@ -83,6 +83,7 @@ type Datastore interface {
 	ValidatePassword(password string) error
 	GetUserByEmail(email string) (User, error)
 	GetUserByGoogleSubId(sub string) (User, error)
+	VerifyDefaultWatchList(user User)
 	ResetUserPassword(id uint, password string) error
 	ValidateUserLogin(email string, password string) error
 	GetUserByStripeCustomer(customerId string) (User, error)

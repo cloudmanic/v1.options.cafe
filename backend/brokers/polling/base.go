@@ -25,16 +25,20 @@ var (
 
 	// Here we set the different type of polls and how often we poll them
 	polls []Poll = []Poll{
-		{Name: "get-quotes", Sleep: 1},
-		{Name: "get-orders", Sleep: 3},
-		{Name: "get-balances", Sleep: 5},
-		{Name: "get-user-profile", Sleep: 20},
-		{Name: "do-access-token-refresh", Sleep: 60},
+		{Name: "get-quotes", Sleep: 1, Delay: 0},
+		{Name: "get-orders", Sleep: 3, Delay: 0},
+		{Name: "get-all-orders", Sleep: 86400, Delay: 0}, // 24 hours
+		{Name: "get-balances", Sleep: 5, Delay: 0},
+		{Name: "get-user-profile", Sleep: 20, Delay: 0},
+		{Name: "get-history", Sleep: 43200, Delay: 0},  // 12 hours
+		{Name: "get-positions", Sleep: 3600, Delay: 5}, // 1 hour, 5 seconds delay (we want all orders to complete first)
+		{Name: "do-access-token-refresh", Sleep: 60, Delay: 0},
 	}
 )
 
 type Poll struct {
 	Name  string
+	Delay time.Duration // seconds
 	Sleep time.Duration // seconds
 }
 
@@ -88,6 +92,11 @@ func Start(db models.Datastore) {
 func StartPoll(db models.Datastore, poll Poll) {
 
 	services.Info("Starting polling for " + poll.Name + ".")
+
+	// Delay before starting
+	if poll.Delay > 0 {
+		time.Sleep(time.Second * poll.Delay)
+	}
 
 	// Start polling
 	for {

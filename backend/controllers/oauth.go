@@ -12,11 +12,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/realip"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/cloudmanic/app.options.cafe/backend/users"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 )
@@ -26,39 +23,36 @@ import (
 //
 func (t *Controller) DoStartBrokerFeed(c *gin.Context) {
 
-	userId := helpers.StringToUint(c.Query("user_id"))
-	brokerId := helpers.StringToUint(c.Query("broker_id"))
+	// userId := helpers.StringToUint(c.Query("user_id"))
+	// brokerId := helpers.StringToUint(c.Query("broker_id"))
 
-	// Validate the hash to avoid DOSS attacks or rather users doing it to other users
-	str := c.Query("user_id") + ":" + c.Query("broker_id")
-	hash, err := helpers.Decrypt(c.Query("key"))
+	// // Validate the hash to avoid DOSS attacks or rather users doing it to other users
+	// str := c.Query("user_id") + ":" + c.Query("broker_id")
+	// hash, err := helpers.Decrypt(c.Query("key"))
 
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Sorry, we could not find your broker session."})
-		return
-	}
+	// if err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Sorry, we could not find your broker session."})
+	// 	return
+	// }
 
-	// Verify the key matches
-	if hash != str {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Sorry, we could not find your broker session."})
-		return
-	}
+	// // Verify the key matches
+	// if hash != str {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Sorry, we could not find your broker session."})
+	// 	return
+	// }
 
-	// Get user
-	user := models.User{}
-	t.DB.New().First(&user, int(userId))
+	// // Get user
+	// user := models.User{}
+	// t.DB.New().First(&user, int(userId))
 
-	if user.Id <= 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Sorry, we could not find your broker session."})
-		return
-	}
+	// if user.Id <= 0 {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Sorry, we could not find your broker session."})
+	// 	return
+	// }
 
-	// Get the broker
-	broker := models.Broker{}
-	t.DB.New().Where("id = ? AND user_id = ?", brokerId, userId).First(&broker)
-
-	// Send message to restart the user's feed
-	t.UserActionChan <- users.UserFeedAction{UserId: user.Id, Action: "restart"}
+	// // Get the broker
+	// broker := models.Broker{}
+	// t.DB.New().Where("id = ? AND user_id = ?", brokerId, userId).First(&broker)
 
 	// Redirect back to main site
 	c.Redirect(302, os.Getenv("SITE_URL"))
