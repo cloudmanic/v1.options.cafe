@@ -62,8 +62,8 @@ export class SidebarComponent implements OnInit {
       this.manageChangeDetection(data);
     }); 
 
-    // This is useful for when the change detection was not caught (say laptop sleeping)
-    Observable.timer((1000 * 30), (1000 * 30)).takeUntil(this.destory).subscribe(x => { this.getMarketStatus(); });           
+    // Poll for market status
+    Observable.timer(0, (1000 * 2)).takeUntil(this.destory).subscribe(x => { this.getMarketStatus(); });           
   }
 
   //
@@ -83,12 +83,7 @@ export class SidebarComponent implements OnInit {
     if(data.Type == 'brokers')
     {
       this.getBrokers();
-    }
-
-    if(data.Type == 'market-status')
-    {
-      this.getMarketStatus();
-    }    
+    }   
   }
 
   //
