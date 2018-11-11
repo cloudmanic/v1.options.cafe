@@ -9,7 +9,6 @@ package controllers
 import (
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/realip"
@@ -17,46 +16,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 )
-
-//
-// Call this to start a user's feed
-//
-func (t *Controller) DoStartBrokerFeed(c *gin.Context) {
-
-	// userId := helpers.StringToUint(c.Query("user_id"))
-	// brokerId := helpers.StringToUint(c.Query("broker_id"))
-
-	// // Validate the hash to avoid DOSS attacks or rather users doing it to other users
-	// str := c.Query("user_id") + ":" + c.Query("broker_id")
-	// hash, err := helpers.Decrypt(c.Query("key"))
-
-	// if err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Sorry, we could not find your broker session."})
-	// 	return
-	// }
-
-	// // Verify the key matches
-	// if hash != str {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Sorry, we could not find your broker session."})
-	// 	return
-	// }
-
-	// // Get user
-	// user := models.User{}
-	// t.DB.New().First(&user, int(userId))
-
-	// if user.Id <= 0 {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Sorry, we could not find your broker session."})
-	// 	return
-	// }
-
-	// // Get the broker
-	// broker := models.Broker{}
-	// t.DB.New().Where("id = ? AND user_id = ?", brokerId, userId).First(&broker)
-
-	// Redirect back to main site
-	c.Redirect(302, os.Getenv("SITE_URL"))
-}
 
 //
 // Login to account.

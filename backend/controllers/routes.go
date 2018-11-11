@@ -136,9 +136,6 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 	r.GET("/tradier/authorize", tr.DoAuthCode)
 	r.GET("/tradier/callback", tr.DoAuthCallback)
 
-	// Redirect after oauth to start the broker feed.
-	r.GET("/broker-feed/start", t.DoStartBrokerFeed)
-
 	// -------- Static Files ------------ //
 
 	r.Use(static.Serve("/", static.LocalFile("/frontend", true)))

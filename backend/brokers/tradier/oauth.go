@@ -203,27 +203,25 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 	}
 
 	// Update Broker
-	broker.Status = "Active"
+	//broker.Status = "Active"
 	broker.AccessToken = tr.Token
 	broker.RefreshToken = tr.RefreshToken
 	broker.TokenExpirationDate = time.Now().Add(time.Duration(tr.ExpiresSec) * time.Second).UTC()
 	t.DB.UpdateBroker(broker)
 
+	// We bootstrap the broker before setting it active this way the normal poller
+	// does not overlap. NOTE: We set the broker to active in KickStartBroker that is
+	// when the everyday poller kicks in.
+	go t.DB.KickStartBroker(user, broker)
+
+	// Just give the data building a bit of a head start
+	time.Sleep(time.Second * 2)
+
 	// Log
 	services.Info("Tradier authorization completed for " + user.Email)
 
-	// Build key to avoid users restarting users
-	str := strconv.Itoa(int(user.Id)) + ":" + strconv.Itoa(int(broker.Id))
-	hash, err := helpers.Encrypt(str)
-
-	if err != nil {
-		services.BetterError(err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
-		return
-	}
-
 	// Return success redirect
-	c.Redirect(302, os.Getenv("BACKEND_URL")+"/broker-feed/start?user_id="+strconv.Itoa(int(user.Id))+"&broker_id="+strconv.Itoa(int(broker.Id))+"&key="+hash)
+	c.Redirect(302, os.Getenv("SITE_URL"))
 }
 
 //

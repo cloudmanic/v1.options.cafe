@@ -40,6 +40,7 @@ type Datastore interface {
 	// Broker
 	UpdateBroker(broker Broker) error
 	GetBrokerById(id uint) (Broker, error)
+	KickStartBroker(user User, broker Broker)
 	GetBrokerTypeAndUserId(userId uint, brokerType string) ([]Broker, error)
 	CreateNewBroker(name string, user User, accessToken string, refreshToken string, tokenExpirationDate time.Time) (Broker, error)
 
@@ -83,7 +84,7 @@ type Datastore interface {
 	ValidatePassword(password string) error
 	GetUserByEmail(email string) (User, error)
 	GetUserByGoogleSubId(sub string) (User, error)
-	VerifyDefaultWatchList(user User)
+	SetDefaultWatchList(user User)
 	ResetUserPassword(id uint, password string) error
 	ValidateUserLogin(email string, password string) error
 	GetUserByStripeCustomer(customerId string) (User, error)

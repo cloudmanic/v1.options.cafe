@@ -1,7 +1,11 @@
 package models
 
 import (
+	"bytes"
 	"errors"
+	"net/http"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
@@ -124,6 +128,39 @@ func (t *DB) UpdateBroker(broker Broker) error {
 
 	// Return the user.
 	return nil
+
+}
+
+//
+// Kick start a broker by sending polling requests to the message queue.
+// We typically call this after adding a new broker to an account. Normal
+// polling will catch up. We dot his just so users do not have to wait for data.
+//
+func (t *DB) KickStartBroker(user User, broker Broker) {
+
+	actions := []string{
+		"get-user-profile",
+		"get-all-orders",
+		"get-history",
+	}
+
+	// Loop through the required actions to get started
+	for _, row := range actions {
+
+		// We do not test for error. We just assume this works.
+		var jsonStr = []byte(`{"action":"` + row + `","user_id":` + strconv.Itoa(int(user.Id)) + `,"broker_id":` + strconv.Itoa(int(broker.Id)) + `}`)
+		req, _ := http.NewRequest("POST", os.Getenv("NSQD_HOST_HTTP")+"/pub?topic=oc-broker-feed-request", bytes.NewBuffer(jsonStr))
+		req.Header.Set("Content-Type", "application/json")
+		client := &http.Client{}
+		resp, _ := client.Do(req)
+		resp.Body.Close()
+
+	}
+
+	// Just give it a few seconds to do its boot strap thing
+	time.Sleep(time.Second * 5)
+	broker.Status = "Active"
+	t.UpdateBroker(broker)
 
 }
 

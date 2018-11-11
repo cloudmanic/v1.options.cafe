@@ -177,7 +177,7 @@ func (t *DB) GetUserById(id uint) (User, error) {
 //
 // Verify we have default watchlist in place.
 //
-func (t *DB) VerifyDefaultWatchList(user User) {
+func (t *DB) SetDefaultWatchList(user User) {
 
 	// Setup defaults.
 	type Y struct {
@@ -866,6 +866,9 @@ func (t *DB) GetInvoiceHistoryWithStripe(user User) ([]UserInvoice, error) {
 // Do post user register stuff.
 //
 func (t *DB) doPostUserRegisterStuff(user User, ipAddress string) {
+
+	// Set default watchlists
+	t.SetDefaultWatchList(user)
 
 	// Subscribe new user to mailing lists.
 	go services.SendySubscribe("trial", user.Email, user.FirstName, user.LastName, "", "", ipAddress, "No")
