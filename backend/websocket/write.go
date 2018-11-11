@@ -7,7 +7,6 @@
 package websocket
 
 import (
-	"encoding/json"
 	"os"
 	"sync"
 	"time"
@@ -29,15 +28,6 @@ func (t *Controller) DoWsWriting(conn *WebsocketConnection) {
 		message := <-conn.WriteChan
 		conn.connection.WriteMessage(websocket.TextMessage, []byte(message))
 		conn.connection.SetWriteDeadline(time.Now().Add(writeWait))
-	}
-}
-
-//
-// Send a message to all connected clients.
-//
-func (t *Controller) WsDispatchToAll(send string) {
-	for i := range t.Connections {
-		t.Connections[i].WriteChan <- send
 	}
 }
 
@@ -92,31 +82,6 @@ func (t *Controller) DoWsDispatch() {
 
 	// Wait for messages
 	wg.Wait()
-}
-
-//
-// Build json to send up websocket.
-//
-func (t *Controller) WsSendJsonBuild(uri string, data_json string) (string, error) {
-
-	type SendStruct struct {
-		Uri  string `json:"uri"`
-		Body string `json:"body"`
-	}
-
-	// Send Object
-	send := SendStruct{
-		Uri:  uri,
-		Body: string(data_json),
-	}
-	send_json, err := json.Marshal(send)
-
-	if err != nil {
-		services.BetterError(err)
-		return "", err
-	}
-
-	return string(send_json), nil
 }
 
 /* End File */

@@ -8,7 +8,6 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/cmd"
 	"github.com/cloudmanic/app.options.cafe/backend/controllers"
 	"github.com/cloudmanic/app.options.cafe/backend/cron"
-	"github.com/cloudmanic/app.options.cafe/backend/library/notify/websocket_push"
 	"github.com/cloudmanic/app.options.cafe/backend/library/polling"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/library/worker/jobs"
@@ -50,9 +49,6 @@ func main() {
 
 	// Setup shared channels
 	WsWriteChan := make(chan websocket.SendStruct, 1000)
-
-	// Setup the notification channel
-	websocket_push.SetWebsocketChannel(WsWriteChan)
 
 	// Create new websocket
 	w := websocket.NewController(db, WsWriteChan)
