@@ -9,13 +9,13 @@ import { Subject } from 'rxjs/Subject';
 import { Component, OnInit } from '@angular/core';
 import { Order } from '../../../models/order';
 import { Settings } from '../../../models/settings';
-import { ChangeDetected } from '../../../models/change-detected';
 import { TradeGroup, TradeGroupsCont } from '../../../models/trade-group';
 import { WebsocketService } from '../../../providers/http/websocket.service';
 import { StateService } from '../../../providers/state/state.service';
 import { BrokerService } from '../../../providers/http/broker.service';
 import { SettingsService } from '../../../providers/http/settings.service';
 import { TradeGroupService } from '../../../providers/http/trade-group.service';
+import { ChangeDetected } from '../../../models/change-detected';
 
 @Component({
   selector: 'app-trading-positions',
@@ -64,6 +64,10 @@ export class PositionsComponent implements OnInit
       this.manageChangeDetection(data);
     }); 
 
+    // Subscribe to data updates from the broker - Orders
+    this.websocketService.ordersPush.takeUntil(this.destory).subscribe(data => {
+      this.doOrders(data);
+    });
     // Subscribe to data updates from the quotes - Market Quotes
     this.websocketService.quotePushData.takeUntil(this.destory).subscribe(data => {
       this.quotes[data.symbol] = data;
@@ -80,20 +84,33 @@ export class PositionsComponent implements OnInit
   }
 
   //
+  // Detect change
+  //
+  manageChangeDetection(data: ChangeDetected)
+  {
+    // This is a little overkill as we also detect changes in doOrders(). 
+    // But we do it in the name of a fast UI.
+    if(data.Type == "order-filled")
+    {
+      this.getPositions();
+    }
+  }
+
+  //
   // Get Orders
   //
   getOrders() 
   {
     // Get orders data
     this.brokerService.getOrders(this.stateService.GetActiveBrokerAccount().BrokerId).subscribe((data) => {
-      this.setOrders(data);
+      this.doOrders(data);
     });
   }    
 
   //
   // Set the orders.
   //
-  setOrders(orders: Order[]) 
+  doOrders(orders: Order[]) 
   {
     var rt = []
 
@@ -112,8 +129,17 @@ export class PositionsComponent implements OnInit
       }
     }
 
+    // See if anything changed if not no need to update the UI
+    if(JSON.stringify(rt) == JSON.stringify(this.orders))
+    {
+      return;
+    }    
+
     // Set order data
     this.orders = rt;
+
+    // An order has changed update position.
+    this.getPositions();
 
     // Add orders to state manager
     this.stateService.SetActiveOrders(this.orders);
@@ -134,21 +160,9 @@ export class PositionsComponent implements OnInit
   }    
 
   //
-  // Manage change detection.
-  //
-  private manageChangeDetection(data: ChangeDetected)
-  {
-    if(data.Type == "orders") 
-    {
-      this.getOrders();
-      this.getPositions();
-    }
-  }
-
-  //
   // Get positions AKA Trade Groups
   //
-  private getPositions() 
+  getPositions() 
   {
     // Get tradegroup data
     this.tradeGroupService.get(Number(this.stateService.GetStoredActiveAccountId()), 100, 1, 'open_date', 'asc', '', 'Open').subscribe((res) => {

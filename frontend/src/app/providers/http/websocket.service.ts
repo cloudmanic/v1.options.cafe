@@ -81,8 +81,8 @@ export class WebsocketService
       break;
 
       // Change detected
-      case 'change-detected':      
-        this.changedDetectedPush.emit(new ChangeDetected(msg.type));              
+      case 'change-detected':
+        this.changedDetectedPush.emit(new ChangeDetected(msg.body.type));              
       break;              
     }
   }

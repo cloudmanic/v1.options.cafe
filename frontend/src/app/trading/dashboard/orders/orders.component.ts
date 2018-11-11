@@ -13,7 +13,6 @@ import { StateService } from '../../../providers/state/state.service';
 import { TradeService } from '../../../providers/http/trade.service';
 import { WebsocketService } from '../../../providers/http/websocket.service';
 import { BrokerService } from '../../../providers/http/broker.service';
-import { ChangeDetected } from '../../../models/change-detected';
 import { DropdownAction } from '../../../shared/dropdown-select/dropdown-select.component';
 
 @Component({

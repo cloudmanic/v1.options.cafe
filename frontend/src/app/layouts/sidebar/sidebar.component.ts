@@ -79,7 +79,7 @@ export class SidebarComponent implements OnInit {
   //
   // Manage change detection.
   //
-  private manageChangeDetection(data: ChangeDetected)
+  manageChangeDetection(data: ChangeDetected)
   {
     if(data.Type == 'brokers')
     {

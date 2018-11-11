@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/notify"
-	"github.com/cloudmanic/app.options.cafe/backend/library/notify/websocket_push"
+	"github.com/cloudmanic/app.options.cafe/backend/library/queue"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
@@ -102,8 +102,8 @@ func DoMultiLegOrders(db models.Datastore, userId uint, brokerId uint) error {
 			continue
 		}
 
-		// Notify
-		websocket_push.Push(userId, "change-detected", `{ "type": "order-filled", "id": `+strconv.Itoa(int(row.Id))+` }`)
+		// Send websocket with position change
+		queue.Write("oc-websocket-write", `{"uri":"change-detected","user_id":`+strconv.Itoa(int(userId))+`,"body": { "type": "order-filled", "order_id": `+strconv.Itoa(int(row.Id))+`} }`)
 
 		// Push notifications
 		notify.Push(db, notify.NotifyRequest{
