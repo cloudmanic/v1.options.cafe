@@ -4,6 +4,8 @@
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import * as moment from 'moment-timezone';
+import * as Highcharts from 'highcharts/highstock';
 import { Observable } from 'rxjs/Rx';
 import 'rxjs/add/operator/takeUntil';
 import { Subject } from 'rxjs/Subject';
@@ -28,6 +30,88 @@ export class AccountSummaryComponent implements OnInit
 
   private destory: Subject<boolean> = new Subject<boolean>(); 
 
+  // High charts config
+  showFirstRun: boolean = false;
+
+  Highcharts = Highcharts;
+
+  groupBy: string = "month";
+
+  startDate: Date = moment(moment().year() + "-01-01").toDate();
+  
+  endDate: Date = moment().toDate();  
+
+  chartType: string = "column";
+
+  chartConstructor = 'chart';
+
+  chartUpdateFlag: boolean = false;
+
+  chartOptions = {
+
+    chart: { type: 'column' },
+
+    title: { text: '' },
+    credits: { enabled: false },
+
+    rangeSelector: { enabled: false },
+
+    scrollbar: { enabled: false },
+
+    navigator: { enabled: false },
+
+    legend: { enabled: false },
+
+    time: {
+      getTimezoneOffset: function(timestamp) {
+        // America/Los_Angeles
+        // America/New_York
+        let timezoneOffset = -moment.tz(timestamp, 'America/Los_Angeles').utcOffset();
+        return timezoneOffset;
+      }
+    },
+
+    tooltip: {
+      formatter: function() {
+        return "<b>" + this.points[0].series.name + ": </b><br />" + Highcharts.dateFormat('%b \'%y', this.points[0].x) + " : $" + Highcharts.numberFormat(this.points[0].y, 0, '.', ',');
+      },
+
+      shared: true
+    },    
+
+    yAxis: {
+      title: {
+        text: 'Profit & Loss'
+      },
+
+      labels: {
+        formatter: function() {
+          return '$' + Highcharts.numberFormat(this.axis.defaultLabelFormatter.call(this), 0, '.', ',');
+        }
+      }
+    },    
+
+    xAxis: {
+      type: 'datetime',
+
+      dateTimeLabelFormats: {
+        month: '%b \'%y',
+        year: '%Y',
+        day: '%e. %b'
+      },
+
+      title: {
+        text: ''
+      }
+    },
+
+    series: [{
+      name: 'Profit & Loss',
+      data: []
+    }]
+  }; 
+
+
   //
   // Construct.
   //
@@ -47,11 +131,13 @@ export class AccountSummaryComponent implements OnInit
     this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
       this.summaryByYearSelected = new Date().getFullYear();
       this.stateService.SetReportsSummaryByYearSelectedYear(this.summaryByYearSelected);
+      this.buildChart();
       this.getAccountSummary();
       this.getTradeGroupYears();
     });
 
     // Get data on page load.
+    this.buildChart();
     this.getAccountSummary();
     this.getTradeGroupYears();
   }
@@ -59,15 +145,69 @@ export class AccountSummaryComponent implements OnInit
   //
   // OnDestroy
   //
-  ngOnDestroy() {
+  ngOnDestroy() 
+  {
     this.destory.next();
     this.destory.complete();
   } 
 
   //
+  // Set chart type.
+  //
+  setChartType(type: string)
+  {
+    this.chartType = type;
+    this.buildChart();
+  }
+
+  //
+  // Get chart data
+  //
+  buildChart()
+  {
+    this.startDate = moment(this.summaryByYearSelected + "-01-01").toDate();
+    this.endDate = moment(this.summaryByYearSelected + "-12-31").toDate(); 
+
+    // Ajax call to get data
+    this.reportsService.getProfitLoss(Number(this.stateService.GetStoredActiveAccountId()), this.startDate, this.endDate, this.groupBy, "asc", false).subscribe((res) => {
+
+      // Show first run
+      if(res.length > 0) 
+      {
+        this.showFirstRun = false;
+      } else 
+      {
+        this.showFirstRun = true;
+      }
+
+      var data = [];
+
+      for (var i = 0; i < res.length; i++) 
+      {
+        let color = "#5cb85c";
+
+        if (res[i].Profit < 0) 
+        {
+          color = "#ce4260";
+        }
+
+        data.push({ x: res[i].Date, y: res[i].Profit, color: color });
+      }
+
+      // Rebuilt the chart
+      this.chartOptions.chart.type = this.chartType;
+      this.chartOptions.series[0].data = data;
+      this.chartOptions.series[0].name = "Profit & Loss";
+      this.chartUpdateFlag = true;
+
+    });
+  }  
+
+  //
   // Setup Summary actions.
   //
-  setupSummaryActions() {
+  setupSummaryActions() 
+  {
     let das = []
     this.summaryActions = []
 
@@ -85,6 +225,7 @@ export class AccountSummaryComponent implements OnInit
         this.stateService.SetReportsSummaryByYearSelectedYear(this.summaryByYearSelected);
 
         // Hack to get it to close;
+        this.buildChart();
         this.setupSummaryActions();
       };
 

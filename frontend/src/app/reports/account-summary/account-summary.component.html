@@ -7,10 +7,9 @@
 
     <div class="article">
       <div class="article__head">
-        <h5>{{ summaryByYearSelected }} Year to Date</h5>  
-
-        <app-dropdown-select [actions]="summaryActions" [data]="tradeGroupYears" class="article__btn" *ngIf="tradeGroupYears.length"></app-dropdown-select>
-      </div><!-- /.article__head -->
+        <h5>{{ summaryByYearSelected }} Year to Date</h5>
+        <app-dropdown-select [actions]="summaryActions" [data]="tradeGroupYears" class="article__btn" *ngIf="tradeGroupYears?.length"></app-dropdown-select>
+      </div>
 
       <div class="article__body article__body--quaternary">
         <ul class="list-stats">
@@ -49,39 +48,50 @@
 
             <h3>{{ summaryByYear?.SharpeRatio | number:'1.2-2' }}</h3>
           </li>
-        </ul><!-- /.list-stats -->
-      </div><!-- /.article__body -->
-    </div><!-- /.article -->
+        </ul>
+      </div>
+    </div>
 
 
 
 
 
-<!--     <div class="article article--size1">
+    <div class="article article--size1">
       <div class="article__head">
-        <h5>Profit and Loss</h5>  
-
-        <ul class="list-actions-alt article__list">
-          <li class="active">
-            <a href="#" class="btn-square">
-              <i class="ico-chart-1"></i>
-            </a>
-          </li>
-
-          <li>
-            <a href="#" class="btn-square">
+        <h5>{{ summaryByYearSelected }} Profit &amp; Loss</h5>
+      
+        <ul class="list-actions-alt article__list" *ngIf="! showFirstRun">
+          <li [ngClass]="{ 'active': (chartType == 'column') }">
+            <a class="btn-square" (click)="setChartType('column')">
               <i class="ico-chart-2"></i>
             </a>
           </li>
+
+          <li [ngClass]="{ 'active': (chartType == 'line') }">
+            <a class="btn-square" (click)="setChartType('line')">
+              <i class="ico-chart-1"></i>
+            </a>
+          </li>
         </ul>
+
+        <app-dropdown-select [actions]="summaryActions" [data]="tradeGroupYears" class="article__btn" *ngIf="tradeGroupYears?.length"></app-dropdown-select>  
       </div>
 
-      <div class="article__body article__body--senary">
-        <div class="report">
-          <img src="css/images/temp/report3.jpg" alt="" />
+      <div class="article__body article__body--teritary" *ngIf="showFirstRun">
+        <div class="article__content-alt">
+          <h3>No data available!</h3>
+          <img src="/images/temp/chart1.png" alt="" />
+          <h4>Try adjusting the year (selector in the upper right).</h4>
+          <h4>Or maybe you need to do some more trading first!</h4>
         </div>
       </div>
-    </div> -->
+
+      <div class="article__body article__body--senary" *ngIf="! showFirstRun">
+        <div class="report">
+          <highcharts-chart [Highcharts]="Highcharts" [constructorType]="chartConstructor" [options]="chartOptions" [(update)]="chartUpdateFlag" style="width: 100%; height: 500px; display: block;"></highcharts-chart>
+        </div>
+      </div>
+    </div>
 
 
 
