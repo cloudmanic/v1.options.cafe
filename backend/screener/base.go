@@ -72,7 +72,7 @@ func NewScreen(db models.Datastore, broker brokers.Api) Base {
 
 //
 // Loop through one user's screeners and add them to our redis cache.
-// This is called from our pooling calls and run through our workers.
+// This is called from our polling calls and run through our workers.
 //
 func PrimeScreenerCachesByUser(db models.Datastore, api brokers.Api, user models.User, broker models.Broker) error {
 
