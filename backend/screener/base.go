@@ -106,9 +106,6 @@ func PrimeScreenerCachesByUser(db models.Datastore, api brokers.Api, user models
 
 	}
 
-	// Some logging
-	services.Info("Done priming " + strconv.Itoa(int(len(screeners))) + " screeners for " + user.Email)
-
 	// Return happy
 	return nil
 }
