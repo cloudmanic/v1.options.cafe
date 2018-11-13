@@ -38,7 +38,8 @@ export class TradeEquityComponent implements OnInit
   //
   // OnInit.
   //
-  ngOnInit() {
+  ngOnInit() 
+  {
 
     // Get and set symbols
     if (this.tradeDetails.Symbol) 
@@ -54,7 +55,8 @@ export class TradeEquityComponent implements OnInit
   //
   // Submit Trade
   //
-  submitTrade() {
+  submitTrade() 
+  {
     // Ajax call to submit trade.
     this.tradeService.submitTrade(this.tradeDetails, this.stateService.GetStoredActiveAccountId()).subscribe(
 

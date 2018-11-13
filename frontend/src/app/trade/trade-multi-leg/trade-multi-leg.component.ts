@@ -268,7 +268,8 @@ export class TradeMultiLegComponent implements OnInit
   //
   // Duplicate leg
   //
-  duplicateLeg(leg: TradeOptionLegs) {
+  duplicateLeg(leg: TradeOptionLegs) 
+  {
     let newLeg = new TradeOptionLegs();
     newLeg.Symbol = leg.Symbol;
     newLeg.Expire = leg.Expire;
@@ -286,14 +287,16 @@ export class TradeMultiLegComponent implements OnInit
   //
   // Remove leg
   //
-  removeLeg(leg: TradeOptionLegs, index: number) {
+  removeLeg(leg: TradeOptionLegs, index: number) 
+  {
     this.tradeDetails.Legs.splice(index, 1);
   }
 
   //
   // Load symbol for the leg
   //
-  loadLegSymbol(leg: TradeOptionLegs) {
+  loadLegSymbol(leg: TradeOptionLegs) 
+  {
     // Ajax call to get option symbol based on these 3 params
     this.symbolService.getOptionSymbolFromParts(this.symbol.ShortName, leg.Expire, leg.Strike, leg.Type).subscribe(data => {
       leg.Symbol = data;

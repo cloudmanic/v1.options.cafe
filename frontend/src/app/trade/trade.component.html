@@ -36,7 +36,7 @@
           </div>
 
           <div class="tab" [ngClass]="{'current': (tradeDetails.Class == 'option') }">
-            Coming soon...
+            <app-trade-option [showTradeBuilder]="showTradeBuilder" [quotes]="quotes" [tradeDetails]="tradeDetails"></app-trade-option>
           </div>
 
           <div class="tab" [ngClass]="{'current': (tradeDetails.Class == 'multileg') }">

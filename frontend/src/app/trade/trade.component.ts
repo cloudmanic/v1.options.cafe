@@ -21,7 +21,7 @@ import { WebsocketService } from '../providers/http/websocket.service';
 export class TradeComponent implements OnInit 
 {
   quotes = {}
-  showTradeBuilder: boolean = false;
+  showTradeBuilder: boolean = true;
   tradeDetails: TradeDetails = new TradeDetails();
 
   //
@@ -33,7 +33,7 @@ export class TradeComponent implements OnInit
     this.tradeDetails.Symbol = "";
     this.tradeDetails.Qty = 1;
     this.tradeDetails.Side = "buy";
-    this.tradeDetails.Class = "equity";
+    this.tradeDetails.Class = "option";
     this.tradeDetails.Duration = "day";
     this.tradeDetails.OrderType = "market";
 
@@ -46,7 +46,8 @@ export class TradeComponent implements OnInit
   //
   // OnInit.
   //
-  ngOnInit() {
+  ngOnInit() 
+  {
     // Subscribe trade events
     this.tradeService.tradeEvent.subscribe(data => {
       this.manageTradeEvent(data);
