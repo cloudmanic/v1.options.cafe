@@ -2,7 +2,7 @@
 // Date: 2018-11-09
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-11
+// Last Modified: 2018-11-12
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -32,6 +32,7 @@ var (
 		{Name: "get-history", Sleep: 43200, Delay: 0, Type: "all-users"},  // 12 hours
 		{Name: "get-positions", Sleep: 3600, Delay: 5, Type: "all-users"}, // 1 hour, 5 seconds delay (we want all orders to complete first)
 		{Name: "do-access-token-refresh", Sleep: 60, Delay: 0, Type: "all-users"},
+		{Name: "prime-screener-caches", Sleep: 240, Delay: 0, Type: "all-users"}, // 4 mins
 	}
 )
 

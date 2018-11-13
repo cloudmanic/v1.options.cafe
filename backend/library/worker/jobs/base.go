@@ -2,7 +2,7 @@
 // Date: 2018-11-09
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-11
+// Last Modified: 2018-11-12
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -23,6 +23,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/library/worker"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/screener"
 	nsq "github.com/nsqio/go-nsq"
 )
 
@@ -51,6 +52,7 @@ func init() {
 		"get-history":             pull.DoGetHistory,
 		"get-positions":           pull.DoGetPositions,
 		"do-access-token-refresh": pull.DoAccessTokenRefresh,
+		"prime-screener-caches":   screener.PrimeScreenerCachesByUser,
 	}
 
 }

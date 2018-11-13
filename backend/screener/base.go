@@ -71,43 +71,46 @@ func NewScreen(db models.Datastore, broker brokers.Api) Base {
 }
 
 //
-// Loop through all screeners and store them in cache.
+// Loop through one user's screeners and add them to our redis cache.
+// This is called from our pooling calls and run through our workers.
 //
-func (t *Base) PrimeAllScreenerCaches() {
+func PrimeScreenerCachesByUser(db models.Datastore, api brokers.Api, user models.User, broker models.Broker) error {
 
-	for {
+	// new screen instance
+	t := NewScreen(db, api)
 
-		screeners := []models.Screener{}
-		t.DB.New().Find(&screeners)
+	// Get screener for this user.
+	screeners := []models.Screener{}
+	db.New().Where("user_id = ?", user.Id).Find(&screeners)
 
-		for _, row := range screeners {
+	for _, row := range screeners {
 
-			// Get screen with screen items
-			screen, err := t.DB.GetScreenerByIdAndUserId(row.Id, row.UserId)
+		// Get screen with screen items
+		screen, err := db.GetScreenerByIdAndUserId(row.Id, row.UserId)
 
-			if err != nil {
-				services.BetterError(err)
-				continue
-			}
-
-			// Run the screen based from our function map
-			result, err := t.ScreenFuncs[row.Strategy](screen)
-
-			if err != nil {
-				services.BetterError(err)
-				continue
-			}
-
-			// Store result in cache.
-			cache.SetExpire("oc-screener-result-"+strconv.Itoa(int(row.Id)), (time.Minute * 5), result)
-
+		if err != nil {
+			services.BetterError(err)
+			continue
 		}
 
-		// Sleep for 5 mins.
-		time.Sleep(time.Second * 60 * 5)
+		// Run the screen based from our function map
+		result, err := t.ScreenFuncs[row.Strategy](screen)
+
+		if err != nil {
+			services.BetterError(err)
+			continue
+		}
+
+		// Store result in cache.
+		cache.SetExpire("oc-screener-result-"+strconv.Itoa(int(row.Id)), (time.Minute * 5), result)
 
 	}
 
+	// Some logging
+	services.Info("Done priming " + strconv.Itoa(int(len(screeners))) + " screeners for " + user.Email)
+
+	// Return happy
+	return nil
 }
 
 //

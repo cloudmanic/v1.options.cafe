@@ -4,7 +4,6 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/cmd"
 	"github.com/cloudmanic/app.options.cafe/backend/controllers"
 	"github.com/cloudmanic/app.options.cafe/backend/cron"
@@ -13,7 +12,6 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/library/worker/jobs"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/cloudmanic/app.options.cafe/backend/screener"
 	"github.com/cloudmanic/app.options.cafe/backend/websocket"
 	_ "github.com/jpfuentes2/go-env/autoload"
 )
@@ -59,10 +57,6 @@ func main() {
 
 	// Startup controller & websockets
 	c := &controllers.Controller{DB: db, WebsocketController: w}
-
-	// Start loop through refresh screener
-	t := screener.NewScreen(db, &tradier.Api{DB: nil, ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN")})
-	go t.PrimeAllScreenerCaches()
 
 	// Stuff we start a as a different process in production using --cmd. In local dev we start here
 	// "-cmd=cron"

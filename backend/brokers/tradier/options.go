@@ -70,8 +70,15 @@ func (t *Api) GetOptionsExpirationsBySymbol(symb string) ([]string, error) {
 	// Create client
 	client := &http.Client{}
 
+	// Get url to api
+	apiUrl := apiBaseUrl
+
+	if t.Sandbox {
+		apiUrl = sandBaseUrl
+	}
+
 	// Create request
-	req, err := http.NewRequest("GET", apiBaseUrl+"/markets/options/expirations?symbol="+symb, nil)
+	req, err := http.NewRequest("GET", apiUrl+"/markets/options/expirations?symbol="+symb, nil)
 
 	// Headers
 	req.Header.Set("Authorization", fmt.Sprint("Bearer ", t.ApiKey))
