@@ -86,6 +86,46 @@ export class TradeOptionComponent implements OnInit
   } 
 
   //
+  // Submit Order
+  //
+  submitOrder()
+  {
+    //alert("kkkjhhh");
+  }
+
+  //
+  // Preview Trade
+  //
+  previewTrade() 
+  {
+    // Set option symbol
+    this.tradeDetails.OptionSymbol = this.option.ShortName;
+
+    // Ajax call to preview trade.
+    this.tradeService.previewTrade(this.tradeDetails, this.stateService.GetStoredActiveAccountId()).subscribe(
+
+      // Success (as in no server errors)
+      data => {
+        this.orderPreview = data;
+      },
+
+      // Error
+      (err: HttpErrorResponse) => {
+
+        if (err.error instanceof Error) 
+        {
+          alert(err.error.message);
+        } else 
+        {
+          alert(err.error.error);
+        }
+
+      }
+
+    );
+  }  
+
+  //
   // onSearchTypeAheadClick() 
   //
   onSearchTypeAheadClick(symbol: Symbol) 
@@ -143,6 +183,24 @@ export class TradeOptionComponent implements OnInit
   }
 
   //
+  // On Strike change
+  //
+  onStrikeChange()
+  {
+    // Load option quotes
+    this.loadOptionSymbol();
+  }
+
+  //
+  // On type change
+  //
+  onTypeChange()
+  {
+    // Load option quotes
+    this.loadOptionSymbol();
+  }
+
+  //
   // On expire change.
   //
   onExpireChange() 
@@ -172,7 +230,7 @@ export class TradeOptionComponent implements OnInit
       this.option = data;
     });
 
-  }      
+  }         
 }
 
 /* End File */

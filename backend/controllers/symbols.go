@@ -137,6 +137,26 @@ func (t *Controller) GetOptionSymbolFromParts(c *gin.Context) {
 		return
 	}
 
+	// To save some processing lets see if we already have this symbol
+	sym, err := t.DB.GetOptionByParts(symbol, optionType, expireDate, strike)
+
+	if err == nil {
+
+		// Now add this symbol to our active symbol list as we most likely want quotes via websockets after this.
+		_, err2 := t.DB.CreateActiveSymbol(userId, sym.ShortName)
+
+		if err2 != nil {
+			services.BetterError(err2)
+			c.JSON(http.StatusBadRequest, gin.H{"error": httpGenericErrMsg})
+			return
+		}
+
+		// Return happy JSON
+		c.JSON(200, sym)
+
+		return
+	}
+
 	// ------------ First we load the entire option chain from Tradier : TODO: someday make this via the users' account -------------- //
 	// ------------ We do this to make sure our symbols table is up to date with the latest for this symbol -------------------------- //
 
@@ -163,13 +183,23 @@ func (t *Controller) GetOptionSymbolFromParts(c *gin.Context) {
 		return
 	}
 
-	// Make sure all these chains are in our symbols table.
-	err = t.DB.LoadSymbolsByOptionsChain(chain)
-
-	if err != nil {
-		t.RespondError(c, err, httpGenericErrMsg)
-		return
+	// Make suser the option we care about is in our Symbol DB.
+	if optionType == "Call" {
+		for _, row := range chain.Calls {
+			if row.Strike == strike {
+				t.DB.CreateNewOptionSymbol(row.Symbol)
+			}
+		}
+	} else {
+		for _, row := range chain.Puts {
+			if row.Strike == strike {
+				t.DB.CreateNewOptionSymbol(row.Symbol)
+			}
+		}
 	}
+
+	// Since we made the chain call lets tore the symbols
+	go t.DB.LoadSymbolsByOptionsChain(chain)
 
 	// ----------- Now Search for the option in the symbols table ------------ //
 

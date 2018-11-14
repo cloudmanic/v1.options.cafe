@@ -497,6 +497,10 @@ func prepOrder(order types.Order) url.Values {
 	params.Set("side", order.Side)
 	params.Set("stop", strconv.FormatFloat(order.Stop, 'f', 2, 64))
 
+	if order.Class == "option" {
+		params.Set("option_symbol", order.OptionSymbol)
+	}
+
 	if order.Class != "multileg" {
 		params.Set("quantity", strconv.FormatFloat(order.Quantity, 'f', 2, 64))
 	}

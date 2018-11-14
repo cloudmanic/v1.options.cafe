@@ -57,7 +57,7 @@
 
 
 <div class="form form--search">
-  <form action="?" method="post">
+  <form (submit)="submitOrder()">
     <div class="form__body">
 
 
@@ -80,7 +80,7 @@
 
           <div class="form__controls">
             <div class="select">
-              <select name="Strike" id="field-strike" [(ngModel)]="symbolStrike">
+              <select name="Strike" id="field-strike" [(ngModel)]="symbolStrike" (change)="onStrikeChange()">
                 <option value="{{ row }}" *ngFor="let row of symbolStrikes">{{ row }}</option>
               </select>
             </div>
@@ -93,7 +93,7 @@
 
           <div class="form__controls">
             <div class="select">
-              <select name="Type" id="field-type" [(ngModel)]="symbolType">
+              <select name="Type" id="field-type" [(ngModel)]="symbolType" (change)="onTypeChange()">
                 <option value="Call">Call</option>
                 <option value="Put">Put</option>
               </select>
@@ -135,20 +135,6 @@
             </table>
 
           </div>
-
-<!--           <div class="net-quote" *ngIf="getAskPrice() < 0">
-            <h3>Net Quote</h3>
-            <p>Credit Ask {{ (getAskPrice() * -1) | currency:'USD':'symbol':'1.2-2' }}</p>            
-            <p>Credit Bid {{ (getBidPrice() * -1) | currency:'USD':'symbol':'1.2-2' }}</p>
-            <p>Credit Mid {{ (getMidPrice() * -1) | currency:'USD':'symbol':'1.2-2' }}</p>
-          </div>          
-
-          <div class="net-quote" *ngIf="getAskPrice() > 0">
-            <h3>Net Quote</h3>
-            <p>Debit Ask {{ getAskPrice() | currency:'USD':'symbol':'1.2-2' }}</p>            
-            <p>Debit Bid {{ getBidPrice() | currency:'USD':'symbol':'1.2-2' }}</p>
-            <p>Debit Mid {{ getMidPrice() | currency:'USD':'symbol':'1.2-2' }}</p>
-          </div>  -->
 
 
         </div>

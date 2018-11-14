@@ -46,6 +46,7 @@ export class TradeService
       type: trade.OrderType,
       price: Number(trade.Price),
       stop: Number(trade.Stop),
+      option_symbol: trade.OptionSymbol,      
       legs: []
     }
 
@@ -80,6 +81,7 @@ export class TradeService
       type: trade.OrderType,
       price: Number(trade.Price),
       stop: Number(trade.Stop),
+      option_symbol: trade.OptionSymbol,
       legs: []
     }
 
@@ -249,6 +251,7 @@ export class TradeDetails
   Price: number;
   Stop: number;
   Qty: number;
+  OptionSymbol: string; // used for option orders
   Legs: TradeOptionLegs[];
 }
 
