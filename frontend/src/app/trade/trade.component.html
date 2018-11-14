@@ -6,15 +6,15 @@
           
           <nav class="tabs__nav">
             <ul>
-              <li [ngClass]="{'current': (tradeDetails.Class == 'equity') }">
+              <li [ngClass]="{'current': (tradeDetails?.Class == 'equity') }">
                 <a (click)="setTradeClass('equity')">Equity</a>
               </li>
 
-              <li [ngClass]="{'current': (tradeDetails.Class == 'option') }">
+              <li [ngClass]="{'current': (tradeDetails?.Class == 'option') }">
                 <a (click)="setTradeClass('option')">Option</a>
               </li>
 
-              <li [ngClass]="{'current': (tradeDetails.Class == 'multileg') }">
+              <li [ngClass]="{'current': (tradeDetails?.Class == 'multileg') }">
                 <a (click)="setTradeClass('multileg')">Multileg</a>
               </li>
 

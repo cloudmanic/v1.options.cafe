@@ -4,8 +4,9 @@
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, Input } from '@angular/core';
-import { TradeDetails, TradeService, OrderPreview } from '../../providers/http/trade.service';
+import { TradeDetails, TradeService, OrderPreview, TradeEvent } from '../../providers/http/trade.service';
 import { SymbolService } from '../../providers/http/symbol.service';
 import { StateService } from '../../providers/state/state.service';
 import { Symbol } from '../../models/symbol';
@@ -43,7 +44,6 @@ export class TradeOptionComponent implements OnInit
   //
   ngOnInit() 
   {
-
     // Get and set symbols
     if (this.tradeDetails.Symbol) 
     {
@@ -51,17 +51,7 @@ export class TradeOptionComponent implements OnInit
         this.symbol = data;
         this.typeAheadSymbol = data;
       });
-    } else
-    {
-      // Set Defaults
-      this.tradeDetails.Qty = 1;
-      this.tradeDetails.Side = "buy_to_open";
-      this.tradeDetails.Class = "option";
-      this.tradeDetails.OrderType = "market";
-      this.tradeDetails.Duration = "day";
-      this.tradeDetails.Price = 0.00;
-    }
-
+    } 
   }
 
   //
@@ -86,12 +76,51 @@ export class TradeOptionComponent implements OnInit
   } 
 
   //
-  // Submit Order
+  // Submit Trade
   //
-  submitOrder()
+  submitTrade() 
   {
-    //alert("kkkjhhh");
+    // Set option symbol
+    this.tradeDetails.OptionSymbol = this.option.ShortName;
+
+    // Ajax call to submit trade.
+    this.tradeService.submitTrade(this.tradeDetails, this.stateService.GetStoredActiveAccountId()).subscribe(
+
+      // Success (as in no server errors)
+      data => {
+        if (data.Status == "ok")
+        {
+          this.restTrade();
+
+          // Close trade window
+          let event = new TradeEvent();
+          event.Action = "trade-success";
+          this.tradeService.tradeEvent.emit(event);
+
+          // Show success notice
+          this.stateService.SiteSuccess.emit("Order Submitted: Your order number is #" + data.Id); 
+        } else
+        {
+          alert(data.Error);
+        }
+      },
+
+      // Error
+      (err: HttpErrorResponse) => {
+
+        if (err.error instanceof Error) 
+        {
+          alert(err.error.message);
+        } else 
+        {
+          alert(err.error.error);
+        }
+
+      }
+
+    );
   }
+
 
   //
   // Preview Trade
@@ -146,6 +175,7 @@ export class TradeOptionComponent implements OnInit
   {
     // Set the symbol
     this.symbol = this.typeAheadSymbol;
+    this.tradeDetails.Side = "buy_to_open";
 
     // Set the symbol
     this.tradeDetails.Symbol = this.symbol.ShortName;
@@ -162,6 +192,9 @@ export class TradeOptionComponent implements OnInit
   //
   loadExpireDates() 
   {
+    // Reset preview
+    this.orderPreview = null;
+
     this.symbolExpirations = [];
 
     // Make API call to get option expire dates.
@@ -187,6 +220,9 @@ export class TradeOptionComponent implements OnInit
   //
   onStrikeChange()
   {
+    // Reset preview
+    this.orderPreview = null;
+
     // Load option quotes
     this.loadOptionSymbol();
   }
@@ -196,6 +232,9 @@ export class TradeOptionComponent implements OnInit
   //
   onTypeChange()
   {
+    // Reset preview
+    this.orderPreview = null;
+
     // Load option quotes
     this.loadOptionSymbol();
   }
@@ -205,6 +244,9 @@ export class TradeOptionComponent implements OnInit
   //
   onExpireChange() 
   {
+    // Reset preview
+    this.orderPreview = null;
+
     // Api call to get the strikes for this chain.
     this.tradeService.getOptionStrikesBySymbolExpiration(this.tradeDetails.Symbol, this.symbolExpire).subscribe(data => {
       

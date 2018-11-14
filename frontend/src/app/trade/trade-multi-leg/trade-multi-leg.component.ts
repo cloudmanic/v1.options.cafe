@@ -37,8 +37,8 @@ export class TradeMultiLegComponent implements OnInit
   //
   // OnInit.
   //
-  ngOnInit() {
-    
+  ngOnInit()
+  {  
     // Get and set symbols
     if(this.tradeDetails.Symbol) 
     {

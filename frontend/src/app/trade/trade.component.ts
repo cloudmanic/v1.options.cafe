@@ -21,21 +21,21 @@ import { WebsocketService } from '../providers/http/websocket.service';
 export class TradeComponent implements OnInit 
 {
   quotes = {}
-  showTradeBuilder: boolean = true;
+  showTradeBuilder: boolean = false;
   tradeDetails: TradeDetails = new TradeDetails();
 
   //
   // Construct.
   //
-  constructor(private websocketService: WebsocketService, private tradeService: TradeService, private optionsChainService: OptionsChainService, private symbolService: SymbolService) {
-
-    // Default values
-    this.tradeDetails.Symbol = "";
-    this.tradeDetails.Qty = 1;
-    this.tradeDetails.Side = "buy";
-    this.tradeDetails.Class = "option";
-    this.tradeDetails.Duration = "day";
-    this.tradeDetails.OrderType = "market";
+  constructor(private websocketService: WebsocketService, private tradeService: TradeService, private optionsChainService: OptionsChainService, private symbolService: SymbolService) 
+  {
+    // // Default values
+    // this.tradeDetails.Symbol = "";
+    // this.tradeDetails.Qty = 1;
+    // this.tradeDetails.Side = "buy";
+    // this.tradeDetails.Class = "equity";
+    // this.tradeDetails.Duration = "day";
+    // this.tradeDetails.OrderType = "market";
 
     // Subscribe to data updates from the quotes - Market Quotes
     this.websocketService.quotePushData.subscribe(data => {
@@ -68,6 +68,8 @@ export class TradeComponent implements OnInit
 
     // Scroll to top of page
     window.scrollTo(0, 0);
+
+    console.log(data);
 
     // Populate the form.
     this.tradeDetails = data.TradeDetails;
@@ -103,7 +105,8 @@ export class TradeComponent implements OnInit
   //
   // Set trade class.
   //
-  setTradeClass(type: string) {
+  setTradeClass(type: string) 
+  {
     this.tradeDetails.Class = type;
   }  
 

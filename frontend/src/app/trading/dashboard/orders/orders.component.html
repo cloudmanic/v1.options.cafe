@@ -140,13 +140,13 @@
             
               <td>{{ row.Type }}</td> 
             
-              <td>
-                <span [hidden]="row.Type != 'debit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</span>
-                <span [hidden]="row.Type != 'credit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</span>
-                <span [hidden]="row.Type != 'stop'">{{ row.StopPrice | currency:'USD':'symbol':'1.2-2' }}</span>
-                <span [hidden]="row.Type != 'limit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</span> 
-                <span [hidden]="row.Type != 'market'">---</span>     					
-              </td> 
+              <!-- Price -->             
+              <td *ngIf="row.Type == 'debit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</td> 
+              <td *ngIf="row.Type == 'credit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</td> 
+              <td *ngIf="row.Type == 'stop'">{{ row.StopPrice | currency:'USD':'symbol':'1.2-2' }}</td> 
+              <td *ngIf="row.Type == 'limit'">{{ row.Price | currency:'USD':'symbol':'1.2-2' }}</td>  
+              <td *ngIf="row.Type == 'market'">---</td>     					
+              
             
               <td>
                 <span [hidden]="row.Status != 'filled'">{{ row.AvgFillPrice | currency:'USD':'symbol':'1.2-2' }}</span>

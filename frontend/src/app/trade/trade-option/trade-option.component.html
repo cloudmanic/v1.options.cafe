@@ -1,7 +1,6 @@
 <div class="tab__flex">
   <div class="tab__inner">
     <div class="search">
-
       <form (submit)="onSearchSubmit()">
         <div class="dropdown dropdown--search trade-search">
           <app-typeahead-symbols (selected)="onSearchTypeAheadClick($event)" searchTerm="{{ typeAheadSymbol?.ShortName }}" clearAfterSelect="false" class="typeahead-cont"></app-typeahead-symbols>
@@ -57,7 +56,7 @@
 
 
 <div class="form form--search">
-  <form (submit)="submitOrder()">
+  <form>
     <div class="form__body">
 
 
