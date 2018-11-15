@@ -95,3 +95,12 @@
     [tradeGroups]="tradeGroups?.LongCallButterfly">
   </app-trading-positions-long-call-butterfly>
 </li>
+
+<!-- Long Put Butterfly -->
+<li class="box--bordered" *ngIf="tradeGroups?.LongPutButterfly.length">
+  <app-trading-positions-long-put-butterfly 
+    [quotes]="quotes" 
+    [orders]="orders"
+    [tradeGroups]="tradeGroups?.LongPutButterfly">
+  </app-trading-positions-long-put-butterfly>
+</li>

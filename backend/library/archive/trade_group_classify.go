@@ -31,6 +31,9 @@ func GetAmountRiskedInTrade(positions *[]models.Position) (float64, float64) {
 	case "Long Call Butterfly":
 		return trade_types.GetLongCallButterflyRiskProfile(positions)
 
+	case "Long Put Butterfly":
+		return trade_types.GetLongPutButterflyRiskProfile(positions)
+
 	case "Put Credit Spread":
 		return trade_types.GetPutCreditSpreadRiskProfile(positions)
 
@@ -74,6 +77,11 @@ func ClassifyTradeGroup(positions *[]models.Position) string {
 	// long call butterfly trade
 	if trade_types.IsLongCallButterfly(positions) {
 		return "Long Call Butterfly"
+	}
+
+	// long put butterfly trade
+	if trade_types.IsLongPutButterfly(positions) {
+		return "Long Put Butterfly"
 	}
 
 	// put credit spread

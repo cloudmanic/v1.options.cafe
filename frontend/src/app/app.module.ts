@@ -94,6 +94,7 @@ import { OptionComponent } from './trading/dashboard/positions/types/option/opti
 import { IronCondorComponent } from './trading/dashboard/positions/types/iron-condor/iron-condor.component';
 import { ReverseIronCondorComponent } from './trading/dashboard/positions/types/reverse-iron-condor/reverse-iron-condor.component';
 import { LongCallButterflyComponent } from './trading/dashboard/positions/types/long-call-butterfly/long-call-butterfly.component';
+import { LongPutButterflyComponent } from './trading/dashboard/positions/types/long-put-butterfly/long-put-butterfly.component';
 
 // Screener
 import { ScreenerComponent } from './trading/screener/home.component';
@@ -186,6 +187,7 @@ import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.c
     ReverseIronCondorComponent,
     TradeOptionComponent,
     LongCallButterflyComponent,
+    LongPutButterflyComponent,
   ],
   
   imports: [
