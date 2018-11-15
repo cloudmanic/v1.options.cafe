@@ -86,3 +86,12 @@
     [tradeGroups]="tradeGroups?.ReverseIronCondor">
   </app-trading-positions-types-reverse-iron-condor>
 </li>
+
+<!-- Long Call Butterfly -->
+<li class="box--bordered" *ngIf="tradeGroups?.LongCallButterfly.length">
+  <app-trading-positions-long-call-butterfly 
+    [quotes]="quotes" 
+    [orders]="orders"
+    [tradeGroups]="tradeGroups?.LongCallButterfly">
+  </app-trading-positions-long-call-butterfly>
+</li>

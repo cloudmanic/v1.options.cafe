@@ -130,7 +130,8 @@ export class TradeGroupsCont
   public PutDebitSpread: TradeGroup[] = []; 
   public CallDebitSpread: TradeGroup[] = []; 
   public IronCondor: TradeGroup[] = []; 
-  public ReverseIronCondor: TradeGroup[] = []; 
+  public ReverseIronCondor: TradeGroup[] = [];
+  public LongCallButterfly: TradeGroup[] = []; 
   public Other: TradeGroup[] = []; 
 }
 
