@@ -5,6 +5,13 @@
 <div class="content__inner">
   <div class="shell shell--fluid">
 
+    <div class="banner banner--info banner--large" *ngIf="ws_reconnecting">
+      <h6 class="banner__title">
+        <strong>Lost Server Connection</strong>
+      </h6>
+      <p>Reconnecting to our servers....</p>
+    </div>
+
     <div class="banner banner--info banner--large" *ngIf="showNotice">
       <a class="btn-close" (click)="closeNotice()"></a>
       <h6 class="banner__title">
