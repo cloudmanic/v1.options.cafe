@@ -14,19 +14,20 @@ import (
 )
 
 type Trade struct {
-	OpenCost               float64
-	CurrentUnderlyingPrice float64
-	Legs                   []TradeLegs
+	OpenCost               float64     `json:"open_cost"`
+	CurrentUnderlyingPrice float64     `json:"current_underlying_price"`
+	Legs                   []TradeLegs `json:"legs"`
 }
 
 type TradeLegs struct {
-	Symbol models.Symbol
-	Qty    int
+	SymbolStr string        `json:"symbol_str"`
+	Symbol    models.Symbol `json:"symbol"`
+	Qty       int           `json:"qty"`
 }
 
 type Result struct {
-	UnderlyingPrice float64
-	Profit          float64
+	UnderlyingPrice float64 `json:"underlying_price"`
+	Profit          float64 `json:"profit"`
 }
 
 //
@@ -61,7 +62,7 @@ func GetRangeOfUnderlyingResults(min float64, max float64, openCost float64, poi
 	// Loop through our range.
 	for i := min; i <= max; i = i + rangeStep {
 
-		list = append(list, Result{UnderlyingPrice: i, Profit: (openCost * -1)})
+		list = append(list, Result{UnderlyingPrice: helpers.Round(i, 2), Profit: (openCost * -1)})
 
 	}
 

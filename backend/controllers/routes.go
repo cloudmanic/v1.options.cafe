@@ -84,6 +84,9 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		apiV1.GET("/quotes/options/chain/:symb/:expire", t.GetOptionsChainByExpiration)
 		apiV1.GET("/quotes/options/strikes/:symb/:expire", t.GetOptionsStikesBySymbolExpiration)
 
+		// Analyze
+		apiV1.POST("/analyze/options/underlying-price", t.AnalyzeOptionsProfitLossByUnderlyingPrice)
+
 		// Screeners
 		apiV1.GET("/screeners", t.GetScreeners)
 		apiV1.POST("/screeners", t.CreateScreener)
