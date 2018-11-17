@@ -113,10 +113,10 @@ export class TradeMultiLegComponent implements OnInit
 
       if((side == "buy_to_open") || (side == "buy_to_close"))
       {
-        leg.Qty = this.tradeDetails.Legs[i].Qty;
+        leg.Qty = Number(this.tradeDetails.Legs[i].Qty);
       } else 
       {
-        leg.Qty = this.tradeDetails.Legs[i].Qty * -1;        
+        leg.Qty = Number(this.tradeDetails.Legs[i].Qty * -1);        
       }
 
       trade.Legs.push(leg) 
