@@ -15,6 +15,8 @@ import { ScreenerResult } from '../../../models/screener-result';
 import { SettingsService } from '../../../providers/http/settings.service';
 import { DropdownAction } from '../../../shared/dropdown-select/dropdown-select.component';
 import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../../../providers/http/trade.service';
+import { AnalyzeService, AnalyzeTrade } from '../../../providers/http/analyze.service';
+import { AnalyzeLeg } from '../../../models/analyze-result';
 
 @Component({
   selector: 'app-add-edit',
@@ -52,7 +54,14 @@ export class AddEditComponent implements OnInit
   //
   // Construct.
   //
-  constructor(private tradeService: TradeService, private stateService: StateService, private router: Router, private route: ActivatedRoute, private screenerService: ScreenerService, private settingsService: SettingsService) 
+  constructor(
+    private tradeService: TradeService, 
+    private stateService: StateService, 
+    private router: Router, 
+    private route: ActivatedRoute, 
+    private screenerService: ScreenerService, 
+    private settingsService: SettingsService,
+    private analyzeService: AnalyzeService) 
   { 
     this.setupToolTips();
     this.setupItemSettings();
@@ -119,8 +128,6 @@ export class AddEditComponent implements OnInit
   {
     this.settingsService.get().subscribe((res) => {
       this.settings = res;
-
-      console.log(this.settings);
       this.stateService.SetSettings(res);
     });
   } 
@@ -138,13 +145,110 @@ export class AddEditComponent implements OnInit
     // Place order action
     da1.click = (result: ScreenerResult) => {
       this.trade(this.screen, result);
-
     };
 
     das.push(da1);
 
+    // Section action
+    let da2 = new DropdownAction();
+    da2.title = "Analyze Trade";
+
+    // Place order action
+    da2.click = (result: ScreenerResult) => {
+      this.analyzeTrade(this.screen, result);
+    };   
+
+    das.push(da2);
+
     this.actions = das;
   }   
+
+  //
+  // Analyze Trade
+  //
+  analyzeTrade(screen: Screener, result: ScreenerResult)
+  {
+    // console.log(screen);
+    // console.log(result);
+
+    let trade = new AnalyzeTrade();
+    trade.OpenCost = 0;
+    trade.Legs = [];
+
+    switch(screen.Strategy)
+    {
+      // Short Strangle
+      case "short-strangle":
+        trade.OpenCost = (result.Credit * 100 * -1);
+      break; 
+
+      // Put Credit Spread
+      case "put-credit-spread":
+        trade.OpenCost = (result.Credit * 100 * -1);
+      break; 
+
+      // Iron Condor
+      case "iron-condor":
+        trade.OpenCost = (result.Credit * 100 * -1);
+      break;
+
+      // Reverse Iron Condor
+      case "reverse-iron-condor":
+        trade.OpenCost = (result.Debit * 100);
+      break;            
+    }
+
+    // Add Legs
+    for(let i = 0; i < result.Legs.length; i++)
+    {
+      //let side = this.tradeDetails.Legs[i].Side;
+      let leg = new AnalyzeLeg();
+      leg.Qty = 1;
+      leg.SymbolStr = result.Legs[i].ShortName;
+
+      // Figure out the QTY
+      switch(screen.Strategy)
+      {
+        // Short Strangle
+        case "short-strangle":
+          leg.Qty = -1;
+        break;
+
+        // Put Credit Spread
+        case "put-credit-spread":
+          // Second spread is the short one.
+          if(i == 1)
+          {
+            leg.Qty = -1;
+          }
+        break;
+
+        // Iron Condor
+        case "iron-condor":
+          // Second / Third spread is the short one.
+          if((i == 1) || (i == 2))
+          {
+            leg.Qty = -1;
+          }
+        break;
+
+        // Reverse Iron Condor
+        case "reverse-iron-condor":
+          // First / Forth spread is the short one.
+          if((i == 0) || (i == 3))
+          {
+            leg.Qty = -1;
+          }
+        break;                 
+      }
+
+      trade.Legs.push(leg) 
+    }
+
+    // Send request to show analyze dialog
+    this.analyzeService.dialog.emit(trade);
+  } 
+
 
   //
   // Place trade from result

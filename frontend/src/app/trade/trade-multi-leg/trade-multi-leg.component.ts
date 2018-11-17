@@ -34,7 +34,12 @@ export class TradeMultiLegComponent implements OnInit
   //
   // Construct.
   //
-  constructor(private tradeService: TradeService, private optionsChainService: OptionsChainService, private symbolService: SymbolService, private stateService: StateService, private analyzeService: AnalyzeService) { }
+  constructor(
+    private tradeService: TradeService, 
+    private optionsChainService: OptionsChainService, 
+    private symbolService: SymbolService, 
+    private stateService: StateService, 
+    private analyzeService: AnalyzeService) { }
 
   //
   // OnInit.
