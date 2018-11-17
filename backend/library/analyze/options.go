@@ -2,7 +2,7 @@
 // Date: 2018-11-16
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-16
+// Last Modified: 2018-11-17
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -13,7 +13,7 @@ import (
 )
 
 const NumProfitLossByUnderlyingPricePoints = 500
-const NumProfitLossByUnderlyingPriceRangePercent = .5
+const NumProfitLossByUnderlyingPriceRangePercent = .05
 
 //
 // Analyze and options trade. We pass in an array

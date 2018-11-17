@@ -12,6 +12,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { HighchartsChartComponent } from './shared/highcharts/highcharts-chart.component';
 
 // Shared
+import { AnalyzeComponent } from './shared/analyze/analyze.component';
 import { ToolTipComponent } from './shared/tool-tip/tool-tip.component';
 import { PagingComponent } from './shared/paging/paging.component';
 import { DialogComponent } from './shared/dialog/dialog.component';
@@ -34,6 +35,7 @@ import { SettingsService } from './providers/http/settings.service';
 import { WatchlistService } from './providers/http/watchlist.service';
 import { TradeGroupService } from './providers/http/trade-group.service';
 import { WebsocketService } from './providers/http/websocket.service';
+import { AnalyzeService } from './providers/http/analyze.service';
 import { BrokerEventsService } from './providers/http/broker-events.service';
 import { NotificationsService } from './providers/http/notifications.service';
 
@@ -188,6 +190,7 @@ import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.c
     TradeOptionComponent,
     LongCallButterflyComponent,
     LongPutButterflyComponent,
+    AnalyzeComponent,
   ],
   
   imports: [
@@ -214,6 +217,7 @@ import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.c
     OptionsChainService,
     ScreenerService,
     ReportsService,
+    AnalyzeService,
     BrokerEventsService,
     NotificationsService,
     SettingsService,
