@@ -11,7 +11,8 @@ import { Settings } from '../../../../../models/settings';
 import { TradeGroup } from '../../../../../models/trade-group';
 import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../../../../../providers/http/trade.service';
 import { Order } from '../../../../../models/order';
-
+import { AnalyzeService, AnalyzeTrade } from '../../../../../providers/http/analyze.service';
+import { AnalyzeLeg } from '../../../../../models/analyze-result';
 
 @Component({
   selector: 'app-trading-positions-types-spread',
@@ -31,7 +32,7 @@ export class SpreadComponent implements OnInit
   //
   // Constructor....
   //
-  constructor(private tradeService: TradeService) { }
+  constructor(private tradeService: TradeService, private analyzeService: AnalyzeService) { }
 
   //
   // OnInit....
@@ -163,6 +164,19 @@ export class SpreadComponent implements OnInit
       this.tradeService.tradeEvent.emit(new TradeEvent().createNew("toggle-trade-builder", tradeDetails));
     };
 
+    // Build Review section
+    let reviewSection = new DropdownAction();
+    reviewSection.title = "Review Position";
+    reviewSection.section = true;
+
+    // Analyze Trade
+    let analyze = new DropdownAction();
+    analyze.title = "Analyze Trade";
+
+    // Analyze Trade Click
+    analyze.click = (row: TradeGroup) => {
+      this.analyzeTrade(row)
+    };
 
     // Build social section
     let socialSection = new DropdownAction();
@@ -191,8 +205,42 @@ export class SpreadComponent implements OnInit
     };
 
     // Load actions.
-    this.actions = [closeSection, da1, da2, da3, socialSection, tweet];
+    this.actions = [closeSection, da1, da2, da3, reviewSection, analyze, socialSection, tweet];
   }
+
+  //
+  // Analyze Trade
+  //
+  analyzeTrade(tradeGroup: TradeGroup)
+  {
+    let trade = new AnalyzeTrade();
+    trade.Legs = [];
+
+    // Figure out open cost
+    switch(tradeGroup.Type)
+    {
+      case "Put Credit Spread":
+      case "Call Credit Spread":
+        trade.OpenCost = (tradeGroup.Credit * -1);
+      break;
+
+      default:
+        trade.OpenCost = tradeGroup.Risked;
+      break;
+    }    
+
+    // Add Legs
+    for(let i = 0; i < tradeGroup.Positions.length; i++)
+    {
+      let leg = new AnalyzeLeg();
+      leg.Qty = tradeGroup.Positions[i].Qty;
+      leg.SymbolStr = tradeGroup.Positions[i].Symbol.ShortName;
+      trade.Legs.push(leg) 
+    }
+
+    // Send request to show analyze dialog
+    this.analyzeService.dialog.emit(trade);
+  } 
 
   //
   // Get trade group total header title.

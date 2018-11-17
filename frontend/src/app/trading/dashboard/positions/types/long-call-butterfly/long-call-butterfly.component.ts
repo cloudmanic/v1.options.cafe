@@ -131,7 +131,6 @@ export class LongCallButterflyComponent implements OnInit
     reviewSection.title = "Review Position";
     reviewSection.section = true;
 
-
     // Analyze Trade
     let analyze = new DropdownAction();
     analyze.title = "Analyze Trade";
