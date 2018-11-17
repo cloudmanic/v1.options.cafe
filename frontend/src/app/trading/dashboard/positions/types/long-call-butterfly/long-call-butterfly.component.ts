@@ -11,7 +11,8 @@ import { Position } from '../../../../../models/position';
 import { Settings } from '../../../../../models/settings';
 import { DropdownAction } from '../../../../../shared/dropdown-select/dropdown-select.component';
 import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../../../../../providers/http/trade.service';
-
+import { AnalyzeService, AnalyzeTrade } from '../../../../../providers/http/analyze.service';
+import { AnalyzeLeg } from '../../../../../models/analyze-result';
 
 @Component({
   selector: 'app-trading-positions-long-call-butterfly',
@@ -32,7 +33,7 @@ export class LongCallButterflyComponent implements OnInit
   //
   // Constructor....
   //
-  constructor(private tradeService: TradeService) { }
+  constructor(private tradeService: TradeService, private analyzeService: AnalyzeService) { }
 
   //
   // OnInit....
@@ -125,6 +126,20 @@ export class LongCallButterflyComponent implements OnInit
       this.tradeService.tradeEvent.emit(new TradeEvent().createNew("toggle-trade-builder", tradeDetails));
     };
 
+    // Build Review section
+    let reviewSection = new DropdownAction();
+    reviewSection.title = "Review Position";
+    reviewSection.section = true;
+
+
+    // Analyze Trade
+    let analyze = new DropdownAction();
+    analyze.title = "Analyze Trade";
+
+    // Analyze Trade Click
+    analyze.click = (row: TradeGroup) => {
+      this.analyzeTrade(row)
+    };
 
     // Build social section
     let socialSection = new DropdownAction();
@@ -152,8 +167,30 @@ export class LongCallButterflyComponent implements OnInit
     };
 
     // Load actions.
-    this.actions = [closeSection, da1, da3, socialSection, tweet];
+    this.actions = [closeSection, da1, da3, reviewSection, analyze, socialSection, tweet];
   }
+
+  //
+  // Analyze Trade
+  //
+  analyzeTrade(tradeGroup: TradeGroup)
+  {
+    let trade = new AnalyzeTrade();
+    trade.OpenCost = tradeGroup.Risked;
+    trade.Legs = [];
+
+    // Add Legs
+    for(let i = 0; i < tradeGroup.Positions.length; i++)
+    {
+      let leg = new AnalyzeLeg();
+      leg.Qty = tradeGroup.Positions[i].Qty;
+      leg.SymbolStr = tradeGroup.Positions[i].Symbol.ShortName;
+      trade.Legs.push(leg) 
+    }
+
+    // Send request to show analyze dialog
+    this.analyzeService.dialog.emit(trade);
+  }   
 
   //
   // Get trade group days to expire
