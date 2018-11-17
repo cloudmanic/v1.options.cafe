@@ -56,7 +56,7 @@ func OptionsProfitLossByUnderlyingPriceManageLeg(leg TradeLegs, results []Result
 	// Is this a long call?
 	if (leg.Symbol.OptionType == "Call") && (leg.Qty > 0) {
 
-		// It is zero if the Strike is greater
+		// If the OptionStrike less than the UnderlyingPrice we have a profit otherwise expired worthless
 		if leg.Symbol.OptionStrike < results[key].UnderlyingPrice {
 			results[key].Profit = helpers.Round(results[key].Profit+(((results[key].UnderlyingPrice-leg.Symbol.OptionStrike)*100.00)*float64(leg.Qty)), 2)
 		}
@@ -66,9 +66,29 @@ func OptionsProfitLossByUnderlyingPriceManageLeg(leg TradeLegs, results []Result
 	// Is this a short call?
 	if (leg.Symbol.OptionType == "Call") && (leg.Qty < 0) {
 
-		// It is zero if the Strike is greater
+		// If the OptionStrike is less than the UnderlyingPrice we have a loss otherwise expired worthless. (Reminder: QTY will be negative)
 		if leg.Symbol.OptionStrike < results[key].UnderlyingPrice {
 			results[key].Profit = helpers.Round(results[key].Profit+(((results[key].UnderlyingPrice-leg.Symbol.OptionStrike)*100.00)*float64(leg.Qty)), 2)
+		}
+
+	}
+
+	// Is this a long put?
+	if (leg.Symbol.OptionType == "Put") && (leg.Qty > 0) {
+
+		// If the Underlying Price is less than the Option Strike we have a gain
+		if leg.Symbol.OptionStrike > results[key].UnderlyingPrice {
+			results[key].Profit = helpers.Round(results[key].Profit+(((leg.Symbol.OptionStrike-results[key].UnderlyingPrice)*100.00)*float64(leg.Qty)), 2)
+		}
+
+	}
+
+	// Is this a short put?
+	if (leg.Symbol.OptionType == "Put") && (leg.Qty < 0) {
+
+		// If the Underlying Price is less than the Option Strike we have a loss (Reminder: QTY will be negative)
+		if leg.Symbol.OptionStrike > results[key].UnderlyingPrice {
+			results[key].Profit = helpers.Round(results[key].Profit+((leg.Symbol.OptionStrike-results[key].UnderlyingPrice)*100*float64(leg.Qty)), 2)
 		}
 
 	}

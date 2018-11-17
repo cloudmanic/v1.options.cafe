@@ -12,6 +12,8 @@ import { SymbolService } from '../../providers/http/symbol.service';
 import { StateService } from '../../providers/state/state.service';
 import { OptionsChainService } from '../../providers/http/options-chain.service';
 import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs, OrderPreview } from '../../providers/http/trade.service';
+import { AnalyzeService, AnalyzeTrade } from '../../providers/http/analyze.service';
+import { AnalyzeLeg } from '../../models/analyze-result';
 
 @Component({
   selector: 'app-trade-multi-leg',
@@ -32,7 +34,7 @@ export class TradeMultiLegComponent implements OnInit
   //
   // Construct.
   //
-  constructor(private tradeService: TradeService, private optionsChainService: OptionsChainService, private symbolService: SymbolService, private stateService: StateService) { }
+  constructor(private tradeService: TradeService, private optionsChainService: OptionsChainService, private symbolService: SymbolService, private stateService: StateService, private analyzeService: AnalyzeService) { }
 
   //
   // OnInit.
@@ -55,6 +57,68 @@ export class TradeMultiLegComponent implements OnInit
     }
 
   }
+
+  //
+  // Analyze Trade
+  //
+  analyzeTrade()
+  {
+    //console.log(this.tradeDetails);
+
+    let trade = new AnalyzeTrade();
+    trade.Legs = [];
+
+    switch(this.tradeDetails.OrderType)
+    {
+      case "credit":
+        trade.OpenCost = this.tradeDetails.Price * (-1 * this.tradeDetails.Legs[0].Qty * 100);
+      break;
+
+      case "debit":
+        trade.OpenCost = this.tradeDetails.Price * (this.tradeDetails.Legs[0].Qty * 100);
+      break;
+
+      default:
+        trade.OpenCost = 0;
+      break;
+    }
+
+    // getAskPrice() < 0
+
+    // // Figure out the open cost.
+    // if(this.tradeDetails.OrderType == "credit")
+    // {
+    //   trade.OpenCost = this.tradeDetails.Price * -1 * this.tradeDetails.Legs[0].Qty;
+    // } else if(this.tradeDetails.OrderType == "market") 
+    // {
+    //   trade.OpenCost = this.getMidPrice() * this.tradeDetails.Legs[0].Qty;
+    // } else
+    // {
+    //   trade.OpenCost = this.getBidPrice() * this.tradeDetails.Legs[0].Qty;
+    // }
+
+    // Add Legs
+    for(let i = 0; i < this.tradeDetails.Legs.length; i++)
+    {
+      let side = this.tradeDetails.Legs[i].Side;
+      let leg = new AnalyzeLeg();
+      leg.Qty = 1;
+      leg.SymbolStr = this.tradeDetails.Legs[i].Symbol.ShortName;
+
+      if((side == "buy_to_open") || (side == "buy_to_close"))
+      {
+        leg.Qty = this.tradeDetails.Legs[i].Qty;
+      } else 
+      {
+        leg.Qty = this.tradeDetails.Legs[i].Qty * -1;        
+      }
+
+      trade.Legs.push(leg) 
+    }
+
+    // Send request to show analyze dialog
+    this.analyzeService.dialog.emit(trade);
+  }  
 
   //
   // Submit Trade

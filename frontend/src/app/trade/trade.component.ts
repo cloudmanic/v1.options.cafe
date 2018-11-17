@@ -69,8 +69,6 @@ export class TradeComponent implements OnInit
     // Scroll to top of page
     window.scrollTo(0, 0);
 
-    console.log(data);
-
     // Populate the form.
     this.tradeDetails = data.TradeDetails;
 

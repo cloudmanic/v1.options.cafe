@@ -5,6 +5,8 @@
 //
 
 import * as moment from 'moment';
+import { AnalyzeTrade, AnalyzeService } from '../../providers/http/analyze.service';
+import { AnalyzeLeg } from '../../models/analyze-result';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Symbol } from '../../models/symbol';
 import { Component, OnInit, Input } from '@angular/core';

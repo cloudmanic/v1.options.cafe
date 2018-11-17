@@ -17,7 +17,7 @@ import (
 )
 
 //
-// Test - OptionsProfitLossByUnderlyingPrice - 01
+// Test - OptionsProfitLossByUnderlyingPrice - 01 (Long Call Butterfly)
 //
 func TestOptionsProfitLossByUnderlyingPrice01(t *testing.T) {
 
@@ -70,6 +70,52 @@ func TestOptionsProfitLossByUnderlyingPrice01(t *testing.T) {
 	st.Expect(t, helpers.Round(results[100].UnderlyingPrice, 2), 246.70)
 	st.Expect(t, results[300].Profit, 333.00)
 	st.Expect(t, helpers.Round(results[300].UnderlyingPrice, 2), 265.10)
+
+}
+
+//
+// Test - OptionsProfitLossByUnderlyingPrice - 02 (Put Credit Spread)
+//
+func TestOptionsProfitLossByUnderlyingPrice02(t *testing.T) {
+
+	syb1 := models.Symbol{
+		ShortName:        "SPY181214P00260000",
+		Name:             "SPY Dec 14 2018 $260.00 Put",
+		Type:             "Option",
+		OptionUnderlying: "SPY",
+		OptionType:       "Put",
+		OptionExpire:     models.Date{helpers.ParseDateNoError("2018-12-14")},
+		OptionStrike:     260,
+	}
+
+	syb2 := models.Symbol{
+		ShortName:        "SPY181214P00262000",
+		Name:             "SPY Dec 14 2018 $262.00 Put",
+		Type:             "Option",
+		OptionUnderlying: "SPY",
+		OptionType:       "Put",
+		OptionExpire:     models.Date{helpers.ParseDateNoError("2018-12-14")},
+		OptionStrike:     262,
+	}
+
+	// Long Call Butterfly
+	legs := []TradeLegs{
+		{Symbol: syb1, Qty: 11},
+		{Symbol: syb2, Qty: -11},
+	}
+
+	// Get the Profit and Loss By Underlying Price
+	results := OptionsProfitLossByUnderlyingPrice(Trade{
+		OpenCost: -286.00,
+		Legs:     legs,
+	})
+
+	// Test results
+	st.Expect(t, len(results), 501)
+	st.Expect(t, results[100].Profit, -1913.99)
+	st.Expect(t, helpers.Round(results[100].UnderlyingPrice, 2), 252.62)
+	st.Expect(t, results[300].Profit, 286.00)
+	st.Expect(t, helpers.Round(results[300].UnderlyingPrice, 2), 263.86)
 
 }
 

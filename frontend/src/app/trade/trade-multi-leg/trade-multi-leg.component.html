@@ -289,22 +289,27 @@
             </td>
           </tr>
         </table>
-      </div><!-- /.table-preview form__aside -->
+      </div>
+
+      
 
       <div class="form__actions__inner" *ngIf="orderPreview">
         <input type="reset" value="Reset" class="link-action" (click)="restTrade()" />
         <input type="submit" value="Preview" class="btn form__btn" (click)="previewTrade()" />
         <input type="submit" value="Submit" class="btn btn--pink form__btn" *ngIf="! orderPreview.Error" (click)="submitTrade()" />
-      </div><!-- /.form__actions__inner -->
-    </div><!-- /.form__actions-flex -->
+      </div>
+    </div>
 
 
     <div class="form__actions" *ngIf="! orderPreview">
+      <a class="link-action" (click)="analyzeTrade()">Analyze Trade</a>
+
       <div class="form__actions__inner">
         <input type="reset" value="Reset" class="link-action" (click)="restTrade()" />
         <input type="submit" value="Preview" class="btn form__btn" (click)="previewTrade()" />
-      </div><!-- /.form__actions__inner -->
-    </div><!-- /.form__actions -->
+      </div>
+    </div>
+
   </form>
 
 
