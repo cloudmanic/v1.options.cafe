@@ -1,1 +1,26 @@
-<highcharts-chart [Highcharts]="Highcharts" [constructorType]="chartConstructor" [options]="chartOptions" [(update)]="chartUpdateFlag" style="width: 100%; height: 500px; display: block;"></highcharts-chart>
+<app-dialog [(visible)]="showChart">
+
+  <div class="popup-alt">
+    <div class="popup__inner popup__inner--size2 width-80-percent">
+      <div class="article">
+        <div class="article__head flex__head">
+          <h6>Profit & Loss of Trade at Expiration</h6>
+
+          <a class="link" (click)="closeDialog()">
+            <fa-icon [icon]="closeIcon" class="fa fa-lg"></fa-icon>          
+          </a>
+        </div>
+
+        <div class="article__body article__body--primary">
+          <highcharts-chart 
+            [Highcharts]="Highcharts" 
+            [constructorType]="chartConstructor" 
+            [options]="chartOptions" 
+            [(update)]="chartUpdateFlag" 
+            style="width: 100%; display: block;"></highcharts-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</app-dialog>

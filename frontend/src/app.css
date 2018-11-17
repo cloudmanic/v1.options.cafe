@@ -39,6 +39,7 @@
 /* Widths */
 .width-95 { width: 95px !important; }
 .width-135 { width: 135px !important; }
+.width-80-percent { width: 80% !important; }
 
 /* Google Button */
 .btn-google-login { display: flex; justify-content: center; font-size: 16px; height: 50px; border: 1px solid #d0d1d1; background-color: #fff; color: #3e4145; text-transform: unset; width: 100%; margin: 10px 0px; font-size: 18px; }
@@ -131,6 +132,9 @@
 .article__head__screener .searching-text { font-weight: 350; }
 .widget-screen .and { text-transform: uppercase; font-weight: 700; margin: 16px 0; font-size: 16px; padding: 0 10px; }
 .widget__actions .delete-btn { display: inline-block; float: right; margin-top: 20px; color: #ce4260; font-weight: 500; } 
+
+/* Dialog */
+.article__head.flex__head { display: flex; justify-content: space-between; }
 
 /* Reports */
 .article .article__head .article__list { right: 52px; top: 55%; }

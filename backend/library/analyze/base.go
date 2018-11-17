@@ -2,7 +2,7 @@
 // Date: 2018-11-16
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-16
+// Last Modified: 2018-11-17
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -14,9 +14,8 @@ import (
 )
 
 type Trade struct {
-	OpenCost               float64     `json:"open_cost"`
-	CurrentUnderlyingPrice float64     `json:"current_underlying_price"`
-	Legs                   []TradeLegs `json:"legs"`
+	OpenCost float64     `json:"open_cost"`
+	Legs     []TradeLegs `json:"legs"`
 }
 
 type TradeLegs struct {

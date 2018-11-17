@@ -2,7 +2,7 @@
 // Date: 2018-11-16
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-16
+// Last Modified: 2018-11-17
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -36,7 +36,6 @@ func TestAnalyzeOptionsProfitLossByUnderlyingPrice01(t *testing.T) {
 	// Setup Post STring
 	postStr := `{
 	"open_cost": 157.00,
-	"current_underlying_price": 273.73,
 	"legs": [
 		{ "symbol_str": "SPY181221C00250000", "qty": 1 },
 		{ "symbol_str": "SPY181221C00260000", "qty": -2 },
@@ -67,11 +66,11 @@ func TestAnalyzeOptionsProfitLossByUnderlyingPrice01(t *testing.T) {
 	// Validate result
 	st.Expect(t, err, nil)
 	st.Expect(t, w.Code, 200)
-	st.Expect(t, len(results), 500)
+	st.Expect(t, len(results), 501)
 	st.Expect(t, results[100].Profit, -157.00)
-	st.Expect(t, helpers.Round(results[100].UnderlyingPrice, 2), 181.00)
-	st.Expect(t, results[300].Profit, -156.98)
-	st.Expect(t, helpers.Round(results[300].UnderlyingPrice, 2), 293.00)
+	st.Expect(t, helpers.Round(results[100].UnderlyingPrice, 2), 246.70)
+	st.Expect(t, results[300].Profit, 333.00)
+	st.Expect(t, helpers.Round(results[300].UnderlyingPrice, 2), 265.10)
 }
 
 /* End File */

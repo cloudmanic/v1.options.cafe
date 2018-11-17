@@ -4,9 +4,12 @@
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import { AnalyzeService } from '../../providers/http/analyze.service'
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { WebsocketService } from '../../providers/http/websocket.service';
 import { NotificationsService } from '../../providers/http/notifications.service';
+import { AnalyzeTrade } from '../../providers/http/analyze.service'
+import { AnalyzeLeg } from '../../models/analyze-result';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,6 +18,7 @@ import { NotificationsService } from '../../providers/http/notifications.service
 
 export class DashboardComponent implements OnInit 
 {
+  openPrice: number = 88.99;
   showNotice: boolean = false;
   noticeId: number = 0;
   noticeTitle: string = '';
@@ -24,7 +28,7 @@ export class DashboardComponent implements OnInit
   //
   // Construct...
   //
-  constructor(private notificationsService: NotificationsService, private websocketService: WebsocketService, private changeDetect: ChangeDetectorRef) 
+  constructor(private notificationsService: NotificationsService, private websocketService: WebsocketService, private changeDetect: ChangeDetectorRef, private analyzeService: AnalyzeService) 
   { 
     // Load data for page.
     this.getNotifications();
@@ -41,6 +45,29 @@ export class DashboardComponent implements OnInit
       this.changeDetect.detectChanges();
     });
 
+  }
+
+  blah()
+  {
+    let trade = new AnalyzeTrade();
+    trade.OpenCost = 100.00;
+
+    let leg1 = new AnalyzeLeg();
+    leg1.Qty = 1;
+    leg1.SymbolStr = "SPY181221C00250000";
+
+    let leg2 = new AnalyzeLeg();
+    leg2.Qty = -2;
+    leg2.SymbolStr = "SPY181221C00260000";
+
+    let leg3 = new AnalyzeLeg();
+    leg3.Qty = 1;
+    leg3.SymbolStr = "SPY181221C00270000";    
+    
+    trade.Legs = [ leg1, leg2, leg3 ];
+
+
+    this.analyzeService.dialog.emit(trade);
   }
 
   //

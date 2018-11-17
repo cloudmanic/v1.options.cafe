@@ -4,10 +4,14 @@
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
+import 'rxjs/add/operator/takeUntil';
 import * as moment from 'moment-timezone';
 import * as Highcharts from 'highcharts/highstock';
-import { AnalyzeService } from '../../providers/http/analyze.service'
-import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs/Rx';
+import { Subject } from 'rxjs/Subject';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { AnalyzeService, AnalyzeTrade } from '../../providers/http/analyze.service'
+import { Component,  OnInit, Input } from '@angular/core';
 import { AnalyzeResult, AnalyzeLeg } from '../../models/analyze-result';
 
 @Component({
@@ -18,6 +22,12 @@ import { AnalyzeResult, AnalyzeLeg } from '../../models/analyze-result';
 
 export class AnalyzeComponent implements OnInit 
 {
+  private destory: Subject<boolean> = new Subject<boolean>(); 
+
+  showChart: boolean = false;
+
+  closeIcon = faTimes; 
+
   // High charts config
   Highcharts = Highcharts;
 
@@ -29,22 +39,11 @@ export class AnalyzeComponent implements OnInit
       type: 'line', 
       zoomType: 'x',
       panning: true,
-      panKey: 'shift',
-      backgroundColor: {
-        linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },
-        stops: [
-            [0, 'rgb(255, 255, 255)'],
-            [1, 'rgb(240, 240, 255)']
-        ]
-      },
-      borderWidth: 2,
-      plotBackgroundColor: 'rgba(255, 255, 255, .9)',
-      plotShadow: true,
-      plotBorderWidth: 1     
+      panKey: 'shift'    
     },
 
     title: {
-      text: 'Profit & Loss of Trade at Expiration'
+      text: ''
     },
 
     subtitle: {
@@ -93,9 +92,10 @@ export class AnalyzeComponent implements OnInit
       },
 
       plotLines: [{
-        color: '#FF0000',
+        dashStyle: 'ShortDash',        
+        color: '#E0A300',
         width: 2,
-        value: 5.5
+        value: 273.73
       }]    
 
     },
@@ -121,30 +121,37 @@ export class AnalyzeComponent implements OnInit
   //
   ngOnInit() 
   {
-    this.getResults();
+    // Get signals to open chart
+    this.analyzeService.dialog.takeUntil(this.destory).subscribe((trade: AnalyzeTrade) => {
+      this.getResults(trade);
+      this.showChart = true;
+    });
+  }
+
+  //
+  // OnDestroy
+  //
+  ngOnDestroy()
+  {
+    this.destory.next();
+    this.destory.complete();
+  } 
+
+  //
+  // Close Dialog
+  //
+  closeDialog() 
+  {
+    this.showChart = false;
   }
 
   //
   // Get analyze results
   //
-  getResults()
+  getResults(trade: AnalyzeTrade)
   {
-    let leg1 = new AnalyzeLeg();
-    leg1.Qty = 1;
-    leg1.SymbolStr = "SPY181221C00250000";
-
-    let leg2 = new AnalyzeLeg();
-    leg2.Qty = -2;
-    leg2.SymbolStr = "SPY181221C00260000";
-
-    let leg3 = new AnalyzeLeg();
-    leg3.Qty = 1;
-    leg3.SymbolStr = "SPY181221C00270000";    
-    
-    let legs: AnalyzeLeg[] = [ leg1, leg2, leg3 ];
-
-
-    this.analyzeService.getOptionsUnderlyingPriceResult(157.00, 273.73, legs).subscribe((res) => {
+    // Make Ajax call to get chart data
+    this.analyzeService.getOptionsUnderlyingPriceResult(trade.OpenCost, trade.Legs).subscribe((res) => {
 
       var data = [];
 

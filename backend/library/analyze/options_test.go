@@ -2,7 +2,7 @@
 // Date: 2018-11-16
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-16
+// Last Modified: 2018-11-17
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -60,17 +60,16 @@ func TestOptionsProfitLossByUnderlyingPrice01(t *testing.T) {
 
 	// Get the Profit and Loss By Underlying Price
 	results := OptionsProfitLossByUnderlyingPrice(Trade{
-		OpenCost:               157.00,
-		CurrentUnderlyingPrice: 273.73,
-		Legs: legs,
+		OpenCost: 157.00,
+		Legs:     legs,
 	})
 
 	// Test results
-	st.Expect(t, len(results), 500)
+	st.Expect(t, len(results), 501)
 	st.Expect(t, results[100].Profit, -157.00)
-	st.Expect(t, helpers.Round(results[100].UnderlyingPrice, 2), 181.00)
-	st.Expect(t, results[300].Profit, -156.98)
-	st.Expect(t, helpers.Round(results[300].UnderlyingPrice, 2), 293.00)
+	st.Expect(t, helpers.Round(results[100].UnderlyingPrice, 2), 246.70)
+	st.Expect(t, results[300].Profit, 333.00)
+	st.Expect(t, helpers.Round(results[300].UnderlyingPrice, 2), 265.10)
 
 }
 
