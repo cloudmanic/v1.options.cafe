@@ -173,6 +173,7 @@ export class AddEditComponent implements OnInit
 
     let trade = new AnalyzeTrade();
     trade.OpenCost = 0;
+    trade.UnderlyingSymbol = screen.Symbol.toUpperCase();
     trade.Legs = [];
 
     switch(screen.Strategy)

@@ -46,6 +46,7 @@ export class AnalyzeService
 export class AnalyzeTrade
 {
   OpenCost: number;
+  UnderlyingSymbol: string;
   Legs: AnalyzeLeg[];
 }
 

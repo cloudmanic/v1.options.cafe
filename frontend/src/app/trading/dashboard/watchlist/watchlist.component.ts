@@ -43,7 +43,12 @@ export class WatchlistComponent implements OnInit {
   //
   // Construct...
   //
-  constructor(private http: HttpClient, private _eref: ElementRef, private websocketService: WebsocketService, private watchlistService: WatchlistService, private stateService: StateService) { }
+  constructor(
+    private http: HttpClient, 
+    private _eref: ElementRef, 
+    private websocketService: WebsocketService, 
+    private watchlistService: WatchlistService, 
+    private stateService: StateService) { }
 
   //
   // On Init...

@@ -13,6 +13,8 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { AnalyzeService, AnalyzeTrade } from '../../providers/http/analyze.service'
 import { Component,  OnInit, Input } from '@angular/core';
 import { AnalyzeResult, AnalyzeLeg } from '../../models/analyze-result';
+import { WebsocketService } from '../../providers/http/websocket.service';
+import { StateService } from '../../providers/state/state.service';
 
 @Component({
   selector: 'app-shared-analyze',
@@ -23,6 +25,8 @@ import { AnalyzeResult, AnalyzeLeg } from '../../models/analyze-result';
 export class AnalyzeComponent implements OnInit 
 {
   private destory: Subject<boolean> = new Subject<boolean>(); 
+
+  quotes = {}
 
   showChart: boolean = false;
 
@@ -95,7 +99,7 @@ export class AnalyzeComponent implements OnInit
         dashStyle: 'ShortDash',        
         color: '#E0A300',
         width: 2,
-        value: 273.73
+        value: 0
       }]    
 
     },
@@ -114,13 +118,24 @@ export class AnalyzeComponent implements OnInit
   //
   // Construct.
   //
-  constructor(private analyzeService: AnalyzeService) { }
+  constructor(
+    private stateService: StateService,
+    private analyzeService: AnalyzeService, 
+    private websocketService: WebsocketService) { }
 
   //
   // NgInit
   //
   ngOnInit() 
   {
+    // Load up cached quotes
+    this.quotes = this.stateService.GetQuotes();
+
+    // Subscribe to data updates from the quotes - Market Quotes
+    this.websocketService.quotePushData.subscribe(data => {
+      this.quotes[data.symbol] = data;
+    });
+
     // Get signals to open chart
     this.analyzeService.dialog.takeUntil(this.destory).subscribe((trade: AnalyzeTrade) => {
       this.getResults(trade);
@@ -165,6 +180,12 @@ export class AnalyzeComponent implements OnInit
         }
 
         data.push({ x: res[i].UnderlyingPrice, y: res[i].Profit, color: color });
+      }
+
+      // Add in the current stock price
+      if(typeof this.quotes[trade.UnderlyingSymbol].last != "undefined")
+      {
+        this.chartOptions.xAxis.plotLines[0].value = this.quotes[trade.UnderlyingSymbol].last;
       }
 
       // Rebuilt the chart

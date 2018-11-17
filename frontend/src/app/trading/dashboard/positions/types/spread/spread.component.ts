@@ -235,7 +235,9 @@ export class SpreadComponent implements OnInit
       let leg = new AnalyzeLeg();
       leg.Qty = tradeGroup.Positions[i].Qty;
       leg.SymbolStr = tradeGroup.Positions[i].Symbol.ShortName;
-      trade.Legs.push(leg) 
+      trade.Legs.push(leg)
+
+      trade.UnderlyingSymbol = tradeGroup.Positions[i].Symbol.OptionUnderlying; 
     }
 
     // Send request to show analyze dialog

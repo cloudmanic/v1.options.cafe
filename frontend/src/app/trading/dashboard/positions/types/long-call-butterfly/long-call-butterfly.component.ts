@@ -184,6 +184,7 @@ export class LongCallButterflyComponent implements OnInit
       let leg = new AnalyzeLeg();
       leg.Qty = tradeGroup.Positions[i].Qty;
       leg.SymbolStr = tradeGroup.Positions[i].Symbol.ShortName;
+      trade.UnderlyingSymbol = tradeGroup.Positions[i].Symbol.OptionUnderlying;
       trade.Legs.push(leg) 
     }
 

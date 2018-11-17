@@ -71,6 +71,7 @@ export class TradeMultiLegComponent implements OnInit
     //console.log(this.tradeDetails);
 
     let trade = new AnalyzeTrade();
+    trade.UnderlyingSymbol = this.tradeDetails.Symbol;
     trade.Legs = [];
 
     switch(this.tradeDetails.OrderType)
