@@ -2,7 +2,7 @@
 // Date: 2018-11-05
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-05
+// Last Modified: 2018-11-18
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -21,11 +21,14 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 
 	apiV1 := r.Group("/api/v1")
 
-	apiV1.Use()
+	apiV1.Use(t.AuthMiddleware())
 	{
 		// accounts
+		apiV1.GET("/accounts/me", t.GetAccountMe)
 		apiV1.POST("/accounts", t.CreateAccount)
 
+		// quotes
+		apiV1.GET("/quotes", t.GetQuotes)
 	}
 
 }

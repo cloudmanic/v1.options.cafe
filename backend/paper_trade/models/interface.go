@@ -2,7 +2,7 @@
 // Date: 2018-11-05
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-05
+// Last Modified: 2018-11-18
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -19,6 +19,9 @@ type DB struct {
 
 // Database interface
 type Datastore interface {
+
+	// Gorm Functions
+	New() *gorm.DB
 }
 
 /* End File */

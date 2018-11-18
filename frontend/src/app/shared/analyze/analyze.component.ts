@@ -37,6 +37,8 @@ export class AnalyzeComponent implements OnInit
 
   chartUpdateFlag: boolean = false;
 
+  chartConstructor: string = "chart";
+
   chartOptions = {
 
     chart: { 
