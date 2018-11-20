@@ -11,10 +11,9 @@ import (
 
 	"github.com/cloudmanic/app.options.cafe/backend/cron/data_import"
 	"github.com/cloudmanic/app.options.cafe/backend/cron/user"
-	"github.com/cloudmanic/app.options.cafe/backend/library/import/options"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/jasonlvhit/gocron"
+	"github.com/robfig/cron"
 )
 
 //
@@ -33,17 +32,19 @@ func Start(db *models.DB) {
 	// Lets get started
 	services.Critical("Cron Started: " + os.Getenv("APP_ENV"))
 
+	// New Cron instance
+	c := cron.New()
+
 	// Setup jobs we need to run
-	gocron.Every(1).Day().At("14:00").Do(d.DoSymbolImport)
-	gocron.Every(1).Day().At("22:00").Do(options.DoEodOptionsImport)
+	c.AddFunc("0 0 14 * * *", d.DoSymbolImport) // Every day at 14:00
+	c.AddFunc("0 0 22 * * *", d.DoSymbolImport) // Every day at 22:00
 
 	// User clean up stuff
-	gocron.Every(1).Hour().Do(u.ExpireTrails)
-	gocron.Every(12).Hours().Do(u.ClearExpiredSessions)
+	c.AddFunc("@hourly", u.ExpireTrails)
+	c.AddFunc("@every 12h", u.ClearExpiredSessions)
 
-	// function Start start all the pending jobs
-	<-gocron.Start()
-
+	// Start cron service
+	c.Run()
 }
 
 /* End File */
