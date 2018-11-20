@@ -92,6 +92,7 @@ import { EquityComponent } from './trading/dashboard/positions/types/equity/equi
 import { TradeOptionComponent } from './trade/trade-option/trade-option.component';
 import { TradeEquityComponent } from './trade/trade-equity/trade-equity.component';
 import { SpreadComponent } from './trading/dashboard/positions/types/spread/spread.component';
+import { OtherComponent } from './trading/dashboard/positions/types/other/other.component';
 import { OptionComponent } from './trading/dashboard/positions/types/option/option.component';
 import { IronCondorComponent } from './trading/dashboard/positions/types/iron-condor/iron-condor.component';
 import { ReverseIronCondorComponent } from './trading/dashboard/positions/types/reverse-iron-condor/reverse-iron-condor.component';
@@ -182,6 +183,7 @@ import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.c
     CustomReportsComponent,
     SpreadComponent,
     OptionComponent,
+    OtherComponent,
     CentcomUsersComponent,
     CentcomCoreComponent,
     SymbolComponent,

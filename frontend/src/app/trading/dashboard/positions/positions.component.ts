@@ -183,6 +183,8 @@ export class PositionsComponent implements OnInit
         this.tradeGroups[res.Data[i].Type.split(' ').join('')].push(res.Data[i]);
       }
 
+      console.log(this.tradeGroups);
+
       // Store the tradegroups in the state manager
       this.stateService.SetDashboardTradeGroups(this.tradeGroups);
     });    
