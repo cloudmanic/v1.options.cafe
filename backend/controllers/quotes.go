@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/araddon/dateparse"
+	"github.com/cloudmanic/app.options.cafe/backend/brokers"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
@@ -255,18 +256,15 @@ func (t *Controller) GetOptionsExpirations(c *gin.Context) {
 //
 func (t *Controller) GetHistoricalQuotes(c *gin.Context) {
 
-	// Get access token
-	apiKey, err := t.GetTradierAccessToken(c)
+	// Get user id.
+	userId := c.MustGet("userId").(uint)
+
+	// Get a broker to use to get this data
+	broker, err := brokers.GetPrimaryTradierConnection(t.DB, userId)
 
 	if err != nil {
 		t.RespondError(c, err, httpGenericErrMsg)
 		return
-	}
-
-	// Setup the broker
-	broker := tradier.Api{
-		DB:     t.DB,
-		ApiKey: apiKey,
 	}
 
 	// Validate the interval
@@ -292,7 +290,7 @@ func (t *Controller) GetHistoricalQuotes(c *gin.Context) {
 	}
 
 	// Store in active symbols
-	t.DB.CreateActiveSymbol(c.MustGet("userId").(uint), c.Query("symbol"))
+	t.DB.CreateActiveSymbol(userId, c.Query("symbol"))
 
 	// Make API call to broker.
 	if IsHistorical(c.Query("interval")) {

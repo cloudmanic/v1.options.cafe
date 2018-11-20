@@ -2,7 +2,7 @@
 // Date: 2018-11-10
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-10
+// Last Modified: 2018-11-19
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -63,6 +63,10 @@ func (t *Base) ExpireTrails() {
 	t.DB.New().Where("trial_expire <= ? AND status = ? AND stripe_subscription = ?", time.Now(), "Trial", "").Find(&users)
 
 	for _, row := range users {
+
+		if row.Id <= 0 {
+			continue
+		}
 
 		row.Status = "Expired"
 		t.DB.New().Save(&row)

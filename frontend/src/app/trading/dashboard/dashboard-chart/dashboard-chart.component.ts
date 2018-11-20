@@ -58,6 +58,7 @@ export class DashboardChartComponent implements OnInit
     },
 
     yAxis: {
+      crosshair: true,
       startOnTick: false,
       endOnTick: false,
       minPadding: 0.1,
@@ -66,6 +67,7 @@ export class DashboardChartComponent implements OnInit
 
     xAxis : {
       type: 'datetime',
+      crosshair: true,
       minRange: 3600 * 1000,
       dateTimeLabelFormats: {
         second: '%I:%M:%S %p',
@@ -91,7 +93,10 @@ export class DashboardChartComponent implements OnInit
   //
   // Constructor....
   //
-  constructor(private stateService: StateService, private quotesService: QuotesService, private websocketService: WebsocketService) { }
+  constructor(
+    private stateService: StateService, 
+    private quotesService: QuotesService, 
+    private websocketService: WebsocketService) { }
 
   //
   // OnInit....
