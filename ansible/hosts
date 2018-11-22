@@ -1,2 +1,13 @@
 [production]
 web2.cloudmanic.com ansible_ssh_user=optionscafe
+
+[swarm-masters]
+142.93.179.63 ansible_ssh_user=root
+
+[swarm-workers]
+142.93.189.164 ansible_ssh_user=root
+159.203.71.175 ansible_ssh_user=root
+
+[docker-hosts:children]
+swarm-masters
+swarm-workers

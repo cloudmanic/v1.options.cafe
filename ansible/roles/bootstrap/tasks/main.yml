@@ -1,0 +1,28 @@
+---
+
+# Set Timezone
+- name: Set the timezone for the server to be Etc/UTC
+  command: timedatectl set-timezone Etc/UTC
+  
+# Disable root password
+- name: Disabled root password
+  tags:
+    - sudo
+  command: passwd -d root 
+  
+# Setup the Hostname
+- name: Updating the host name
+  hostname: name={{ inventory_hostname }}  
+  
+# Run the equivalent of "apt-get update" as a separate step
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt: update_cache=yes
+
+# Update all packages to the latest version
+- name: Update all packages to the latest version
+  apt: upgrade=dist
+
+# Install base packages we need on all systems.
+- name: Install base packages
+  action: apt pkg={{item}} state=present
+  with_items: "{{ core_packages }}"

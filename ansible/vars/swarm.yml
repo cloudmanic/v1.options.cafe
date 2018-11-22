@@ -1,0 +1,43 @@
+---
+
+spicer_uid: 1000
+spicer_gid: 1000
+
+deploy_uid: 1001
+deploy_gid: 1001
+
+docker_mysql: no
+
+docker_mysql_servers:
+
+docker_nginx_proxy: no
+
+docker_site_dir: /sites
+
+docker_nginx_proxy_dir: /sites/nginx-proxy
+
+docker_mysql_dir: /sites/mysql
+
+docker_sites:
+        
+core_packages:
+  - git-core
+  - vim
+  - ntp
+  - nmap
+  - php-cli
+  - mysql-client
+  - docker.io
+  - docker-compose
+    
+firewall_tcp_ports_allowed:
+  - 80
+  - 443
+  
+firewall_ssh_ips_allowed:
+  - 71.238.46.175
+  - 45.33.31.199 
+  - 96.239.59.69
+  - 173.255.201.122
+  - 104.155.155.41
+  - 35.197.103.173 # web1.cloudmanic.com 

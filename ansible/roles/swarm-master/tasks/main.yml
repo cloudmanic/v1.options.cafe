@@ -1,0 +1,27 @@
+---
+
+- name: Swarm Init
+  command: docker swarm init --advertise-addr {{ ansible_eth1['ipv4']['address'] }}
+  register: swarm_init
+  ignore_errors: yes
+
+- name: Show Master swarm_init
+  debug: var=swarm_init.stdout
+
+
+- name: Get Worker Token
+  command: docker swarm join-token worker -q
+  register: worker_token
+
+- name: Show Worker Token
+  debug: var=worker_token.stdout
+
+- name: Master Token
+  command: docker swarm join-token manager -q
+  register: master_token
+
+- name: Show Master Token
+  debug: var=master_token.stdout
+
+- name: Show Master Private IP
+  debug: var="ansible_eth0['ipv4']['address']"

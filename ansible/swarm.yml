@@ -1,0 +1,53 @@
+---
+
+- name: Bootstrap app.options.cafe to production
+  hosts: docker-hosts
+  remote_user: ubuntu
+  become: yes
+  become_user: root  
+
+  roles:
+    #- bootstrap
+    
+  vars_files:
+    - "vars/swarm.yml"
+    - "vars/env.yml"
+
+
+# Run on only master nodes
+- name: Deploys the docker swarm master nodes for app.options.cafe to production
+  hosts: swarm-masters
+  remote_user: ubuntu
+  become: yes
+  become_user: root
+  gather_facts: False    
+
+  tasks:
+    - debug: var="ansible_eth1['ipv4']['address']"
+
+  roles:
+    - swarm-master
+    
+  vars_files:
+    - "vars/swarm.yml"
+    - "vars/env.yml"
+
+
+# Run on only worker nodes (note master node is also a worker)
+- name: Deploys the docker swarm worker nodes for app.options.cafe to production
+  hosts: docker-hosts
+  remote_user: ubuntu
+  become: yes
+  become_user: root
+  gather_facts: False
+
+  vars:
+    token: "{{ hostvars[groups['swarm-masters'][0]]['worker_token']['stdout'] }}"
+    master: "{{ hostvars[groups['swarm-masters'][0]]['ansible_eth1']['ipv4']['address'] }}"    
+
+  roles:
+    - swarm-worker
+    
+  vars_files:
+    - "vars/swarm.yml"
+    - "vars/env.yml"
