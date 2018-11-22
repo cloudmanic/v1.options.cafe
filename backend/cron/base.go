@@ -21,13 +21,9 @@ import (
 //
 func Start(db *models.DB) {
 
-	// Setup instance
-	u := user.Base{DB: db}
-	d := data_import.Base{DB: db}
-
 	// Stuff we do on start as well
-	u.ExpireTrails()
-	u.ClearExpiredSessions()
+	user.ExpireTrails(db)
+	user.ClearExpiredSessions(db)
 
 	// Lets get started
 	services.Critical("Cron Started: " + os.Getenv("APP_ENV"))
@@ -36,15 +32,29 @@ func Start(db *models.DB) {
 	c := cron.New()
 
 	// Setup jobs we need to run
-	c.AddFunc("0 0 14 * * *", d.DoSymbolImport) // Every day at 14:00
-	c.AddFunc("0 0 22 * * *", d.DoSymbolImport) // Every day at 22:00
+	c.AddFunc("0 0 14 * * *", func() { data_import.DoSymbolImport(db) }) // Every day at 14:00
+	c.AddFunc("0 0 22 * * *", func() { data_import.DoSymbolImport(db) }) // Every day at 22:00
 
 	// User clean up stuff
-	c.AddFunc("@hourly", u.ExpireTrails)
-	c.AddFunc("@every 12h", u.ClearExpiredSessions)
+	c.AddFunc("@hourly", func() { user.ExpireTrails(db) })
+	c.AddFunc("@every 12h", func() { user.ClearExpiredSessions(db) })
+
+	// System stuff.
+	c.AddFunc("@every 10s", func() { DatabasePing(db) })
 
 	// Start cron service
 	c.Run()
+}
+
+//
+// We use this to keep the database alive.
+//
+func DatabasePing(db *models.DB) {
+
+	// Just run a query to make sure things are active.
+	a := []models.Application{}
+	db.New().Find(&a)
+
 }
 
 /* End File */

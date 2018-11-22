@@ -70,8 +70,7 @@ func Run(db *models.DB) bool {
 
 	// Download all the symbols Tradier knows about. (typically run daily from cron)
 	case "symbol-import":
-		d := data_import.Base{DB: db}
-		d.DoSymbolImport()
+		data_import.DoSymbolImport(db)
 		return true
 		break
 

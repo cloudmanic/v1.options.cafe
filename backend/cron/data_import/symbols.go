@@ -21,12 +21,12 @@ var chars = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
 //
 // Connect to Tradier using our shared admin account and download all possible symbols.
 //
-func (t *Base) DoSymbolImport() {
+func DoSymbolImport(db *models.DB) {
 
 	knownSymbols := make(map[string]models.Symbol)
 
 	// Map known symbols
-	s := t.DB.GetAllSymbols()
+	s := db.GetAllSymbols()
 
 	for _, row := range s {
 		knownSymbols[row.ShortName] = row
@@ -37,7 +37,7 @@ func (t *Base) DoSymbolImport() {
 
 	// Loop through each char and import into db.
 	for _, row := range chars {
-		t.ProcessLetter(row, knownSymbols)
+		ProcessLetter(db, row, knownSymbols)
 	}
 
 	// Send health check notice.
@@ -57,7 +57,7 @@ func (t *Base) DoSymbolImport() {
 //
 // Process a letter.
 //
-func (t *Base) ProcessLetter(letter string, knownSymbols map[string]models.Symbol) {
+func ProcessLetter(db *models.DB, letter string, knownSymbols map[string]models.Symbol) {
 
 	// Create new tradier instance
 	tr := &tradier.Api{ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN")}
@@ -80,7 +80,7 @@ func (t *Base) ProcessLetter(letter string, knownSymbols map[string]models.Symbo
 
 			// TODO: See if the company name updated.....
 			if row.Description != knownSymbols[row.Name].Name {
-				t.DB.UpdateSymbol(knownSymbols[row.Name].Id, row.Name, row.Description, "Equity")
+				db.UpdateSymbol(knownSymbols[row.Name].Id, row.Name, row.Description, "Equity")
 			}
 
 			// Continue nothing to do.
@@ -88,7 +88,7 @@ func (t *Base) ProcessLetter(letter string, knownSymbols map[string]models.Symbo
 		}
 
 		// Add Symbol to our database.
-		t.DB.CreateNewSymbol(row.Name, row.Description, "Equity")
+		db.CreateNewSymbol(row.Name, row.Description, "Equity")
 	}
 }
 
