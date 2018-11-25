@@ -2,7 +2,7 @@
 // Date: 2018-11-09
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-12
+// Last Modified: 2018-11-24
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -93,7 +93,7 @@ func StartPoll(db models.Datastore, poll Poll) {
 
 		}
 
-		// Sleep for 3 seconds
+		// Sleep for X seconds
 		time.Sleep(time.Second * poll.Sleep)
 	}
 
