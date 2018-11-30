@@ -18,7 +18,7 @@ services:
         P_UID: 1002
         P_GID: 1002      
     
-    image: backup.options.cafe/cloudmanic-backup
+    image: backup.app.options.cafe/cloudmanic-backup
 
     restart: always
 
@@ -26,7 +26,7 @@ services:
       driver: "syslog"
       options:
         syslog-address: tcp+tls://logs6.papertrailapp.com:49242
-        tag: backup.options.cafe
+        tag: backup.app.options.cafe
 
     environment:   
       BACKUP_NAME: app.options.cafe      
