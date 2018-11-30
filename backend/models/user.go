@@ -870,6 +870,12 @@ func (t *DB) doPostUserRegisterStuff(user User, ipAddress string) {
 	// Set default watchlists
 	t.SetDefaultWatchList(user)
 
+	// Set required active symbols
+	t.CreateActiveSymbol(user.Id, "$DJI")
+	t.CreateActiveSymbol(user.Id, "COMP")
+	t.CreateActiveSymbol(user.Id, "VIX")
+	t.CreateActiveSymbol(user.Id, "SPX")
+
 	// Subscribe new user to mailing lists.
 	go services.SendySubscribe("trial", user.Email, user.FirstName, user.LastName, "", "", ipAddress, "No")
 	go services.SendySubscribe("no-brokers", user.Email, user.FirstName, user.LastName, "No", "", ipAddress, "No")

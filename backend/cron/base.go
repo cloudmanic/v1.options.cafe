@@ -37,11 +37,25 @@ func Start(db *models.DB) {
 	c.AddFunc("0 0 22 * * *", func() { options.DoEodOptionsImport() })   // Every day at 22:00
 
 	// User clean up stuff
-	c.AddFunc("@hourly", func() { user.ExpireTrails(db) })
+	c.AddFunc("@every 50m", func() { user.ExpireTrails(db) }) // Some reason 1h does not work.
 	c.AddFunc("@every 6h", func() { user.ClearExpiredSessions(db) })
+
+	// System stuff.
+	c.AddFunc("@every 10s", func() { DatabasePing(db) })
 
 	// Start cron service
 	c.Run()
+}
+
+//
+// We use this to keep the database alive.
+//
+func DatabasePing(db *models.DB) {
+
+	// Just run a query to make sure things are active.
+	a := []models.Application{}
+	db.New().Find(&a)
+
 }
 
 /* End File */
