@@ -2,14 +2,13 @@
 // Date: 2018-11-10
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-25
+// Last Modified: 2018-12-03
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
 package user
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
@@ -57,11 +56,9 @@ func ClearExpiredSessions(db *models.DB) {
 func ExpireTrails(db *models.DB) {
 
 	users := []models.User{}
-	db.New().Debug().Where("trial_expire <= ? AND status = ? AND stripe_subscription = ?", time.Now(), "Trial", "").Find(&users)
+	db.New().Where("trial_expire <= ? AND status = ? AND stripe_subscription = ?", time.Now(), "Trial", "").Find(&users)
 
 	for _, row := range users {
-
-		services.Info(strconv.Itoa(int(row.Id)))
 
 		if row.Id <= 0 {
 			continue

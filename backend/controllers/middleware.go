@@ -81,6 +81,14 @@ func (t *Controller) AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		// Make sure we really have a user.
+		if user.Id <= 0 {
+			services.Critical("User Not Found - Unable to Authenticate - UserId <= 0 (HTTP) : " + fmt.Sprint(session.UserId) + " - Session Id : " + fmt.Sprint(session.Id))
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization Failed (#004)"})
+			c.AbortWithStatus(401)
+			return
+		}
+
 		// Add last_activity to users model as well.
 		user.LastActivity = time.Now()
 		t.DB.UpdateUser(&user)

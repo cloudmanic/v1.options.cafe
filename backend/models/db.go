@@ -53,6 +53,10 @@ func NewDB() (*DB, error) {
 	// db.LogMode(true)
 	// db.SetLogger(log.New(os.Stdout, "\r\n", 0))
 
+	// Helpful settings
+	//db.DB().SetMaxIdleConns(10)
+	//db.DB().SetMaxOpenConns(100)
+
 	// Migrate the schemas (one per table).
 	db.AutoMigrate(&User{})
 	db.AutoMigrate(&Broker{})
@@ -81,8 +85,28 @@ func NewDB() (*DB, error) {
 		LoadTestingData(db)
 	}
 
+	// Ping every so often to keep the connection alive.
+	go PingDbServer(db)
+
 	// Return db connection.
 	return &DB{db}, nil
+}
+
+//
+// Just make a query on this connection every so often to keep it alive.
+//
+func PingDbServer(db *gorm.DB) {
+
+	for {
+
+		// Ping to keep server alive
+		db.DB().Ping()
+
+		// Sleep for X seconds
+		time.Sleep(time.Second * 10)
+
+	}
+
 }
 
 //
