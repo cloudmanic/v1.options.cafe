@@ -1,0 +1,38 @@
+---
+
+spicer_uid: 1000
+spicer_gid: 1000
+
+deploy_uid: 1001
+deploy_gid: 1001
+
+syslog_port: 49242
+syslog_address: logs6.papertrailapp.com
+
+app_site_dir: /sites/optionscafe
+
+docker_mysql: yes
+
+docker_mysql_servers:
+  - { "name": "mariadb102", "image": "mariadb:10.2", "container_name": "mariadb-10.2", "port_mapping": "127.0.0.1:3306", "password": "{{ MYSQL_ROOT_PASSWORD }}" } 
+
+docker_nginx_proxy: yes
+
+docker_site_dir: /sites
+
+docker_nginx_proxy_dir: /sites/nginx-proxy
+
+docker_mysql_dir: /sites/mysql
+
+docker_sites:
+  - { site_slug: "optionscafe", uid: "1002", gid: "1002" }   
+        
+core_packages:
+  - git-core
+  - vim
+  - ntp
+  - nmap
+  - php-cli
+  - mysql-client
+  - docker.io
+  - docker-compose

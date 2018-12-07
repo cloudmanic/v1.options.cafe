@@ -1,9 +1,20 @@
 ---
 
-- name: Deploys the server config app.options.cafe to production
+- name: Deploys the server config for app.options.cafe to production
+  
   hosts: production
+
+  become: yes
+  
+  become_user: root
+
   roles:
-    - server
+    - bootstrap
+    - users
+    - docker-sites
+    - docker-mysql            
+    - app-config
     
   vars_files:
     - "vars/env.yml"
+    - "vars/all.yml"

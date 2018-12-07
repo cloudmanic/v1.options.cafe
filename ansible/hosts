@@ -1,5 +1,5 @@
 [production]
-web2.cloudmanic.com ansible_ssh_user=optionscafe
+web2.options.cafe ansible_ssh_user=spicer
 
 [swarm-masters]
 142.93.179.63 ansible_ssh_user=root
