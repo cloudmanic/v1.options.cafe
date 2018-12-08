@@ -7,18 +7,13 @@ services:
   # App
   app_backup:
 
-    hostname: backup.options.cafe
+    hostname: {{ backup_hostname }}
 
-    container_name: backup.options.cafe
+    container_name: {{ backup_hostname }}
 
-    build:
-      context: ./
-      dockerfile: Dockerfile
-      args:
-        P_UID: 1002
-        P_GID: 1002      
+    user: {{ backup_uid }}:{{ backup_gid }}     
     
-    image: backup.app.options.cafe/cloudmanic-backup
+    image: cloudmanic/cloudmanic-backup
 
     restart: always
 

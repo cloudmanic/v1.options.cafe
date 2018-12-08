@@ -27,29 +27,3 @@
 # Install ENV File
 - name: Install ENV File
   template: src=env dest={{ app_site_dir }}/app.options.cafe/docker/.env owner=optionscafe group=optionscafe mode=0644
-
-# See if we have uploaded the binary for options cafe yet.
-- name: Register {{ app_site_dir }}/app.options.cafe/docker/build/app.options.cafe
-  stat: path=/etc/shorewall/rules
-  register: app_binary
-
-# Pull docker
-- name: Building image for {{ app_site_dir }}/app.options.cafe/docker
-  command: docker-compose build
-  when: app_binary.stat.exists == True
-  args:
-    chdir: "{{ app_site_dir }}/app.options.cafe/docker"
-
-# Stop docker
-- name: Stopping docker container for {{ app_site_dir }}/app.options.cafe/docker
-  command: docker-compose down --remove-orphans 
-  when: app_binary.stat.exists == True  
-  args:
-    chdir: "{{ app_site_dir }}/app.options.cafe/docker"
-
-# Start docker
-- name: Starting docker for {{ app_site_dir }}/app.options.cafe/docker
-  command: docker-compose up -d
-  when: app_binary.stat.exists == True  
-  args:
-    chdir: "{{ app_site_dir }}/app.options.cafe/docker"

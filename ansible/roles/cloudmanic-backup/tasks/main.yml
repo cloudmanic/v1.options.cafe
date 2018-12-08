@@ -8,10 +8,18 @@
 - name: Install docker-compose for backup.options.cafe
   template: src=docker-compose.yml dest=/sites/optionscafe/backup.options.cafe/docker-compose.yml owner=optionscafe group=optionscafe mode=0644
 
-# Install Dockerfile for backup.options.cafe
-- name: Install Dockerfile for backup.options.cafe
-  template: src=Dockerfile dest=/sites/optionscafe/backup.options.cafe/Dockerfile owner=optionscafe group=optionscafe mode=0644
-
 # Install ENV File for backup.options.cafe
 - name: Install ENV File for backup.options.cafe
   template: src=env dest=/sites/optionscafe/backup.options.cafe/.env owner=optionscafe group=optionscafe mode=0644
+
+# Stop docker
+- name: Stopping docker container for {{ app_site_dir }}/backup.options.cafe
+  command: docker-compose down --remove-orphans  
+  args:
+    chdir: "{{ app_site_dir }}/backup.options.cafe"
+
+# Start docker
+- name: Starting docker for {{ app_site_dir }}/backup.options.cafe
+  command: docker-compose up -d  
+  args:
+    chdir: "{{ app_site_dir }}/backup.options.cafe"  

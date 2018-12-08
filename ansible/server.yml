@@ -14,6 +14,7 @@
     - docker-sites
     - docker-mysql            
     - app-config
+    - app-restart
     
   vars_files:
     - "vars/env.yml"

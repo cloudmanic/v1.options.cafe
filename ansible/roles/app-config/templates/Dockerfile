@@ -30,7 +30,9 @@ RUN set -x \
 RUN set -x \
   && mkdir /work \
   && chmod 755 /work \    
-  && chown -R deploy:deploy /work  
+  && chown -R deploy:deploy /work \
+  && mkdir /letsencrypt \
+  && chown -R deploy:deploy /letsencrypt  
   
 # Copy binary into place.
 COPY app.options.cafe /work/app

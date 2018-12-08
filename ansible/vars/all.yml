@@ -36,3 +36,8 @@ core_packages:
   - mysql-client
   - docker.io
   - docker-compose
+
+# Backup configs
+backup_uid: 1002
+backup_gid: 1002
+backup_hostname: backups.app.options.cafe 
