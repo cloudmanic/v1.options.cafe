@@ -14,3 +14,4 @@
     
   vars_files:
     - "vars/env.yml"
+    - "vars/all.yml"    

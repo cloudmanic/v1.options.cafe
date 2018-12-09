@@ -8,6 +8,8 @@
 # Pull docker
 - name: Building image for {{ app_site_dir }}/app.options.cafe/docker
   command: docker-compose build
+  become: yes
+  become_user: deploy
   when: app_binary.stat.exists == True
   args:
     chdir: "{{ app_site_dir }}/app.options.cafe/docker"
@@ -15,6 +17,8 @@
 # Stop docker
 - name: Stopping docker container for {{ app_site_dir }}/app.options.cafe/docker
   command: docker-compose down --remove-orphans 
+  become: yes
+  become_user: deploy  
   when: app_binary.stat.exists == True  
   args:
     chdir: "{{ app_site_dir }}/app.options.cafe/docker"
@@ -22,6 +26,8 @@
 # Start docker
 - name: Starting docker for {{ app_site_dir }}/app.options.cafe/docker
   command: docker-compose up -d
+  become: yes
+  become_user: deploy  
   when: app_binary.stat.exists == True  
   args:
     chdir: "{{ app_site_dir }}/app.options.cafe/docker"

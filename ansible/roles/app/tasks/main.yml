@@ -7,3 +7,9 @@
 # Install app.options.cafe frontend code.
 - name: Copying app.options.cafe frontend code to server(s)
   synchronize: src=../frontend/dist/ dest=/sites/optionscafe/app.options.cafe/docker/build/frontend
+
+# Change owner of docker/build/frontend
+- name: Change owner of docker/build/frontend
+  file: path=/sites/optionscafe/app.options.cafe/docker/build/frontend owner=optionscafe group=optionscafe recurse=yes
+  become: yes
+  become_user: root
