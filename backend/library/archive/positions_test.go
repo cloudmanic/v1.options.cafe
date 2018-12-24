@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	env "github.com/jpfuentes2/go-env"
 	"github.com/nbio/st"
@@ -77,6 +78,71 @@ func TestReviewCurrentPositionsForExpiredOptions01(t *testing.T) {
 	st.Expect(t, result.Status, "Closed")
 	st.Expect(t, result.Profit, 976.55)
 	st.Expect(t, result.PercentGain, 333.33)
+}
+
+//
+// Test reviewing current positions for expired options.
+//
+func TestReviewCurrentPositionsForExpiredOptions02(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+	defer db.Close()
+
+	// Clear tables - Default test values throws API Token to Tradier off.
+	db.Exec("TRUNCATE TABLE brokers;")
+	db.Exec("TRUNCATE TABLE broker_accounts;")
+
+	// put test data into the DB.
+	openTs := time.Date(2018, 11, 8, 17, 20, 01, 507451, time.UTC)
+
+	db.Exec("TRUNCATE TABLE symbols;")
+	db.Create(&models.Symbol{Name: "SPY Dec 21 2018 $260.00 Put", ShortName: "SPY181221P00260000", Type: "Option", OptionUnderlying: "SPY", OptionExpire: models.Date{helpers.ParseDateNoError("12/21/2018").UTC()}, OptionType: "Put", OptionStrike: 260.00})
+	db.Create(&models.Symbol{Name: "SPY Dec 21 2018 $262.00 Put", ShortName: "SPY181221P00262000", Type: "Option", OptionUnderlying: "SPY", OptionExpire: models.Date{helpers.ParseDateNoError("12/21/2018").UTC()}, OptionType: "Put", OptionStrike: 262.00})
+
+	db.Exec("TRUNCATE TABLE trade_groups;")
+	db.Create(&models.TradeGroup{UserId: 1, BrokerAccountId: 1, Name: "Put Credit Spread", BrokerAccountRef: "abc123", Status: "Open", Type: "Option", OrderIds: "1", Risked: 1969.00, Proceeds: 0.00, Profit: 0.00, Commission: 0.00, OpenDate: openTs})
+
+	db.Exec("TRUNCATE TABLE positions;")
+	db.Create(&models.Position{UserId: 1, TradeGroupId: 1, BrokerAccountId: 1, BrokerAccountRef: "123abc", Status: "Open", SymbolId: 1, Qty: 11, OrgQty: 11, CostBasis: 1738.00, AvgOpenPrice: 1.58, AvgClosePrice: 0.00, OrderIds: "1", OpenDate: openTs})
+	db.Create(&models.Position{UserId: 1, TradeGroupId: 1, BrokerAccountId: 1, BrokerAccountRef: "123abc", Status: "Open", SymbolId: 2, Qty: -11, OrgQty: -11, CostBasis: -1969.00, AvgOpenPrice: 1.79, AvgClosePrice: 0.00, OrderIds: "1", OpenDate: openTs})
+
+	// Run the test function we are testing.
+	err := ReviewCurrentPositionsForExpiredOptions(db, 1, 1)
+
+	// Verify the data was return as expected
+	st.Expect(t, err, nil)
+
+	// Get all open positions.
+	var results = []models.Position{}
+
+	err = db.Query(&results, models.QueryParam{Wheres: []models.KeyValue{
+		{Key: "status", Value: "Closed"},
+		{Key: "user_id", ValueInt: 1},
+		{Key: "broker_account_id", ValueInt: 1},
+	}})
+
+	// Verify the data was return as expected
+	st.Expect(t, err, nil)
+	st.Expect(t, len(results), 2)
+	st.Expect(t, results[1].Id, uint(2))
+	st.Expect(t, results[1].CostBasis, -1969.00)
+	st.Expect(t, results[1].Profit, -21461.00)
+
+	// Get all open positions.
+	var result = models.TradeGroup{}
+
+	err = db.Query(&result, models.QueryParam{Wheres: []models.KeyValue{
+		{Key: "id", ValueInt: int(results[1].TradeGroupId)},
+		{Key: "user_id", ValueInt: 1},
+	}})
+
+	// Verify the data was return as expected
+	st.Expect(t, err, nil)
+	st.Expect(t, result.Id, uint(1))
+	st.Expect(t, result.Status, "Closed")
+	st.Expect(t, result.Profit, -1969.00)
+	st.Expect(t, result.PercentGain, -100.00)
 }
 
 //

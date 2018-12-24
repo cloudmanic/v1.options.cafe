@@ -2,7 +2,7 @@
 // Date: 2018-11-09
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-24
+// Last Modified: 2018-12-23
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -25,12 +25,12 @@ var (
 	polls []Poll = []Poll{
 		{Name: "get-market-status", Sleep: 2, Delay: 0, Type: "simple"},
 		{Name: "get-quotes", Sleep: 1, Delay: 0, Type: "all-users"},
-		{Name: "get-orders", Sleep: 3, Delay: 0, Type: "all-users"},
+		{Name: "get-orders", Sleep: 3, Delay: 30, Type: "all-users"},        // Give get-all-orders enough time to get started
 		{Name: "get-all-orders", Sleep: 86400, Delay: 0, Type: "all-users"}, // 24 hours
 		{Name: "get-balances", Sleep: 5, Delay: 0, Type: "all-users"},
 		{Name: "get-user-profile", Sleep: 20, Delay: 0, Type: "all-users"},
-		{Name: "get-history", Sleep: 43200, Delay: 0, Type: "all-users"},  // 12 hours
-		{Name: "get-positions", Sleep: 3600, Delay: 5, Type: "all-users"}, // 1 hour, 5 seconds delay (we want all orders to complete first)
+		{Name: "get-history", Sleep: 43200, Delay: 0, Type: "all-users"},   // 12 hours
+		{Name: "get-positions", Sleep: 3600, Delay: 10, Type: "all-users"}, // 1 hour, 10 seconds delay (we want all orders to complete first)
 		{Name: "do-access-token-refresh", Sleep: 60, Delay: 0, Type: "all-users"},
 		{Name: "prime-screener-caches", Sleep: 240, Delay: 0, Type: "all-users"}, // 4 mins
 	}
@@ -50,6 +50,9 @@ type Poll struct {
 // do the broker polling or not.
 //
 func Start(db models.Datastore) {
+
+	// Small delay to make sure all services are up.
+	time.Sleep(time.Second * 3)
 
 	// Start different types of polls.
 	for _, row := range polls {

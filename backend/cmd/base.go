@@ -86,6 +86,12 @@ func Run(db *models.DB) bool {
 		return true
 		break
 
+	// Rebuild trade groups by user.
+	case "user-rebuild-trade-groups":
+		actions.UserRebuildTradeGroups(db, *userId)
+		return true
+		break
+
 	}
 
 	return false

@@ -104,31 +104,47 @@ func (t *Api) GetHistoricalQuotes(symbol string, start time.Time, end time.Time,
 
 	res, err := client.Do(req)
 
-	if err != nil {
-		return quotes, err
-	}
-
 	// Close Body
 	defer res.Body.Close()
 
-	// Make sure the api responded with a 200
-	if res.StatusCode != 200 {
-		body, _ := ioutil.ReadAll(res.Body)
-		fmt.Println(string(body))
-		return quotes, errors.New(fmt.Sprint("GetHistoricalQuotes API did not return 200, It returned ", res.StatusCode))
-	}
-
-	// Read the data we got.
+	// Get body
 	body, _ := ioutil.ReadAll(res.Body)
 
-	// Reach down in the json - Because Tradier is cray cray
-	vo := gjson.Get(string(body), "history.day")
+	if err != nil {
+		return quotes, errors.New(fmt.Sprint("GetHistoricalQuotes API did not return 200, It returned ", res.StatusCode, " with a body : ", string(body)))
+	}
 
-	if !vo.Exists() {
-		// Return happy (just not more than one quote)
+	// Make sure the api responded with a 200
+	if res.StatusCode != 200 {
+		return quotes, errors.New(fmt.Sprint("GetHistoricalQuotes API did not return 200, It returned ", res.StatusCode, " with a body : ", string(body)))
+	}
+
+	// Make sure we have a result
+	vo1 := gjson.Get(string(body), "history")
+
+	if vo1.Value() == nil {
 		return quotes, nil
 	}
 
+	// Reach down in the json - Because Tradier is cray cray
+	vo := gjson.Get(string(body), "history.day")
+	vo2 := gjson.Get(string(body), "history.day.date")
+
+	// We only have one result
+	if vo2.Exists() {
+
+		quote := types.HistoryQuote{}
+
+		if err := json.Unmarshal([]byte(vo.String()), &quote); err != nil {
+			return quotes, err
+		}
+
+		quotes = append(quotes, quote)
+
+		return quotes, nil
+	}
+
+	// We have more than one result
 	if err := json.Unmarshal([]byte(vo.String()), &quotes); err != nil {
 		return quotes, err
 	}

@@ -2,7 +2,7 @@
 // Date: 2018-11-10
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-10
+// Last Modified: 2018-12-23
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -19,6 +19,12 @@ import (
 // Fetch - Positions
 //
 func DoGetPositions(db models.Datastore, api brokers.Api, user models.User, broker models.Broker) error {
+
+	// We do not call this until a user is boot strapped
+	if user.Bootstrapped == "No" {
+		services.Info("Skipping DoGetPositions() for user " + user.Email + " as the user is not bootstrapped yet.")
+		return nil
+	}
 
 	// Make API call
 	positions, err := api.GetPositions()

@@ -44,6 +44,7 @@ type User struct {
 	GoogleSubId        string    `sql:"not null" json:"google_sub_id"`
 	LastActivity       time.Time `json:"last_activity"`
 	TrialExpire        time.Time `json:"-"`
+	Bootstrapped       string    `sql:"not null;type:ENUM('Yes', 'No');default:'No'" json:"-"` // Set to yes after we do our first import
 }
 
 type UserSubscription struct {

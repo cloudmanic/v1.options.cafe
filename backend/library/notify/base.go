@@ -31,10 +31,10 @@ type NotifyRequest struct {
 //
 func Push(db models.Datastore, request NotifyRequest) {
 
-	// Loop through the different channels and push
-	for _, row := range channels {
-		go PushChannel(db, row, request)
-	}
+	// // Loop through the different channels and push
+	// for _, row := range channels {
+	// 	go PushChannel(db, row, request)
+	// }
 
 }
 

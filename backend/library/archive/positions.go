@@ -13,6 +13,7 @@ import (
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/market"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
@@ -184,8 +185,38 @@ func ReviewCurrentPositionsForExpiredOptions(db models.Datastore, userId uint, b
 		// This value will be positive if option has expired.
 		if nowDate.Sub(parts.Expire) > 0 {
 
+			// Get underlying quote
+			stockQuote, err := market.GetUnderlayingQuoteByDate(db, userId, row.Symbol.OptionUnderlying, parts.Expire)
+
+			if err != nil {
+				services.BetterError(err)
+				continue
+			}
+
 			// Figure out profit.
-			row.Profit = row.CostBasis * -1
+			if row.OrgQty > 0 {
+
+				// Figure out based on Call or Put - Long
+				if (row.Symbol.OptionType == "Call") && (row.Symbol.OptionStrike < stockQuote) {
+					row.Profit = (stockQuote - row.Symbol.OptionStrike) * float64(row.OrgQty) * 100.00
+				} else if (row.Symbol.OptionType == "Put") && (row.Symbol.OptionStrike > stockQuote) {
+					row.Profit = ((row.Symbol.OptionStrike - stockQuote) * float64(row.OrgQty) * 100.00) - row.CostBasis
+				} else {
+					row.Profit = row.CostBasis * -1
+				}
+
+			} else {
+
+				// Figure out based on Call or Put - Short
+				if (row.Symbol.OptionType == "Call") && (row.Symbol.OptionStrike < stockQuote) {
+					row.Profit = ((stockQuote - row.Symbol.OptionStrike) * float64(row.OrgQty) * 100.00) + (row.CostBasis * -1)
+				} else if (row.Symbol.OptionType == "Put") && (row.Symbol.OptionStrike > stockQuote) {
+					row.Profit = ((row.Symbol.OptionStrike - stockQuote) * float64(row.OrgQty) * 100.00) + (row.CostBasis * -1)
+				} else {
+					row.Profit = row.CostBasis * -1
+				}
+
+			}
 
 			// Lets expire the position
 			row.Qty = 0
@@ -227,6 +258,7 @@ func ReviewCurrentPositionsForExpiredOptions(db models.Datastore, userId uint, b
 				tradeGroup.Profit = profit - tradeGroup.Commission
 				tradeGroup.PercentGain = (((tradeGroup.Risked + profit) - tradeGroup.Risked) / tradeGroup.Risked) * 100
 				tradeGroup.Status = tradeGroupStatus
+				tradeGroup.ClosedDate = tradeGroup.Positions[0].ClosedDate
 				db.UpdateTradeGroup(&tradeGroup)
 
 				// Log success

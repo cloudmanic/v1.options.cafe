@@ -2,7 +2,7 @@
 // Date: 2018-11-20
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
-// Last Modified: 2018-11-20
+// Last Modified: 2018-12-23
 // Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
 //
 
@@ -10,6 +10,7 @@ package brokers
 
 import (
 	"errors"
+	"os"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
@@ -36,9 +37,9 @@ func GetPrimaryTradierConnection(db models.Datastore, userId uint) (tradier.Api,
 	// Run the query to get brokers. For now we always get Tradier
 	db.New().Where("user_id = ?", user.Id).Find(&brokers)
 
-	// If we have no brokers return error : TODO: change this to default to our Tradier ADMIN Key
+	// If we have no brokers found so we return our default admin broker. Mostly used for unit testing and customers without tradier.
 	if len(brokers) <= 0 {
-		return tradier.Api{}, err
+		return tradier.Api{DB: db, ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN")}, nil
 	}
 
 	// Find our default broker
