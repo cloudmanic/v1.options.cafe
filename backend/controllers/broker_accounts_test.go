@@ -13,6 +13,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/queue"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/gin-gonic/gin"
 	"github.com/nbio/st"
@@ -22,6 +23,9 @@ import (
 // Test - UpdateBrokerAccount - 01 - Success
 //
 func TestUpdateBrokerAccount01(t *testing.T) {
+
+	// Fire up the queue connection
+	queue.Start()
 
 	// Start the db connection.
 	db, _ := models.NewDB()

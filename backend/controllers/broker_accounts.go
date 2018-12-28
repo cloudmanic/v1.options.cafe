@@ -172,7 +172,7 @@ func (t *Controller) UpdateBrokerAccount(c *gin.Context) {
 	queue.Write("oc-websocket-write", `{"uri":"change-detected","user_id":`+strconv.Itoa(int(o.UserId))+`,"body": { "type": "brokers" } }`)
 
 	// Return success.
-	c.JSON(202, o)
+	c.JSON(204, o)
 }
 
 /* End File */
