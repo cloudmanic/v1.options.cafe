@@ -43,18 +43,18 @@ type RankResponse struct {
 //
 func (t *Controller) GetRank(c *gin.Context) {
 
-	// Get from cache?
-	if c.Param("symb") == "vix" {
-		rankResponse := RankResponse{}
+	// // Get from cache?
+	// if c.Param("symb") == "vix" {
+	// 	rankResponse := RankResponse{}
 
-		found, _ := cache.Get("oc-rank-vix", &rankResponse)
+	// 	found, _ := cache.Get("oc-rank-vix", &rankResponse)
 
-		// Return happy JSON
-		if found {
-			c.JSON(200, rankResponse)
-			return
-		}
-	}
+	// 	// Return happy JSON
+	// 	if found {
+	// 		c.JSON(200, rankResponse)
+	// 		return
+	// 	}
+	// }
 
 	// Setup dates back
 	now := time.Now()
@@ -382,6 +382,22 @@ func ComputeIVR(lastQuote float64, quotes []types.HistoryQuote) RankResponse {
 	ivr.Rank60 = helpers.Round(((ivr.Rank60 / n60) * 100), 2)
 	ivr.Rank90 = helpers.Round(((ivr.Rank90 / n90) * 100), 2)
 	ivr.Rank365 = helpers.Round(((ivr.Rank365 / n365) * 100), 2)
+
+	if ivr.Rank30 < 0 {
+		ivr.Rank30 = 0
+	}
+
+	if ivr.Rank60 < 0 {
+		ivr.Rank60 = 0
+	}
+
+	if ivr.Rank90 < 0 {
+		ivr.Rank90 = 0
+	}
+
+	if ivr.Rank365 < 0 {
+		ivr.Rank365 = 0
+	}
 
 	return ivr
 }

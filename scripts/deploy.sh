@@ -17,7 +17,7 @@ upx builds/app.options.cafe
 cd ../frontend
 
 echo "Building Frontend"
-ng build -prod
+ng build --prod
 
 cd ../scripts
 

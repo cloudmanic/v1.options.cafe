@@ -20,9 +20,9 @@ import (
 
 // IPs allowed to access these admin routes
 var allowedIps = map[string]bool{
-	"127.0.0.1":     true,
-	"71.238.46.175": true, // Spicer home
-	"96.239.59.69":  true, // VMG VPN
+	"127.0.0.1":      true,
+	"71.238.46.175":  true, // Spicer home
+	"208.100.153.45": true, // Bend Condo
 }
 
 //

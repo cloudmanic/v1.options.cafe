@@ -314,7 +314,7 @@ func TestUpdateCreditCard01(t *testing.T) {
 	// All good?
 	st.Expect(t, sub.CardBrand, "MasterCard")
 	st.Expect(t, sub.CardLast4, "4444")
-	st.Expect(t, sub.CardExpMonth, 10)
+	st.Expect(t, sub.CardExpMonth, 12)
 	st.Expect(t, sub.CardExpYear, 2019)
 
 	// Clean things up at stripe
@@ -386,7 +386,7 @@ func TestApplyCoupon01(t *testing.T) {
 	// All good?
 	st.Expect(t, sub.CardBrand, "MasterCard")
 	st.Expect(t, sub.CardLast4, "4444")
-	st.Expect(t, sub.CardExpMonth, 10)
+	st.Expect(t, sub.CardExpMonth, 12)
 	st.Expect(t, sub.CardExpYear, 2019)
 	st.Expect(t, sub.CouponName, "Unit Test Coupon 1")
 	st.Expect(t, sub.CouponCode, couponId)

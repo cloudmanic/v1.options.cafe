@@ -16,6 +16,7 @@ import (
 )
 
 //
+// AnalyzeOptionsProfitLossByUnderlyingPrice
 // Return data for analyzing a trade by underlying price at expire
 //
 func (t *Controller) AnalyzeOptionsProfitLossByUnderlyingPrice(c *gin.Context) {
