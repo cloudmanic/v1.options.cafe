@@ -15,252 +15,260 @@ import { StateService } from '../../providers/state/state.service';
 import { ScreenerService } from '../../providers/http/screener.service';
 import { faListAlt, faTh, faCaretRight, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../../providers/http/trade.service';
+import { Settings } from 'app/models/settings';
+import { SettingsService } from 'app/providers/http/settings.service';
 
 @Component({
-  selector: 'app-screener',
-  templateUrl: './home.component.html'
+	selector: 'app-screener',
+	templateUrl: './home.component.html'
 })
 
-export class ScreenerComponent implements OnInit 
-{
-  screeners: Screener[] = [];
-  destory: Subject<boolean> = new Subject<boolean>();
-  listGrid = faTh;
-  listIcon = faListAlt;
-  faCaretDown = faCaretDown;  
-  faCaretRight = faCaretRight;  
+export class ScreenerComponent implements OnInit {
+	screeners: Screener[] = [];
+	destory: Subject<boolean> = new Subject<boolean>();
+	listGrid = faTh;
+	listIcon = faListAlt;
+	faCaretDown = faCaretDown;
+	faCaretRight = faCaretRight;
+	settings: Settings = new Settings();
 
-  //
-  // Constructor....
-  //
-  constructor(private stateService: StateService, private screenerService: ScreenerService, private tradeService: TradeService, private router: Router) { }
+	//
+	// Constructor....
+	//
+	constructor(private stateService: StateService, private screenerService: ScreenerService, private tradeService: TradeService, private router: Router, private settingsService: SettingsService) {
+		// Load settings
+		this.loadSettingsData();
+	}
 
-  //
-  // OnInit....
-  //
-  ngOnInit() 
-  {
-    // Default start timer
-    let startTimer: number = (1000 * 10);
+	//
+	// OnInit....
+	//
+	ngOnInit() {
+		// Default start timer
+		let startTimer: number = (1000 * 10);
 
-    // Get Data from cache
-    this.screeners = this.stateService.GetScreens();  
+		// Get Data from cache
+		this.screeners = this.stateService.GetScreens();
 
-    // Load page data.
-    if(! this.screeners) 
-    {
-      startTimer = (1000 * 60);
-      this.getScreeners();
-    }
+		// Load page data.
+		if (!this.screeners) {
+			startTimer = (1000 * 60);
+			this.getScreeners();
+		}
 
-    // Reload the data every 1min after a 1 min delay to start
-    Observable.timer(startTimer, (1000 * 60)).takeUntil(this.destory).subscribe(x => { this.getScreeners(); });    
-  }
+		// Reload the data every 1min after a 1 min delay to start
+		Observable.timer(startTimer, (1000 * 60)).takeUntil(this.destory).subscribe(x => { this.getScreeners(); });
+	}
 
-  //
-  // OnDestroy
-  //
-  ngOnDestroy() 
-  {
-    this.destory.next();
-    this.destory.complete();
-  }  
+	//
+	// OnDestroy
+	//
+	ngOnDestroy() {
+		this.destory.next();
+		this.destory.complete();
+	}
 
-  //
-  // Sort click
-  //
-  sortClick(screen: Screener, col: string) 
-  {
-    if(screen.ListSort == col)
-    {
-      screen.ListOrder = screen.ListOrder * -1;
-    }
+	//
+	// Load settings data.
+	//
+	loadSettingsData() {
+		this.settingsService.get().subscribe((res) => {
+			this.settings = res;
+			this.stateService.SetSettings(res);
+		});
+	}
 
-    screen.ListSort = col;
-  }
+	//
+	// Sort click
+	//
+	sortClick(screen: Screener, col: string) {
+		if (screen.ListSort == col) {
+			screen.ListOrder = screen.ListOrder * -1;
+		}
 
-  //
-  // Toggle expanded.
-  //
-  viewToggle(screen: Screener) 
-  {
-    if(screen.Expanded)
-    {
-      screen.Expanded = false;
-    } else
-    {
-      screen.Expanded = true;      
-    }
+		screen.ListSort = col;
+	}
 
-    this.storePerferedView();    
-  }
+	//
+	// Toggle expanded.
+	//
+	viewToggle(screen: Screener) {
+		if (screen.Expanded) {
+			screen.Expanded = false;
+		} else {
+			screen.Expanded = true;
+		}
 
-  //
-  // View change
-  //
-  viewChange(screen: Screener, type: string)
-  {
-    screen.View = type; 
-    this.storePerferedView(); 
-  }
+		this.storePerferedView();
+	}
 
-  //
-  // Save our preferred views into local storage.
-  //
-  storePerferedView()
-  {
-    let obj = {}
+	//
+	// View change
+	//
+	viewChange(screen: Screener, type: string) {
+		screen.View = type;
+		this.storePerferedView();
+	}
 
-    for(let i = 0; i < this.screeners.length; i++)
-    {
-      obj[this.screeners[i].Id] = { View: this.screeners[i].View, Expanded: this.screeners[i].Expanded };
-    }
+	//
+	// Save our preferred views into local storage.
+	//
+	storePerferedView() {
+		let obj = {}
 
-    localStorage.setItem("screener-view", JSON.stringify(obj));
-  }
+		for (let i = 0; i < this.screeners.length; i++) {
+			obj[this.screeners[i].Id] = { View: this.screeners[i].View, Expanded: this.screeners[i].Expanded };
+		}
 
-  //
-  // Get and set preferred views. 
-  //
-  getSetpreferedViews() 
-  {
-    let json = localStorage.getItem("screener-view");
+		localStorage.setItem("screener-view", JSON.stringify(obj));
+	}
 
-    if(! json)
-    {
-      for(let i = 0; i < this.screeners.length; i++)
-      {
-        this.screeners[i].View = "grid";
-      }
-      return;
-    }
+	//
+	// Get and set preferred views.
+	//
+	getSetpreferedViews() {
+		let json = localStorage.getItem("screener-view");
 
-    let obj = JSON.parse(json);
+		if (!json) {
+			for (let i = 0; i < this.screeners.length; i++) {
+				this.screeners[i].View = "grid";
+			}
+			return;
+		}
 
-    for(let i = 0; i < this.screeners.length; i++)
-    {
-      if(typeof obj[this.screeners[i].Id] != "undefined")
-      {
-        this.screeners[i].View = obj[this.screeners[i].Id].View;
-        this.screeners[i].Expanded = obj[this.screeners[i].Id].Expanded;
-      } else
-      {
-        this.screeners[i].View = "grid";
-      }
-    }
+		let obj = JSON.parse(json);
 
-  }
+		for (let i = 0; i < this.screeners.length; i++) {
+			if (typeof obj[this.screeners[i].Id] != "undefined") {
+				this.screeners[i].View = obj[this.screeners[i].Id].View;
+				this.screeners[i].Expanded = obj[this.screeners[i].Id].Expanded;
+			} else {
+				this.screeners[i].View = "grid";
+			}
+		}
 
-  //
-  // Get screeners.
-  //
-  getScreeners()
-  {
-    // Make api call to get screeners
-    this.screenerService.get().subscribe(
+	}
 
-      (res) => {
+	//
+	// Get screeners.
+	//
+	getScreeners() {
+		// Make api call to get screeners
+		this.screenerService.get().subscribe(
 
-        // Assign the screeners. 
-        this.screeners = res;
-        
-        // Set the preferred views.
-        this.getSetpreferedViews();
+			(res) => {
 
-        // Make sure we have at least one screener
-        if(this.screeners.length <= 0)
-        {
-          this.router.navigate(['/screener/add']);
-          return;
-        }
+				// Assign the screeners.
+				this.screeners = res;
 
-        // Load results.
-        for (let i = 0; i < this.screeners.length; i++) 
-        {
-          this.screenerService.getResults(this.screeners[i].Id).subscribe((res) => {
-            this.screeners[i].Results = res;
-          });
-        }
+				// Set the preferred views.
+				this.getSetpreferedViews();
 
-        // Store in site cache.
-        this.stateService.SetScreens(this.screeners);
-      }, 
+				// Make sure we have at least one screener
+				if (this.screeners.length <= 0) {
+					this.router.navigate(['/screener/add']);
+					return;
+				}
 
-      // Error
-      (err: HttpErrorResponse) => {
+				// Load results.
+				for (let i = 0; i < this.screeners.length; i++) {
+					this.screenerService.getResults(this.screeners[i].Id).subscribe((res) => {
+						this.screeners[i].Results = res;
+					});
+				}
 
-        if (err.error instanceof Error) 
-        {
-          // A client-side or network error occurred. Handle it accordingly.
-          console.log('An error occurred:', err.error);
-        } else 
-        {
-          if (err.error.error == 'No Record Found.')
-          {
-            this.router.navigate(['/screener/add'], { queryParams: { action: 'first-run' } });
-          }
-        }
-      }
-    );
-  }
+				// Store in site cache.
+				this.stateService.SetScreens(this.screeners);
+			},
 
-  //
-  // Place trade from result
-  //
-  trade(screen: Screener, result: ScreenerResult) {
+			// Error
+			(err: HttpErrorResponse) => {
 
-    // Just a double check
-    if(result.Legs.length <= 0)
-    {
-      return;
-    }
+				if (err.error instanceof Error) {
+					// A client-side or network error occurred. Handle it accordingly.
+					console.log('An error occurred:', err.error);
+				} else {
+					if (err.error.error == 'No Record Found.') {
+						this.router.navigate(['/screener/add'], { queryParams: { action: 'first-run' } });
+					}
+				}
+			}
+		);
+	}
 
-    // Set values
-    let tradeDetails = new TradeDetails();
-    tradeDetails.Symbol = result.Legs[0].OptionUnderlying;
-    tradeDetails.Class = "multileg";
-    
-    if(result.Credit > 0) 
-    {
-      tradeDetails.OrderType = "credit";
-    } else 
-    {
-      tradeDetails.OrderType = "debit";
-    }
+	//
+	// Place trade from result
+	//
+	trade(screen: Screener, result: ScreenerResult) {
 
-    // TODO: Add configuration around this.
-    tradeDetails.Duration = "gtc";
-    
-    // TODO: Add configuration around this. (or just selectors midpoint vs ask).
-    tradeDetails.Price = result.MidPoint;
+		// Just a double check
+		if (result.Legs.length <= 0) {
+			return;
+		}
 
-    // Build legs
-    tradeDetails.Legs = [];
+		// Set values
+		let tradeDetails = new TradeDetails();
+		tradeDetails.Symbol = result.Legs[0].OptionUnderlying;
+		tradeDetails.Class = "multileg";
 
-    for (let i = 0; i < result.Legs.length; i++) 
-    {
-      let side = "sell_to_close";
-      
-      // TODO: Get this from settings.
-      let qty = 11;
+		if (result.Credit > 0) {
+			tradeDetails.OrderType = "credit";
+		} else {
+			tradeDetails.OrderType = "debit";
+		}
 
-      // TODO this will need work based on the type of screener.
-      if (i == 1) 
-      {
-        side = "sell_to_open";
-      } else 
-      {
-        side = "buy_to_open"
-      }
+		// Set default duration.
+		tradeDetails.Duration = "gtc";
 
-      tradeDetails.Legs.push(new TradeOptionLegs().createNew(result.Legs[i], result.Legs[i].OptionExpire, result.Legs[i].OptionType, result.Legs[i].OptionStrike, side, qty));
-    }
+		// Set default price
+		tradeDetails.Price = result.MidPoint;
 
-    // Open builder to place trade.
-    this.tradeService.tradeEvent.emit(new TradeEvent().createNew("toggle-trade-builder", tradeDetails));
+		// Build legs
+		tradeDetails.Legs = [];
+
+		// Get the default lot size
+		let defaultLots = 1;
+
+		switch (screen.Strategy) {
+			case "put-credit-spread":
+				defaultLots = this.settings.StrategyPcsLots;
+
+				// If this is a mid point price.
+				if (this.settings.StrategyPcsOpenPrice == "mid-point") {
+					tradeDetails.Price = result.MidPoint;
+				}
+
+				// If this is a ask price.
+				if (this.settings.StrategyPcsOpenPrice == "ask") {
+					tradeDetails.Price = result.Credit;
+				}
+
+				// If this is a bid price.
+				if (this.settings.StrategyPcsOpenPrice == "bid") {
+					tradeDetails.Price = result.Debit;
+				}
+				break;
+		}
+
+		for (let i = 0; i < result.Legs.length; i++) {
+			let side = "sell_to_close";
+			let qty = defaultLots;
+
+			// TODO this will need work based on the type of screener.
+			if (i == 1) {
+				side = "sell_to_open";
+			} else {
+				side = "buy_to_open"
+			}
+
+			tradeDetails.Legs.push(new TradeOptionLegs().createNew(result.Legs[i], result.Legs[i].OptionExpire, result.Legs[i].OptionType, result.Legs[i].OptionStrike, side, qty));
+		}
+
+		// Open builder to place trade.
+		this.tradeService.tradeEvent.emit(new TradeEvent().createNew("toggle-trade-builder", tradeDetails));
 
 
-  }
+	}
 
 }
 
