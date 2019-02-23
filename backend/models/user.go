@@ -140,6 +140,7 @@ func (t *DB) DeleteUser(user *User) error {
 	t.DB.New().Where("user_id = ?", user.Id).Delete(BalanceHistory{})
 	t.DB.New().Where("user_id = ?", user.Id).Delete(ActiveSymbol{})
 	t.DB.New().Where("user_id = ?", user.Id).Delete(Backtest{})
+	t.DB.New().Where("user_id = ?", user.Id).Delete(BacktestPosition{})
 	t.DB.New().Where("id = ?", user.Id).Delete(User{})
 
 	// At Sendy make sure this user is in a canceled state

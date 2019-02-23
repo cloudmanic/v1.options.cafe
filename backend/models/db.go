@@ -80,6 +80,7 @@ func NewDB() (*DB, error) {
 	db.AutoMigrate(&BrokerAccount{})
 	db.AutoMigrate(&ForgotPassword{})
 	db.AutoMigrate(&BalanceHistory{})
+	db.AutoMigrate(&BacktestPosition{})
 
 	// Is this a testing run? If so load testing data.
 	if flag.Lookup("test.v") != nil {
@@ -126,6 +127,9 @@ func LoadTestingData(db *gorm.DB) {
 
 	// Backtest
 	db.Exec("TRUNCATE TABLE backtests;")
+
+	// Backtest
+	db.Exec("TRUNCATE TABLE backtest_positions;")
 
 	// Users
 	db.Exec("TRUNCATE TABLE users;")
