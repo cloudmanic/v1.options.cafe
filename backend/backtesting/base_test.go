@@ -35,8 +35,8 @@ func TestDoBacktestDays01(t *testing.T) {
 
 	// Run blank backtest
 	err := bt.DoBacktestDays(models.Backtest{
-		StartDate: helpers.ParseDateNoError("2018-01-01"),
-		EndDate:   helpers.ParseDateNoError("2018-01-03"),
+		StartDate: models.Date{helpers.ParseDateNoError("2018-01-01")},
+		EndDate:   models.Date{helpers.ParseDateNoError("2018-01-03")},
 		Screen:    screen,
 	})
 	st.Expect(t, err, nil)

@@ -16,8 +16,8 @@ type Backtest struct {
 	CreatedAt       time.Time          `json:"-"`
 	UpdatedAt       time.Time          `json:"-"`
 	UserId          uint               `sql:"not null;index:UserId" json:"user_id"`
-	StartDate       time.Time          `sql:"not null" json:"start_date"`
-	EndDate         time.Time          `sql:"not null" json:"end_date"`
+	StartDate       Date               `gorm:"type:date" sql:"not null" json:"start_date"`
+	EndDate         Date               `gorm:"type:date" sql:"not null" json:"end_date"`
 	EndingBalance   float64            `sql:"not null" json:"ending_balance"`
 	StartingBalance float64            `sql:"not null" json:"starting_balance"`
 	TradeSelect     string             `sql:"not null;type:ENUM('highest-credit', 'median-credit', 'lowest-credit');default:'median-credit'" json:"trade_select"`

@@ -74,12 +74,12 @@ func (t *Base) DoBacktestDays(backtest models.Backtest) error {
 	for _, row := range dates {
 
 		// We skip dates before our start date
-		if row.Before(backtest.StartDate) {
+		if row.Before(helpers.ParseDateNoError(backtest.StartDate.Format("2006-01-02"))) {
 			continue
 		}
 
 		// We skip dates after our end date
-		if row.After(backtest.EndDate) {
+		if row.After(helpers.ParseDateNoError(backtest.EndDate.Format("2006-01-02"))) {
 			continue
 		}
 
@@ -188,22 +188,21 @@ func (t *Base) OpenMultiLegCredit(today time.Time, backtest *models.Backtest, re
 	openPrice := result.MidPoint * 100 * float64(lots)
 
 	// Amount of margin left after trade is opened.
-	// TODO(spicer): this is only for put credit spreads we need to measture margin for other types.
 	diff := result.Legs[1].OptionStrike - result.Legs[0].OptionStrike
 	var margin float64 = (diff * 100 * float64(lots)) - openPrice
 
-	if len(backtest.Positions) > 0 {
-		margin = backtest.Positions[len(backtest.Positions)-1].Margin + margin
-	}
+	// Get total margin needed
+	totalMarginNeeded := t.getTotalMarginUsed(backtest) + margin
 
 	// Make sure we have enough margin to continue
-	if margin > backtest.EndingBalance {
+	if totalMarginNeeded > backtest.EndingBalance {
 		return
 	}
 
 	// Add position
 	backtest.Positions = append(backtest.Positions, models.BacktestPosition{
 		UserId:    backtest.UserId,
+		Status:    "Open",
 		OpenDate:  models.Date{today},
 		OpenPrice: openPrice,
 		Margin:    margin,
@@ -214,10 +213,65 @@ func (t *Base) OpenMultiLegCredit(today time.Time, backtest *models.Backtest, re
 	// Update ending balance
 	backtest.EndingBalance += openPrice
 
-	fmt.Println(today.Format("2006-01-02"), " : ", backtest.EndingBalance, " / ", margin, " / ", backtest.Positions[len(backtest.Positions)-1].OpenPrice)
+	fmt.Println(today.Format("2006-01-02"), " : ", backtest.EndingBalance, " / ", totalMarginNeeded, " / ", margin, " / ", backtest.Positions[len(backtest.Positions)-1].OpenPrice)
+}
+
+//
+// CloseMultiLegCredit - Close positions
+//
+func (t *Base) CloseMultiLegCredit(today time.Time, backtest *models.Backtest) {
+	// Expire positions
+	t.expirePositions(today, backtest)
 }
 
 // -------------- Private Helper Functions ------------------- //
+
+//
+// getTotalMarginUsed - Return a value for the total margin being used right now.
+//
+func (t *Base) getTotalMarginUsed(backtest *models.Backtest) float64 {
+	total := 0.00
+
+	// Loop for expired postions
+	for _, row := range backtest.Positions {
+
+		if row.Status == "Closed" {
+			continue
+		}
+
+		total += row.Margin
+	}
+
+	// Return happy
+	return total
+}
+
+//
+// expirePositions - Loop through to see if we have any positions to expire.
+//
+func (t *Base) expirePositions(today time.Time, backtest *models.Backtest) {
+	// Loop for expired postions
+	for key, row := range backtest.Positions {
+		expired := false
+
+		// See if any of the legs are expired
+		for _, row2 := range row.Legs {
+			if today.Format("2006-01-02") == row2.OptionExpire.Format("2006-01-02") ||
+				today.After(helpers.ParseDateNoError(row2.OptionExpire.Format("2006-01-02"))) {
+				expired = true
+				break
+			}
+		}
+
+		// If expired close out trade
+		if expired && row.Status == "Open" {
+			backtest.Positions[key].Status = "Closed"
+			backtest.Positions[key].ClosePrice = 0.00
+			backtest.Positions[key].CloseDate = models.Date{today}
+			backtest.Positions[key].Note = "Expired worthless."
+		}
+	}
+}
 
 //
 // getCachedChain - See if we have a cached chain stored on file.
