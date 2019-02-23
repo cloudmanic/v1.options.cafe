@@ -88,7 +88,7 @@ func (t *Base) DoPutCreditSpread(today time.Time, backtest *models.Backtest, und
 
 	}
 
-	// Open first result
+	// TODO(spicer): Figure which result to open
 	if len(results) > 0 {
 		t.OpenMultiLegCredit(today, backtest, results[0])
 	}
