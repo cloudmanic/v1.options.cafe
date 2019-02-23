@@ -14,14 +14,15 @@ import (
 )
 
 type Screener struct {
-	Id        uint           `gorm:"primary_key" json:"id"`
-	CreatedAt time.Time      `json:"-"`
-	UpdatedAt time.Time      `json:"-"`
-	UserId    uint           `sql:"not null;index:UserId" json:"user_id"`
-	Name      string         `sql:"not null" json:"name"`
-	Strategy  string         `json:"strategy"`
-	Symbol    string         `json:"symbol"`
-	Items     []ScreenerItem `json:"items"`
+	Id         uint           `gorm:"primary_key" json:"id"`
+	CreatedAt  time.Time      `json:"-"`
+	UpdatedAt  time.Time      `json:"-"`
+	UserId     uint           `sql:"not null;index:UserId" json:"user_id"`
+	BacktestId uint           `sql:"not null;index:BacktestId" json:"backtest_id"`
+	Name       string         `sql:"not null" json:"name"`
+	Strategy   string         `sql:"not null" json:"strategy"`
+	Symbol     string         `sql:"not null" json:"symbol"`
+	Items      []ScreenerItem `sql:"not null" json:"items"`
 }
 
 //

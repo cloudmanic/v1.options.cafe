@@ -69,6 +69,7 @@ func NewDB() (*DB, error) {
 	db.AutoMigrate(&Watchlist{})
 	db.AutoMigrate(&WatchlistSymbol{})
 	db.AutoMigrate(&Position{})
+	db.AutoMigrate(&Backtest{})
 	db.AutoMigrate(&Screener{})
 	db.AutoMigrate(&ScreenerItem{})
 	db.AutoMigrate(&TradeGroup{})
@@ -122,6 +123,9 @@ func LoadTestingData(db *gorm.DB) {
 
 	// NotifyChannel
 	db.Exec("TRUNCATE TABLE notify_channels;")
+
+	// Backtest
+	db.Exec("TRUNCATE TABLE backtests;")
 
 	// Users
 	db.Exec("TRUNCATE TABLE users;")
@@ -254,7 +258,7 @@ func LoadTestingData(db *gorm.DB) {
 	// Orders
 	db.Exec("TRUNCATE TABLE orders;")
 
-	db.Exec(`INSERT INTO orders (id, user_id, created_at, updated_at, broker_account_id, broker_ref, broker_account_ref, type, symbol_id, option_symbol_id, side, qty, status, duration, price, avg_fill_price, exec_quantity, last_fill_price, last_fill_quantity, remaining_quantity, create_date, transaction_date, class, num_legs, position_reviewed) VALUES 
+	db.Exec(`INSERT INTO orders (id, user_id, created_at, updated_at, broker_account_id, broker_ref, broker_account_ref, type, symbol_id, option_symbol_id, side, qty, status, duration, price, avg_fill_price, exec_quantity, last_fill_price, last_fill_quantity, remaining_quantity, create_date, transaction_date, class, num_legs, position_reviewed) VALUES
 	(1,1,'2018-02-17 00:13:53','2018-02-17 00:13:54',2,'734801','ABC123ZY','limit',1,11,'buy_to_open',1,'filled','day',2.40,2.39,1.00,2.39,1.00,0.00,'2018-01-16 11:54:50','2018-01-16 11:54:51','option',0,'No'),
 	(2,1,'2018-02-17 00:13:53','2018-02-17 00:13:54',2,'735196','ABC123ZY','limit',1,11,'sell_to_close',-1,'filled','gtc',3.39,3.62,1.00,3.62,1.00,0.00,'2018-01-16 15:29:51','2018-02-05 06:30:03','option',0,'No'),
 	(3,1,'2018-02-17 00:13:53','2018-02-17 00:13:53',2,'767256','ABC123ZY','credit',1,0,'buy',9,'filled','day',0.24,-0.24,9.00,0.00,1.00,0.00,'2018-01-30 09:20:25','2018-01-30 09:45:11','multileg',2,'No'),
@@ -278,7 +282,7 @@ func LoadTestingData(db *gorm.DB) {
 
 	// OrderLegs
 	db.Exec("TRUNCATE TABLE order_legs;")
-	db.Exec(`INSERT INTO order_legs (id, user_id, created_at, updated_at, order_id, type, symbol_id, side, qty, status, duration, avg_fill_price, exec_quantity, last_fill_price, last_fill_quantity, remaining_quantity, create_date, transaction_date) VALUES 
+	db.Exec(`INSERT INTO order_legs (id, user_id, created_at, updated_at, order_id, type, symbol_id, side, qty, status, duration, avg_fill_price, exec_quantity, last_fill_price, last_fill_quantity, remaining_quantity, create_date, transaction_date) VALUES
 	(1,1,'2018-02-17 00:13:53','2018-02-17 00:13:53',3,'credit',14,'buy_to_open',9,'filled','day',1.62,9.00,1.65,1.00,0.00,'2018-01-30 09:20:25','2018-01-30 09:45:11'),
 	(2,1,'2018-02-17 00:13:53','2018-02-17 00:13:53',3,'credit',15,'sell_to_open',9,'filled','day',1.86,9.00,1.89,1.00,0.00,'2018-01-30 09:20:25','2018-01-30 09:45:11'),
 	(3,1,'2018-02-17 00:13:53','2018-02-17 00:13:53',4,'credit',16,'buy_to_open',9,'filled','day',1.49,9.00,1.49,3.00,0.00,'2018-01-31 09:39:20','2018-01-31 11:21:38'),

@@ -46,7 +46,7 @@ func (t *Base) RunPutCreditSpread(screen models.Screener) ([]Result, error) {
 	}
 
 	// Set params
-	spreadWidth := t.getPutCreditSpreadParms(screen, quote.Last)
+	spreadWidth := t.GetPutCreditSpreadParms(screen, quote.Last)
 
 	// Loop through the expire dates
 	for _, row := range expires {
@@ -131,12 +131,10 @@ func (t *Base) RunPutCreditSpread(screen models.Screener) ([]Result, error) {
 	return result, nil
 }
 
-// --------------------- Private Helper Functions ------------------------ //
-
 //
 // Set Parms we need.
 //
-func (t *Base) getPutCreditSpreadParms(screen models.Screener, lastQuote float64) float64 {
+func (t *Base) GetPutCreditSpreadParms(screen models.Screener, lastQuote float64) float64 {
 
 	var spreadWidth float64 = 5.00
 

@@ -25,15 +25,7 @@ const cacheDirBase = "backtesting-options-chains"
 // Base struct
 type Base struct {
 	DB            models.Datastore
-	BacktestFuncs map[string]func(today time.Time, action Action, chains map[time.Time]types.OptionsChain) error
-}
-
-// Action struct - Struct we pass into a backtest.
-type Action struct {
-	Type      string    `json:"type"`
-	Symbol    string    `json:"symbol"`
-	StartDate time.Time `json:"start_date"`
-	EndDate   time.Time `json:"end_date"`
+	StrategyFuncs map[string]func(today time.Time, backtest models.Backtest, underlyingLast float64, chains map[time.Time]types.OptionsChain) error
 }
 
 //
@@ -47,7 +39,7 @@ func New(db models.Datastore) Base {
 	}
 
 	// Build backtest functions.
-	t.BacktestFuncs = map[string]func(today time.Time, action Action, chains map[time.Time]types.OptionsChain) error{
+	t.StrategyFuncs = map[string]func(today time.Time, backtest models.Backtest, underlyingLast float64, chains map[time.Time]types.OptionsChain) error{
 		"blank":             t.DoBlank,
 		"put-credit-spread": t.DoPutCreditSpread,
 	}
@@ -67,10 +59,10 @@ func New(db models.Datastore) Base {
 // DoBacktestDays - Loop through every day in the backtest and pass
 // an options chain into a function for a prticular backtest type.
 //
-func (t *Base) DoBacktestDays(action Action) error {
+func (t *Base) DoBacktestDays(backtest models.Backtest) error {
 
 	// Get dates by symbol
-	dates, err := eod.GetTradeDatesBySymbols(action.Symbol)
+	dates, err := eod.GetTradeDatesBySymbols(backtest.Screen.Symbol)
 
 	if err != nil {
 		return err
@@ -80,12 +72,12 @@ func (t *Base) DoBacktestDays(action Action) error {
 	for _, row := range dates {
 
 		// We skip dates before our start date
-		if row.Before(action.StartDate) {
+		if row.Before(backtest.StartDate) {
 			continue
 		}
 
 		// We skip dates after our end date
-		if row.After(action.EndDate) {
+		if row.After(backtest.EndDate) {
 			continue
 		}
 
@@ -96,18 +88,18 @@ func (t *Base) DoBacktestDays(action Action) error {
 		}
 
 		// Log where we are in the backtest. TODO(spicer): Send this up websocket
-		services.Info("Backtesting " + action.Symbol + " for date " + row.Format("2006-01-02"))
+		//services.Info("Backtesting " + backtest.Screen.Strategy + " " + backtest.Screen.Symbol + " on " + row.Format("2006-01-02"))
 
 		// See if we have the chain in cache
-		chains, err := getCachedChain(action.Symbol, row)
+		chains, err := getCachedChain(backtest.Screen.Symbol, row)
 
 		// We did not have the chains in the file cache
 		if err != nil {
 			// Log no cache found.
-			services.Info("Backtesting - chains not found in file cache - " + action.Symbol + " " + row.Format("2006-01-02"))
+			services.Info("Backtesting - chains not found in file cache - " + backtest.Screen.Symbol + " " + row.Format("2006-01-02"))
 
 			// Get the expire dates for this option option chain.
-			expDates, err2 := o.GetOptionsExpirationsBySymbol(action.Symbol)
+			expDates, err2 := o.GetOptionsExpirationsBySymbol(backtest.Screen.Symbol)
 
 			if err2 != nil {
 				return err2
@@ -120,7 +112,7 @@ func (t *Base) DoBacktestDays(action Action) error {
 			for _, row2 := range expDates {
 
 				// Get the options change by expire
-				chain, err2 := o.GetOptionsChainByExpiration(action.Symbol, row2)
+				chain, err2 := o.GetOptionsChainByExpiration(backtest.Screen.Symbol, row2)
 
 				if err2 != nil {
 					return err2
@@ -131,14 +123,20 @@ func (t *Base) DoBacktestDays(action Action) error {
 			}
 
 			// Store in file cache
-			setCacheChain(action.Symbol, row, tmpChains)
+			setCacheChain(backtest.Screen.Symbol, row, tmpChains)
 
 			// Reset chains
 			chains = tmpChains
 		}
 
-		// Run backtest function for this backtest
-		err = t.BacktestFuncs[action.Type](row, action, chains)
+		// Get underlyingLast
+		underlyingLast := 0.00
+		for _, row2 := range chains {
+			underlyingLast = row2.UnderlyingLast
+		}
+
+		// Run backtest strategy function for this backtest
+		err = t.StrategyFuncs[backtest.Screen.Strategy](row, backtest, underlyingLast, chains)
 
 		if err != nil {
 			return err
@@ -151,7 +149,7 @@ func (t *Base) DoBacktestDays(action Action) error {
 //
 // DoBlank is mostly using for unit testing.
 //
-func (t *Base) DoBlank(today time.Time, action Action, chains map[time.Time]types.OptionsChain) error {
+func (t *Base) DoBlank(today time.Time, backtest models.Backtest, underlyingLast float64, chains map[time.Time]types.OptionsChain) error {
 	return nil
 }
 

@@ -10,9 +10,9 @@ import (
 	"os"
 	"testing"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/nbio/st"
-	"github.com/optionscafe/options-cafe-cli/helpers"
 )
 
 //
@@ -27,12 +27,17 @@ func TestDoBacktestDays01(t *testing.T) {
 	// Setup a new backtesting
 	bt := New(db)
 
+	// Build screener object
+	screen := models.Screener{
+		Symbol:   "SPY",
+		Strategy: "blank",
+	}
+
 	// Run blank backtest
-	err := bt.DoBacktestDays(Action{
-		Type:      "blank",
-		Symbol:    "SPY",
+	err := bt.DoBacktestDays(models.Backtest{
 		StartDate: helpers.ParseDateNoError("2018-01-01"),
 		EndDate:   helpers.ParseDateNoError("2018-01-03"),
+		Screen:    screen,
 	})
 	st.Expect(t, err, nil)
 
