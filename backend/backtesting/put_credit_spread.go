@@ -22,7 +22,7 @@ import (
 func (t *Base) DoPutCreditSpread(today time.Time, backtest *models.Backtest, underlyingLast float64, chains map[time.Time]types.OptionsChain) error {
 
 	// See if we have any positions to close
-	t.CloseMultiLegCredit(today, underlyingLast, backtest)
+	t.CloseMultiLegCredit(today, underlyingLast, backtest, chains)
 
 	// Results that we return.
 	results := []screener.Result{}
