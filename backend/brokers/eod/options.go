@@ -13,17 +13,28 @@ import (
 	"strings"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
+	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 )
 
 //
-// Get options expiration by Symbol
+// GetOptionsExpirationsBySymbol - Get options expiration by Symbol
 //
 func (t *Api) GetOptionsExpirationsBySymbol(symbol string) ([]string, error) {
 
 	expires := []string{}
 	symb := strings.ToUpper(symbol)
 	tmpExpires := make(map[string]bool)
+	cacheKey := "oc-brokers-eod-expirations-" + strings.ToUpper(symbol) + "-" + t.Day.Format("2006-01-02")
+
+	// See if we have this result in the cache.
+	var cacheddates []string
+	found, _ := cache.Get(cacheKey, &cacheddates)
+
+	// Return happy JSON
+	if found {
+		return cacheddates, nil
+	}
 
 	// Get a list of all options
 	options, _, err := t.GetOptionsBySymbol(symb)
@@ -45,28 +56,32 @@ func (t *Api) GetOptionsExpirationsBySymbol(symbol string) ([]string, error) {
 	// Sort the results date in asc order.
 	sort.Strings(expires)
 
+	// Store dates in cache. Does not expire.
+	cache.Set(cacheKey, expires)
+
+	// Return happy
 	return expires, nil
 }
 
 //
-// Get an options chain by expiration.
+// GetOptionsChainByExpiration - Get an options chain by expiration.
 //
 func (t *Api) GetOptionsChainByExpiration(symbol string, expireStr string) (types.OptionsChain, error) {
 
 	symb := strings.ToUpper(symbol)
 	expireDate := types.Date{helpers.ParseDateNoError(expireStr).UTC()}
 
+	// Get a list of all options
+	options, underlyingLast, err := t.GetOptionsBySymbol(symb)
+
 	// New chain to return
 	chain := types.OptionsChain{
 		Underlying:     symb,
-		UnderlyingLast: 0.00,
+		UnderlyingLast: underlyingLast,
 		ExpirationDate: expireDate,
 		Puts:           []types.OptionsChainItem{},
 		Calls:          []types.OptionsChainItem{},
 	}
-
-	// Get a list of all options
-	options, _, err := t.GetOptionsBySymbol(symb)
 
 	if err != nil {
 		return chain, err

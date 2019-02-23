@@ -42,11 +42,6 @@ func init() {
 	if err != nil {
 		services.Fatal(err)
 	}
-
-	// // Log success
-	// if flag.Lookup("test.v") == nil {
-	// 	services.Info("Connected to Redis host: " + os.Getenv("REDIS_HOST"))
-	// }
 }
 
 //

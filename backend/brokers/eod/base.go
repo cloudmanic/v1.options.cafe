@@ -216,7 +216,18 @@ func DownloadEodSymbol(symbol string, debug bool) []string {
 	var total int = 0
 	var allFiles []string
 
+	// Cache keys
 	cacheKey := "oc-brokers-eod-symbol-objects-" + strings.ToUpper(symbol)
+	cacheListKey := "oc-brokers-eod-local-cache-list-" + strings.ToUpper(symbol)
+
+	// See if we have this result in the cache.
+	var cachedFileList []string
+	found1, _ := cache.Get(cacheListKey, &cachedFileList)
+
+	// Store cache
+	if found1 {
+		return cachedFileList
+	}
 
 	// Log if we are debug
 	if debug {
@@ -290,6 +301,9 @@ func DownloadEodSymbol(symbol string, debug bool) []string {
 	if debug {
 		fmt.Println("Done download of all " + symbol + " daily options data.")
 	}
+
+	// Store dates in cache - 3 hours
+	cache.SetExpire(cacheListKey, (time.Minute * 60 * 3), allFiles)
 
 	// Return a list of all files.
 	return allFiles
