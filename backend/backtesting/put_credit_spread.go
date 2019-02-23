@@ -19,7 +19,7 @@ import (
 //
 // DoPutCreditSpread - Run a put credit spread backtest.
 //
-func (t *Base) DoPutCreditSpread(today time.Time, backtest models.Backtest, underlyingLast float64, chains map[time.Time]types.OptionsChain) error {
+func (t *Base) DoPutCreditSpread(today time.Time, backtest *models.Backtest, underlyingLast float64, chains map[time.Time]types.OptionsChain) error {
 
 	// Results that we return.
 	results := []screener.Result{}
@@ -84,9 +84,13 @@ func (t *Base) DoPutCreditSpread(today time.Time, backtest models.Backtest, unde
 				PutPrecentAway: helpers.Round(((1 - row2.Strike/underlyingLast) * 100), 2),
 				Legs:           []models.Symbol{symbBuyLeg, symbSellLeg},
 			})
-
 		}
 
+	}
+
+	// Open first result
+	if len(results) > 0 {
+		t.OpenMultiLegCredit(today, backtest, results[0])
 	}
 
 	return nil

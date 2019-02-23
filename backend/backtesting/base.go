@@ -9,6 +9,7 @@ package backtesting
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"time"
@@ -17,6 +18,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/screener"
 	"github.com/optionscafe/options-cafe-cli/helpers"
 )
 
@@ -25,7 +27,7 @@ const cacheDirBase = "backtesting-options-chains"
 // Base struct
 type Base struct {
 	DB            models.Datastore
-	StrategyFuncs map[string]func(today time.Time, backtest models.Backtest, underlyingLast float64, chains map[time.Time]types.OptionsChain) error
+	StrategyFuncs map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, chains map[time.Time]types.OptionsChain) error
 }
 
 //
@@ -39,7 +41,7 @@ func New(db models.Datastore) Base {
 	}
 
 	// Build backtest functions.
-	t.StrategyFuncs = map[string]func(today time.Time, backtest models.Backtest, underlyingLast float64, chains map[time.Time]types.OptionsChain) error{
+	t.StrategyFuncs = map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, chains map[time.Time]types.OptionsChain) error{
 		"blank":             t.DoBlank,
 		"put-credit-spread": t.DoPutCreditSpread,
 	}
@@ -88,7 +90,7 @@ func (t *Base) DoBacktestDays(backtest models.Backtest) error {
 		}
 
 		// Log where we are in the backtest. TODO(spicer): Send this up websocket
-		//services.Info("Backtesting " + backtest.Screen.Strategy + " " + backtest.Screen.Symbol + " on " + row.Format("2006-01-02"))
+		services.Info("Backtesting " + backtest.Screen.Strategy + " " + backtest.Screen.Symbol + " on " + row.Format("2006-01-02"))
 
 		// See if we have the chain in cache
 		chains, err := getCachedChain(backtest.Screen.Symbol, row)
@@ -136,7 +138,7 @@ func (t *Base) DoBacktestDays(backtest models.Backtest) error {
 		}
 
 		// Run backtest strategy function for this backtest
-		err = t.StrategyFuncs[backtest.Screen.Strategy](row, backtest, underlyingLast, chains)
+		err = t.StrategyFuncs[backtest.Screen.Strategy](row, &backtest, underlyingLast, chains)
 
 		if err != nil {
 			return err
@@ -149,7 +151,7 @@ func (t *Base) DoBacktestDays(backtest models.Backtest) error {
 //
 // DoBlank is mostly using for unit testing.
 //
-func (t *Base) DoBlank(today time.Time, backtest models.Backtest, underlyingLast float64, chains map[time.Time]types.OptionsChain) error {
+func (t *Base) DoBlank(today time.Time, backtest *models.Backtest, underlyingLast float64, chains map[time.Time]types.OptionsChain) error {
 	return nil
 }
 
@@ -173,6 +175,49 @@ func setCacheChain(symbol string, today time.Time, chains map[time.Time]types.Op
 		return
 	}
 }
+
+//
+// OpenMultiLegCredit - Open a new spread by adding a position
+//
+func (t *Base) OpenMultiLegCredit(today time.Time, backtest *models.Backtest, result screener.Result) {
+
+	// TODO(spicer): make this work from configs
+	lots := 10
+
+	// TODO(spicer): figure which price to use to open
+	openPrice := result.MidPoint * 100 * float64(lots)
+
+	// Amount of margin left after trade is opened.
+	// TODO(spicer): this is only for put credit spreads we need to measture margin for other types.
+	diff := result.Legs[1].OptionStrike - result.Legs[0].OptionStrike
+	var margin float64 = (diff * 100 * float64(lots)) - openPrice
+
+	if len(backtest.Positions) > 0 {
+		margin = backtest.Positions[len(backtest.Positions)-1].Margin + margin
+	}
+
+	// Make sure we have enough margin to continue
+	if margin > backtest.EndingBalance {
+		return
+	}
+
+	// Add position
+	backtest.Positions = append(backtest.Positions, models.BacktestPosition{
+		UserId:    backtest.UserId,
+		OpenDate:  models.Date{today},
+		OpenPrice: openPrice,
+		Margin:    margin,
+		Legs:      result.Legs,
+		Lots:      lots,
+	})
+
+	// Update ending balance
+	backtest.EndingBalance += openPrice
+
+	fmt.Println(today.Format("2006-01-02"), " : ", backtest.EndingBalance, " / ", margin, " / ", backtest.Positions[len(backtest.Positions)-1].OpenPrice)
+}
+
+// -------------- Private Helper Functions ------------------- //
 
 //
 // getCachedChain - See if we have a cached chain stored on file.
