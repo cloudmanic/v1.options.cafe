@@ -7,7 +7,6 @@
 package backtesting
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/models"
@@ -20,7 +19,7 @@ import (
 func (t *Base) OpenMultiLegCredit(today time.Time, backtest *models.Backtest, result screener.Result) {
 
 	// TODO(spicer): make this work from configs
-	lots := 10
+	lots := 1
 
 	// TODO(spicer): figure which price to use to open
 	openPrice := result.MidPoint * 100 * float64(lots)
@@ -46,12 +45,13 @@ func (t *Base) OpenMultiLegCredit(today time.Time, backtest *models.Backtest, re
 		Margin:    margin,
 		Legs:      result.Legs,
 		Lots:      lots,
+		Balance:   (backtest.EndingBalance + openPrice),
 	})
 
 	// Update ending balance
-	backtest.EndingBalance += openPrice
+	backtest.EndingBalance = backtest.EndingBalance + openPrice
 
-	fmt.Println(today.Format("2006-01-02"), " : ", backtest.EndingBalance, " / ", totalMarginNeeded, " / ", margin, " / ", backtest.Positions[len(backtest.Positions)-1].OpenPrice)
+	//fmt.Println(today.Format("2006-01-02"), " : ", backtest.EndingBalance, " / ", totalMarginNeeded, " / ", margin, " / ", backtest.Positions[len(backtest.Positions)-1].OpenPrice)
 }
 
 // -------------- Private Helper Functions ------------------- //

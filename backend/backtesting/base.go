@@ -59,7 +59,7 @@ func New(db models.Datastore) Base {
 // DoBacktestDays - Loop through every day in the backtest and pass
 // an options chain into a function for a prticular backtest type.
 //
-func (t *Base) DoBacktestDays(backtest models.Backtest) error {
+func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 
 	// Get dates by symbol
 	dates, err := eod.GetTradeDatesBySymbols(backtest.Screen.Symbol)
@@ -136,7 +136,7 @@ func (t *Base) DoBacktestDays(backtest models.Backtest) error {
 		}
 
 		// Run backtest strategy function for this backtest
-		err = t.StrategyFuncs[backtest.Screen.Strategy](row, &backtest, underlyingLast, chains)
+		err = t.StrategyFuncs[backtest.Screen.Strategy](row, backtest, underlyingLast, chains)
 
 		if err != nil {
 			return err

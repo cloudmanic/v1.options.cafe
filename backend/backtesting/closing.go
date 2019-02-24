@@ -29,7 +29,7 @@ func (t *Base) CloseMultiLegCredit(today time.Time, underlyingLast float64, back
 }
 
 //
-// closeOnDebit - Cloase a trade if it hits our debit trigger
+// closeOnDebit - Close a trade if it hits our debit trigger
 //
 func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *models.Backtest, chains map[time.Time]types.OptionsChain) {
 
@@ -37,7 +37,7 @@ func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *m
 	debitAmount := 0.03
 
 	// TODO(spicer): make this work from configs. Maybe it should be part of the backtest object
-	lots := 10
+	lots := 1
 
 	// Loop for expired postions
 	for key, row := range backtest.Positions {
@@ -55,7 +55,8 @@ func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *m
 			backtest.Positions[key].ClosePrice = debitAmount * 100 * float64(lots)
 			backtest.Positions[key].CloseDate = models.Date{today}
 			backtest.Positions[key].Note = "Triggered at debit amount."
-			backtest.EndingBalance += backtest.Positions[key].ClosePrice
+			backtest.EndingBalance = (backtest.EndingBalance - backtest.Positions[key].ClosePrice)
+			backtest.Positions[key].Balance = backtest.EndingBalance
 		}
 	}
 
@@ -67,7 +68,7 @@ func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *m
 func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backtest *models.Backtest, chains map[time.Time]types.OptionsChain) {
 
 	// TODO(spicer): make this work from configs
-	lots := 10
+	lots := 1
 
 	// Loop for expired postions
 	for key, row := range backtest.Positions {
@@ -87,6 +88,7 @@ func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backte
 			backtest.Positions[key].ClosePrice = closingPrice
 			backtest.Positions[key].CloseDate = models.Date{today}
 			backtest.Positions[key].Note = "Trade touched the short leg."
+			backtest.Positions[key].Balance += closingPrice
 			backtest.EndingBalance += closingPrice
 
 		}

@@ -23,6 +23,7 @@ type BacktestPosition struct {
 	OpenPrice  float64   `sql:"not null" json:"open_price"`
 	ClosePrice float64   `sql:"not null" json:"close_price"`
 	Margin     float64   `sql:"not null" json:"margin"`
+	Balance    float64   `sql:"not null" json:"balance"`
 	Lots       int       `sql:"not null" json:"lots"`
 	Legs       []Symbol  `sql:"not null" json:"legs" gorm:"many2many:backtest_positions_symbols;"`
 	Note       string    `sql:"not null" json:"note"`
