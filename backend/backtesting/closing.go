@@ -23,6 +23,42 @@ func (t *Base) CloseMultiLegCredit(today time.Time, underlyingLast float64, back
 
 	// Close if we touch the short leg
 	t.closeOnShortTouch(today, underlyingLast, backtest, chains)
+
+	// Close if we hit a particular debit
+	t.closeOnDebit(today, underlyingLast, backtest, chains)
+}
+
+//
+// closeOnDebit - Cloase a trade if it hits our debit trigger
+//
+func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *models.Backtest, chains map[time.Time]types.OptionsChain) {
+
+	// TODO(spicer): make this work from configs
+	debitAmount := 0.03
+
+	// TODO(spicer): make this work from configs. Maybe it should be part of the backtest object
+	lots := 10
+
+	// Loop for expired postions
+	for key, row := range backtest.Positions {
+
+		if row.Status == "Closed" {
+			continue
+		}
+
+		// Get closing price
+		closePrice := t.getClosedPrice(row, chains)
+
+		// Close trade at the debitAmount
+		if closePrice <= debitAmount {
+			backtest.Positions[key].Status = "Closed"
+			backtest.Positions[key].ClosePrice = debitAmount * 100 * float64(lots)
+			backtest.Positions[key].CloseDate = models.Date{today}
+			backtest.Positions[key].Note = "Triggered at debit amount."
+			backtest.EndingBalance += backtest.Positions[key].ClosePrice
+		}
+	}
+
 }
 
 //
@@ -42,35 +78,9 @@ func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backte
 
 		// TODO(Spicer): Currently this only works for PCS. We assume the second leg is the short leg.
 		if underlyingLast <= row.Legs[1].OptionStrike {
-			ed := helpers.ParseDateNoError(row.Legs[0].OptionExpire.Format("2006-01-02"))
-
-			var leg1Chain types.OptionsChainItem
-			var leg2Chain types.OptionsChainItem
-
-			// Loop through until we find first symbol
-			for _, row2 := range chains[ed].Puts {
-				if row2.Symbol != row.Legs[0].ShortName {
-					continue
-				}
-
-				// We found it
-				leg1Chain = row2
-				break
-			}
-
-			// Loop through until we find second symbol
-			for _, row2 := range chains[ed].Puts {
-				if row2.Symbol != row.Legs[1].ShortName {
-					continue
-				}
-
-				// We found it
-				leg2Chain = row2
-				break
-			}
 
 			// Set closing Closing Price
-			closingPrice := ((leg2Chain.Ask * 100.00 * float64(lots)) - (leg1Chain.Bid * 100.00 * float64(lots))) * -1
+			closingPrice := (t.getClosedPrice(row, chains) * 100.00 * float64(lots)) - 1
 
 			// Close trade
 			backtest.Positions[key].Status = "Closed"
@@ -78,6 +88,7 @@ func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backte
 			backtest.Positions[key].CloseDate = models.Date{today}
 			backtest.Positions[key].Note = "Trade touched the short leg."
 			backtest.EndingBalance += closingPrice
+
 		}
 	}
 
@@ -115,6 +126,45 @@ func (t *Base) expirePositions(today time.Time, backtest *models.Backtest) {
 		}
 	}
 
+}
+
+// -------------- Helper Functions ---------------- //
+
+//
+// getClosedPrice - Figure out how much it would be to close this trade now
+//
+func (t *Base) getClosedPrice(position models.BacktestPosition, chains map[time.Time]types.OptionsChain) float64 {
+
+	ed := helpers.ParseDateNoError(position.Legs[0].OptionExpire.Format("2006-01-02"))
+
+	// TODO(spicer): Make this work for everything. Currently just works for PCS
+	var leg1Chain types.OptionsChainItem
+	var leg2Chain types.OptionsChainItem
+
+	// Loop through until we find first symbol
+	for _, row2 := range chains[ed].Puts {
+		if row2.Symbol != position.Legs[0].ShortName {
+			continue
+		}
+
+		// We found it
+		leg1Chain = row2
+		break
+	}
+
+	// Loop through until we find second symbol
+	for _, row2 := range chains[ed].Puts {
+		if row2.Symbol != position.Legs[1].ShortName {
+			continue
+		}
+
+		// We found it
+		leg2Chain = row2
+		break
+	}
+
+	// Get price to close.
+	return leg2Chain.Ask - leg1Chain.Bid
 }
 
 /* End File */
