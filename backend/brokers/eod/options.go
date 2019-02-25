@@ -9,12 +9,19 @@
 package eod
 
 import (
+	"errors"
+	"fmt"
+	"os"
 	"sort"
 	"strings"
+	"time"
+
+	"github.com/jinzhu/gorm"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 )
 
 //
@@ -114,8 +121,44 @@ func (t *Api) GetOptionsChainByExpiration(symbol string, expireStr string) (type
 		return chain.Puts[i].Strike < chain.Puts[j].Strike
 	})
 
+	// Store in sql cache.
+	setSqlLiteChain(symb, t.Day, chain)
+
 	// Return Chain
 	return chain, nil
+}
+
+//
+// Store this chain in a file cache so we can get it faster in the future.
+//
+func setSqlLiteChain(symbol string, today time.Time, chain types.OptionsChain) {
+
+	// Set the cache dir and sqlfile
+	cacheDir := os.Getenv("CACHE_DIR") + "/" + cacheDirBase + "/chain/" + symbol
+	dbFile := cacheDir + "/" + today.Format("2006-01-02") + ".sqlite"
+
+	fmt.Println(dbFile)
+
+	// Make a directory to create sqlite db in.
+	if _, err := os.Stat(cacheDir); os.IsNotExist(err) {
+		os.MkdirAll(cacheDir, 0755)
+	}
+
+	// Connect to sqlite db.
+	db, err := gorm.Open("sqlite3", dbFile)
+
+	if err != nil {
+		services.Fatal(errors.New("setSqlLiteChain: failed to connect sqlite database - " + dbFile))
+	}
+	defer db.Close()
+
+	// Migrate the schema
+	db.AutoMigrate(&types.OptionsChain{})
+	db.AutoMigrate(&types.OptionsChainItem{})
+
+	// Create
+	db.Create(&chain)
+
 }
 
 /* End File */

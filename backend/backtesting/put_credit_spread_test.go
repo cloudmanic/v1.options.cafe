@@ -12,18 +12,31 @@ import (
 	"os"
 	"testing"
 
+	"github.com/cloudmanic/app.options.cafe/backend/models"
 	humanize "github.com/dustin/go-humanize"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/nbio/st"
 	"github.com/olekukonko/tablewriter"
-
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/optionscafe/options-cafe-cli/helpers"
 )
 
 //
 // TestRunPutCreditSpread01 - Run a put credit spread backtest.
 //
 func TestDoPutCreditSpread01(t *testing.T) {
+
+	// db, err := gorm.Open("sqlite3", "test.db")
+	//
+	// if err != nil {
+	// 	panic("failed to connect database")
+	// }
+	// defer db.Close()
+
+	//Chain
+
+	// Migrate the schema
+	//db.AutoMigrate(&models.Backtest{})
+	//db.AutoMigrate(&models.Screener{})
 
 	// Start the db connection.
 	db, _ := models.NewDB()
@@ -53,7 +66,7 @@ func TestDoPutCreditSpread01(t *testing.T) {
 		StartingBalance: 1000.00,
 		EndingBalance:   1000.00,
 		StartDate:       models.Date{helpers.ParseDateNoError("2018-01-01")},
-		EndDate:         models.Date{helpers.ParseDateNoError("2018-01-08")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2018-12-31")},
 		Midpoint:        true,
 		TradeSelect:     "highest-credit",
 		Screen:          screen,

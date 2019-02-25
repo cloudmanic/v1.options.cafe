@@ -9,6 +9,7 @@
 package types
 
 import (
+	"database/sql/driver"
 	"fmt"
 	"strings"
 	"time"
@@ -61,6 +62,26 @@ func (t *Time) UnmarshalJSON(b []byte) error {
 
 	// Return UTC
 	*t = Time{tt.UTC()}
+	return nil
+}
+
+//
+// Format time Date Going into the DB
+//
+func (t Date) Value() (driver.Value, error) {
+	return t.Format("2006-01-02"), nil
+}
+
+//
+// Convert to type Date Coming out of the DB
+//
+func (t *Date) Scan(value interface{}) error {
+
+	// Parse string
+	tt, _ := time.Parse("2006-01-02 03:04:05 -0700 MST", fmt.Sprintf("%s", value))
+
+	// Return UTC
+	*t = Date{tt.UTC()}
 	return nil
 }
 

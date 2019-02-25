@@ -30,6 +30,7 @@ import (
 )
 
 const workerCount int = 100
+const cacheDirBase = "broker-eod"
 
 type Api struct {
 	DB  models.Datastore
