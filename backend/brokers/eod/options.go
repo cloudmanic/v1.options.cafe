@@ -9,19 +9,12 @@
 package eod
 
 import (
-	"errors"
-	"fmt"
-	"os"
 	"sort"
 	"strings"
-	"time"
-
-	"github.com/jinzhu/gorm"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 )
 
 //
@@ -78,6 +71,49 @@ func (t *Api) GetOptionsChainByExpiration(symbol string, expireStr string) (type
 	symb := strings.ToUpper(symbol)
 	expireDate := types.Date{helpers.ParseDateNoError(expireStr).UTC()}
 
+	// // Set the cache dir and sqlfile
+	// cacheDir := os.Getenv("CACHE_DIR") + "/" + cacheDirBase + "/chain/" + symb
+	// dbFile := cacheDir + "/" + t.Day.Format("2006-01-02") + ".sqlite"
+	//
+	// // Make a directory to create sqlite db in.
+	// _, err := os.Stat(dbFile)
+	//
+	// if err == nil {
+	//
+	// 	// Connect to sqlite db.
+	// 	db, err := gorm.Open("sqlite3", dbFile)
+	//
+	// 	if err != nil {
+	// 		services.Fatal(errors.New("GetOptionsChainByExpiration: failed to connect sqlite database - " + dbFile))
+	// 	}
+	// 	defer db.Close()
+	//
+	// 	start := time.Now()
+	//
+	// 	chains := []types.OptionsChain{}
+	//
+	// 	//fmt.Println(expireStr)
+	//
+	// 	//db.Debug().Preload("Puts").Where("expiration_date = ?", expireStr).Find(&chain)
+	//
+	// 	db.Preload("Puts", func(db *gorm.DB) *gorm.DB {
+	// 		return db.Where("option_type = ?", "Put").Order("strike asc")
+	// 	}).Preload("Calls", func(db *gorm.DB) *gorm.DB {
+	// 		return db.Where("option_type = ?", "Call").Order("strike asc")
+	// 	}).Find(&chains)
+	//
+	// 	elapsed := time.Since(start)
+	// 	log.Printf("Binomial took %s", elapsed)
+	// 	os.Exit(1)
+	//
+	// 	return chains[0], nil
+	//
+	// 	// fmt.Println(dbFile)
+	// 	// fmt.Println("Found file")
+	// 	// os.Exit(1)
+	//
+	// }
+
 	// Get a list of all options
 	options, underlyingLast, err := t.GetOptionsBySymbol(symb)
 
@@ -122,43 +158,64 @@ func (t *Api) GetOptionsChainByExpiration(symbol string, expireStr string) (type
 	})
 
 	// Store in sql cache.
-	setSqlLiteChain(symb, t.Day, chain)
+	//setSqlLiteChain(symb, t.Day, chain)
 
 	// Return Chain
 	return chain, nil
 }
 
 //
-// Store this chain in a file cache so we can get it faster in the future.
+// GetOptionsByExpirationType - Loop through and filter out just expire and type
 //
-func setSqlLiteChain(symbol string, today time.Time, chain types.OptionsChain) {
+func (t *Api) GetOptionsByExpirationType(expire types.Date, optionType string, options []types.OptionsChainItem) []types.OptionsChainItem {
+	rt := []types.OptionsChainItem{}
 
-	// Set the cache dir and sqlfile
-	cacheDir := os.Getenv("CACHE_DIR") + "/" + cacheDirBase + "/chain/" + symbol
-	dbFile := cacheDir + "/" + today.Format("2006-01-02") + ".sqlite"
+	for _, row := range options {
 
-	fmt.Println(dbFile)
+		if row.OptionType != optionType {
+			continue
+		}
 
-	// Make a directory to create sqlite db in.
-	if _, err := os.Stat(cacheDir); os.IsNotExist(err) {
-		os.MkdirAll(cacheDir, 0755)
+		if row.ExpirationDate != expire {
+			continue
+		}
+
+		rt = append(rt, row)
 	}
 
-	// Connect to sqlite db.
-	db, err := gorm.Open("sqlite3", dbFile)
-
-	if err != nil {
-		services.Fatal(errors.New("setSqlLiteChain: failed to connect sqlite database - " + dbFile))
-	}
-	defer db.Close()
-
-	// Migrate the schema
-	db.AutoMigrate(&types.OptionsChain{})
-	db.AutoMigrate(&types.OptionsChainItem{})
-
-	// Create
-	db.Create(&chain)
-
+	// Return filtered subset
+	return rt
 }
+
+// //
+// // Store this chain in a file cache so we can get it faster in the future.
+// //
+// func setSqlLiteChain(symbol string, today time.Time, chain types.OptionsChain) {
+//
+// 	// Set the cache dir and sqlfile
+// 	cacheDir := os.Getenv("CACHE_DIR") + "/" + cacheDirBase + "/chain/" + symbol
+// 	dbFile := cacheDir + "/" + today.Format("2006-01-02") + ".sqlite"
+//
+// 	// Make a directory to create sqlite db in.
+// 	if _, err := os.Stat(cacheDir); os.IsNotExist(err) {
+// 		os.MkdirAll(cacheDir, 0755)
+// 	}
+//
+// 	// Connect to sqlite db.
+// 	db, err := gorm.Open("sqlite3", dbFile)
+//
+// 	if err != nil {
+// 		services.Fatal(errors.New("setSqlLiteChain: failed to connect sqlite database - " + dbFile))
+// 	}
+// 	defer db.Close()
+//
+// 	// Migrate the schema
+// 	db.AutoMigrate(&types.OptionsChain{})
+// 	db.AutoMigrate(&types.OptionsChainItem{})
+//
+// 	// Create
+// 	db.Create(&chain)
+//
+// }
 
 /* End File */

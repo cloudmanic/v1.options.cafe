@@ -70,4 +70,33 @@ func TestGetOptionsExpirationsBySymbol01(t *testing.T) {
 
 }
 
+//
+// TestGetOptionsByExpirationType01
+//
+func TestGetOptionsByExpirationType01(t *testing.T) {
+
+	// Start the db connection.
+	db, _ := models.NewDB()
+
+	// Create broker object
+	o := Api{
+		DB:  db,
+		Day: helpers.ParseDateNoError("2018-10-18").UTC(),
+	}
+
+	// Get options
+	options, underlyingLast, err := o.GetOptionsBySymbol("spy")
+
+	// Test result
+	st.Expect(t, err, nil)
+	st.Expect(t, underlyingLast, 276.39)
+	st.Expect(t, len(options), 6262)
+
+	// Get just PUTs that expire on a certain date.
+	list := o.GetOptionsByExpirationType(options[0].ExpirationDate, options[0].OptionType, options)
+	st.Expect(t, len(list), 195)
+	st.Expect(t, list[0].OptionType, "Call")
+	st.Expect(t, list[0].ExpirationDate.Format("2006-01-02"), "2018-10-19")
+}
+
 /* End File */
