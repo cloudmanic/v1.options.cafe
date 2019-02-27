@@ -32,11 +32,13 @@ import (
 const workerCount int = 100
 const cacheDirBase = "broker-eod"
 
+// Api struct
 type Api struct {
 	DB  models.Datastore
 	Day time.Time // This is the day we pull EOD data for
 }
 
+// Job struct
 type Job struct {
 	Path  string
 	Index int
@@ -51,7 +53,7 @@ func init() {
 }
 
 //
-// Get options by Symbol. We do not return a chain. We more or less
+// GetOptionsBySymbol - Get options by Symbol. We do not return a chain. We more or less
 // return the data in our CSV files as Go structs
 //
 func (t *Api) GetOptionsBySymbol(symbol string) ([]types.OptionsChainItem, float64, error) {
@@ -141,6 +143,7 @@ func (t *Api) GetOptionsBySymbol(symbol string) ([]types.OptionsChainItem, float
 		services.FatalMsg(err, "Could not delete file - "+f[0])
 	}
 
+	// Return happy
 	return options, underlyingLast, nil
 }
 

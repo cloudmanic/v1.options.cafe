@@ -90,9 +90,9 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 		// Get all options for this symbol and day.
 		//start := time.Now()
 		options, underlyingLast, err := o.GetOptionsBySymbol(backtest.Screen.Symbol)
-		//elapsed := time.Since(start)
-		//log.Printf("Binomial took %s", elapsed)
-		//os.Exit(1)
+		// elapsed := time.Since(start)
+		// log.Printf("Binomial took %s", elapsed)
+		// os.Exit(1)
 
 		if err != nil {
 			return err
