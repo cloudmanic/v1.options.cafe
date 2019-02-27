@@ -11,18 +11,18 @@ import (
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/eod"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/cloudmanic/app.options.cafe/backend/screener"
+	"github.com/optionscafe/options-cafe-cli/helpers"
 )
 
 //
 // DoPutCreditSpread - Run a put credit spread backtest.
 //
-func (t *Base) DoPutCreditSpread(today time.Time, backtest *models.Backtest, underlyingLast float64, chains map[time.Time]types.OptionsChain) error {
+func (t *Base) DoPutCreditSpread(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) error {
 
 	// See if we have any positions to close
-	t.CloseMultiLegCredit(today, underlyingLast, backtest, chains)
+	t.CloseMultiLegCredit(today, underlyingLast, backtest, options)
 
 	// Results that we return.
 	results := []screener.Result{}
@@ -33,10 +33,17 @@ func (t *Base) DoPutCreditSpread(today time.Time, backtest *models.Backtest, und
 	// Set params
 	spreadWidth := screenObj.GetPutCreditSpreadParms(backtest.Screen, underlyingLast)
 
-	// Loop through the expire dates
-	for _, row := range chains {
+	// Take complete list of options and return a list of expiration dates.
+	expireDates := t.GetExpirationDatesFromOptions(options)
 
-		for _, row2 := range row.Puts {
+	// Loop through the expire dates
+	for _, row := range expireDates {
+
+		// Get the options and just pull out the PUT options for this expire date.
+		putOptions := t.GetOptionsByExpirationType(row, "Put", options)
+
+		// Loop through the options we need.
+		for _, row2 := range putOptions {
 
 			// No need to pay attention to open interest of zero
 			if row2.OpenInterest == 0 {
@@ -49,7 +56,7 @@ func (t *Base) DoPutCreditSpread(today time.Time, backtest *models.Backtest, und
 			}
 
 			// Find the strike that is x points away.
-			buyLeg, err := screenObj.FindByStrike(row.Puts, (row2.Strike - spreadWidth))
+			buyLeg, err := screenObj.FindByStrike(putOptions, (row2.Strike - spreadWidth))
 
 			if err != nil {
 				continue

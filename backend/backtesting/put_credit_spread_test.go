@@ -25,19 +25,6 @@ import (
 //
 func TestDoPutCreditSpread01(t *testing.T) {
 
-	// db, err := gorm.Open("sqlite3", "test.db")
-	//
-	// if err != nil {
-	// 	panic("failed to connect database")
-	// }
-	// defer db.Close()
-
-	//Chain
-
-	// Migrate the schema
-	//db.AutoMigrate(&models.Backtest{})
-	//db.AutoMigrate(&models.Screener{})
-
 	// Start the db connection.
 	db, _ := models.NewDB()
 	defer db.Close()

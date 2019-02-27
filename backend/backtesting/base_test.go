@@ -7,7 +7,6 @@
 package backtesting
 
 import (
-	"os"
 	"testing"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
@@ -40,12 +39,6 @@ func TestDoBacktestDays01(t *testing.T) {
 		Screen:    screen,
 	})
 	st.Expect(t, err, nil)
-
-	// Verify our cache files got set.
-	cacheDir := os.Getenv("CACHE_DIR") + "/" + cacheDirBase
-	cacheFile := cacheDir + "/SPY-2018-01-02.json"
-	_, err2 := os.Stat(cacheFile)
-	st.Expect(t, err2, nil)
 }
 
 /* End File */

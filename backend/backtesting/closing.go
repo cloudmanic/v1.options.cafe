@@ -17,21 +17,21 @@ import (
 //
 // CloseMultiLegCredit - Close positions
 //
-func (t *Base) CloseMultiLegCredit(today time.Time, underlyingLast float64, backtest *models.Backtest, chains map[time.Time]types.OptionsChain) {
+func (t *Base) CloseMultiLegCredit(today time.Time, underlyingLast float64, backtest *models.Backtest, options []types.OptionsChainItem) {
 	// Expire positions
 	t.expirePositions(today, backtest)
 
 	// Close if we touch the short leg
-	t.closeOnShortTouch(today, underlyingLast, backtest, chains)
+	t.closeOnShortTouch(today, underlyingLast, backtest, options)
 
 	// Close if we hit a particular debit
-	t.closeOnDebit(today, underlyingLast, backtest, chains)
+	t.closeOnDebit(today, underlyingLast, backtest, options)
 }
 
 //
 // closeOnDebit - Close a trade if it hits our debit trigger
 //
-func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *models.Backtest, chains map[time.Time]types.OptionsChain) {
+func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *models.Backtest, options []types.OptionsChainItem) {
 
 	// TODO(spicer): make this work from configs
 	debitAmount := 0.03
@@ -47,7 +47,7 @@ func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *m
 		}
 
 		// Get closing price
-		closePrice := t.getClosedPrice(row, chains)
+		closePrice := t.getClosedPrice(row, options)
 
 		// Close trade at the debitAmount
 		if closePrice <= debitAmount {
@@ -65,7 +65,7 @@ func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *m
 //
 // closeOnShortTouch - If our trade touches the short leg we close
 //
-func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backtest *models.Backtest, chains map[time.Time]types.OptionsChain) {
+func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backtest *models.Backtest, options []types.OptionsChainItem) {
 
 	// TODO(spicer): make this work from configs
 	lots := 1
@@ -81,7 +81,7 @@ func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backte
 		if underlyingLast <= row.Legs[1].OptionStrike {
 
 			// Set closing Closing Price
-			closingPrice := (t.getClosedPrice(row, chains) * 100.00 * float64(lots)) - 1
+			closingPrice := (t.getClosedPrice(row, options) * 100.00 * float64(lots)) - 1
 
 			// Close trade
 			backtest.Positions[key].Status = "Closed"
@@ -135,33 +135,31 @@ func (t *Base) expirePositions(today time.Time, backtest *models.Backtest) {
 //
 // getClosedPrice - Figure out how much it would be to close this trade now
 //
-func (t *Base) getClosedPrice(position models.BacktestPosition, chains map[time.Time]types.OptionsChain) float64 {
-
-	ed := helpers.ParseDateNoError(position.Legs[0].OptionExpire.Format("2006-01-02"))
+func (t *Base) getClosedPrice(position models.BacktestPosition, options []types.OptionsChainItem) float64 {
 
 	// TODO(spicer): Make this work for everything. Currently just works for PCS
 	var leg1Chain types.OptionsChainItem
 	var leg2Chain types.OptionsChainItem
 
 	// Loop through until we find first symbol
-	for _, row2 := range chains[ed].Puts {
-		if row2.Symbol != position.Legs[0].ShortName {
+	for _, row := range options {
+		if row.Symbol != position.Legs[0].ShortName {
 			continue
 		}
 
 		// We found it
-		leg1Chain = row2
+		leg1Chain = row
 		break
 	}
 
 	// Loop through until we find second symbol
-	for _, row2 := range chains[ed].Puts {
-		if row2.Symbol != position.Legs[1].ShortName {
+	for _, row := range options {
+		if row.Symbol != position.Legs[1].ShortName {
 			continue
 		}
 
 		// We found it
-		leg2Chain = row2
+		leg2Chain = row
 		break
 	}
 

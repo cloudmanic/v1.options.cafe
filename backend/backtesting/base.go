@@ -7,9 +7,6 @@
 package backtesting
 
 import (
-	"encoding/json"
-	"errors"
-	"io/ioutil"
 	"os"
 	"time"
 
@@ -25,7 +22,7 @@ const cacheDirBase = "backtesting-options-chains"
 // Base struct
 type Base struct {
 	DB            models.Datastore
-	StrategyFuncs map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, chains map[time.Time]types.OptionsChain) error
+	StrategyFuncs map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) error
 }
 
 //
@@ -39,7 +36,7 @@ func New(db models.Datastore) Base {
 	}
 
 	// Build backtest functions.
-	t.StrategyFuncs = map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, chains map[time.Time]types.OptionsChain) error{
+	t.StrategyFuncs = map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) error{
 		"blank":             t.DoBlank,
 		"put-credit-spread": t.DoPutCreditSpread,
 	}
@@ -90,53 +87,19 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 		// Log where we are in the backtest. TODO(spicer): Send this up websocket
 		services.Info("Backtesting " + backtest.Screen.Strategy + " " + backtest.Screen.Symbol + " on " + row.Format("2006-01-02"))
 
-		// See if we have the chain in cache
-		chains, err := getCachedChain(backtest.Screen.Symbol, row)
+		// Get all options for this symbol and day.
+		//start := time.Now()
+		options, underlyingLast, err := o.GetOptionsBySymbol(backtest.Screen.Symbol)
+		//elapsed := time.Since(start)
+		//log.Printf("Binomial took %s", elapsed)
+		//os.Exit(1)
 
-		// We did not have the chains in the file cache
 		if err != nil {
-			// Log no cache found.
-			services.Info("Backtesting - chains not found in file cache - " + backtest.Screen.Symbol + " " + row.Format("2006-01-02"))
-
-			// Get the expire dates for this option option chain.
-			expDates, err2 := o.GetOptionsExpirationsBySymbol(backtest.Screen.Symbol)
-
-			if err2 != nil {
-				return err2
-			}
-
-			// Create map of expire dates and thier chain
-			tmpChains := map[time.Time]types.OptionsChain{}
-
-			// Loop through expire dates and look for possible trades
-			for _, row2 := range expDates {
-
-				// Get the options change by expire
-				chain, err2 := o.GetOptionsChainByExpiration(backtest.Screen.Symbol, row2)
-
-				if err2 != nil {
-					return err2
-				}
-
-				// Add to chains map
-				tmpChains[helpers.ParseDateNoError(row2)] = chain
-			}
-
-			// Store in file cache
-			setCacheChain(backtest.Screen.Symbol, row, tmpChains)
-
-			// Reset chains
-			chains = tmpChains
-		}
-
-		// Get underlyingLast
-		underlyingLast := 0.00
-		for _, row2 := range chains {
-			underlyingLast = row2.UnderlyingLast
+			return err
 		}
 
 		// Run backtest strategy function for this backtest
-		err = t.StrategyFuncs[backtest.Screen.Strategy](row, backtest, underlyingLast, chains)
+		err = t.StrategyFuncs[backtest.Screen.Strategy](row, backtest, underlyingLast, options)
 
 		if err != nil {
 			return err
@@ -149,62 +112,50 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 //
 // DoBlank is mostly using for unit testing.
 //
-func (t *Base) DoBlank(today time.Time, backtest *models.Backtest, underlyingLast float64, chains map[time.Time]types.OptionsChain) error {
+func (t *Base) DoBlank(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) error {
 	return nil
 }
 
 //
-// setCacheChain store a chance in file cache
+// GetOptionsByExpirationType - Loop through and filter out just expire and type
 //
-func setCacheChain(symbol string, today time.Time, chains map[time.Time]types.OptionsChain) {
-	// Set the cache dir.
-	cacheDir := os.Getenv("CACHE_DIR") + "/" + cacheDirBase
+func (t *Base) GetOptionsByExpirationType(expire types.Date, optionType string, options []types.OptionsChainItem) []types.OptionsChainItem {
+	rt := []types.OptionsChainItem{}
 
-	// Store results in file cache.
-	j, err := json.Marshal(chains)
+	for _, row := range options {
 
-	if err != nil {
-		return
+		if row.OptionType != optionType {
+			continue
+		}
+
+		if row.ExpirationDate != expire {
+			continue
+		}
+
+		rt = append(rt, row)
 	}
 
-	err = ioutil.WriteFile(cacheDir+"/"+symbol+"-"+today.Format("2006-01-02")+".json", j, 0644)
-
-	if err != nil {
-		return
-	}
+	// Return filtered subset
+	return rt
 }
 
-// -------------- Private Helper Functions ------------------- //
-
 //
-// getCachedChain - See if we have a cached chain stored on file.
+// GetExpirationDatesFromOptions - Take complete list of options and return a list of expiration dates.
 //
-func getCachedChain(symbol string, today time.Time) (map[time.Time]types.OptionsChain, error) {
-	// Set the cache dir.
-	cacheDir := os.Getenv("CACHE_DIR") + "/" + cacheDirBase
-	cacheFile := cacheDir + "/" + symbol + "-" + today.Format("2006-01-02") + ".json"
+func (t *Base) GetExpirationDatesFromOptions(options []types.OptionsChainItem) []types.Date {
+	seen := map[types.Date]bool{}
+	dates := []types.Date{}
 
-	// See if we have the file.
-	if _, err := os.Stat(cacheFile); os.IsNotExist(err) {
-		return nil, errors.New("cache not found")
+	// Loop through and get expire dates
+	for _, row := range options {
+		if _, ok := seen[row.ExpirationDate]; !ok {
+			dates = append(dates, row.ExpirationDate)
+			seen[row.ExpirationDate] = true
+		}
 	}
 
-	// Read contents of file.
-	fileDat, err := ioutil.ReadFile(cacheFile)
-
-	if err != nil {
-		return nil, err
-	}
-
-	// JSON to struct
-	var dat map[time.Time]types.OptionsChain
-
-	if err := json.Unmarshal(fileDat, &dat); err != nil {
-		return nil, err
-	}
-
-	// Retun happy
-	return dat, nil
+	// Return happy
+	return dates
 }
 
 /* End File */
