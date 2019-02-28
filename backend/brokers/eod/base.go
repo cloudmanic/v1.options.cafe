@@ -12,8 +12,11 @@ package eod
 
 import (
 	"encoding/csv"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"go/build"
+	"io/ioutil"
 	"os"
 	"strings"
 	"time"
@@ -26,11 +29,12 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/store/object"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	env "github.com/jpfuentes2/go-env"
-	minio "github.com/minio/minio-go"
 )
 
 const workerCount int = 100
 const cacheDirBase = "broker-eod"
+
+var cacheDir string
 
 // Api struct
 type Api struct {
@@ -44,12 +48,26 @@ type Job struct {
 	Index int
 }
 
+// SymbolStore struct
+type SymbolStore struct {
+	Last    float64                  `json:"last"`
+	Options []types.OptionsChainItem `json:"options"`
+}
+
 //
 // Start up the controller.
 //
 func init() {
 	// Helpful for testing
 	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/.env")
+
+	// Set cache dir
+	cacheDir = os.Getenv("CACHE_DIR") + "/" + cacheDirBase + "/"
+
+	// Make sure our cache dir is setup.
+	if _, err := os.Stat(cacheDir); os.IsNotExist(err) {
+		os.MkdirAll(cacheDir, 0755)
+	}
 }
 
 //
@@ -57,19 +75,108 @@ func init() {
 // return the data in our CSV files as Go structs
 //
 func (t *Api) GetOptionsBySymbol(symbol string) ([]types.OptionsChainItem, float64, error) {
-
+	// Symbol to upper
 	symb := strings.ToUpper(symbol)
-	underlyingLast := 0.00
+
+	// See if we have this symbol chain cached already. If so return from cache
+	o, u, e := getSymbolEodJSONFromCache(symb, t.Day)
+
+	if e == nil {
+		return o, u, e
+	}
+
+	// Get symbole from S3 store.
+	zipFile, err := downloadEodSymbol(symbol, t.Day)
+
+	if err != nil {
+		services.FatalMsg(err, "Could not download file - "+zipFile)
+	}
+
+	// Convert CSV to Struct
+	options, underlyingLast, err := unzipSymbolCSV(symb, zipFile)
+
+	if err != nil {
+		return options, underlyingLast, err
+	}
+
+	// Store JSON for local cache
+	storeSymbolEodJSON(symb, t.Day, underlyingLast, options)
+
+	// Return happy
+	return options, underlyingLast, nil
+}
+
+//
+// Return a list of trade dates by symbol
+//
+func GetTradeDatesBySymbols(symbol string) ([]time.Time, error) {
+
+	dates := []time.Time{}
+	dirPath := "options-eod/" + strings.ToUpper(symbol) + "/"
+	cacheKey := "oc-brokers-eod-trade-dates-" + strings.ToUpper(symbol)
+
+	// See if we have this result in the cache.
+	cacheddates := []time.Time{}
+	found, _ := cache.Get(cacheKey, &cacheddates)
+
+	// Return happy JSON
+	if found {
+		return cacheddates, nil
+	}
+
+	// Make call to S3 store and get the dates for different EODs
+	files, err := object.ListObjects(dirPath)
+
+	if err != nil {
+		return dates, err
+	}
+
+	// Convert strings to dates
+	for _, row := range files {
+		fileName := strings.Replace(row.Key, dirPath, "", -1)
+		fileName = strings.Replace(fileName, ".csv.zip", "", -1)
+		dates = append(dates, helpers.ParseDateNoError(fileName).UTC())
+	}
+
+	// Store dates in cache - 3 hours
+	cache.SetExpire(cacheKey, (time.Minute * 60 * 3), dates)
+
+	// Return happy
+	return dates, nil
+}
+
+//
+// Return a list of keys to download by symbol.
+//
+func GetTradeDateKeysBySymbol(symbol string) ([]string, error) {
+
+	keys := []string{}
+	dirPath := "options-eod/" + strings.ToUpper(symbol) + "/"
+
+	// Get dates from S3 store
+	dates, err := GetTradeDatesBySymbols("spy")
+
+	if err != nil {
+		return keys, err
+	}
+
+	// Loop through and create keys
+	for _, row := range dates {
+		keys = append(keys, dirPath+row.Format("2006-01-02")+".csv.zip")
+	}
+
+	// Return happy
+	return keys, nil
+}
+
+// ---------------- Private Helper Functions -------------- //
+
+//
+// unzipSymbolCSV - Convert CSV lines to objects
+//
+func unzipSymbolCSV(symb string, zipFile string) ([]types.OptionsChainItem, float64, error) {
 	options := []types.OptionsChainItem{}
-
-	// Set the cache dir.
-	cacheDir := os.Getenv("CACHE_DIR") + "/object-store/options-eod/"
-
-	// Get dates from S3 store - TODO: Maybe some day just download the date we are after instead of all dates.
-	DownloadEodSymbol(symbol, false)
-
-	// Make sure we have this zip file
-	zipFile := cacheDir + symb + "/" + t.Day.Format("2006-01-02") + ".csv.zip"
+	underlyingLast := 0.00
 
 	// Make sure we have this file
 	if _, err := os.Stat(zipFile); os.IsNotExist(err) {
@@ -136,102 +243,73 @@ func (t *Api) GetOptionsBySymbol(symbol string) ([]types.OptionsChainItem, float
 		options = append(options, op)
 	}
 
-	// // Delete csv file
+	// Delete csv file
 	err = os.Remove(f[0])
 
 	if err != nil {
 		services.FatalMsg(err, "Could not delete file - "+f[0])
 	}
 
-	// Return happy
-	return options, underlyingLast, nil
-}
-
-//
-// Return a list of trade dates by symbol
-//
-func GetTradeDatesBySymbols(symbol string) ([]time.Time, error) {
-
-	dates := []time.Time{}
-	dirPath := "options-eod/" + strings.ToUpper(symbol) + "/"
-	cacheKey := "oc-brokers-eod-trade-dates-" + strings.ToUpper(symbol)
-
-	// See if we have this result in the cache.
-	cacheddates := []time.Time{}
-	found, _ := cache.Get(cacheKey, &cacheddates)
-
-	// Return happy JSON
-	if found {
-		return cacheddates, nil
-	}
-
-	// Make call to S3 store and get the dates for different EODs
-	files, err := object.ListObjects(dirPath)
+	// Delete CSV Zip file
+	err = os.Remove(zipFile)
 
 	if err != nil {
-		return dates, err
+		services.FatalMsg(err, "Could not delete file - "+zipFile)
 	}
-
-	// Convert strings to dates
-	for _, row := range files {
-
-		fileName := strings.Replace(row.Key, dirPath, "", -1)
-		fileName = strings.Replace(fileName, ".csv.zip", "", -1)
-		dates = append(dates, helpers.ParseDateNoError(fileName).UTC())
-
-	}
-
-	// Store dates in cache - 3 hours
-	cache.SetExpire(cacheKey, (time.Minute * 60 * 3), dates)
 
 	// Return happy
-	return dates, nil
+	return options, underlyingLast, err
 }
 
 //
-// Return a list of keys to download by symbol.
+// downloadEodSymbol - Download one symbol and store it locally for back testing.
 //
-func GetTradeDateKeysBySymbol(symbol string) ([]string, error) {
+func downloadEodSymbol(symbol string, date time.Time) (string, error) {
+	// Download File
+	dFile := "options-eod/" + strings.ToUpper(symbol) + "/" + date.Format("2006-01-02") + ".csv.zip"
+	lFile := os.Getenv("CACHE_DIR") + "/object-store/" + dFile
 
-	keys := []string{}
-	dirPath := "options-eod/" + strings.ToUpper(symbol) + "/"
-
-	// Get dates from S3 store
-	dates, err := GetTradeDatesBySymbols("spy")
+	// List file just to make sure we have this file at the storage
+	list, err := object.ListObjects(dFile)
 
 	if err != nil {
-		return keys, err
+		return "", err
 	}
 
-	// Loop through and create keys
-	for _, row := range dates {
-		keys = append(keys, dirPath+row.Format("2006-01-02")+".csv.zip")
+	// We should return one file only.
+	if len(list) != 1 {
+		return "", errors.New("File not found at Object Store : " + dFile)
+	}
+
+	// Check the MD5 the current file. If we already have the file no need to re-download.
+	md5Hash := files.Md5(lFile)
+
+	// Send download job to the workers
+	if md5Hash != strings.Replace(list[0].ETag, `"`, "", -1) {
+
+		// Download file from object store.
+		_, err2 := object.DownloadObject(dFile)
+
+		if err2 != nil {
+			return "", err2
+		}
 	}
 
 	// Return happy
-	return keys, nil
+	return lFile, nil
 }
 
 //
-// Download one symbol and store it locally for back testing.
+// DownloadAllEodSymbolFiles - Download one symbol and store it locally for back testing.
 //
-func DownloadEodSymbol(symbol string, debug bool) []string {
+// TODO(spicer): WE do not use this anywhere but some day we might to prime symbols.
+// But most likely we will have to add the storeSymbolEodJSON (maybe just by calling GetOptionsBySymbol)
+// to this no point in storing the CSV when JSON is what we really want.
+//
+func DownloadAllEodSymbolFiles(symbol string, debug bool) []string {
 
 	var total int = 0
 	var allFiles []string
-
-	// Cache keys
-	cacheKey := "oc-brokers-eod-symbol-objects-" + strings.ToUpper(symbol)
-	cacheListKey := "oc-brokers-eod-local-cache-list-" + strings.ToUpper(symbol)
-
-	// See if we have this result in the cache.
-	var cachedFileList []string
-	found1, _ := cache.Get(cacheListKey, &cachedFileList)
-
-	// Store cache
-	if found1 {
-		return cachedFileList
-	}
 
 	// Log if we are debug
 	if debug {
@@ -244,33 +322,15 @@ func DownloadEodSymbol(symbol string, debug bool) []string {
 
 	// Load up the workers
 	for w := 0; w < workerCount; w++ {
-		go DownloadWorker(jobs, results)
+		go downloadWorker(jobs, results)
 	}
 
-	var list []minio.ObjectInfo
+	// List files we need to download.
+	list, err := object.ListObjects("options-eod/" + strings.ToUpper(symbol) + "/")
 
-	// See if we have this result in the cache.
-	cachedObjectInfo := []minio.ObjectInfo{}
-	found, _ := cache.Get(cacheKey, &cachedObjectInfo)
-
-	// Store cache
-	if found {
-
-		list = cachedObjectInfo
-
-	} else {
-
-		// List files we need to download.
-		list, err := object.ListObjects("options-eod/" + strings.ToUpper(symbol) + "/")
-
-		if err != nil {
-			services.Warning(err)
-			return allFiles
-		}
-
-		// Store dates in cache - 3 hours
-		cache.SetExpire(cacheKey, (time.Minute * 60 * 3), list)
-
+	if err != nil {
+		services.Warning(err)
+		return allFiles
 	}
 
 	// Send all files to workers.
@@ -306,17 +366,14 @@ func DownloadEodSymbol(symbol string, debug bool) []string {
 		fmt.Println("Done download of all " + symbol + " daily options data.")
 	}
 
-	// Store dates in cache - 3 hours
-	cache.SetExpire(cacheListKey, (time.Minute * 60 * 3), allFiles)
-
 	// Return a list of all files.
 	return allFiles
 }
 
 //
-// A worker for downloading
+// downloadWorker - A worker for downloading
 //
-func DownloadWorker(jobs <-chan Job, results chan<- Job) {
+func downloadWorker(jobs <-chan Job, results chan<- Job) {
 
 	// Wait for jobs to come in and process them.
 	for job := range jobs {
@@ -334,6 +391,55 @@ func DownloadWorker(jobs <-chan Job, results chan<- Job) {
 
 	}
 
+}
+
+//
+// getSymbolEodJSONFromCache - See if we have the JSON for this symbol stored locally
+//
+func getSymbolEodJSONFromCache(symb string, date time.Time) ([]types.OptionsChainItem, float64, error) {
+	// Read JSON file
+	jdat, err := ioutil.ReadFile(cacheDir + symb + "/" + date.Format("2006-01-02") + ".json")
+
+	if err != nil {
+		return []types.OptionsChainItem{}, 0.00, err
+	}
+
+	// Convert json to struct
+	var s SymbolStore
+	if err := json.Unmarshal(jdat, &s); err != nil {
+		return []types.OptionsChainItem{}, 0.00, err
+	}
+
+	// Return happy
+	return s.Options, s.Last, nil
+}
+
+//
+// storeSymbolEodJson - Take an options chain for a symbol and write it to our cache
+//
+func storeSymbolEodJSON(symb string, date time.Time, underlyingLast float64, options []types.OptionsChainItem) error {
+	// Make sure our cache dir and symbol is setup.
+	if _, err := os.Stat(cacheDir + symb); os.IsNotExist(err) {
+		os.MkdirAll(cacheDir+symb, 0755)
+	}
+
+	// Create JSON for cache file
+	jBlob, err := json.Marshal(SymbolStore{Options: options, Last: underlyingLast})
+
+	if err != nil {
+		return err
+	}
+
+	// Write the json to cache
+	jFile := cacheDir + symb + "/" + date.Format("2006-01-02") + ".json"
+	err = ioutil.WriteFile(jFile, jBlob, 0644)
+
+	if err != nil {
+		return errors.New(err.Error() + " : Could not write json file - " + jFile)
+	}
+
+	// Return happy
+	return nil
 }
 
 /* End File */

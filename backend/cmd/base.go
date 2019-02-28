@@ -92,6 +92,12 @@ func Run(db *models.DB) bool {
 		return true
 		break
 
+	// Run a backtest
+	case "backtest-run":
+		actions.RunBackTest(db, *userId)
+		return true
+		break
+
 	}
 
 	return false

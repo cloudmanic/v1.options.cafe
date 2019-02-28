@@ -1,36 +1,32 @@
 //
-// Date: 2019-02-22
+// Date: 2019-02-27
 // Author: Spicer Matthews (spicer@cloudmanic.com)
-// Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
+// Copyright: 2019 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-package backtesting
+package actions
 
 import (
 	"fmt"
 	"math/big"
 	"os"
-	"testing"
 
+	"github.com/cloudmanic/app.options.cafe/backend/backtesting"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	humanize "github.com/dustin/go-humanize"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"github.com/nbio/st"
 	"github.com/olekukonko/tablewriter"
 	"github.com/optionscafe/options-cafe-cli/helpers"
 )
 
 //
-// TestRunPutCreditSpread01 - Run a put credit spread backtest.
+// RunBackTest run a back test
 //
-func TestDoPutCreditSpread01(t *testing.T) {
-
-	// Start the db connection.
-	db, _ := models.NewDB()
-	defer db.Close()
+// go run main.go --cmd="backtest-run" --user_id=1
+//
+func RunBackTest(db *models.DB, userId int) {
 
 	// Setup a new backtesting
-	bt := New(db)
+	bt := backtesting.New(db)
 
 	// Build screener object
 	screen := models.Screener{
@@ -53,17 +49,15 @@ func TestDoPutCreditSpread01(t *testing.T) {
 		StartingBalance: 2000.00,
 		EndingBalance:   2000.00,
 		StartDate:       models.Date{helpers.ParseDateNoError("2018-01-01")},
-		EndDate:         models.Date{helpers.ParseDateNoError("2018-03-01")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2019-01-01")},
 		Midpoint:        true,
 		TradeSelect:     "highest-credit",
 		Screen:          screen,
 	}
 
 	// Run blank backtest
-	err := bt.DoBacktestDays(&btM)
-	st.Expect(t, err, nil)
+	bt.DoBacktestDays(&btM)
 
-	//spew.Dump(btM)
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "Margin", "Balance", "Status", "Note"})
 

@@ -18,14 +18,14 @@ import (
 // CloseMultiLegCredit - Close positions
 //
 func (t *Base) CloseMultiLegCredit(today time.Time, underlyingLast float64, backtest *models.Backtest, options []types.OptionsChainItem) {
-	// Expire positions
-	t.expirePositions(today, backtest)
-
 	// Close if we touch the short leg
 	t.closeOnShortTouch(today, underlyingLast, backtest, options)
 
 	// Close if we hit a particular debit
 	t.closeOnDebit(today, underlyingLast, backtest, options)
+
+	// Expire positions
+	t.expirePositions(today, backtest)
 }
 
 //
@@ -88,8 +88,8 @@ func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backte
 			backtest.Positions[key].ClosePrice = closingPrice
 			backtest.Positions[key].CloseDate = models.Date{today}
 			backtest.Positions[key].Note = "Trade touched the short leg."
-			backtest.Positions[key].Balance += closingPrice
-			backtest.EndingBalance += closingPrice
+			backtest.Positions[key].Balance -= closingPrice
+			backtest.EndingBalance -= closingPrice
 
 		}
 	}

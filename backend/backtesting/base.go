@@ -7,7 +7,7 @@
 package backtesting
 
 import (
-	"os"
+	"log"
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/eod"
@@ -16,8 +16,6 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/optionscafe/options-cafe-cli/helpers"
 )
-
-const cacheDirBase = "backtesting-options-chains"
 
 // Base struct
 type Base struct {
@@ -41,14 +39,6 @@ func New(db models.Datastore) Base {
 		"put-credit-spread": t.DoPutCreditSpread,
 	}
 
-	// Set the cache dir.
-	cacheDir := os.Getenv("CACHE_DIR") + "/" + cacheDirBase
-
-	// Make a directory to download.
-	if _, err := os.Stat(cacheDir); os.IsNotExist(err) {
-		os.MkdirAll(cacheDir, 0755)
-	}
-
 	return t
 }
 
@@ -64,6 +54,8 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 	if err != nil {
 		return err
 	}
+
+	start := time.Now()
 
 	// Loop through the dates and run backtest.
 	for _, row := range dates {
@@ -105,6 +97,10 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 			return err
 		}
 	}
+
+	elapsed := time.Since(start)
+	log.Printf("Binomial took %s", elapsed)
+	//os.Exit(1)
 
 	return nil
 }

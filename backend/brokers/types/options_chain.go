@@ -18,7 +18,7 @@ type OptionsChain struct {
 }
 
 type OptionsChainItem struct {
-	OptionsChainId   uint    `sql:"not null;index:OptionsChainId" json:"_"`
+	OptionsChainId   uint    `sql:"not null;index:OptionsChainId" json:"-"`
 	Underlying       string  `sql:"not null" json:"underlying"`
 	Symbol           string  `sql:"not null" json:"symbol"`
 	OptionType       string  `sql:"not null" json:"option_type"`
