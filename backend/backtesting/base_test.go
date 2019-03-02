@@ -95,4 +95,37 @@ func TestGetOptionsByExpirationType01(t *testing.T) {
 	st.Expect(t, len(errorOptions), 0)
 }
 
+//
+// TestGetExpirationDatesFromOptions
+//
+func TestGetExpirationDatesFromOptions01(t *testing.T) {
+	// Start the db connection.
+	db, _ := models.NewDB()
+	defer db.Close()
+
+	// Setup a new backtesting
+	bt := New(db)
+
+	// Setup EOD Api
+	o := eod.Api{
+		DB:  db,
+		Day: helpers.ParseDateNoError("2018-01-03"),
+	}
+
+	// Get a list of options
+	options, underlyingLast, err := o.GetOptionsBySymbol("spy")
+
+	// Double check results.
+	st.Expect(t, err, nil)
+	st.Expect(t, len(options), 4512)
+	st.Expect(t, 270.47, underlyingLast)
+
+	// Return a list of dates
+	dates := bt.GetExpirationDatesFromOptions(options)
+
+	// Test restults.
+	st.Expect(t, len(dates), 30)
+	st.Expect(t, dates[15].Format("2006-01-02"), "2018-04-20") // hehe 4/20 :)
+}
+
 /* End File */
