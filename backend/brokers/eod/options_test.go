@@ -13,10 +13,10 @@ package eod
 import (
 	"testing"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
+	"github.com/nbio/st"
+
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/nbio/st"
 )
 
 //
@@ -42,8 +42,8 @@ func TestGetOptionsChainByExpiration01(t *testing.T) {
 	st.Expect(t, len(chain.Puts), 195)
 	st.Expect(t, chain.Puts[50].Strike, 222.00)
 	st.Expect(t, chain.Calls[60].Strike, 232.00)
-	st.Expect(t, chain.Puts[50].ExpirationDate, types.Date{helpers.ParseDateNoError("2018-10-19").UTC()})
-	st.Expect(t, chain.Calls[60].ExpirationDate, types.Date{helpers.ParseDateNoError("2018-10-19").UTC()})
+	st.Expect(t, chain.Puts[50].ExpirationDate.Format("2006-01-02"), "2018-10-19")
+	st.Expect(t, chain.Calls[60].ExpirationDate.Format("2006-01-02"), "2018-10-19")
 }
 
 //

@@ -11,11 +11,14 @@
 package eod
 
 import (
+	"os"
 	"testing"
 
+	"github.com/nbio/st"
+
+	"github.com/cloudmanic/app.options.cafe/backend/library/files"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/nbio/st"
 )
 
 //
@@ -71,16 +74,51 @@ func TestGetTradeDateKeysBySymbol01(t *testing.T) {
 }
 
 //
-// Test - DownloadEodSymbol01
+// Test - downloadEodSymbol01
 //
 func TestDownloadEodSymbol01(t *testing.T) {
+	// Download File
+	dFile := "options-eod/SPY/2018-10-18.csv.zip"
+	lFile := os.Getenv("CACHE_DIR") + "/object-store/" + dFile
+
+	// Delete any left overs of this file so we can test the download.
+	os.Remove(lFile)
 
 	// Get dates from S3 store
-	files := DownloadEodSymbol("spy", false)
+	file, err := downloadEodSymbol("spy", helpers.ParseDateNoError("2018-10-18").UTC())
 
 	// Test result
-	st.Expect(t, (len(files) >= 3477), true)
+	st.Expect(t, err, nil)
+	st.Expect(t, file, lFile)
+	st.Expect(t, "f39b09fc32df9640ee1f4aa21f74ae93", files.Md5(lFile))
+}
 
+//
+// Test - TestUnzipSymbolCSV01
+//
+func TestUnzipSymbolCSV01(t *testing.T) {
+	// Download File
+	dFile := "options-eod/SPY/2018-10-18.csv.zip"
+	lFile := os.Getenv("CACHE_DIR") + "/object-store/" + dFile
+
+	// Get dates from S3 store
+	file, err := downloadEodSymbol("spy", helpers.ParseDateNoError("2018-10-18").UTC())
+
+	// Just double check.
+	st.Expect(t, err, nil)
+	st.Expect(t, file, lFile)
+	st.Expect(t, "f39b09fc32df9640ee1f4aa21f74ae93", files.Md5(lFile))
+
+	// Unzip file.
+	options, last, err := unzipSymbolCSV("spy", file)
+
+	// Test result
+	st.Expect(t, err, nil)
+	st.Expect(t, 276.39, last)
+	st.Expect(t, len(options), 6262)
+	st.Expect(t, options[55].Underlying, "SPY")
+	st.Expect(t, options[55].Last, 0.01)
+	st.Expect(t, options[55].Symbol, "SPY181019P00199000")
 }
 
 /* End File */

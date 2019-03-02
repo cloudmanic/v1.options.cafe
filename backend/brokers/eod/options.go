@@ -91,7 +91,7 @@ func (t *Api) GetOptionsChainByExpiration(symbol string, expireStr string) (type
 	for _, row := range options {
 
 		// We only want the expire date we passed in.
-		if row.ExpirationDate != expireDate {
+		if row.ExpirationDate.Format("2006-01-02") != expireDate.Format("2006-01-02") {
 			continue
 		}
 

@@ -21,6 +21,8 @@ import (
 	"strings"
 	"time"
 
+	env "github.com/jpfuentes2/go-env"
+
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
 	"github.com/cloudmanic/app.options.cafe/backend/library/files"
@@ -28,7 +30,6 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/library/store/object"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	env "github.com/jpfuentes2/go-env"
 )
 
 const workerCount int = 100
@@ -221,7 +222,7 @@ func unzipSymbolCSV(symb string, zipFile string) ([]types.OptionsChainItem, floa
 
 		// Build Item
 		op := types.OptionsChainItem{
-			Underlying:     symb,
+			Underlying:     strings.ToUpper(symb),
 			Symbol:         row[3],
 			OptionType:     parts.Type,
 			Description:    parts.Name,
