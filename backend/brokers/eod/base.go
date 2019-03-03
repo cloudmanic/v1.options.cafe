@@ -32,7 +32,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
 
-const workerCount int = 2
+const workerCount int = 100
 const cacheDirBase = "broker-eod"
 
 var cacheDir string

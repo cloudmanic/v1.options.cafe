@@ -19,7 +19,7 @@ import (
 //
 // DoPutCreditSpread - Run a put credit spread backtest.
 //
-func (t *Base) DoPutCreditSpread(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) error {
+func (t *Base) DoPutCreditSpread(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) ([]screener.Result, error) {
 
 	// See if we have any positions to close
 	t.CloseMultiLegCredit(today, underlyingLast, backtest, options)
@@ -74,17 +74,17 @@ func (t *Base) DoPutCreditSpread(today time.Time, backtest *models.Backtest, und
 			midPoint := (credit + buyCost) / 2
 
 			// Add in Symbol Object - Sell leg
-			symbSellLeg, err := t.DB.CreateNewSymbol(row2.Symbol, row2.Description, "Option")
+			symbSellLeg, err := t.GetSymbol(row2.Symbol, row2.Description, "Option")
 
 			if err != nil {
-				return err
+				return []screener.Result{}, err
 			}
 
 			// Add in Symbol Object - Buy leg
-			symbBuyLeg, err := t.DB.CreateNewSymbol(buyLeg.Symbol, buyLeg.Description, "Option")
+			symbBuyLeg, err := t.GetSymbol(buyLeg.Symbol, buyLeg.Description, "Option")
 
 			if err != nil {
-				return err
+				return []screener.Result{}, err
 			}
 
 			// We have a winner
@@ -98,12 +98,13 @@ func (t *Base) DoPutCreditSpread(today time.Time, backtest *models.Backtest, und
 
 	}
 
-	// TODO(spicer): Figure which result to open
-	if len(results) > 0 {
-		t.OpenMultiLegCredit(today, backtest, results[0])
-	}
+	// // TODO(spicer): Figure which result to open
+	// if len(results) > 0 {
+	// 	t.OpenMultiLegCredit(today, backtest, results[0])
+	// }
 
-	return nil
+	// Return happy with results.
+	return results, nil
 }
 
 /* End File */

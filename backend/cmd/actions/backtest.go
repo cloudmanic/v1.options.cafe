@@ -8,6 +8,7 @@ package actions
 
 import (
 	"fmt"
+	"log"
 	"math/big"
 	"os"
 
@@ -34,7 +35,7 @@ func RunBackTest(db *models.DB, userId int) {
 		Symbol:   "SPY",
 		Strategy: "put-credit-spread",
 		Items: []models.ScreenerItem{
-			{UserId: 1, Key: "short-strike-percent-away", Operator: "<", ValueNumber: 4.0},
+			{UserId: 1, Key: "short-strike-percent-away", Operator: ">", ValueNumber: 4.0},
 			{UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
 			{UserId: 1, Key: "open-credit", Operator: ">", ValueNumber: 0.18},
 			{UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.20},
@@ -59,7 +60,7 @@ func RunBackTest(db *models.DB, userId int) {
 	bt.DoBacktestDays(&btM)
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "Margin", "Balance", "Status", "Note"})
+	table.SetHeader([]string{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "% Away", "Margin", "Balance", "Status", "Note"})
 
 	for _, row := range btM.Positions {
 		table.Append([]string{
@@ -69,6 +70,7 @@ func RunBackTest(db *models.DB, userId int) {
 			fmt.Sprintf("$%.2f", row.OpenPrice),
 			fmt.Sprintf("$%.2f", row.ClosePrice),
 			fmt.Sprintf("%d", row.Lots),
+			fmt.Sprintf("%.2f", row.PutPrecentAway) + "%",
 			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.Margin))),
 			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.Balance))),
 			row.Status,
@@ -77,6 +79,8 @@ func RunBackTest(db *models.DB, userId int) {
 	}
 	table.Render()
 
+	// Show how long the backtest took.
+	log.Printf("Backtest took %s", btM.TimeElapsed)
 }
 
 /* End File */

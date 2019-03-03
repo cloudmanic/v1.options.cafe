@@ -7,33 +7,34 @@
 package backtesting
 
 import (
+	"fmt"
 	"time"
 
+	"bitbucket.org/api.triwou.org/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/eod"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"github.com/cloudmanic/app.options.cafe/backend/screener"
 )
 
-const workerCount int = 100
+const workerCount int = 10
 
 // Used to cache all symbols in the DB to avoid too many sql queries
 var cachedSymbols map[string]models.Symbol = make(map[string]models.Symbol)
 
 // Base struct
 type Base struct {
-	DB            models.Datastore
-	StrategyFuncs map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) error
+	DB           models.Datastore
+	ResultsFuncs map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) ([]screener.Result, error)
 }
 
 // Job struct
 type Job struct {
-	Symbol         string
-	Day            time.Time
-	Index          int
-	UnderlyingLast float64
-	Options        []types.OptionsChainItem
+	Day      time.Time
+	Index    int
+	Backtest *models.Backtest
+	Results  []screener.Result
 }
 
 //
@@ -47,10 +48,13 @@ func New(db models.Datastore) Base {
 	}
 
 	// Build backtest functions.
-	t.StrategyFuncs = map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) error{
+	t.ResultsFuncs = map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) ([]screener.Result, error){
 		"blank":             t.DoBlank,
 		"put-credit-spread": t.DoPutCreditSpread,
 	}
+
+	// Warm symbol cache (just random sumbol to warm cache)
+	t.GetSymbol("SPY190418P00269000", "SPY Apr 18 2019 $269.00 Put", "Option")
 
 	return t
 }
@@ -70,6 +74,16 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 		return err
 	}
 
+	// Worker job queue (some stocks have thousands of days)
+	totalJobs := 0
+	jobs := make(chan Job, 1000000)
+	results := make(chan Job, 1000000)
+
+	// Load up the workers
+	for w := 0; w < workerCount; w++ {
+		go t.tradeResultsWorker(jobs, results)
+	}
+
 	// Loop through the dates and run backtest.
 	for _, row := range dates {
 		// We skip dates before our start date
@@ -82,47 +96,114 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 			continue
 		}
 
-		// Create broker object
-		o := eod.Api{
-			DB:  t.DB,
-			Day: row,
-		}
+		//go func() {
 
-		// Log where we are in the backtest. TODO(spicer): Send this up websocket
-		services.Info("Backtesting " + backtest.Screen.Strategy + " " + backtest.Screen.Symbol + " on " + row.Format("2006-01-02"))
+		jobs <- Job{Index: totalJobs, Day: row, Backtest: backtest}
+		totalJobs++
 
-		// Get all options for this symbol and day.
-		//start2 := time.Now()
-		options, underlyingLast, err := o.GetOptionsBySymbol(backtest.Screen.Symbol)
-		//elapsed2 := time.Since(start2)
-		//log.Printf("BS took %s", elapsed2)
-		// os.Exit(1)
+		// // Job struct
+		// type Job struct {
+		// 	Symbol         string
+		// 	Day            time.Time
+		// 	Index          int
+		// 	UnderlyingLast float64
+		// 	Options        []types.OptionsChainItem
+		// }
 
-		if err != nil {
-			return err
-		}
+		// // Create broker object
+		// o := eod.Api{
+		// 	DB:  t.DB,
+		// 	Day: row,
+		// }
+		//
+		// // Log where we are in the backtest. TODO(spicer): Send this up websocket
+		// services.Info("Backtesting " + backtest.Screen.Strategy + " " + backtest.Screen.Symbol + " on " + row.Format("2006-01-02"))
+		//
+		// // Get all options for this symbol and day.
+		// options, underlyingLast, _ := o.GetOptionsBySymbol(backtest.Screen.Symbol)
+		//
+		// // if err != nil {
+		// // 	return err
+		// // }
+		//
+		// // Run backtest strategy function for this backtest
+		// t.StrategyFuncs[backtest.Screen.Strategy](row, backtest, underlyingLast, options)
+		//
+		// // if err != nil {
+		// // 	return err
+		// // }
 
-		// Run backtest strategy function for this backtest
-		err = t.StrategyFuncs[backtest.Screen.Strategy](row, backtest, underlyingLast, options)
+		//}()
 
-		if err != nil {
-			return err
+	}
+
+	// Close jobs so the workers return.
+	close(jobs)
+
+	// Set the results array list.
+	resultsList := make([][]screener.Result, totalJobs)
+
+	// Collect results so this function does not just return.
+	for a := 0; a < totalJobs; a++ {
+		job := <-results
+		resultsList[job.Index] = job.Results
+	}
+
+	// Close results
+	close(results)
+
+	// Now that we have a list of all possible trades by day we can go through and "trade".
+	for _, row := range resultsList {
+		for _, row2 := range row {
+			fmt.Println(row2.Credit)
 		}
 	}
 
 	// Store how long the backtest took to run.
 	backtest.TimeElapsed = time.Since(start)
-	//log.Printf("Binomial took %s", backtest.TimeElapsed)
-	//os.Exit(1)
 
 	return nil
 }
 
 //
+// tradeResultsWorker - A worker for running trade results per day.
+//
+func (t *Base) tradeResultsWorker(jobs <-chan Job, results chan<- Job) {
+	// Wait for jobs to come in and process them.
+	for job := range jobs {
+		// Create broker object
+		o := eod.Api{
+			DB:  t.DB,
+			Day: job.Day,
+		}
+
+		// Log where we are in the backtest. TODO(spicer): Send this up websocket
+		services.Info("Backtesting " + job.Backtest.Screen.Strategy + " " + job.Backtest.Screen.Symbol + " on " + job.Day.Format("2006-01-02"))
+
+		// Get all options for this symbol and day.
+		options, underlyingLast, err := o.GetOptionsBySymbol(job.Backtest.Screen.Symbol)
+
+		if err != nil {
+			services.Warning(err)
+		}
+
+		// Run backtest strategy function for this backtest
+		job.Results, err = t.ResultsFuncs[job.Backtest.Screen.Strategy](job.Day, job.Backtest, underlyingLast, options)
+
+		if err != nil {
+			services.Warning(err)
+		}
+
+		// Send back a happy with results.
+		results <- job
+	}
+}
+
+//
 // DoBlank is mostly using for unit testing.
 //
-func (t *Base) DoBlank(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) error {
-	return nil
+func (t *Base) DoBlank(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) ([]screener.Result, error) {
+	return []screener.Result{}, nil
 }
 
 //
