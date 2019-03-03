@@ -7,20 +7,33 @@
 package backtesting
 
 import (
-	"log"
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/eod"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/optionscafe/options-cafe-cli/helpers"
 )
+
+const workerCount int = 100
+
+// Used to cache all symbols in the DB to avoid too many sql queries
+var cachedSymbols map[string]models.Symbol = make(map[string]models.Symbol)
 
 // Base struct
 type Base struct {
 	DB            models.Datastore
 	StrategyFuncs map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) error
+}
+
+// Job struct
+type Job struct {
+	Symbol         string
+	Day            time.Time
+	Index          int
+	UnderlyingLast float64
+	Options        []types.OptionsChainItem
 }
 
 //
@@ -47,6 +60,8 @@ func New(db models.Datastore) Base {
 // an options chain into a function for a prticular backtest type.
 //
 func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
+	// Let's time this backtest
+	start := time.Now()
 
 	// Get dates by symbol
 	dates, err := eod.GetTradeDatesBySymbols(backtest.Screen.Symbol)
@@ -55,11 +70,8 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 		return err
 	}
 
-	start := time.Now()
-
 	// Loop through the dates and run backtest.
 	for _, row := range dates {
-
 		// We skip dates before our start date
 		if row.Before(helpers.ParseDateNoError(backtest.StartDate.Format("2006-01-02"))) {
 			continue
@@ -80,10 +92,10 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 		services.Info("Backtesting " + backtest.Screen.Strategy + " " + backtest.Screen.Symbol + " on " + row.Format("2006-01-02"))
 
 		// Get all options for this symbol and day.
-		//start := time.Now()
+		//start2 := time.Now()
 		options, underlyingLast, err := o.GetOptionsBySymbol(backtest.Screen.Symbol)
-		// elapsed := time.Since(start)
-		// log.Printf("Binomial took %s", elapsed)
+		//elapsed2 := time.Since(start2)
+		//log.Printf("BS took %s", elapsed2)
 		// os.Exit(1)
 
 		if err != nil {
@@ -98,8 +110,9 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 		}
 	}
 
-	elapsed := time.Since(start)
-	log.Printf("Binomial took %s", elapsed)
+	// Store how long the backtest took to run.
+	backtest.TimeElapsed = time.Since(start)
+	//log.Printf("Binomial took %s", backtest.TimeElapsed)
 	//os.Exit(1)
 
 	return nil
@@ -157,6 +170,40 @@ func (t *Base) GetExpirationDatesFromOptions(options []types.OptionsChainItem) [
 
 	// Return happy
 	return dates
+}
+
+//
+// GetSymbol - This is a wrapper function for models.Symbol. We want to do a bit of "caching".
+//
+func (t *Base) GetSymbol(short string, name string, sType string) (models.Symbol, error) {
+	// Build cache of all symbols in the system
+	if len(cachedSymbols) == 0 {
+		// Get all the symbols in the DB
+		s := t.DB.GetAllSymbols()
+
+		// Loop through and build hash table
+		for _, row := range s {
+			cachedSymbols[row.ShortName] = row
+		}
+	}
+
+	// See if we have this symbol in cache. If so return happy.
+	if val, ok := cachedSymbols[short]; ok {
+		return val, nil
+	}
+
+	// Add symbol to the DB. Since we do not know about it.
+	symb, err := t.DB.CreateNewSymbol(short, name, sType)
+
+	if err != nil {
+		return symb, err
+	}
+
+	// Add symbol to map.
+	cachedSymbols[short] = symb
+
+	// Return happy.
+	return symb, nil
 }
 
 /* End File */

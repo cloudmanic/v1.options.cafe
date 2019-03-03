@@ -8,6 +8,7 @@ package backtesting
 
 import (
 	"fmt"
+	"log"
 	"math/big"
 	"os"
 	"testing"
@@ -38,7 +39,7 @@ func TestDoPutCreditSpread01(t *testing.T) {
 		Symbol:   "SPY",
 		Strategy: "put-credit-spread",
 		Items: []models.ScreenerItem{
-			{UserId: 1, Key: "short-strike-percent-away", Operator: "<", ValueNumber: 4.0},
+			{UserId: 1, Key: "short-strike-percent-away", Operator: ">", ValueNumber: 4.0},
 			{UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
 			{UserId: 1, Key: "open-credit", Operator: ">", ValueNumber: 0.18},
 			{UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.20},
@@ -53,7 +54,7 @@ func TestDoPutCreditSpread01(t *testing.T) {
 		StartingBalance: 2000.00,
 		EndingBalance:   2000.00,
 		StartDate:       models.Date{helpers.ParseDateNoError("2018-01-01")},
-		EndDate:         models.Date{helpers.ParseDateNoError("2018-03-01")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2019-01-01")},
 		Midpoint:        true,
 		TradeSelect:     "highest-credit",
 		Screen:          screen,
@@ -65,7 +66,7 @@ func TestDoPutCreditSpread01(t *testing.T) {
 
 	//spew.Dump(btM)
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "Margin", "Balance", "Status", "Note"})
+	table.SetHeader([]string{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "% Away", "Margin", "Balance", "Status", "Note"})
 
 	for _, row := range btM.Positions {
 		table.Append([]string{
@@ -75,6 +76,7 @@ func TestDoPutCreditSpread01(t *testing.T) {
 			fmt.Sprintf("$%.2f", row.OpenPrice),
 			fmt.Sprintf("$%.2f", row.ClosePrice),
 			fmt.Sprintf("%d", row.Lots),
+			fmt.Sprintf("%.2f", row.PutPrecentAway) + "%",
 			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.Margin))),
 			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.Balance))),
 			row.Status,
@@ -82,6 +84,9 @@ func TestDoPutCreditSpread01(t *testing.T) {
 		})
 	}
 	table.Render()
+
+	// Show how long the backtest took.
+	log.Printf("Backtest took %s", btM.TimeElapsed)
 
 }
 

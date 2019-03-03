@@ -22,6 +22,7 @@ type Backtest struct {
 	StartingBalance float64            `sql:"not null" json:"starting_balance"`
 	TradeSelect     string             `sql:"not null;type:ENUM('highest-credit', 'median-credit', 'lowest-credit');default:'median-credit'" json:"trade_select"`
 	Midpoint        bool               `sql:"not null" json:"midpoint"` // Open trade at the midpoint
+	TimeElapsed     time.Duration      `sql:"not null" json:"time_elapsed"`
 	Screen          Screener           `json:"screen"`
 	Positions       []BacktestPosition `json:"positions"`
 }

@@ -51,14 +51,16 @@ func (t *Base) OpenMultiLegCredit(today time.Time, backtest *models.Backtest, re
 
 	// Add position
 	backtest.Positions = append(backtest.Positions, models.BacktestPosition{
-		UserId:    backtest.UserId,
-		Status:    "Open",
-		OpenDate:  models.Date{today},
-		OpenPrice: openPrice,
-		Margin:    margin,
-		Legs:      result.Legs,
-		Lots:      lots,
-		Balance:   (backtest.EndingBalance + openPrice),
+		UserId:          backtest.UserId,
+		Status:          "Open",
+		OpenDate:        models.Date{today},
+		OpenPrice:       openPrice,
+		Margin:          margin,
+		Legs:            result.Legs,
+		Lots:            lots,
+		PutPrecentAway:  result.PutPrecentAway,
+		CallPrecentAway: 0,
+		Balance:         (backtest.EndingBalance + openPrice),
 	})
 
 	// Update ending balance

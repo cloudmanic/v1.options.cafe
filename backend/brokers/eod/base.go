@@ -32,7 +32,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
 
-const workerCount int = 100
+const workerCount int = 2
 const cacheDirBase = "broker-eod"
 
 var cacheDir string
@@ -361,6 +361,9 @@ func DownloadAllEodSymbolFiles(symbol string, debug bool) []string {
 			fmt.Println(job.Index, " of ", total)
 		}
 	}
+
+	// Close results
+	close(results)
 
 	// Log if we are cli
 	if debug {

@@ -37,7 +37,7 @@ func TestDoBacktestDays01(t *testing.T) {
 	// Run blank backtest
 	err := bt.DoBacktestDays(&models.Backtest{
 		StartDate: models.Date{helpers.ParseDateNoError("2018-01-01")},
-		EndDate:   models.Date{helpers.ParseDateNoError("2018-01-03")},
+		EndDate:   models.Date{helpers.ParseDateNoError("2019-01-01")},
 		Screen:    screen,
 	})
 	st.Expect(t, err, nil)
@@ -126,6 +126,37 @@ func TestGetExpirationDatesFromOptions01(t *testing.T) {
 	// Test restults.
 	st.Expect(t, len(dates), 30)
 	st.Expect(t, dates[15].Format("2006-01-02"), "2018-04-20") // hehe 4/20 :)
+}
+
+//
+// TestGetSymbol - Get getting symb struct from DB
+//
+func TestGetSymbol(t *testing.T) {
+	// Start the db connection.
+	db, _ := models.NewDB()
+	defer db.Close()
+
+	// Setup a new backtesting
+	bt := New(db)
+
+	// Get test symbol.
+	smb, err := bt.GetSymbol("SPY190418P00269000", "SPY Apr 18 2019 $269.00 Put", "Option")
+
+	// Check results.
+	st.Expect(t, err, nil)
+	st.Expect(t, smb.ShortName, "SPY190418P00269000")
+	st.Expect(t, smb.Name, "SPY Apr 18 2019 $269.00 Put")
+	st.Expect(t, smb.OptionStrike, 269.00)
+
+	// Get test symbol - Make sure it is cached
+	smb2, err := bt.GetSymbol("SPY190418P00269000", "SPY Apr 18 2019 $269.00 Put", "Option")
+
+	// Check results.
+	st.Expect(t, err, nil)
+	st.Expect(t, smb2.Id, smb.Id)
+	st.Expect(t, smb2.ShortName, "SPY190418P00269000")
+	st.Expect(t, smb2.Name, "SPY Apr 18 2019 $269.00 Put")
+	st.Expect(t, smb2.OptionStrike, 269.00)
 }
 
 /* End File */

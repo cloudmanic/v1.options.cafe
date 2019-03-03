@@ -166,8 +166,8 @@ func (t *DB) SearchSymbols(query string, sType string) ([]Symbol, error) {
 
 	var sql = `SELECT *,
     IF(short_name = ?,  40, IF(short_name LIKE ?, 10, 0))
-	  + IF(short_name LIKE ?, 20,  0)    
-		+ IF(name LIKE ?, 10,  0)    
+	  + IF(short_name LIKE ?, 20,  0)
+		+ IF(name LIKE ?, 10,  0)
     + IF(name LIKE ?, 5,  0)
     AS weight
 		FROM symbols
