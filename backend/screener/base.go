@@ -26,13 +26,16 @@ type Base struct {
 	ScreenFuncs map[string]func(models.Screener) ([]Result, error)
 }
 
+// Result struct
 type Result struct {
+	Day             types.Date      `gorm:"type:date" sql:"not null" json:"day"` // Used for backtesting. The day in the backtest
 	Debit           float64         `json:"debit"`
 	Credit          float64         `json:"credit"`
 	MidPoint        float64         `json:"midpoint"`
 	Expired         models.Date     `gorm:"type:expired" json:"expired"` // Used when all legs have the same expire
 	CallPrecentAway float64         `json:"call_percent_away"`
 	PutPrecentAway  float64         `json:"put_percent_away"`
+	UnderlyingLast  float64         `json:"underlyng_last"`
 	Legs            []models.Symbol `json:"legs"`
 }
 

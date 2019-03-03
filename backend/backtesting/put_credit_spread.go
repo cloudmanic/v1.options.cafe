@@ -17,13 +17,29 @@ import (
 )
 
 //
-// DoPutCreditSpread - Run a put credit spread backtest.
+// PutCreditSpreadPlaceTrades managed trades. Call this after all possible trades are found.
 //
-func (t *Base) DoPutCreditSpread(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) ([]screener.Result, error) {
+func (t *Base) PutCreditSpreadPlaceTrades(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem) {
+	// Make sure we have at least one result
+	if len(results) <= 0 {
+		return
+	}
 
 	// See if we have any positions to close
-	t.CloseMultiLegCredit(today, underlyingLast, backtest, options)
+	t.CloseMultiLegCredit(today, results[0].UnderlyingLast, backtest, options)
 
+	// TODO(spicer): Figure which result to open
+	if len(results) > 0 {
+		t.OpenMultiLegCredit(today, backtest, results[0])
+	}
+
+	return
+}
+
+//
+// PutCreditSpreadResults - Find possible trades for this strategy.
+//
+func (t *Base) PutCreditSpreadResults(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) ([]screener.Result, error) {
 	// Results that we return.
 	results := []screener.Result{}
 
@@ -89,19 +105,16 @@ func (t *Base) DoPutCreditSpread(today time.Time, backtest *models.Backtest, und
 
 			// We have a winner
 			results = append(results, screener.Result{
+				Day:            types.Date{today},
 				Credit:         helpers.Round(credit, 2),
 				MidPoint:       helpers.Round(midPoint, 2),
+				UnderlyingLast: underlyingLast,
 				PutPrecentAway: helpers.Round(((1 - row2.Strike/underlyingLast) * 100), 2),
 				Legs:           []models.Symbol{symbBuyLeg, symbSellLeg},
 			})
 		}
 
 	}
-
-	// // TODO(spicer): Figure which result to open
-	// if len(results) > 0 {
-	// 	t.OpenMultiLegCredit(today, backtest, results[0])
-	// }
 
 	// Return happy with results.
 	return results, nil

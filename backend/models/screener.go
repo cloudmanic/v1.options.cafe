@@ -13,6 +13,7 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
+// Screener struct
 type Screener struct {
 	Id         uint           `gorm:"primary_key" json:"id"`
 	CreatedAt  time.Time      `json:"-"`
