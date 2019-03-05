@@ -21,6 +21,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// User struct
 type User struct {
 	Id                 uint      `gorm:"primary_key" json:"id"`
 	CreatedAt          time.Time `json:"-"`

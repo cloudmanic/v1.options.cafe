@@ -7,6 +7,7 @@
 package models
 
 import (
+	"os"
 	"testing"
 	"time"
 
@@ -51,8 +52,6 @@ func TestGetAllUsers01(t *testing.T) {
 	st.Expect(t, users[2].Email, "spicer+bobrosso@options.cafe")
 }
 
-/*
-
 //
 // Test - CreateNewUserWithStripe
 //
@@ -75,7 +74,7 @@ func TestCreateNewUserWithStripe01(t *testing.T) {
 		Email:     "jane+unittest@options.cafe",
 	}
 
-	err := db.CreateNewUserWithStripe(user, "", "", "")
+	err := db.CreateNewUserWithStripe(user, os.Getenv("STRIPE_YEARLY_PLAN"), "tok_visa", "")
 
 	// Since we are testing we know the user is id 4
 	dbUser, _ := db.GetUserById(4)
@@ -92,7 +91,6 @@ func TestCreateNewUserWithStripe01(t *testing.T) {
 	// Clean things up at stripe
 	db.DeleteUserWithStripe(dbUser)
 }
-
 
 //
 // Test - GetSubscriptionWithStripe
@@ -116,7 +114,7 @@ func TestGetSubscriptionWithStripe01(t *testing.T) {
 		Email:     "jane+unittest@options.cafe",
 	}
 
-	err := db.CreateNewUserWithStripe(user, "", "", "")
+	err := db.CreateNewUserWithStripe(user, os.Getenv("STRIPE_MONTHLY_PLAN"), "tok_visa", "")
 
 	// Since we are testing we know the user is id 4
 	dbUser, _ := db.GetUserById(4)
@@ -149,12 +147,12 @@ func TestGetSubscriptionWithStripe01(t *testing.T) {
 	st.Expect(t, err, nil)
 	st.Expect(t, sub.Name, "Monthly - $20")
 	st.Expect(t, sub.Amount, 20.00)
-	st.Expect(t, sub.TrialDays, 7)
+	st.Expect(t, sub.TrialDays, 30)
 	st.Expect(t, sub.BillingInterval, "month")
 	st.Expect(t, sub.CardBrand, "American Express")
 	st.Expect(t, sub.CardLast4, "8431")
-	st.Expect(t, sub.CardExpMonth, 10)
-	st.Expect(t, sub.CardExpYear, 2019)
+	st.Expect(t, sub.CardExpMonth, 3)
+	st.Expect(t, sub.CardExpYear, 2020)
 
 	// Clean things up at stripe
 	db.DeleteUserWithStripe(dbUser)
@@ -182,7 +180,7 @@ func TestGetSubscriptionWithStripe02(t *testing.T) {
 		Email:     "jane+unittest@options.cafe",
 	}
 
-	err := db.CreateNewUserWithStripe(user, "", "", "")
+	err := db.CreateNewUserWithStripe(user, os.Getenv("STRIPE_MONTHLY_PLAN"), "tok_visa", "")
 
 	// Since we are testing we know the user is id 4
 	dbUser, _ := db.GetUserById(4)
@@ -203,12 +201,12 @@ func TestGetSubscriptionWithStripe02(t *testing.T) {
 	st.Expect(t, err, nil)
 	st.Expect(t, sub.Name, "Monthly - $20")
 	st.Expect(t, sub.Amount, 20.00)
-	st.Expect(t, sub.TrialDays, 7)
+	st.Expect(t, sub.TrialDays, 30)
 	st.Expect(t, sub.BillingInterval, "month")
-	st.Expect(t, sub.CardBrand, "")
-	st.Expect(t, sub.CardLast4, "")
-	st.Expect(t, sub.CardExpMonth, 0)
-	st.Expect(t, sub.CardExpYear, 0)
+	st.Expect(t, sub.CardBrand, "Visa")
+	st.Expect(t, sub.CardLast4, "4242")
+	st.Expect(t, sub.CardExpMonth, 3)
+	st.Expect(t, sub.CardExpYear, 2020)
 
 	// Clean things up at stripe
 	db.DeleteUserWithStripe(dbUser)
@@ -240,8 +238,6 @@ func TestGetInvoiceHistoryWithStripe01(t *testing.T) {
 
 	// spew.Dump(inv)
 }
-
-*/
 
 //
 // Validate an email address
