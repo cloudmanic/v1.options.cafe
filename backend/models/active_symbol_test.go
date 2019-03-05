@@ -22,8 +22,8 @@ func TestCreateActiveSymbol01(t *testing.T) {
 	env.ReadEnv("../.env")
 
 	// Start the db connection.
-	db, _ := NewDB()
-	defer db.Close()
+	db, dbName, _ := NewTestDB("")
+	defer TestingTearDown(db, dbName)
 
 	// Make query
 	syb1, _ := db.CreateActiveSymbol(1, "SPY")
@@ -46,8 +46,8 @@ func TestGetActiveSymbolsByUser01(t *testing.T) {
 	env.ReadEnv("../.env")
 
 	// Start the db connection.
-	db, _ := NewDB()
-	defer db.Close()
+	db, dbName, _ := NewTestDB("")
+	defer TestingTearDown(db, dbName)
 
 	// Test data into place.
 	db.CreateActiveSymbol(1, "SPY")
