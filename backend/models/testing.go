@@ -9,7 +9,10 @@
 package models
 
 import (
+	"errors"
 	"log"
+	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -18,11 +21,20 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 )
 
+const (
+	dockerMysqlContainerName = "options_cafe_testing"
+)
+
 //
 // NewTestDB - Start the Test DB connection.
 //
 func NewTestDB(dbName string) (*DB, string, error) {
 	var err error
+
+	// Make sure our docker mysql container for testing is running.
+	if !isDockerMysqlRunning() {
+		log.Fatal(errors.New("Docker testing Mysql container is not running. Please run scripts/start_testing_db.sh."))
+	}
 
 	// If dbName is empty we create our own.
 	if len(dbName) == 0 {
@@ -93,7 +105,40 @@ func TruncateAllTables(db *gorm.DB) {
 }
 
 //
-// Load testing data.
+// isDockerMysqlRunning - verify our testing mysql instance is running in docker.
+//
+func isDockerMysqlRunning() bool {
+	// Command to get the status of our mysql docker container.
+	command := exec.Command("docker", "ps", "-a", "--format", "{{.ID}}|{{.Status}}|{{.Ports}}|{{.Names}}")
+	output, err := command.CombinedOutput()
+	if err != nil {
+		return false
+	}
+
+	// Parse the output of the command
+	outputString := string(output)
+	outputString = strings.TrimSpace(outputString)
+	dockerPsResponse := strings.Split(outputString, "\n")
+
+	// Loop through the response to find the container we care about.
+	for _, response := range dockerPsResponse {
+		containerStatusData := strings.Split(response, "|")
+		containerStatus := containerStatusData[1]
+		containerName := containerStatusData[3]
+
+		// dis we find the cotainer we wanted?
+		if containerName == dockerMysqlContainerName {
+			if strings.HasPrefix(containerStatus, "Up ") {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+//
+// LoadTestingData - Load testing data.
 //
 func LoadTestingData(db *gorm.DB) {
 
