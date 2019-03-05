@@ -17,10 +17,16 @@ import (
 // Test - Do equity order
 //
 func TestDoEquityOrder01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
-	defer db.Close()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
+
+	models.LoadTestingData(db.New())
+
+	// Users
+	//db.Create(&models.User{FirstName: "Rob", LastName: "Tester", Email: "spicer+robtester@options.cafe", Status: "Active"})
+	//db.Create(&models.User{FirstName: "Jane", LastName: "Wells", Email: "spicer+janewells@options.cafe", Status: "Active"})
+	//db.Create(&models.User{FirstName: "Bob", LastName: "Rosso", Email: "spicer+bobrosso@options.cafe", Status: "Active"})
 
 	// put test data into the DB.
 	db.Exec("TRUNCATE TABLE symbols;")

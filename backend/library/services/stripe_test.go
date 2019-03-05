@@ -95,8 +95,12 @@ func TestApplyCoupon01(t *testing.T) {
 	customerId, err := StripeAddCustomer("Jane", "Tester", "jane+unittest@options.cafe", 15)
 	st.Expect(t, err, nil)
 
+	// Add Payment Source
+	_, err = StripeAddCreditCardByToken(customerId, "tok_visa")
+	st.Expect(t, err, nil)
+
 	// Add a customer to a subscription
-	subId, err := StripeAddSubscription(customerId, os.Getenv("STRIPE_DEFAULT_PLAN"), "")
+	subId, err := StripeAddSubscription(customerId, os.Getenv("STRIPE_MONTHLY_PLAN"), "")
 	st.Expect(t, err, nil)
 
 	// Apply the coupon to the subscription

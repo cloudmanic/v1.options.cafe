@@ -25,8 +25,10 @@ func TestReviewCurrentPositionsForExpiredOptions01(t *testing.T) {
 	env.ReadEnv("../../.env")
 
 	// Start the db connection.
-	db, _ := models.NewDB()
-	defer db.Close()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
+
+	//models.LoadTestingData(db.New())
 
 	// put test data into the DB.
 	db.Exec("TRUNCATE TABLE positions;")
@@ -84,26 +86,23 @@ func TestReviewCurrentPositionsForExpiredOptions01(t *testing.T) {
 // Test reviewing current positions for expired options.
 //
 func TestReviewCurrentPositionsForExpiredOptions02(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
-	defer db.Close()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
-	// Clear tables - Default test values throws API Token to Tradier off.
-	db.Exec("TRUNCATE TABLE brokers;")
-	db.Exec("TRUNCATE TABLE broker_accounts;")
+	// Users
+	db.Create(&models.User{FirstName: "Rob", LastName: "Tester", Email: "spicer+robtester@options.cafe", Status: "Active"})
+	db.Create(&models.User{FirstName: "Jane", LastName: "Wells", Email: "spicer+janewells@options.cafe", Status: "Active"})
+	db.Create(&models.User{FirstName: "Bob", LastName: "Rosso", Email: "spicer+bobrosso@options.cafe", Status: "Active"})
 
 	// put test data into the DB.
 	openTs := time.Date(2018, 11, 8, 17, 20, 01, 507451, time.UTC)
 
-	db.Exec("TRUNCATE TABLE symbols;")
 	db.Create(&models.Symbol{Name: "SPY Dec 21 2018 $260.00 Put", ShortName: "SPY181221P00260000", Type: "Option", OptionUnderlying: "SPY", OptionExpire: models.Date{helpers.ParseDateNoError("12/21/2018").UTC()}, OptionType: "Put", OptionStrike: 260.00})
 	db.Create(&models.Symbol{Name: "SPY Dec 21 2018 $262.00 Put", ShortName: "SPY181221P00262000", Type: "Option", OptionUnderlying: "SPY", OptionExpire: models.Date{helpers.ParseDateNoError("12/21/2018").UTC()}, OptionType: "Put", OptionStrike: 262.00})
 
-	db.Exec("TRUNCATE TABLE trade_groups;")
 	db.Create(&models.TradeGroup{UserId: 1, BrokerAccountId: 1, Name: "Put Credit Spread", BrokerAccountRef: "abc123", Status: "Open", Type: "Option", OrderIds: "1", Risked: 1969.00, Proceeds: 0.00, Profit: 0.00, Commission: 0.00, OpenDate: openTs})
 
-	db.Exec("TRUNCATE TABLE positions;")
 	db.Create(&models.Position{UserId: 1, TradeGroupId: 1, BrokerAccountId: 1, BrokerAccountRef: "123abc", Status: "Open", SymbolId: 1, Qty: 11, OrgQty: 11, CostBasis: 1738.00, AvgOpenPrice: 1.58, AvgClosePrice: 0.00, OrderIds: "1", OpenDate: openTs})
 	db.Create(&models.Position{UserId: 1, TradeGroupId: 1, BrokerAccountId: 1, BrokerAccountRef: "123abc", Status: "Open", SymbolId: 2, Qty: -11, OrgQty: -11, CostBasis: -1969.00, AvgOpenPrice: 1.79, AvgClosePrice: 0.00, OrderIds: "1", OpenDate: openTs})
 
@@ -154,13 +153,10 @@ func TestStorePositions01(t *testing.T) {
 	env.ReadEnv("../../.env")
 
 	// Start the db connection.
-	db, _ := models.NewDB()
-	defer db.Close()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
-	// Best to clear this data so we can test against empty tables.
-	// This test is responsible for populating these tables.
-	db.Exec("TRUNCATE TABLE trade_groups;")
-	db.Exec("TRUNCATE TABLE positions;")
+	//models.LoadTestingData(db.New())
 
 	// Set known values from testing data
 	var userId uint = 1
@@ -184,8 +180,6 @@ func TestStorePositions01(t *testing.T) {
 	// Verify the data was return as expected
 	st.Expect(t, err, nil)
 	st.Expect(t, len(results), 13)
-
-	//spew.Dump(results)
 
 	// Check some of the single options
 	st.Expect(t, results[10].Status, "Closed")
