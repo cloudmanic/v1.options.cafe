@@ -9,6 +9,7 @@
 package models
 
 import (
+	"errors"
 	"flag"
 	"go/build"
 	"log"
@@ -30,15 +31,14 @@ func init() {
 // Start the DB connection.
 //
 func NewDB() (*DB, error) {
+	// We should not be calling htis from testing.
+	if flag.Lookup("test.v") != nil {
+		log.Fatal(errors.New("We can not call NewDB() from testing."))
+	}
 
 	var err error
 
 	dbName := os.Getenv("DB_DATABASE")
-
-	// Is this a testing run?
-	if flag.Lookup("test.v") != nil {
-		dbName = os.Getenv("DB_DATABASE_TESTING")
-	}
 
 	// Connect to Mysql
 	db, err := gorm.Open("mysql", os.Getenv("DB_USERNAME")+":"+os.Getenv("DB_PASSWORD")+"@"+os.Getenv("DB_HOST")+"/"+dbName+"?charset=utf8&parseTime=True&loc=Local")

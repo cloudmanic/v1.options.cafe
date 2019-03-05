@@ -22,7 +22,8 @@ import (
 func TestGetQuotes01(t *testing.T) {
 
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create broker object
 	broker := Api{

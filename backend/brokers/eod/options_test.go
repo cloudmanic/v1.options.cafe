@@ -25,7 +25,8 @@ import (
 func TestGetOptionsChainByExpiration01(t *testing.T) {
 
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create broker object
 	o := Api{
@@ -52,7 +53,8 @@ func TestGetOptionsChainByExpiration01(t *testing.T) {
 func TestGetOptionsExpirationsBySymbol01(t *testing.T) {
 
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create broker object
 	o := Api{
@@ -76,7 +78,8 @@ func TestGetOptionsExpirationsBySymbol01(t *testing.T) {
 func TestGetOptionsByExpirationType01(t *testing.T) {
 
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create broker object
 	o := Api{

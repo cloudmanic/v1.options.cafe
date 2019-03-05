@@ -27,7 +27,8 @@ import (
 func TestGetOptionsBySymbol01(t *testing.T) {
 
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create broker object
 	o := Api{
@@ -42,7 +43,6 @@ func TestGetOptionsBySymbol01(t *testing.T) {
 	st.Expect(t, err, nil)
 	st.Expect(t, underlyingLast, 276.39)
 	st.Expect(t, len(options), 6262)
-
 }
 
 //

@@ -25,10 +25,9 @@ import (
 // TestRunPutCreditSpread01 - Run a put credit spread backtest.
 //
 func TestDoPutCreditSpread01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
-	defer db.Close()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Setup a new backtesting
 	bt := New(db)

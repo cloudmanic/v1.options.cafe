@@ -22,8 +22,8 @@ import (
 func TestDoBacktestDays01(t *testing.T) {
 
 	// Start the db connection.
-	db, _ := models.NewDB()
-	defer db.Close()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Setup a new backtesting
 	bt := New(db)
@@ -100,8 +100,8 @@ func TestGetOptionsByExpirationType01(t *testing.T) {
 //
 func TestGetExpirationDatesFromOptions01(t *testing.T) {
 	// Start the db connection.
-	db, _ := models.NewDB()
-	defer db.Close()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Setup a new backtesting
 	bt := New(db)
@@ -133,8 +133,8 @@ func TestGetExpirationDatesFromOptions01(t *testing.T) {
 //
 func TestGetSymbol(t *testing.T) {
 	// Start the db connection.
-	db, _ := models.NewDB()
-	defer db.Close()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Setup a new backtesting
 	bt := New(db)

@@ -17,11 +17,10 @@ import (
 //
 // Load and return some test data.
 //
-func LoadAndGetTestData() models.BrokerAccount {
-
-	// Start the db connection.
-	db, _ := models.NewDB()
-	defer db.Close()
+func LoadAndGetTestData(db *models.DB) models.BrokerAccount {
+	// BrokerAccounts
+	db.Create(&models.BrokerAccount{UserId: 1, BrokerId: 1, Name: "Test Account 1", AccountNumber: "abc1235423", StockCommission: 5.00, StockMin: 0.00, OptionCommission: 0.35, OptionSingleMin: 5.00, OptionMultiLegMin: 7.00, OptionBase: 0.00})
+	db.Create(&models.BrokerAccount{UserId: 1, BrokerId: 1, Name: "Test Account 2", AccountNumber: "ABC123ZY", StockCommission: 5.00, StockMin: 0.00, OptionCommission: 0.35, OptionSingleMin: 5.00, OptionMultiLegMin: 7.00, OptionBase: 0.00})
 
 	// Put test data into database
 	brokerAccount := models.BrokerAccount{
@@ -75,11 +74,11 @@ func LoadAndGetTestData() models.BrokerAccount {
 func TestGetYearlySummaryByAccountYear01(t *testing.T) {
 
 	// Start the db connection.
-	db, _ := models.NewDB()
-	defer db.Close()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Get test data
-	brokerAccount := LoadAndGetTestData()
+	brokerAccount := LoadAndGetTestData(db)
 
 	// Run function we are testing. - 2016
 	summary2016 := GetYearlySummaryByAccountYear(db, brokerAccount, 2016)
@@ -124,11 +123,11 @@ func TestGetYearlySummaryByAccountYear01(t *testing.T) {
 func TestGetYearsWithTradeGroups01(t *testing.T) {
 
 	// Start the db connection.
-	db, _ := models.NewDB()
-	defer db.Close()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Get test data
-	brokerAccount := LoadAndGetTestData()
+	brokerAccount := LoadAndGetTestData(db)
 
 	// Run function we are testing. - 2016
 	years := GetYearsWithTradeGroups(db, brokerAccount)
