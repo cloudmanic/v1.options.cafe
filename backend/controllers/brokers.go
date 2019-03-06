@@ -7,10 +7,11 @@
 package controllers
 
 import (
-	"flag"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
@@ -171,7 +172,7 @@ func (t *Controller) GetBalances(c *gin.Context) {
 	})
 
 	// Loop through the different brokers- TODO: This only supports one broker. We need to get balance from all brokers and merge data together.
-	if flag.Lookup("test.v") == nil {
+	if !strings.HasSuffix(os.Args[0], ".test") {
 		for _, row := range brokers {
 
 			// Decrypt the access token

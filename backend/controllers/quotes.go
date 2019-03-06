@@ -8,10 +8,10 @@ package controllers
 
 import (
 	"errors"
-	"flag"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/araddon/dateparse"
@@ -423,7 +423,7 @@ func (t *Controller) GetTradierAccessToken(c *gin.Context) (string, error) {
 	}
 
 	// TODO: For now we only support Tradier but as we open up to new brokers we will have to support more.
-	if flag.Lookup("test.v") == nil {
+	if strings.HasSuffix(os.Args[0], ".test") {
 		for _, row := range brokers {
 
 			// Decrypt the access token

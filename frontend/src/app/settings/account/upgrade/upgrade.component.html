@@ -1,126 +1,115 @@
 <div class="section-primary section-primary--alt">
-    <div class="shell shell--size2">
-        <div class="section__bar" *ngIf="back.length">
-            <a routerLink="{{ back }}" class="link-back">
-                <i class="ico-angle-left"></i> Back to Settings
-            </a>
-        </div>
-
-        <div class="section__body">
-            <div class="section__body-inner">
-                <div class="widget-options">
-                    <h4>Options Cafe Upgrade</h4>
-
-                    <div class="widget__body">
-                        <ul class="list-checks">
-                            <li>
-                                <i class="ico-check-rect"></i>
-
-                                Full access to all features
-                            </li>
-                            
-                            <li>
-                                <i class="ico-check-rect"></i>
-
-                                Unlimited accounts
-                            </li>
-                            
-                            <li>
-                                <i class="ico-check-rect"></i>
-
-                                Unlimited trades
-                            </li>
-                            
-                            <li>
-                                <i class="ico-check-rect"></i>
-
-                                Full support and help
-                            </li>
-                            
-                            <li>
-                                <i class="ico-check-rect"></i>
-
-                                Stock screener
-                            </li>
-                            
-                            <li>
-                                <i class="ico-check-rect"></i>
-
-                                Trade groups
-                            </li>
-                            
-                            <li>
-                                <i class="ico-check-rect"></i>
-
-                                Automatic updates and improvements
-                            </li>
-                            
-                            <li>
-                                <i class="ico-check-rect"></i>
-
-                                $20 in commission credits
-                            </li>
-
-                        </ul><!-- /.list-checks -->
-                    </div><!-- /.widget__body -->
-                </div><!-- /.widget-options -->
-
-                <div class="section__content">
-                    <h4>Have questions? We have answers!</h4>
-
-                    <h6>Can I keep using the free account?</h6>
-
-                    <p>
-                        We offer a free trial because we believe that you will see that Options Cafe is a valuable tool that will help you make better trades. After 30 days you are required to update to the paid account. 
-                    </p>
-
-                    <h6>What if I change my mind?</h6>
-
-                    <p>You can cancel any time. We also offer a generous <a href="https://options.cafe/refunds" target="_blank">refund</a> for annual accounts, we want you to be happy!</p>
-
-                    <h6>Will you keep making updates and enhancements to the application?</h6>
-
-                    <p>Of course. Options Cafe is always improving. If there is some feature you want to see please contact us at <a href="https://options.cafe/refunds" target="_blank">help@options.cafe</a>. We love feedback.</p>
-
-                    <h6>How do I get my commission credits?</h6>
-
-                    <p>Each month when you make more than 8 options trades with <a href="https://brokerage.tradier.com/signup?platform=72&promo=OCOffset" target="_blank">Tradier</a> a credit of $20 will be applied to your Tradier account. It is that simple! More information <a href="https://cloudmanic.groovehq.com/knowledge_base/topics/getting-commission-credits-with-tradier" target="_blank">here</a>.</p>
-
-                    <h6>Still have questions? Feel free to reach out!</h6>
-
-                    <p>
-                        <a href="https://options.cafe/refunds" target="_blank">help@options.cafe</a>
-                    </p>
-                </div><!-- /.section__content -->
-            </div><!-- /.section__body-inner -->
-
-            <ul class="list-plans list-plans--alt">
-                <li>
-                    <h4>Monthly Plan</h4>
-
-                    <p>$20/Month – Recurring Payment</p>
-
-                    <a routerLink="/settings/account/upgrade/credit-card" [queryParams]="{plan: 'monthly'}" class="btn btn--pink">Choose This Plan</a>
-                </li>
-
-                <li>
-                    <h4>ANNUAL PLAN</h4>
-
-                    <p>$200/Year – Recurring Payment</p>
-
-                    <h6 class="title-arrow">Save $40/Year!</h6><!-- /.title-arrow -->
-
-                    <a routerLink="/settings/account/upgrade/credit-card" [queryParams]="{plan: 'yearly'}" class="btn btn--pink">Choose This Plan</a>
-                </li>
-            </ul>
-            
-            <div class="section__foot section__foot--alt">
-                <p>If you wish to cancel your account, click here. If you have any questions please contact us.</p>
-
-                <a (click)="cancelAccount()" class="btn btn--border">Cancel Account</a>
-            </div>
-        </div>
+  <div class="shell shell--size2">
+    <div class="section__bar" *ngIf="back.length">
+      <a routerLink="{{ back }}" class="link-back">
+        <i class="ico-angle-left"></i> Back to Settings
+      </a>
     </div>
+
+    <div class="section__body">
+      <div class="section__body-inner">
+        <div class="widget-options">
+          <h4>Options Cafe Upgrade</h4>
+
+          <div class="widget__body">
+            <ul class="list-checks">
+              <li>
+                <i class="ico-check-rect"></i>
+                Full access to all features
+              </li>
+
+              <li>
+                <i class="ico-check-rect"></i>
+                Unlimited Commission-Free Trades
+              </li>
+
+              <li>
+                <i class="ico-check-rect"></i>
+                Full support and help
+              </li>
+
+              <li>
+                <i class="ico-check-rect"></i>
+                Stock screener
+              </li>
+
+              <li>
+                <i class="ico-check-rect"></i>
+                Trade groups
+              </li>
+
+              <li>
+                <i class="ico-check-rect"></i>
+                Automatic updates and improvements
+              </li>
+
+              <li>
+                <i class="ico-check-rect"></i>
+                Unlimited Commission-Free Trades
+              </li>
+
+            </ul>
+          </div>
+        </div>
+
+        <div class="section__content">
+          <h4>Have questions? We have answers!</h4>
+
+          <h6>Can I keep using the free account?</h6>
+
+          <p>
+            We offer a free trial because we believe that you will see that Options Cafe is a valuable tool that will help you make better trades. After 30 days you are required to update to the paid account.
+          </p>
+
+          <h6>What if I change my mind?</h6>
+
+          <p>You can cancel any time. We also offer a generous <a href="https://options.cafe/refunds" target="_blank">refund</a> for annual accounts, we want you to be happy!</p>
+
+          <h6>Will you keep making updates and enhancements to the application?</h6>
+
+          <p>Of course. Options Cafe is always improving. If there is some feature you want to see please contact us at <a href="https://options.cafe/refunds" target="_blank">help@options.cafe</a>. We love feedback.</p>
+
+          <h6>What is the deal with Tradier Brokerage?</h6>
+
+          <p>We have partnered with <a href="https://brokerage.tradier.com/signup?platform=72&promo=OCUnlimited" target="_blank">Tradier Brokerage</a> to provide broker services for Options Cafe.
+            As an Options Cafe customer you will receive unlimited commission-free trades with Tradier Brokerage. Some additional information on how to setup a
+            Tradier Brokerage account can be found <a href="https://cloudmanic.groovehq.com/knowledge_base/topics/how-to-setup-your-tradier-account">here</a>.
+
+            <h6>Still have questions? Feel free to reach out!</h6>
+
+            <p>
+              <a href="https://options.cafe/refunds" target="_blank">help@options.cafe</a>
+            </p>
+        </div><!-- /.section__content -->
+      </div><!-- /.section__body-inner -->
+
+      <ul class="list-plans list-plans--alt">
+        <li>
+          <h4>Monthly Plan</h4>
+
+          <p>$60/Month – Recurring Payment</p>
+
+          <a routerLink="/settings/account/upgrade/credit-card" [queryParams]="{plan: 'monthly'}" class="btn btn--pink">Choose This Plan</a>
+        </li>
+
+        <li>
+          <h4>ANNUAL PLAN</h4>
+
+          <p>$600/Year – Recurring Payment</p>
+
+          <h6 class="title-arrow">Save $120/Year!</h6><!-- /.title-arrow -->
+
+          <a routerLink="/settings/account/upgrade/credit-card" [queryParams]="{plan: 'yearly'}" class="btn btn--pink">Choose This Plan</a>
+        </li>
+      </ul>
+
+      <div class="section__foot section__foot--alt">
+        <p>If you wish to cancel your account, click here. If you have any questions please contact us.</p>
+
+        <a (click)="cancelAccount()" class="btn btn--border">Cancel Account</a>
+      </div>
+    </div>
+  </div>
 </div>
 
 

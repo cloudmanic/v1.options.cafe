@@ -10,10 +10,10 @@ package models
 
 import (
 	"errors"
-	"flag"
 	"go/build"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/jinzhu/gorm"
@@ -32,7 +32,7 @@ func init() {
 //
 func NewDB() (*DB, error) {
 	// We should not be calling htis from testing.
-	if flag.Lookup("test.v") != nil {
+	if strings.HasSuffix(os.Args[0], ".test") {
 		log.Fatal(errors.New("We can not call NewDB() from testing."))
 	}
 
@@ -54,7 +54,7 @@ func NewDB() (*DB, error) {
 	db.AutoMigrate(&Position{})
 
 	// Is this a testing run? If so load testing data.
-	if flag.Lookup("test.v") != nil {
+	if strings.HasSuffix(os.Args[0], ".test") {
 		ClearTestingData(db)
 	}
 

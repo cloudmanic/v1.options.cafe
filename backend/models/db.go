@@ -8,10 +8,10 @@ package models
 
 import (
 	"errors"
-	"flag"
 	"go/build"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -33,7 +33,7 @@ func init() {
 //
 func NewDB() (*DB, error) {
 	// We should not be calling htis from testing.
-	if flag.Lookup("test.v") != nil {
+	if strings.HasSuffix(os.Args[0], ".test") {
 		log.Fatal(errors.New("We can not call NewDB() from testing."))
 	}
 

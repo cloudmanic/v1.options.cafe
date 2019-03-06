@@ -9,7 +9,8 @@
 package screener
 
 import (
-	"flag"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
@@ -28,7 +29,7 @@ func (t *Base) RunIronCondor(screen models.Screener) ([]Result, error) {
 	today := time.Now()
 
 	// Change today's date for unit testing.
-	if flag.Lookup("test.v") != nil {
+	if strings.HasSuffix(os.Args[0], ".test") {
 		today = helpers.ParseDateNoError("2018-10-18").UTC()
 	}
 

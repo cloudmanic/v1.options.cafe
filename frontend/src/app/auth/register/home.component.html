@@ -1,74 +1,74 @@
-<app-auth-layout> 
+<app-auth-layout>
 
   <form (ngSubmit)="onSubmit(f)" #f="ngForm">
     <section class="form__section box--bordered">
-    	<div class="form__head">
-    		<h5 class="form__title">Create an Options Cafe Account!</h5><!-- /.form__title -->
-    	</div>
-  
-    	<div class="form__body">
+      <div class="form__head">
+        <h5 class="form__title">Create an Options Cafe Account!</h5><!-- /.form__title -->
+      </div>
 
-            <div class="form__row">
-                <a class="btn btn-google-login" title="Sign in with Google" (click)="googleLogin()">
-                    <span class="oauth-icon">
-                        <svg class="icon-svg icon-svg--google icon--" width="26" height="26" viewbox="0 0 32 32" preserveAspectRatio="xMinYMin">
-                            <use xlink:href="/images/svg/icons.svg#icon--google"></use>
-                        </svg>
-                    </span>
-                    <span class="btn-text">Sign up with Google</span>
-                </a>
-            </div>
+      <div class="form__body">
 
-            <div class="form__row">
-              <div class="break">
-                <div class="break__content">Or, use my email address</div>
-              </div>
-            </div>
+        <div class="form__row">
+          <a class="btn btn-google-login" title="Sign in with Google" (click)="googleLogin()">
+            <span class="oauth-icon">
+              <svg class="icon-svg icon-svg--google icon--" width="26" height="26" viewbox="0 0 32 32" preserveAspectRatio="xMinYMin">
+                <use xlink:href="/images/svg/icons.svg#icon--google"></use>
+              </svg>
+            </span>
+            <span class="btn-text">Sign up with Google</span>
+          </a>
+        </div>
 
-    		<div class="form__row">
-    			<label for="field-first" class="form__label">First Name</label>
-  
-    			<div class="form__controls">
-    				<input type="text" class="field" name="first" id="field-first" required ngModel />
-    			</div>
-    		</div>
-    		
-    		<div class="form__row">
-    			<label for="field-last" class="form__label">Last Name</label>
-  
-    			<div class="form__controls">
-    				<input type="text" class="field" name="last" id="field-last" required ngModel />
-    			</div>
-    		</div>    		
-  
-    		<div class="form__row">
-    			<label for="field-email" class="form__label">Email</label>
-  
-    			<div class="form__controls">
-    				<input type="email" class="field" name="email" id="field-email" required email [(ngModel)]="email" />
-    			</div>
-    		</div>
-  
-    		<div class="form__row">
-    			<label for="field-password" class="form__label">Password</label>
-  
-    			<div class="form__controls">
-    				<input type="password" class="field" name="password" id="field-password" minlength="6" required ngModel />
-    			</div>
-    		</div>
-  
-    		<span class="form__error active" *ngIf="errorMsg">{{ errorMsg }}</span>
-    	</div>
-  
-    	<div class="form__actions">
-    		<input type="submit" value="{{ submitBtn }}" class="btn form__btn" [disabled]="! f.valid" />
-    	</div><!-- /.form__actions -->
+        <div class="form__row">
+          <div class="break">
+            <div class="break__content">Or, use my email address</div>
+          </div>
+        </div>
+
+        <div class="form__row">
+          <label for="field-first" class="form__label">First Name</label>
+
+          <div class="form__controls">
+            <input type="text" class="field" name="first" id="field-first" required ngModel />
+          </div>
+        </div>
+
+        <div class="form__row">
+          <label for="field-last" class="form__label">Last Name</label>
+
+          <div class="form__controls">
+            <input type="text" class="field" name="last" id="field-last" required ngModel />
+          </div>
+        </div>
+
+        <div class="form__row">
+          <label for="field-email" class="form__label">Email</label>
+
+          <div class="form__controls">
+            <input type="email" class="field" name="email" id="field-email" required email [(ngModel)]="email" />
+          </div>
+        </div>
+
+        <div class="form__row">
+          <label for="field-password" class="form__label">Password</label>
+
+          <div class="form__controls">
+            <input type="password" class="field" name="password" id="field-password" minlength="6" required ngModel />
+          </div>
+        </div>
+
+        <span class="form__error active" *ngIf="errorMsg">{{ errorMsg }}</span>
+      </div>
+
+      <div class="form__actions">
+        <input type="submit" value="{{ submitBtn }}" class="btn form__btn" [disabled]="! f.valid" />
+      </div><!-- /.form__actions -->
     </section><!-- /.form__section box-bordered -->
-  
+
     <footer class="form__foot form__foot--alignleft">
-    	<p>
-    		<a routerLink="/login" class="link-action">Back to login</a>
-    	</p>
+      <p>
+        <a routerLink="/login" class="link-action">Back to login</a>
+      </p>
     </footer>
   </form>
 

@@ -8,10 +8,11 @@ package controllers
 
 import (
 	"encoding/json"
-	"flag"
 	"go/build"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
@@ -160,7 +161,7 @@ func (t *Controller) RespondJSON(c *gin.Context, status int, payload interface{}
 func (t *Controller) RespondError(c *gin.Context, err error, msg string) bool {
 
 	if err != nil {
-		if flag.Lookup("test.v") == nil {
+		if !strings.HasSuffix(os.Args[0], ".test") {
 			services.Warning(err)
 		}
 

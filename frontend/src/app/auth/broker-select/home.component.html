@@ -1,37 +1,37 @@
-<app-auth-layout>  				
-  
+<app-auth-layout>
+
   <form (ngSubmit)="onSubmit(f)" #f="ngForm">
     <section class="form__section box--bordered">
-    	<div class="form__head">
-    		<h5 class="form__title">Select Broker</h5><!-- /.form__title -->
-    	</div><!-- /.form__head -->
-  
-    	<div class="form__body">
-    		<div class="form__row">
-    			<label for="field-broker" class="form__label">Broker</label>
-  
-    			<div class="form__controls">
-    				<div class="select">
-    					<select name="field-broker" id="field-broker" [ngModel]="broker">
-    						<option value="tradier">Tradier</option>
-    						<option value="demo" disabled>Demo Account - Coming Soon</option>
-    					</select>
-    				</div><!-- /.select -->
-    			</div><!-- /.form__controls -->
-    		</div><!-- /.form__row -->
-    	</div><!-- /.form__body -->
-  
-    	<div class="form__actions">
-    		<input type="submit" value="Connect" class="btn form__btn" />
-    	</div><!-- /.form__actions -->
+      <div class="form__head">
+        <h5 class="form__title">Select Broker</h5><!-- /.form__title -->
+      </div><!-- /.form__head -->
+
+      <div class="form__body">
+        <div class="form__row">
+          <label for="field-broker" class="form__label">Broker</label>
+
+          <div class="form__controls">
+            <div class="select">
+              <select name="field-broker" id="field-broker" [ngModel]="broker">
+                <option value="tradier">Tradier</option>
+                <option value="demo" disabled>Demo Account - Coming Soon</option>
+              </select>
+            </div><!-- /.select -->
+          </div><!-- /.form__controls -->
+        </div><!-- /.form__row -->
+      </div><!-- /.form__body -->
+
+      <div class="form__actions">
+        <input type="submit" value="Connect" class="btn form__btn" />
+      </div><!-- /.form__actions -->
     </section><!-- /.form__section box-bordered -->
-  
+
     <footer class="form__foot">
-    	<p>Don't have a Tradier account?</p>
-  
-    	<p>
-    		<a href="https://brokerage.tradier.com/signup?platform=72&promo=OCOffset" class="link-action" target="_blank">Click here to create an account</a>
-    	</p>
+      <p>Don't have a Tradier account?</p>
+
+      <p>
+        <a href="https://brokerage.tradier.com/signup?platform=72&promo=OCUnlimited" class="link-action" target="_blank">Click here to create an account</a>
+      </p>
     </footer><!-- /.form__foot -->
   </form>
 

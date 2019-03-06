@@ -7,7 +7,6 @@
 package services
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -31,7 +30,7 @@ func Error(err error, message string) {
 // Info Log.
 //
 func Info(message string) {
-	if flag.Lookup("test.v") == nil {
+	if !strings.HasSuffix(os.Args[0], ".test") {
 		log.Println("[App:Info] " + MyCaller() + " : " + ansi.Color(message, "magenta"))
 	}
 }

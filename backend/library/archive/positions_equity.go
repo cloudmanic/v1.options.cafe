@@ -7,8 +7,9 @@
 package archive
 
 import (
-	"flag"
+	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/notify"
@@ -60,7 +61,7 @@ func DoEquityOrder(db models.Datastore, userId uint) error {
 		}
 
 		// Not useful if we are in testing.
-		if flag.Lookup("test.v") == nil {
+		if !strings.HasSuffix(os.Args[0], ".test") {
 			// Send websocket with position change
 			queue.Write("oc-websocket-write", `{"uri":"change-detected","user_id":`+strconv.Itoa(int(userId))+`,"body": { "type": "order-filled", "order_id": `+strconv.Itoa(int(row.Id))+`} }`)
 
