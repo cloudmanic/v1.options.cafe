@@ -218,7 +218,7 @@ export class ScreenerComponent implements OnInit {
 		}
 
 		// Set default duration.
-		tradeDetails.Duration = "gtc";
+		tradeDetails.Duration = "day";
 
 		// Set default price
 		tradeDetails.Price = result.MidPoint;
