@@ -6,12 +6,18 @@
 #
 # Deploy the entire app (frontend and backend). We do some compiling locally and then deploy.
 
-# Build backend
+# cd to backend
 cd ../backend
 
+# First run unit tests. No deploys if issues.
+cd scripts
+./run_tests.sh
+cd ../
+
+# Build backend
 echo "Building app.options.cafe"
 env GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o builds/app.options.cafe
-upx builds/app.options.cafe 
+upx builds/app.options.cafe
 
 # Build frontend
 cd ../frontend
