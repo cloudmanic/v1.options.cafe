@@ -81,7 +81,6 @@ func (t *DB) GetBrokerFromBrokerAccountAndUserId(id uint, userId uint) (Broker, 
 // Update the broker account object.
 //
 func (t *DB) UpdateBrokerAccount(brokerAccount *BrokerAccount) error {
-
 	// Update entry.
 	t.Save(&brokerAccount)
 

@@ -28,7 +28,7 @@ func DoGetHistory(db models.Datastore, api brokers.Api, user models.User, broker
 	}
 
 	if err != nil {
-		return fmt.Errorf("pull.DoGetHistory(): ", err)
+		return fmt.Errorf("pull.DoGetHistory(): %s", err)
 	}
 
 	// Store the history in our database

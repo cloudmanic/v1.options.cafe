@@ -120,10 +120,8 @@ func GetActiveUserList(db models.Datastore) []models.User {
 // Send a simple message
 //
 func SendSimpleAction(action string) {
-
 	// Send message to message queue
 	queue.Write("oc-job", `{"action":"`+action+`"}`)
-
 }
 
 //

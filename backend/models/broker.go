@@ -28,7 +28,6 @@ type Broker struct {
 // Get a broker by Id.
 //
 func (t *DB) GetBrokerById(id uint) (Broker, error) {
-
 	var u Broker
 
 	if t.Where("Id = ?", id).First(&u).RecordNotFound() {
@@ -37,14 +36,12 @@ func (t *DB) GetBrokerById(id uint) (Broker, error) {
 
 	// Return the user.
 	return u, nil
-
 }
 
 //
 // Get a brokers by type and user id.
 //
 func (t *DB) GetBrokerTypeAndUserId(userId uint, brokerType string) ([]Broker, error) {
-
 	var u []Broker
 
 	if t.Where("user_id = ? AND name = ?", userId, brokerType).Find(&u).RecordNotFound() {
@@ -53,14 +50,12 @@ func (t *DB) GetBrokerTypeAndUserId(userId uint, brokerType string) ([]Broker, e
 
 	// Return the user.
 	return u, nil
-
 }
 
 //
 // Create a new broker entry.
 //
 func (t *DB) CreateNewBroker(name string, user User, accessToken string, refreshToken string, tokenExpirationDate time.Time) (Broker, error) {
-
 	// Encrypt the access token
 	encryptAccessToken, err := helpers.Encrypt(accessToken)
 
@@ -93,14 +88,12 @@ func (t *DB) CreateNewBroker(name string, user User, accessToken string, refresh
 
 	// Return the user.
 	return broker, nil
-
 }
 
 //
 // Update a new broker entry.
 //
 func (t *DB) UpdateBroker(broker Broker) error {
-
 	// Encrypt the access token
 	encryptAccessToken, err := helpers.Encrypt(broker.AccessToken)
 
@@ -126,7 +119,6 @@ func (t *DB) UpdateBroker(broker Broker) error {
 
 	// Return the user.
 	return nil
-
 }
 
 //
@@ -135,7 +127,7 @@ func (t *DB) UpdateBroker(broker Broker) error {
 // polling will catch up. We dot his just so users do not have to wait for data.
 //
 func (t *DB) KickStartBroker(user User, broker Broker) {
-
+	// Actions
 	actions := []string{
 		"get-user-profile",
 		"get-all-orders",
@@ -144,17 +136,14 @@ func (t *DB) KickStartBroker(user User, broker Broker) {
 
 	// Loop through the required actions to get started
 	for _, row := range actions {
-
 		// Send message to websocket
 		queue.Write("oc-job", `{"action":"`+row+`","user_id":`+strconv.Itoa(int(user.Id))+`,"broker_id":`+strconv.Itoa(int(broker.Id))+`}`)
-
 	}
 
 	// Just give it a few seconds to do its boot strap thing
 	time.Sleep(time.Second * 5)
 	broker.Status = "Active"
 	t.UpdateBroker(broker)
-
 }
 
 /* End File */

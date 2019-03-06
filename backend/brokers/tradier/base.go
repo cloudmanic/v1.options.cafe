@@ -20,6 +20,7 @@ const (
 	sandBaseUrl = "https://sandbox.tradier.com/v1"
 )
 
+// Api struct
 type Api struct {
 	DB      models.Datastore
 	Sandbox bool
@@ -40,16 +41,14 @@ func init() {
 }
 
 //
-// Add symbols to active list.
+// SetActiveSymbols - Add symbols to active list.
 //
 func (t *Api) SetActiveSymbols(symbols []string) {
-
 	// Lock da memory
 	t.muActiveSymbols.Lock()
 	defer t.muActiveSymbols.Unlock()
 
 	t.activeSymbols = strings.Join(symbols, ",")
-
 }
 
 //

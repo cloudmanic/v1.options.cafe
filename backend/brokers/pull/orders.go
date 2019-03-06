@@ -3,7 +3,7 @@
 // Author: Spicer Matthews (spicer@cloudmanic.com)
 // Last Modified by: Spicer Matthews
 // Last Modified: 2018-12-23
-// Copyright: 2017 Cloudmanic Labs, LLC. All rights reserved.
+// Copyright: 2019 Cloudmanic Labs, LLC. All rights reserved.
 //
 
 package pull
@@ -23,10 +23,10 @@ import (
 )
 
 //
-// Do get All orders. Here is where we archive historical orders.
+// DoGetAllOrders - Do get All orders. Here is where we archive historical orders.
 //
 func DoGetAllOrders(db models.Datastore, api brokers.Api, user models.User, broker models.Broker) error {
-
+	// Orders
 	var orders []types.Order
 
 	// Helpful log.
@@ -36,24 +36,21 @@ func DoGetAllOrders(db models.Datastore, api brokers.Api, user models.User, brok
 	orders, err := api.GetAllOrders()
 
 	if err != nil {
-		return fmt.Errorf("pull.GetAllOrders() : ", err)
+		return fmt.Errorf("pull.GetAllOrders() : %s", err)
 	}
 
 	// Store the orders in our database
 	err = archive.StoreOrders(db, orders, user.Id, broker.Id)
 
 	if err != nil {
-		return fmt.Errorf("pull.GetAllOrders() - StoreOrders() : ", err)
+		return fmt.Errorf("pull.GetAllOrders() - StoreOrders() : %s", err)
 	}
 
 	// Consider this user boot strapped
-	user.Bootstrapped = "Yes"
-	db.New().Save(&user)
-	services.Info("DoGetAllOrders() : Setting user " + user.Email + " to fully bootstrapped.")
+	endBookstrapping(db, user.Id, user.Email)
 
 	// Return Happy
 	return nil
-
 }
 
 //
@@ -101,6 +98,24 @@ func DoGetOrders(db models.Datastore, api brokers.Api, user models.User, broker 
 
 	// Return Happy
 	return nil
+}
+
+// ------------ Private Helper Functions -------------- //
+
+//
+// endBookstrapping - We just call this function to end the bookstraping process for a new account.
+// We broke this out into a new function because we had an issue with the broker being set back to
+// disabled. We need to update just one field not the entire user object.
+//
+func endBookstrapping(db models.Datastore, userID uint, email string) {
+	// Update the DB record that we are now bootstrapped
+	db.New().Model(&models.User{}).Where("id = ?", userID).Update("bootstrapped", "Yes")
+
+	// Log action
+	services.Info("DoGetAllOrders() : Setting user " + email + " to fully bootstrapped.")
+
+	// Return Happy
+	return
 }
 
 /* End File */

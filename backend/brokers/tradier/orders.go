@@ -12,10 +12,9 @@ import (
 )
 
 //
-// Cancel order
+// CancelOrder - Cancel order
 //
 func (t *Api) CancelOrder(accountId string, orderId string) error {
-
 	// Log order cancel
 	services.Info("Canceling order for account - " + accountId + " : " + orderId)
 
@@ -30,10 +29,9 @@ func (t *Api) CancelOrder(accountId string, orderId string) error {
 }
 
 //
-// Submit order
+// SubmitOrder - Submit order
 //
 func (t *Api) SubmitOrder(accountId string, order types.Order) (types.OrderSubmit, error) {
-
 	// Log order
 	orderJson, _ := json.Marshal(order)
 	services.Info("Placing order for account - " + accountId + " : " + string(orderJson))
@@ -68,7 +66,7 @@ func (t *Api) SubmitOrder(accountId string, order types.Order) (types.OrderSubmi
 }
 
 //
-// Preview order
+// PreviewOrder - Preview order
 //
 func (t *Api) PreviewOrder(accountId string, order types.Order) (types.OrderPreview, error) {
 
@@ -105,10 +103,10 @@ func (t *Api) PreviewOrder(accountId string, order types.Order) (types.OrderPrev
 }
 
 //
-// Get All Orders Ever
+// GetAllOrders - Get All Orders Ever
 //
 func (t *Api) GetAllOrders() ([]types.Order, error) {
-
+	// Vars
 	page := 1
 	orders := []types.Order{}
 
@@ -154,7 +152,6 @@ func (t *Api) GetAllOrders() ([]types.Order, error) {
 
 	// Return the data.
 	return orders, nil
-
 }
 
 //

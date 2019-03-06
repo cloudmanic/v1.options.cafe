@@ -58,10 +58,10 @@ func init() {
 }
 
 //
-// Consume messages to make poll a broker
+// Start - Consume messages to make poll a broker
 //
 func Start(db models.Datastore) {
-
+	// WaitGroup
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 	defer wg.Done()
@@ -88,14 +88,12 @@ func Start(db models.Datastore) {
 
 	// Wait for messages
 	wg.Wait()
-
 }
 
 //
-// Handle broker feed request.
+// HandleRequest - Handle broker feed request.
 //
 func HandleRequest(db models.Datastore, msg string) {
-
 	// Convert JSON to Struct
 	job := worker.JobRequest{DB: db}
 

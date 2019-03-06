@@ -16,7 +16,7 @@ import (
 )
 
 //
-// Do get user profile data.
+// DoGetUserProfile - Do get user profile data.
 //
 func DoGetUserProfile(db models.Datastore, api brokers.Api, user models.User, broker models.Broker) error {
 
@@ -44,7 +44,7 @@ func DoGetUserProfile(db models.Datastore, api brokers.Api, user models.User, br
 		isNew, err := db.FirstOrCreateBrokerAccount(ba)
 
 		if err != nil {
-			return fmt.Errorf("DoGetUserProfile() FirstOrCreateBrokerAccount : ", err)
+			return fmt.Errorf("DoGetUserProfile() FirstOrCreateBrokerAccount : %s", err)
 		}
 
 		// If this is a new entry we should add default commissions.
@@ -60,7 +60,7 @@ func DoGetUserProfile(db models.Datastore, api brokers.Api, user models.User, br
 			err := db.UpdateBrokerAccount(ba)
 
 			if err != nil {
-				return fmt.Errorf("DoGetUserProfile() FirstOrCreateBrokerAccount : ", err)
+				return fmt.Errorf("DoGetUserProfile() FirstOrCreateBrokerAccount : %s", err)
 			}
 
 		}

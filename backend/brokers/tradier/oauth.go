@@ -228,7 +228,6 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 // Check to see if we need to refresh the refresh token.
 //
 func (t *Api) DoRefreshAccessTokenIfNeeded(user models.User) error {
-
 	// Get the different tradier brokers.
 	brokers, err := t.DB.GetBrokerTypeAndUserId(user.Id, "Tradier")
 
@@ -270,14 +269,12 @@ func (t *Api) DoRefreshAccessTokenIfNeeded(user models.User) error {
 
 	// All done no errors
 	return nil
-
 }
 
 //
 // Get a new access token via the refresh token.
 //
 func (t *Api) DoRefreshAccessToken(broker models.Broker) (error, string) {
-
 	// Decrypt the refresh token
 	decryptRefreshToken, err := helpers.Decrypt(broker.RefreshToken)
 
@@ -340,7 +337,6 @@ func (t *Api) DoRefreshAccessToken(broker models.Broker) (error, string) {
 
 	// All done no errors
 	return nil, tr.Token
-
 }
 
 /* End File */
