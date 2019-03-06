@@ -23,9 +23,9 @@ import (
 // Delete a screener - 01
 //
 func TestDeleteScreener01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -74,9 +74,9 @@ func TestDeleteScreener01(t *testing.T) {
 // UpdateScreener - 01
 //
 func TestUpdateScreener01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -133,9 +133,9 @@ func TestUpdateScreener01(t *testing.T) {
 // CreateScreener - 01
 //
 func TestCreateScreener01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -211,9 +211,9 @@ func TestGetScreenerResults01(t *testing.T) {
 // GetScreenerResultsFromFilters01
 //
 func TestGetScreenerResultsFromFilters01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -258,9 +258,9 @@ func TestGetScreenerResultsFromFilters01(t *testing.T) {
 // TestGetScreeners01
 //
 func TestGetScreeners01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -297,9 +297,9 @@ func TestGetScreeners01(t *testing.T) {
 // TestGetScreener01 - Get a screener by id. - 01
 //
 func TestGetScreener01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -337,9 +337,9 @@ func TestGetScreener01(t *testing.T) {
 // TestGetScreener02 - Get a screener by id. - 02 - Not Found
 //
 func TestGetScreener02(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -370,9 +370,9 @@ func TestGetScreener02(t *testing.T) {
 // TestGetScreener03 - Get a screener by id. - 03 - No Perms
 //
 func TestGetScreener03(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}

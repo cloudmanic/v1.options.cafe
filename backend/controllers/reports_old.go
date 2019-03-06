@@ -23,10 +23,9 @@ import (
 // Load and return some test data.
 //
 func LoadAndGetTestData() {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
-	defer db.Close()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Put test data into database
 	brokerAccount := models.BrokerAccount{
@@ -76,9 +75,9 @@ func LoadAndGetTestData() {
 // TestReportsGetTradeGroupYears01
 //
 func TestReportsGetTradeGroupYears01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Load test data
 	LoadAndGetTestData()
@@ -117,9 +116,9 @@ func TestReportsGetTradeGroupYears01(t *testing.T) {
 // TestReportsGetAccountYearlySummary01
 //
 func TestReportsGetAccountYearlySummary01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Load test data
 	LoadAndGetTestData()

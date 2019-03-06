@@ -24,9 +24,9 @@ import (
 // Test - PreviewOrder 01
 //
 func TestPreviewOrder01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -91,9 +91,9 @@ func TestPreviewOrder01(t *testing.T) {
 // Test - PreviewOrder 02
 //
 func TestPreviewOrder02(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -159,9 +159,9 @@ func TestPreviewOrder02(t *testing.T) {
 // Test - PreviewOrder 03 - equity trade
 //
 func TestPreviewOrder03(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -223,9 +223,9 @@ func TestPreviewOrder03(t *testing.T) {
 // Test - SubmitOrder 01
 //
 func TestSubmitOrder01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}

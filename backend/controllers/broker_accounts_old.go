@@ -28,7 +28,8 @@ func TestUpdateBrokerAccount01(t *testing.T) {
 	queue.Start()
 
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -83,9 +84,9 @@ func TestUpdateBrokerAccount01(t *testing.T) {
 // Test - UpdateBrokerAccount - 02 - Failed
 //
 func TestUpdateBrokerAccount02(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -130,9 +131,9 @@ func TestUpdateBrokerAccount02(t *testing.T) {
 // Test - UpdateBrokerAccount - 03 - Failed
 //
 func TestUpdateBrokerAccount03(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -177,9 +178,9 @@ func TestUpdateBrokerAccount03(t *testing.T) {
 // Test - UpdateBrokerAccount - 04 - Success
 //
 func TestUpdateBrokerAccount04(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -234,9 +235,9 @@ func TestUpdateBrokerAccount04(t *testing.T) {
 // Test - UpdateBrokerAccount - 05 - Failed
 //
 func TestUpdateBrokerAccount05(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}

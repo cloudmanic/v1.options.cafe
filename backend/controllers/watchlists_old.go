@@ -23,9 +23,9 @@ import (
 // Test UpdateWatchlist - 01
 //
 func TestUpdateWatchlist01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -66,9 +66,9 @@ func TestUpdateWatchlist01(t *testing.T) {
 // Test UpdateWatchlist - 02 (No access)
 //
 func TestUpdateWatchlist02(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -110,9 +110,9 @@ func TestUpdateWatchlist02(t *testing.T) {
 // Test UpdateWatchlist - 03 (No list found)
 //
 func TestUpdateWatchlist03(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -146,9 +146,9 @@ func TestUpdateWatchlist03(t *testing.T) {
 // Test DeleteWatchlist - 01
 //
 func TestDeleteWatchlist01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -191,9 +191,9 @@ func TestDeleteWatchlist01(t *testing.T) {
 // Test CreateWatchlist - 01
 //
 func TestCreateWatchlist01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -234,9 +234,9 @@ func TestCreateWatchlist01(t *testing.T) {
 // Test CreateWatchlist - 02 (empty name)
 //
 func TestCreateWatchlist02(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -269,9 +269,9 @@ func TestCreateWatchlist02(t *testing.T) {
 // Test CreateWatchlist - 03 (duplicate name)
 //
 func TestCreateWatchlist03(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -304,9 +304,9 @@ func TestCreateWatchlist03(t *testing.T) {
 // Test - WatchlistAddSymbol - 01 (Success)
 //
 func TestWatchlistAddSymbol01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -361,9 +361,9 @@ func TestWatchlistAddSymbol01(t *testing.T) {
 // Test - WatchlistAddSymbol - 02 (Another user's watchlist id)
 //
 func TestWatchlistAddSymbol02(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -397,9 +397,9 @@ func TestWatchlistAddSymbol02(t *testing.T) {
 // Test - WatchlistAddSymbol - 03 (Invalid symbol id)
 //
 func TestWatchlistAddSymbol03(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -433,9 +433,9 @@ func TestWatchlistAddSymbol03(t *testing.T) {
 // Test - WatchlistAddSymbol - 04 (A symbol that is already added to the watchlist)
 //
 func TestWatchlistAddSymbol04(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -469,9 +469,9 @@ func TestWatchlistAddSymbol04(t *testing.T) {
 // Test WatchlistReorder - 01
 //
 func TestWatchlistReorder01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -514,9 +514,9 @@ func TestWatchlistReorder01(t *testing.T) {
 // Test WatchlistReorder - 02 (No Access)
 //
 func TestWatchlistReorder02(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -550,9 +550,9 @@ func TestWatchlistReorder02(t *testing.T) {
 // Test WatchlistDeleteSymbol - 01
 //
 func TestWatchlistDeleteSymbol01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -592,9 +592,9 @@ func TestWatchlistDeleteSymbol01(t *testing.T) {
 // Test WatchlistDeleteSymbol - 02 (No Access)
 //
 func TestWatchlistDeleteSymbol02(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}

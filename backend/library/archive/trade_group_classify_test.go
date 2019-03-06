@@ -17,7 +17,6 @@ import (
 // Test trade risked in trade - Single stock trade
 //
 func TestGetAmountRiskedInTrade01(t *testing.T) {
-
 	// Test put credit spread
 	positions := &[]models.Position{
 		{
@@ -39,7 +38,6 @@ func TestGetAmountRiskedInTrade01(t *testing.T) {
 // Test trade risked in trade - Single option trade
 //
 func TestGetAmountRiskedInTrade02(t *testing.T) {
-
 	// Test single option
 	positions := &[]models.Position{
 		{
@@ -61,7 +59,6 @@ func TestGetAmountRiskedInTrade02(t *testing.T) {
 // Test trade risked in trade - Put Credit Spread trade
 //
 func TestGetAmountRiskedInTrade03(t *testing.T) {
-
 	// Test put credit spread
 	positions := &[]models.Position{
 		{
@@ -90,7 +87,6 @@ func TestGetAmountRiskedInTrade03(t *testing.T) {
 // Test trade risked in trade - Call Credit Spread trade
 //
 func TestGetAmountRiskedInTrade04(t *testing.T) {
-
 	// Test call credit spread
 	positions := &[]models.Position{
 		{
@@ -119,7 +115,6 @@ func TestGetAmountRiskedInTrade04(t *testing.T) {
 // Test trade classification - Single stock trade
 //
 func TestClassifyTradeGroupSingleStock01(t *testing.T) {
-
 	// Test put credit spread
 	positions := &[]models.Position{
 		{
@@ -135,14 +130,12 @@ func TestClassifyTradeGroupSingleStock01(t *testing.T) {
 
 	// Verify the data was return as expected
 	st.Expect(t, class, "Equity")
-
 }
 
 //
 // Test trade classification - Single short stock trade
 //
 func TestClassifyTradeGroupSingleShortStock01(t *testing.T) {
-
 	// Test put credit spread
 	positions := &[]models.Position{
 		{
@@ -158,14 +151,12 @@ func TestClassifyTradeGroupSingleShortStock01(t *testing.T) {
 
 	// Verify the data was return as expected
 	st.Expect(t, class, "Short Equity")
-
 }
 
 //
 // Test trade classification - Single option trade
 //
 func TestClassifyTradeGroupSingleOption01(t *testing.T) {
-
 	// Test put credit spread
 	positions := &[]models.Position{
 		{
@@ -181,14 +172,12 @@ func TestClassifyTradeGroupSingleOption01(t *testing.T) {
 
 	// Verify the data was return as expected
 	st.Expect(t, class, "Option")
-
 }
 
 //
 // Test trade classification - Put Credit Spread
 //
 func TestClassifyTradeGroupPutCreditSpread01(t *testing.T) {
-
 	// Test put credit spread
 	positions := &[]models.Position{
 		{
@@ -211,14 +200,12 @@ func TestClassifyTradeGroupPutCreditSpread01(t *testing.T) {
 
 	// Verify the data was return as expected
 	st.Expect(t, class, "Put Credit Spread")
-
 }
 
 //
 // Test trade classification - Put Debit Spread
 //
 func TestClassifyTradeGroupPutDebitSpread01(t *testing.T) {
-
 	// Test put credit spread
 	positions := &[]models.Position{
 		{
@@ -241,14 +228,12 @@ func TestClassifyTradeGroupPutDebitSpread01(t *testing.T) {
 
 	// Verify the data was return as expected
 	st.Expect(t, class, "Put Debit Spread")
-
 }
 
 //
 // Test trade classification - Call Credit Spread
 //
 func TestClassifyTradeGroupCallCreditSpread01(t *testing.T) {
-
 	// Test put credit spread
 	positions := &[]models.Position{
 		{
@@ -271,14 +256,12 @@ func TestClassifyTradeGroupCallCreditSpread01(t *testing.T) {
 
 	// Verify the data was return as expected
 	st.Expect(t, class, "Call Credit Spread")
-
 }
 
 //
 // Test trade classification - Call Debit Spread
 //
 func TestClassifyTradeGroupCallDebitSpread01(t *testing.T) {
-
 	// Test put credit spread
 	positions := &[]models.Position{
 		{
@@ -301,7 +284,6 @@ func TestClassifyTradeGroupCallDebitSpread01(t *testing.T) {
 
 	// Verify the data was return as expected
 	st.Expect(t, class, "Call Debit Spread")
-
 }
 
 /* End File */

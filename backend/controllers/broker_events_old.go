@@ -22,10 +22,9 @@ import (
 // Load and return some test data.
 //
 func LoadAndGetBrokerEventsTestData() {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
-	defer db.Close()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Put test data into database
 	brokerAccount := models.BrokerAccount{
@@ -56,9 +55,9 @@ func LoadAndGetBrokerEventsTestData() {
 // TestGetBrokerEvents01
 //
 func TestGetBrokerEvents01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Load test data
 	LoadAndGetBrokerEventsTestData()

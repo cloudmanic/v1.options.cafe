@@ -24,10 +24,11 @@ import (
 func TestGetSettings01(t *testing.T) {
 
 	// Json response
-	jsonResponse := `{"id":1,"user_id":1,"strategy_pcs_close_price":0.03,"strategy_pcs_open_price":"mid-point","strategy_pcs_lots":10,"strategy_ccs_close_price":0.03,"strategy_ccs_open_price":"mid-point","strategy_ccs_lots":10,"strategy_pds_close_price":0.03,"strategy_pds_open_price":"mid-point","strategy_pds_lots":10,"strategy_cds_close_price":0.03,"strategy_cds_open_price":"mid-point","strategy_cds_lots":10}`
+	jsonResponse := `{"id":1,"user_id":1,"strategy_pcs_close_price":0.03,"strategy_pcs_open_price":"mid-point","strategy_pcs_lots":10,"strategy_ccs_close_price":0.03,"strategy_ccs_open_price":"mid-point","strategy_ccs_lots":10,"strategy_pds_close_price":0.03,"strategy_pds_open_price":"mid-point","strategy_pds_lots":10,"strategy_cds_close_price":0.03,"strategy_cds_open_price":"mid-point","strategy_cds_lots":10,"notice_trade_filled_email":"No","notice_trade_filled_sms":"No","notice_trade_filled_push":"No","notice_market_open_email":"No","notice_market_open_sms":"No","notice_market_open_push":"No","notice_market_closed_email":"No","notice_market_closed_sms":"No","notice_market_closed_push":"No"}`
 
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -81,9 +82,9 @@ func TestGetSettings01(t *testing.T) {
 // TestGetSettings01
 //
 func TestUpdateSettings01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -134,9 +135,9 @@ func TestUpdateSettings01(t *testing.T) {
 // TestGetSettings02
 //
 func TestUpdateSettings02(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -189,9 +190,9 @@ func TestUpdateSettings02(t *testing.T) {
 // TestGetSettings03
 //
 func TestUpdateSettings03(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}

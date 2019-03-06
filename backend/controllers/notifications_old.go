@@ -22,9 +22,9 @@ import (
 // CreateNotifyChannel - 01
 //
 func TestCreateNotifyChannel01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -72,9 +72,9 @@ func TestCreateNotifyChannel01(t *testing.T) {
 // CreateNotifyChannel - 02
 //
 func TestCreateNotifyChannel02(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -113,9 +113,9 @@ func TestCreateNotifyChannel02(t *testing.T) {
 // CreateNotifyChannel - 03
 //
 func TestCreateNotifyChannel03(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}

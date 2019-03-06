@@ -98,7 +98,7 @@ func doMigrations(db *gorm.DB) {
 }
 
 //
-// Just make a query on this connection every so often to keep it alive.
+// PingDbServer - Just make a query on this connection every so often to keep it alive.
 //
 func PingDbServer(db *gorm.DB) {
 	for {

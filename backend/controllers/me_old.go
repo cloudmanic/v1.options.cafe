@@ -26,9 +26,9 @@ import (
 // TestGetProfile01
 //
 func TestGetProfile01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -73,9 +73,9 @@ func TestGetProfile01(t *testing.T) {
 // TestUpdateProfile01
 //
 func TestUpdateProfile01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -123,9 +123,9 @@ func TestUpdateProfile01(t *testing.T) {
 // TestResetPassword01
 //
 func TestResetPassword01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -170,9 +170,9 @@ func TestResetPassword01(t *testing.T) {
 // TestResetPassword02
 //
 func TestResetPassword02(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -212,9 +212,9 @@ func TestResetPassword02(t *testing.T) {
 // TestResetPassword03
 //
 func TestResetPassword03(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -254,9 +254,9 @@ func TestResetPassword03(t *testing.T) {
 // TestUpdateCreditCard01
 //
 func TestUpdateCreditCard01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -325,9 +325,9 @@ func TestUpdateCreditCard01(t *testing.T) {
 // TestApplyCoupon01
 //
 func TestApplyCoupon01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -406,9 +406,9 @@ func TestApplyCoupon01(t *testing.T) {
 // TestVerifyCoupon01
 //
 func TestVerifyCoupon01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -458,9 +458,9 @@ func TestVerifyCoupon01(t *testing.T) {
 // TestVerifyCoupon02
 //
 func TestVerifyCoupon02(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -504,9 +504,9 @@ func TestVerifyCoupon02(t *testing.T) {
 // Test - SubscribeUser - 01
 //
 func TestSubscribeUser01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -560,9 +560,9 @@ func TestSubscribeUser01(t *testing.T) {
 // Test - SubscribeUser - 02 (coupon)
 //
 func TestSubscribeUser02(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -625,9 +625,9 @@ func TestSubscribeUser02(t *testing.T) {
 // Test - SubscribeUser - 03 (no token)
 //
 func TestSubscribeUser03(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}

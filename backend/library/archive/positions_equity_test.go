@@ -8,6 +8,7 @@ package archive
 
 import (
 	"testing"
+	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/nbio/st"
@@ -21,12 +22,22 @@ func TestDoEquityOrder01(t *testing.T) {
 	db, dbName, _ := models.NewTestDB("")
 	defer models.TestingTearDown(db, dbName)
 
-	models.LoadTestingData(db.New())
+	// Shared vars we use.
+	ts := time.Date(2017, 10, 29, 17, 20, 01, 507451, time.UTC)
 
 	// Users
-	//db.Create(&models.User{FirstName: "Rob", LastName: "Tester", Email: "spicer+robtester@options.cafe", Status: "Active"})
-	//db.Create(&models.User{FirstName: "Jane", LastName: "Wells", Email: "spicer+janewells@options.cafe", Status: "Active"})
-	//db.Create(&models.User{FirstName: "Bob", LastName: "Rosso", Email: "spicer+bobrosso@options.cafe", Status: "Active"})
+	db.Create(&models.User{FirstName: "Rob", LastName: "Tester", Email: "spicer+robtester@options.cafe", Status: "Active"})
+	db.Create(&models.User{FirstName: "Jane", LastName: "Wells", Email: "spicer+janewells@options.cafe", Status: "Active"})
+	db.Create(&models.User{FirstName: "Bob", LastName: "Rosso", Email: "spicer+bobrosso@options.cafe", Status: "Active"})
+
+	// Brokers
+	db.Create(&models.Broker{Name: "Tradier", UserId: 1, AccessToken: "CLOwLO2cMnx-N_bPEexiVo9z9oRR80nPI9ycxQw3KQ-WQ4OP3D44gIbfLScAZ9pv", RefreshToken: "abc", TokenExpirationDate: ts})
+	db.Create(&models.Broker{Name: "Tradeking", UserId: 1, AccessToken: "456", RefreshToken: "xyz", TokenExpirationDate: ts})
+	db.Create(&models.Broker{Name: "Etrade", UserId: 1, AccessToken: "789", RefreshToken: "mno", TokenExpirationDate: ts})
+
+	// BrokerAccounts
+	db.Create(&models.BrokerAccount{UserId: 1, BrokerId: 1, Name: "Test Account 1", AccountNumber: "abc1235423", StockCommission: 5.00, StockMin: 0.00, OptionCommission: 0.35, OptionSingleMin: 5.00, OptionMultiLegMin: 7.00, OptionBase: 0.00})
+	db.Create(&models.BrokerAccount{UserId: 1, BrokerId: 1, Name: "Test Account 2", AccountNumber: "ABC123ZY", StockCommission: 5.00, StockMin: 0.00, OptionCommission: 0.35, OptionSingleMin: 5.00, OptionMultiLegMin: 7.00, OptionBase: 0.00})
 
 	// put test data into the DB.
 	db.Exec("TRUNCATE TABLE symbols;")
@@ -237,7 +248,6 @@ func TestDoEquityOrder01(t *testing.T) {
 	st.Expect(t, err, nil)
 
 	// TODO: query database and make sure all the data was correctly stored.
-
 }
 
 /* End File */

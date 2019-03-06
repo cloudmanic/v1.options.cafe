@@ -147,10 +147,9 @@ func PastCreateTradeGroupFromPosition(db models.Datastore, userId uint, brokerId
 }
 
 //
-// Review current Positions for options that have expired.
+// ReviewCurrentPositionsForExpiredOptions - Review current Positions for options that have expired.
 //
 func ReviewCurrentPositionsForExpiredOptions(db models.Datastore, userId uint, brokerId uint) error {
-
 	// Set results var
 	var results = []models.Position{}
 

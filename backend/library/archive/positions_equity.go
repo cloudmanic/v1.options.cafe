@@ -7,6 +7,7 @@
 package archive
 
 import (
+	"flag"
 	"strconv"
 	"time"
 
@@ -58,16 +59,19 @@ func DoEquityOrder(db models.Datastore, userId uint) error {
 			continue
 		}
 
-		// Send websocket with position change
-		queue.Write("oc-websocket-write", `{"uri":"change-detected","user_id":`+strconv.Itoa(int(userId))+`,"body": { "type": "order-filled", "order_id": `+strconv.Itoa(int(row.Id))+`} }`)
+		// Not useful if we are in testing.
+		if flag.Lookup("test.v") == nil {
+			// Send websocket with position change
+			queue.Write("oc-websocket-write", `{"uri":"change-detected","user_id":`+strconv.Itoa(int(userId))+`,"body": { "type": "order-filled", "order_id": `+strconv.Itoa(int(row.Id))+`} }`)
 
-		// Push notifications
-		notify.Push(db, notify.NotifyRequest{
-			UriRefId: row.Id,
-			UserId:   userId,
-			Uri:      "order-filled",
-			ShortMsg: "Equity Order #" + strconv.Itoa(int(row.Id)) + " has filled.",
-		})
+			// Push notifications
+			notify.Push(db, notify.NotifyRequest{
+				UriRefId: row.Id,
+				UserId:   userId,
+				Uri:      "order-filled",
+				ShortMsg: "Equity Order #" + strconv.Itoa(int(row.Id)) + " has filled.",
+			})
+		}
 	}
 
 	// Return happy

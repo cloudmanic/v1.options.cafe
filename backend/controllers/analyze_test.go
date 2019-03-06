@@ -26,9 +26,9 @@ import (
 // Test - AnalyzeOptionsProfitLossByUnderlyingPrice - 01 - Success
 //
 func TestAnalyzeOptionsProfitLossByUnderlyingPrice01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -39,7 +39,7 @@ func TestAnalyzeOptionsProfitLossByUnderlyingPrice01(t *testing.T) {
 	"legs": [
 		{ "symbol_str": "SPY181221C00250000", "qty": 1 },
 		{ "symbol_str": "SPY181221C00260000", "qty": -2 },
-		{ "symbol_str": "SPY181221C00270000", "qty": 1 }		
+		{ "symbol_str": "SPY181221C00270000", "qty": 1 }
 	]}`
 
 	// Make a mock request.

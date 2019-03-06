@@ -23,7 +23,6 @@ var (
 // Just start the connect to the queue.
 //
 func Start() {
-
 	// NSQ config
 	config := nsq.NewConfig()
 
@@ -46,6 +45,10 @@ func Start() {
 // could be lost. In fact they are lost on every deploy.
 //
 func Write(topic string, msg string) {
+	// We have not started the message queue. Maybe in testing.
+	if nsqConn == nil {
+		return
+	}
 
 	// Send message to message queue
 	err := nsqConn.Publish(topic, []byte(msg))

@@ -25,9 +25,9 @@ import (
 // Test - GetBrokers
 //
 func TestGetBrokers01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -90,9 +90,9 @@ func TestGetBrokers01(t *testing.T) {
 // Test - CreateBroker - 01 - Success
 //
 func TestCreateBroker01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -137,9 +137,9 @@ func TestCreateBroker01(t *testing.T) {
 // Test - CreateBroker 02 - Fail
 //
 func TestCreateBroker02(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -184,9 +184,9 @@ func TestCreateBroker02(t *testing.T) {
 // Test - CreateBroker 03 - Fail
 //
 func TestCreateBroker03(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -231,9 +231,9 @@ func TestCreateBroker03(t *testing.T) {
 // Test - CreateBroker 04 - Fail
 //
 func TestCreateBroker04(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -289,7 +289,8 @@ func TestGetBalances01(t *testing.T) {
 		BodyString(`{"accounts":{"account":[{"balances":{"option_short_value":0,"total_equity":0.00000000,"account_number":"6Y111184","account_type":"cash","close_pl":0,"current_requirement":0,"equity":0,"long_market_value":0,"market_value":0,"open_pl":0,"option_long_value":0,"option_requirement":0,"pending_orders_count":0,"short_market_value":0,"stock_long_value":0,"total_cash":0.00000000,"uncleared_funds":0,"pending_cash":0,"cash":{"cash_available":0.00000000,"sweep":0,"unsettled_funds":0}},"account_number":"6Y111184"},{"balances":{"option_short_value":-5166.0000000000000000000,"total_equity":115978.2300000000000000000,"account_number":"6Y777785","account_type":"margin","close_pl":0.00000000,"current_requirement":12600.0000000000000000,"equity":0,"long_market_value":0,"market_value":-751.5000000000000000000,"open_pl":850.5000000000000000000,"option_long_value":4414.5000000000000000000,"option_requirement":12600.0000000000000000,"pending_orders_count":14,"short_market_value":0,"stock_long_value":0,"total_cash":116729.73000000,"uncleared_funds":0,"pending_cash":0,"margin":{"fed_call":0,"maintenance_call":0,"option_buying_power":4129.73000000,"stock_buying_power":8259.46,"stock_short_value":0,"sweep":0}},"account_number":"6Y777785"},{"balances":{"option_short_value":0,"total_equity":3165.660000000000000000,"account_number":"6YA88882","account_type":"cash","close_pl":0.00000000,"current_requirement":0,"equity":0,"long_market_value":0,"market_value":2903.260000000000000000,"open_pl":946.243200000000000000,"option_long_value":0,"option_requirement":0,"pending_orders_count":0,"short_market_value":0,"stock_long_value":2903.260000000000000000,"total_cash":262.40000000,"uncleared_funds":0,"pending_cash":0,"cash":{"cash_available":0.00000000,"sweep":0,"unsettled_funds":0}},"account_number":"6YA88882"}]}}`)
 
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -340,9 +341,9 @@ func TestGetBalances01(t *testing.T) {
 // Test - UpdateBroker 01 - Success
 //
 func TestUpdateBroker01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -388,9 +389,9 @@ func TestUpdateBroker01(t *testing.T) {
 // Test - UpdateBroker 02 - fail
 //
 func TestUpdateBroker02(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}

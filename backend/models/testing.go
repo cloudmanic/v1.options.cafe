@@ -9,6 +9,7 @@
 package models
 
 import (
+	"database/sql"
 	"errors"
 	"log"
 	"os/exec"
@@ -41,24 +42,14 @@ func NewTestDB(dbName string) (*DB, string, error) {
 		dbName = "oc_" + helpers.RandStr(10)
 	}
 
+	// Create database
+	createTestDatabase(dbName)
+
 	// Connect to Mysql but do not connect to a database
-	db, err := gorm.Open("mysql", "root:foobar@tcp(127.0.0.1:9906)/?charset=utf8&parseTime=True&loc=Local")
+	db, err := gorm.Open("mysql", "root:foobar@tcp(127.0.0.1:9906)/"+dbName+"?charset=utf8&parseTime=True&loc=Local")
 
 	if err != nil {
 		services.Error(err, "Failed to connect database")
-		log.Fatal(err)
-	}
-
-	// Create a new DB for unit testing.
-	_, err = db.DB().Exec("CREATE DATABASE IF NOT EXISTS " + dbName + ";")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Select the database we are connecting to.
-	_, err = db.DB().Exec("USE " + dbName)
-	if err != nil {
-		services.Error(err, "Failed to use database")
 		log.Fatal(err)
 	}
 
@@ -70,6 +61,27 @@ func NewTestDB(dbName string) (*DB, string, error) {
 
 	// Return db connection.
 	return &DB{db}, dbName, nil
+}
+
+//
+// createTestDatabase - Create test database.
+//
+func createTestDatabase(name string) {
+	// Connect to DB
+	db, err := sql.Open("mysql", "root:foobar@tcp(127.0.0.1:9906)/?charset=utf8&parseTime=True&loc=Local")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer db.Close()
+
+	// Create DB
+	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + name)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 //

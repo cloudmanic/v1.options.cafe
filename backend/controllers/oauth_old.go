@@ -20,9 +20,9 @@ import (
 // Test - DoLogOut 01
 //
 func TestDoLogOut01(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Add test session
 	db.Create(&models.Session{AccessToken: "abc123456789you"})
@@ -53,9 +53,9 @@ func TestDoLogOut01(t *testing.T) {
 // Test - DoLogOut 02
 //
 func TestDoLogOut02(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
@@ -83,9 +83,9 @@ func TestDoLogOut02(t *testing.T) {
 // Test - DoLogOut 03
 //
 func TestDoLogOut03(t *testing.T) {
-
 	// Start the db connection.
-	db, _ := models.NewDB()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Create controller
 	c := &Controller{DB: db}
