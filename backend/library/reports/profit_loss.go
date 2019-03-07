@@ -36,6 +36,7 @@ type ProfitLoss struct {
 
 //
 // Get profit and loss based on parms we pass in.
+// (\d+)-(\d+)-(\d+)\s(\d+):(\d+):(\d+)
 //
 func GetProfitLoss(db models.Datastore, brokerAccount models.BrokerAccount, parms ProfitLossParams) []ProfitLoss {
 
@@ -49,15 +50,15 @@ func GetProfitLoss(db models.Datastore, brokerAccount models.BrokerAccount, parm
 
 	case "day":
 		selectStr = `DATE_FORMAT(closed_date,'%Y-%m-%d') AS date_str, SUM(profit) AS profit, SUM(commission) AS commissions, COUNT(closed_date) AS trade_count, SUM(CASE WHEN profit < 0 THEN 1 ELSE 0 END) AS loss_count, SUM(CASE WHEN profit > 0 THEN 1 ELSE 0 END) AS win_count`
-		queryStr = "SELECT " + selectStr + " FROM trade_groups WHERE status = 'Closed' AND broker_account_id = ? AND open_date >= ? AND closed_date <= ? GROUP BY DATE_FORMAT(closed_date,'%Y-%m-%d') " + parms.Sort
+		queryStr = "SELECT " + selectStr + " FROM trade_groups WHERE status = 'Closed' AND broker_account_id = ? AND closed_date >= ? AND closed_date <= ? GROUP BY DATE_FORMAT(closed_date,'%Y-%m-%d') " + parms.Sort
 
 	case "month":
 		selectStr = `DATE_FORMAT(closed_date,'%Y-%m') AS date_str, SUM(profit) AS profit, SUM(commission) AS commissions, COUNT(closed_date) AS trade_count, SUM(CASE WHEN profit < 0 THEN 1 ELSE 0 END) AS loss_count, SUM(CASE WHEN profit > 0 THEN 1 ELSE 0 END) AS win_count`
-		queryStr = "SELECT " + selectStr + " FROM trade_groups WHERE status = 'Closed' AND broker_account_id = ? AND open_date >= ? AND closed_date <= ? GROUP BY DATE_FORMAT(closed_date,'%Y-%m') " + parms.Sort
+		queryStr = "SELECT " + selectStr + " FROM trade_groups WHERE status = 'Closed' AND broker_account_id = ? AND closed_date >= ? AND closed_date <= ? GROUP BY DATE_FORMAT(closed_date,'%Y-%m') " + parms.Sort
 
 	case "year":
 		selectStr = `YEAR(closed_date) AS date_str, SUM(profit) AS profit, SUM(commission) AS commissions, COUNT(closed_date) AS trade_count, SUM(CASE WHEN profit < 0 THEN 1 ELSE 0 END) AS loss_count, SUM(CASE WHEN profit > 0 THEN 1 ELSE 0 END) AS win_count`
-		queryStr = "SELECT " + selectStr + " FROM trade_groups WHERE status = 'Closed' AND broker_account_id = ? AND open_date >= ? AND closed_date <= ? GROUP BY YEAR(closed_date) " + parms.Sort
+		queryStr = "SELECT " + selectStr + " FROM trade_groups WHERE status = 'Closed' AND broker_account_id = ? AND closed_date >= ? AND closed_date <= ? GROUP BY YEAR(closed_date) " + parms.Sort
 
 	}
 
