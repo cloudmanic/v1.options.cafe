@@ -36,7 +36,6 @@ type ProfitLoss struct {
 
 //
 // Get profit and loss based on parms we pass in.
-// (\d+)-(\d+)-(\d+)\s(\d+):(\d+):(\d+)
 //
 func GetProfitLoss(db models.Datastore, brokerAccount models.BrokerAccount, parms ProfitLossParams) []ProfitLoss {
 
