@@ -261,7 +261,7 @@ func TestReportsGetAccountReturns01(t *testing.T) {
 	st.Expect(t, err, nil)
 	st.Expect(t, w.Code, 200)
 	st.Expect(t, len(results), 12)
-	st.Expect(t, w.Body.String(), `[{"date":"2018-12-20","percent":0,"account_value":3007.22,"total_cash":8096.72,"price_per":1,"units":3007.22},{"date":"2018-12-21","percent":-0.29339389868383414,"account_value":2124.92,"total_cash":8056.42,"price_per":0.7066061013161659,"units":3714.8278158236544},{"date":"2018-12-22","percent":-0.5330416143082024,"account_value":1734.67,"total_cash":3612.67,"price_per":0.4669583856917976,"units":3714.8278158236544},{"date":"2018-12-23","percent":-0.5330416143082024,"account_value":1734.67,"total_cash":3612.67,"price_per":0.4669583856917976,"units":3714.8278158236544},{"date":"2018-12-24","percent":-0.05334239583853195,"account_value":3516.67,"total_cash":3612.67,"price_per":0.946657604161468,"units":3714.8278158236544},{"date":"2018-12-25","percent":-0.05334239583853195,"account_value":3516.67,"total_cash":3612.67,"price_per":0.946657604161468,"units":3714.8278158236544},{"date":"2018-12-26","percent":-0.2374693685844661,"account_value":2832.67,"total_cash":3612.67,"price_per":0.7625306314155339,"units":3714.8278158236544},{"date":"2018-12-27","percent":-0.5160825510289716,"account_value":1797.67,"total_cash":3612.67,"price_per":0.4839174489710284,"units":3714.8278158236544},{"date":"2018-12-28","percent":-0.5233507210057848,"account_value":1770.67,"total_cash":3612.67,"price_per":0.47664927899421516,"units":3714.8278158236544},{"date":"2018-12-29","percent":-0.5233507210057848,"account_value":1770.67,"total_cash":3612.67,"price_per":0.47664927899421516,"units":3714.8278158236544},{"date":"2018-12-30","percent":-0.5233507210057848,"account_value":1770.67,"total_cash":3612.67,"price_per":0.47664927899421516,"units":3714.8278158236544},{"date":"2018-12-31","percent":-0.5235122358941584,"account_value":1770.07,"total_cash":2856.07,"price_per":0.47648776410584154,"units":3714.8278158236544}]`)
+	st.Expect(t, w.Body.String(), `[{"date":"2018-12-20","percent":0,"account_value":3007.22,"total_cash":8096.72,"price_per":1,"units":3007.22},{"date":"2018-12-21","percent":-0.459660417262455,"account_value":2124.92,"total_cash":8056.42,"price_per":0.540339582737545,"units":3932.564016936218},{"date":"2018-12-22","percent":-0.5588959283232605,"account_value":1734.67,"total_cash":3612.67,"price_per":0.4411040716767395,"units":3932.564016936218},{"date":"2018-12-23","percent":-0.5588959283232605,"account_value":1734.67,"total_cash":3612.67,"price_per":0.4411040716767395,"units":3932.564016936218},{"date":"2018-12-24","percent":-0.1057564518072951,"account_value":3516.67,"total_cash":3612.67,"price_per":0.8942435481927049,"units":3932.564016936218},{"date":"2018-12-25","percent":-0.1057564518072951,"account_value":3516.67,"total_cash":3612.67,"price_per":0.8942435481927049,"units":3932.564016936218},{"date":"2018-12-26","percent":-0.27968877612655463,"account_value":2832.67,"total_cash":3612.67,"price_per":0.7203112238734454,"units":3932.564016936218},{"date":"2018-12-27","percent":-0.5428758458201708,"account_value":1797.67,"total_cash":3612.67,"price_per":0.45712415417982916,"units":3932.564016936218},{"date":"2018-12-28","percent":-0.5497415954643521,"account_value":1770.67,"total_cash":3612.67,"price_per":0.45025840453564786,"units":3932.564016936218},{"date":"2018-12-29","percent":-0.5497415954643521,"account_value":1770.67,"total_cash":3612.67,"price_per":0.45025840453564786,"units":3932.564016936218},{"date":"2018-12-30","percent":-0.5497415954643521,"account_value":1770.67,"total_cash":3612.67,"price_per":0.45025840453564786,"units":3932.564016936218},{"date":"2018-12-31","percent":-0.5498941676786673,"account_value":1770.07,"total_cash":2856.07,"price_per":0.45010583232133267,"units":3932.564016936218}]`)
 }
 
 //
@@ -343,16 +343,16 @@ func TestReportsGetAccountReturns02(t *testing.T) {
 	st.Expect(t, results[20].Date.Format("2006-01-02"), "2018-10-04")
 
 	st.Expect(t, results[30].TotalCash, 7092.32)
-	st.Expect(t, results[30].PricePer, 0.8793378557103995)
-	st.Expect(t, results[30].Percent, -0.12066214428960054)
-	st.Expect(t, results[30].Units, 6257.913228987943)
+	st.Expect(t, results[30].PricePer, 0.8044679501956067)
+	st.Expect(t, results[30].Percent, -0.19553204980439332)
+	st.Expect(t, results[30].Units, 6840.322226214216)
 	st.Expect(t, results[30].AccountValue, 5502.82)
 	st.Expect(t, results[30].Date.Format("2006-01-02"), "2018-10-14")
 
 	st.Expect(t, results[108].TotalCash, 2856.07)
-	st.Expect(t, results[108].PricePer, 0.16260125625509866)
-	st.Expect(t, results[108].Percent, -0.8373987437449013)
-	st.Expect(t, results[108].Units, 10885.955255001274)
+	st.Expect(t, results[108].PricePer, 0.13075520837172877)
+	st.Expect(t, results[108].Percent, -0.8692447916282713)
+	st.Expect(t, results[108].Units, 13537.28101574205)
 	st.Expect(t, results[108].AccountValue, 1770.07)
 	st.Expect(t, results[108].Date.Format("2006-01-02"), "2018-12-31")
 }

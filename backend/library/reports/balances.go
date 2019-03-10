@@ -130,6 +130,10 @@ func GetAccountReturns(db models.Datastore, brokerAccount models.BrokerAccount, 
 		// See if we had any ACHs today. Key > 0 solves for case when start day we also added money.
 		if key > 0 {
 			if val, ok := achMap[row.Date.Format("2006-01-02")]; ok {
+
+				// Update the price per.
+				pricePer = (row.AccountValue - val) / units
+
 				// Adding or removing money to account
 				if val > 0 {
 					units = units + (val / pricePer)
