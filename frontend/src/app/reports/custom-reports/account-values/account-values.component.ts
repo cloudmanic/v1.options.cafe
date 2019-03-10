@@ -14,17 +14,15 @@ import { Component, OnInit } from '@angular/core';
 import { StateService } from '../../../providers/state/state.service';
 import { ReportsService } from '../../../providers/http/reports.service';
 import { Router } from '@angular/router';
-import { Shared, ReportType } from 'app/reports/custom-reports/shared';
 import { BaseComponent } from 'app/reports/custom-reports/base/base.component';
 
 @Component({
-	selector: 'app-reports-custom-reports-account-returns',
-	templateUrl: './account-returns.component.html'
+	selector: 'app-reports-custom-reports-account-values',
+	templateUrl: './account-values.component.html'
 })
-
-export class AccountReturnsComponent extends BaseComponent implements OnInit {
+export class AccountValuesComponent extends BaseComponent implements OnInit {
 	showFirstRun: boolean = false;
-	chartType: string = "column";
+	chartType: string = "line";
 
 	arData: AccountReturn[] = [];
 
@@ -37,7 +35,7 @@ export class AccountReturnsComponent extends BaseComponent implements OnInit {
 	// High charts config
 	chartOptions = {
 
-		chart: { type: 'column' },
+		chart: { type: 'line' },
 
 		title: { text: '' },
 		credits: { enabled: false },
@@ -61,7 +59,7 @@ export class AccountReturnsComponent extends BaseComponent implements OnInit {
 
 		tooltip: {
 			formatter: function() {
-				return "<b>" + this.points[0].series.name + ": </b><br />" + Highcharts.dateFormat('%b \'%y', this.points[0].x) + " : " + Highcharts.numberFormat(this.points[0].y, 0, '.', ',') + "%";
+				return "<b>" + this.points[0].series.name + "</b><br />" + Highcharts.dateFormat('%b %d, %Y', this.points[0].x) + " : $" + Highcharts.numberFormat(this.points[0].y, 0, '.', ',');
 			},
 
 			shared: true
@@ -69,12 +67,12 @@ export class AccountReturnsComponent extends BaseComponent implements OnInit {
 
 		yAxis: {
 			title: {
-				text: '% Gain / Loss'
+				text: 'Account Value'
 			},
 
 			labels: {
 				formatter: function() {
-					return Highcharts.numberFormat(this.axis.defaultLabelFormatter.call(this), 0, '.', ',') + '%';
+					return '$' + Highcharts.numberFormat(this.axis.defaultLabelFormatter.call(this), 0, '.', ',');
 				}
 			}
 		},
@@ -94,7 +92,7 @@ export class AccountReturnsComponent extends BaseComponent implements OnInit {
 		},
 
 		series: [{
-			name: 'Account Returns',
+			name: 'Account Value',
 			data: []
 		}]
 	};
@@ -106,7 +104,7 @@ export class AccountReturnsComponent extends BaseComponent implements OnInit {
 		super(router, stateService);
 
 		// Set which report type this is.
-		this.setReportType("account-returns");
+		this.setReportType("account-values");
 	}
 
 	//
@@ -140,17 +138,17 @@ export class AccountReturnsComponent extends BaseComponent implements OnInit {
 			for (var i = 0; i < res.length; i++) {
 				let color = "#5cb85c";
 
-				if (res[i].Percent < 0) {
+				if (res[i].AccountValue < 0) {
 					color = "#ce4260";
 				}
 
-				data.push({ x: res[i].Date, y: (res[i].Percent * 100), color: color });
+				data.push({ x: res[i].Date, y: res[i].AccountValue, color: color });
 			}
 
 			// Rebuilt the chart
 			this.chartOptions.chart.type = this.chartType;
 			this.chartOptions.series[0].data = data;
-			this.chartOptions.series[0].name = "Account Returns";
+			this.chartOptions.series[0].name = "Account Value";
 			this.chartUpdateFlag = true;
 		});
 	}
@@ -167,11 +165,7 @@ export class AccountReturnsComponent extends BaseComponent implements OnInit {
 
 			data.push({
 				Date: moment(row.Date).format('YYYY-MM-DD'),
-				Percent: row.Percent,
-				TotalCash: row.TotalCash,
-				AccountValue: row.AccountValue,
-				PricePer: row.PricePer,
-				Units: row.Units
+				AccountValue: row.AccountValue
 			});
 		}
 
@@ -179,14 +173,14 @@ export class AccountReturnsComponent extends BaseComponent implements OnInit {
 			fieldSeparator: ',',
 			quoteStrings: '"',
 			decimalseparator: '.',
-			headers: ['Date', 'Percent', 'TotalCash', 'AccountValue', 'PricePer', 'Units'],
+			headers: ['Date', 'AccountValue'],
 			showTitle: false,
 			useBom: true,
 			removeNewLines: false,
 			keys: []
 		};
 
-		new Angular2Csv(data, 'options-cafe-account-returns', options);
+		new Angular2Csv(data, 'options-cafe-account-value', options);
 	}
 }
 

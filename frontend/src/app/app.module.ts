@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule }   from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
@@ -58,9 +58,14 @@ import { BacktestSubnavComponent } from './backtest/sub-nav/subnav.component';
 import { BacktestHomeComponent } from './backtest/home/home.component';
 
 // Reports
+import { BaseComponent } from './reports/custom-reports/base/base.component';
 import { CustomReportsComponent } from './reports/custom-reports/custom-reports.component';
 import { AccountHistoryComponent } from './reports/account-history/account-history.component';
 import { AccountSummaryComponent } from './reports/account-summary/account-summary.component';
+import { AccountReturnsComponent } from './reports/custom-reports/account-returns/account-returns.component';
+import { ProfitLossComponent } from './reports/custom-reports/profit-loss/profit-loss.component';
+import { AccountCashComponent } from './reports/custom-reports/account-cash/account-cash.component';
+import { AccountValuesComponent } from './reports/custom-reports/account-values/account-values.component';
 
 // Settings
 import { BrokersComponent } from './settings/brokers/brokers.component';
@@ -105,7 +110,7 @@ import { AddEditComponent as ScreenerAddEditComponent } from './trading/screener
 
 
 // Pipes
-import { TableSortPipe } from './pipes/table-sort.pipe'; 
+import { TableSortPipe } from './pipes/table-sort.pipe';
 
 
 // Research
@@ -114,123 +119,124 @@ import { SymbolComponent } from './research/symbol/symbol.component';
 // Centcom
 import { CoreComponent as CentcomCoreComponent } from './centcom/layouts/core/core.component';
 import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.component';
-import { AccountReturnsComponent } from './reports/custom-reports/account-returns/account-returns.component';
-import { ProfitLossComponent } from './reports/custom-reports/profit-loss/profit-loss.component';
 
 @NgModule({
-  declarations: [
+	declarations: [
 
-    AppComponent,
-    HighchartsChartComponent,
-    
-    // Pipes 
-    TableSortPipe,    
+		AppComponent,
+		HighchartsChartComponent,
 
-    // Layout
-    SidebarComponent,
-    MainNavComponent,
-    LayoutCoreComponent,    
-    
-    // Shared
-    ToolTipComponent,
-    PagingComponent,
-    DialogComponent,    
+		// Pipes
+		TableSortPipe,
 
-    // Auth
-    AuthLayoutComponent,
-    AuthLoginComponent,
-    AuthRegisterComponent,
-    AuthBrokerSelectComponent,
-    AuthResetPasswordComponent,
-    AuthForgotPasswordComponent,
-    
-    // Backtest
-    BacktestSubnavComponent,
-    BacktestHomeComponent,
+		// Layout
+		SidebarComponent,
+		MainNavComponent,
+		LayoutCoreComponent,
 
-    // Reports
-    AccountSummaryComponent,
-    
-    // Trading
-    IvrComponent,
-    OrdersComponent,
-    SubnavComponent,
-    TradesComponent,
-    ScreenerComponent,
-    DashboardComponent,
-    WatchlistComponent,
-    PositionsComponent,
-    MarketQuotesComponent,
-    DashboardChartComponent,
-    TypeaheadSymbolsComponent,
-    TradeComponent,
-    TradeMultiLegComponent,
-    DropdownSelectComponent,
-    ScreenerAddEditComponent,
-    AccountHistoryComponent,
-    EquityComponent,
-    TradeEquityComponent,
-    BrokersComponent,
-    AccountComponent,
-    TradingComponent,
-    PersonalInfoComponent,
-    BillingHistoryComponent,
-    AccountDetailsComponent,
-    SocialComponent,
-    UpgradeComponent,
-    ExpiredComponent,
-    CreditCardComponent,
-    CardComponent,
-    ToolTipComponent,
-    CustomReportsComponent,
-    SpreadComponent,
-    OptionComponent,
-    OtherComponent,
-    CentcomUsersComponent,
-    CentcomCoreComponent,
-    SymbolComponent,
-    IronCondorComponent,
-    ReverseIronCondorComponent,
-    TradeOptionComponent,
-    LongCallButterflyComponent,
-    LongPutButterflyComponent,
-    AnalyzeComponent,
-    AccountReturnsComponent,
-    ProfitLossComponent,
-  ],
-  
-  imports: [
-    Routing,
-    FormsModule,
-    BrowserModule,
-    SortablejsModule,
-    HttpClientModule,
-    FontAwesomeModule   
-  ],
-  
-  providers: [
-    MeService, 
-    QuotesService, 
-    AuthGuard, 
-    SymbolService,
-    BrokerService,
-    TradeGroupService,
-    StateService,
-    WatchlistService,
-    WebsocketService,
-    StatusService,
-    TradeService,
-    OptionsChainService,
-    ScreenerService,
-    ReportsService,
-    AnalyzeService,
-    BrokerEventsService,
-    NotificationsService,
-    SettingsService,
-    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }    
-  ],
-  
-  bootstrap: [AppComponent]
+		// Shared
+		ToolTipComponent,
+		PagingComponent,
+		DialogComponent,
+
+		// Auth
+		AuthLayoutComponent,
+		AuthLoginComponent,
+		AuthRegisterComponent,
+		AuthBrokerSelectComponent,
+		AuthResetPasswordComponent,
+		AuthForgotPasswordComponent,
+
+		// Backtest
+		BacktestSubnavComponent,
+		BacktestHomeComponent,
+
+		// Reports
+		AccountSummaryComponent,
+		AccountReturnsComponent,
+		ProfitLossComponent,
+		AccountCashComponent,
+		AccountValuesComponent,
+		BaseComponent,
+
+		// Trading
+		IvrComponent,
+		OrdersComponent,
+		SubnavComponent,
+		TradesComponent,
+		ScreenerComponent,
+		DashboardComponent,
+		WatchlistComponent,
+		PositionsComponent,
+		MarketQuotesComponent,
+		DashboardChartComponent,
+		TypeaheadSymbolsComponent,
+		TradeComponent,
+		TradeMultiLegComponent,
+		DropdownSelectComponent,
+		ScreenerAddEditComponent,
+		AccountHistoryComponent,
+		EquityComponent,
+		TradeEquityComponent,
+		BrokersComponent,
+		AccountComponent,
+		TradingComponent,
+		PersonalInfoComponent,
+		BillingHistoryComponent,
+		AccountDetailsComponent,
+		SocialComponent,
+		UpgradeComponent,
+		ExpiredComponent,
+		CreditCardComponent,
+		CardComponent,
+		ToolTipComponent,
+		CustomReportsComponent,
+		SpreadComponent,
+		OptionComponent,
+		OtherComponent,
+		CentcomUsersComponent,
+		CentcomCoreComponent,
+		SymbolComponent,
+		IronCondorComponent,
+		ReverseIronCondorComponent,
+		TradeOptionComponent,
+		LongCallButterflyComponent,
+		LongPutButterflyComponent,
+		AnalyzeComponent,
+	],
+
+	imports: [
+		Routing,
+		FormsModule,
+		BrowserModule,
+		SortablejsModule,
+		HttpClientModule,
+		FontAwesomeModule
+	],
+
+	providers: [
+		MeService,
+		QuotesService,
+		AuthGuard,
+		SymbolService,
+		BrokerService,
+		TradeGroupService,
+		StateService,
+		WatchlistService,
+		WebsocketService,
+		StatusService,
+		TradeService,
+		OptionsChainService,
+		ScreenerService,
+		ReportsService,
+		AnalyzeService,
+		BrokerEventsService,
+		NotificationsService,
+		SettingsService,
+		{ provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
+	],
+
+	bootstrap: [AppComponent]
 })
 
 export class AppModule { }

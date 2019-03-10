@@ -5,7 +5,7 @@
 //
 
 import { Component } from '@angular/core';
-import { StateService } from '../../providers/state/state.service';
+import { StateService } from 'app/providers/state/state.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 
 @Component({

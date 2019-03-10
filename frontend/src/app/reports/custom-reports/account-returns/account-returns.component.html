@@ -8,10 +8,8 @@
 
           <div class="select-container select-container--size3">
             <div class="select select--primary">
-              <select name="dataType" [(ngModel)]="dataType" (change)="dataTypeChange()">
-                <option value="profit-loss">Profit & Loss</option>
-                <option value="account-returns">Account Returns</option>
-                <option value="profit-loss-cumulative">Cumulative Earnings</option>
+              <select name="reportType" [(ngModel)]="reportType" (change)="doReportChange()">
+                <option [ngValue]="row" *ngFor="let row of reportTypes">{{ row.Name }}</option>
               </select>
             </div>
           </div>
@@ -19,14 +17,7 @@
           <div class="select-container select-container--size3">
             <div class="select select--primary">
               <select name="dateSelect" [(ngModel)]="dateSelect" (change)="onDateChange()">
-                <option value="1-year">Last 1 Year</option>
-                <option value="2-year">Last 2 Year</option>
-                <option value="3-year">Last 3 Year</option>
-                <option value="4-year">Last 4 Year</option>
-                <option value="5-year">Last 5 Year</option>
-                <option value="10-year">Last 10 Year</option>
-                <option value="ytd">Year to Date</option>
-                <option value="custom">Custom Dates</option>
+                <option value="{{ row.Value }}" *ngFor="let row of dateTimeframes">{{ row.Name }}</option>
               </select>
             </div>
           </div>

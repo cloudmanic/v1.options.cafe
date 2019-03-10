@@ -14,13 +14,14 @@ import { Component, OnInit } from '@angular/core';
 import { StateService } from '../../../providers/state/state.service';
 import { ReportsService } from '../../../providers/http/reports.service';
 import { Router, Params, ActivatedRoute } from '@angular/router';
+import { BaseComponent } from 'app/reports/custom-reports/base/base.component';
 
 @Component({
 	selector: 'app-reports-custom-reports-profit-loss',
 	templateUrl: './profit-loss.component.html'
 })
 
-export class ProfitLossComponent implements OnInit {
+export class ProfitLossComponent extends BaseComponent implements OnInit {
 	cumulative: boolean = false;
 	dataType: string = "profit-loss";
 	showFirstRun: boolean = false;
@@ -38,8 +39,6 @@ export class ProfitLossComponent implements OnInit {
 	chartConstructor = 'chart';
 
 	chartUpdateFlag: boolean = false;
-
-	destory: Subject<boolean> = new Subject<boolean>();
 
 	// High charts config
 	chartOptions = {
@@ -109,38 +108,20 @@ export class ProfitLossComponent implements OnInit {
 	//
 	// Construct.
 	//
-	constructor(private router: Router, private stateService: StateService, private reportsService: ReportsService, private activatedRoute: ActivatedRoute) {
+	constructor(public router: Router, public stateService: StateService, private reportsService: ReportsService, private activatedRoute: ActivatedRoute) {
+		super(router, stateService);
+
+		// Set which report type this is.
+		this.setReportType("profit-loss");
+
 		// subscribe to router event
 		this.activatedRoute.queryParams.subscribe((params: Params) => {
 			// See what type profit / loss we have
 			if (params['type']) {
 				this.dataType = params['type'];
-				this.dataTypeChange();
+				this.setReportType(this.dataType);
 			}
 		});
-
-		// Subscribe to changes in the selected broker.
-		this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
-			this.buildChart();
-			this.getProfitLoss();
-		});
-	}
-
-	//
-	// OnInit....
-	//
-	ngOnInit() {
-		// Load page.
-		this.buildChart();
-		this.getProfitLoss();
-	}
-
-	//
-	// OnDestroy
-	//
-	ngOnDestroy() {
-		this.destory.next();
-		this.destory.complete();
 	}
 
 	//
@@ -152,94 +133,9 @@ export class ProfitLossComponent implements OnInit {
 	}
 
 	//
-	// Data type change.
+	// doBuildPage
 	//
-	dataTypeChange() {
-		switch (this.dataType) {
-			case "profit-loss":
-				this.cumulative = false;
-				break;
-
-			case "profit-loss-cumulative":
-				this.cumulative = true;
-				break;
-
-			case "account-returns":
-				this.router.navigate(['/reports/custom/account-returns']);
-				break;
-		}
-
-		this.chartChange();
-	}
-
-	//
-	// Chart change
-	//
-	chartChange() {
-		switch (this.dataType) {
-			case "profit-loss":
-				this.buildChart();
-				this.getProfitLoss();
-				break;
-
-			case "profit-loss-cumulative":
-				this.buildChart();
-				this.getProfitLoss();
-				break;
-
-			case "account-returns":
-				this.router.navigate(['/reports/custom/account-returns']);
-				break;
-		}
-	}
-
-	//
-	// Deal with date change
-	//
-	dateChange() {
-		// Set start and stop dates based on predefined selector
-		switch (this.dateSelect) {
-			case "1-year":
-				this.startDate = moment().subtract(1, 'year').toDate();
-				this.endDate = moment().toDate();
-				break;
-
-			case "2-year":
-				this.startDate = moment().subtract(2, 'year').toDate();
-				this.endDate = moment().toDate();
-				break;
-
-			case "3-year":
-				this.startDate = moment().subtract(3, 'year').toDate();
-				this.endDate = moment().toDate();
-				break;
-
-			case "4-year":
-				this.startDate = moment().subtract(4, 'year').toDate();
-				this.endDate = moment().toDate();
-				break;
-
-			case "5-year":
-				this.startDate = moment().subtract(5, 'year').toDate();
-				this.endDate = moment().toDate();
-				break;
-
-			case "10-year":
-				this.startDate = moment().subtract(10, 'year').toDate();
-				this.endDate = moment().toDate();
-				break;
-
-			case "ytd":
-				this.startDate = moment(moment().year() + "-01-01").toDate();
-				this.endDate = moment().toDate();
-				break;
-
-			case "custom":
-				this.startDate = moment(this.startDateInput).toDate();
-				this.endDate = moment(this.endDateInput).toDate();
-				break;
-		}
-
+	doBuildPage() {
 		this.buildChart();
 		this.getProfitLoss();
 	}

@@ -31,6 +31,8 @@ import { AccountHistoryComponent } from './reports/account-history/account-histo
 import { AccountSummaryComponent } from './reports/account-summary/account-summary.component';
 import { ProfitLossComponent } from 'app/reports/custom-reports/profit-loss/profit-loss.component';
 import { AccountReturnsComponent } from 'app/reports/custom-reports/account-returns/account-returns.component';
+import { AccountCashComponent } from './reports/custom-reports/account-cash/account-cash.component';
+import { AccountValuesComponent } from './reports/custom-reports/account-values/account-values.component';
 
 // Trading
 import { TradesComponent } from './trading/trades/home.component';
@@ -78,6 +80,8 @@ const appRoutes: Routes = [
 			{ path: 'reports/account-history', component: AccountHistoryComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'account-history', action: '' } },
 			{ path: 'reports/custom', component: CustomReportsComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'custom', action: '' } },
 			{ path: 'reports/custom/profit-loss', component: ProfitLossComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'custom', action: '' } },
+			{ path: 'reports/custom/account-cash', component: AccountCashComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'custom', action: '' } },
+			{ path: 'reports/custom/account-values', component: AccountValuesComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'custom', action: '' } },
 			{ path: 'reports/custom/account-returns', component: AccountReturnsComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'custom', action: '' } },
 
 			// Backtest
