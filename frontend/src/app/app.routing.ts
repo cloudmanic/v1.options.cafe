@@ -29,6 +29,7 @@ import { BacktestHomeComponent } from './backtest/home/home.component';
 import { CustomReportsComponent } from './reports/custom-reports/custom-reports.component';
 import { AccountHistoryComponent } from './reports/account-history/account-history.component';
 import { AccountSummaryComponent } from './reports/account-summary/account-summary.component';
+import { AccountReturnsComponent } from 'app/reports/custom-reports/account-returns/account-returns.component';
 
 // Trading
 import { TradesComponent } from './trading/trades/home.component';
@@ -38,7 +39,7 @@ import { DashboardComponent } from './trading/dashboard/home.component';
 import { ScreenerComponent } from './trading/screener/home.component';
 import { AddEditComponent as ScreenerAddEditComponent } from './trading/screener/add-edit/add-edit.component';
 
-// Research 
+// Research
 import { SymbolComponent } from './research/symbol/symbol.component';
 
 // Centcom
@@ -47,58 +48,61 @@ import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.c
 
 // Routes
 const appRoutes: Routes = [
-  // Auth
-  { path: 'login', component: AuthLoginComponent }, 
-  { path: 'logout', redirectTo: 'login' },    
-  { path: 'register', component: AuthRegisterComponent },
-  { path: 'broker-select', component: AuthBrokerSelectComponent }, 
-  { path: 'forgot-password', component: AuthForgotPasswordComponent },   
-  { path: 'reset-password', component: AuthResetPasswordComponent }, 
-  
-  // Upgrade
-  { path: 'settings/account/upgrade', component: UpgradeComponent },
-  { path: 'settings/account/expired', component: ExpiredComponent },
-  { path: 'settings/account/upgrade/credit-card', component: CreditCardComponent },  
+	// Auth
+	{ path: 'login', component: AuthLoginComponent },
+	{ path: 'logout', redirectTo: 'login' },
+	{ path: 'register', component: AuthRegisterComponent },
+	{ path: 'broker-select', component: AuthBrokerSelectComponent },
+	{ path: 'forgot-password', component: AuthForgotPasswordComponent },
+	{ path: 'reset-password', component: AuthResetPasswordComponent },
 
-  // Core App
-  { path: '', component: LayoutCoreComponent, children: [
-    
-    // Trades
-    { path: '', component: DashboardComponent, canActivate: [AuthGuard], data: { section: 'trading', subSection: 'dashboard', action: '' } },
-    { path: 'trades', component: TradesComponent, canActivate: [AuthGuard], data: { section: 'trading', subSection: 'trades', action: '' } },    
-    { path: 'screener', component: ScreenerComponent, canActivate: [AuthGuard], data: { section: 'trading', subSection: 'screener', action: 'list' } },
-    { path: 'screener/add', component: ScreenerAddEditComponent, canActivate: [AuthGuard], data: { section: 'trading', subSection: 'screener', action: 'add-edit' } },
-    { path: 'screener/edit/:id', component: ScreenerAddEditComponent, canActivate: [AuthGuard], data: { section: 'trading', subSection: 'screener', action: 'add-edit' } },
+	// Upgrade
+	{ path: 'settings/account/upgrade', component: UpgradeComponent },
+	{ path: 'settings/account/expired', component: ExpiredComponent },
+	{ path: 'settings/account/upgrade/credit-card', component: CreditCardComponent },
 
-    // Reports
-    { path: 'reports/account-summary', component: AccountSummaryComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'account-summary', action: '' } },
-    { path: 'reports/account-history', component: AccountHistoryComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'account-history', action: '' } },
-    { path: 'reports/custom', component: CustomReportsComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'custom', action: '' } },
+	// Core App
+	{
+		path: '', component: LayoutCoreComponent, children: [
 
-    // Backtest 
-    { path: 'backtest', component: BacktestHomeComponent, canActivate: [AuthGuard], data: { section: 'backtest', subSection: 'dashboard', action: '' } },
+			// Trades
+			{ path: '', component: DashboardComponent, canActivate: [AuthGuard], data: { section: 'trading', subSection: 'dashboard', action: '' } },
+			{ path: 'trades', component: TradesComponent, canActivate: [AuthGuard], data: { section: 'trading', subSection: 'trades', action: '' } },
+			{ path: 'screener', component: ScreenerComponent, canActivate: [AuthGuard], data: { section: 'trading', subSection: 'screener', action: 'list' } },
+			{ path: 'screener/add', component: ScreenerAddEditComponent, canActivate: [AuthGuard], data: { section: 'trading', subSection: 'screener', action: 'add-edit' } },
+			{ path: 'screener/edit/:id', component: ScreenerAddEditComponent, canActivate: [AuthGuard], data: { section: 'trading', subSection: 'screener', action: 'add-edit' } },
 
-    // Settings
-    { path: 'settings/account', component: AccountComponent, canActivate: [AuthGuard], data: { section: 'settings', subSection: 'account', action: '' } },
-    { path: 'settings/trading', component: TradingComponent, canActivate: [AuthGuard], data: { section: 'settings', subSection: 'trading', action: '' } },
-    { path: 'settings/brokers', component: BrokersComponent, canActivate: [AuthGuard], data: { section: 'settings', subSection: 'brokers', action: '' } },
+			// Reports
+			{ path: 'reports/account-summary', component: AccountSummaryComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'account-summary', action: '' } },
+			{ path: 'reports/account-history', component: AccountHistoryComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'account-history', action: '' } },
+			{ path: 'reports/custom', component: CustomReportsComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'custom', action: '' } },
+			{ path: 'reports/custom/account-returns', component: AccountReturnsComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'custom', action: '' } },
 
-    // Research
-    { path: 'research/symbol', component: SymbolComponent, canActivate: [AuthGuard], data: { section: 'research', subSection: 'symbol', action: '' } },  
+			// Backtest
+			{ path: 'backtest', component: BacktestHomeComponent, canActivate: [AuthGuard], data: { section: 'backtest', subSection: 'dashboard', action: '' } },
 
-    
-  ] },
+			// Settings
+			{ path: 'settings/account', component: AccountComponent, canActivate: [AuthGuard], data: { section: 'settings', subSection: 'account', action: '' } },
+			{ path: 'settings/trading', component: TradingComponent, canActivate: [AuthGuard], data: { section: 'settings', subSection: 'trading', action: '' } },
+			{ path: 'settings/brokers', component: BrokersComponent, canActivate: [AuthGuard], data: { section: 'settings', subSection: 'brokers', action: '' } },
 
-  // Centcom App
-  {
-    path: 'centcom', component: CentcomCoreComponent, children: [
-      { path: 'users', component: CentcomUsersComponent, canActivate: [AuthGuard], data: {} },
-    ]
-  },
+			// Research
+			{ path: 'research/symbol', component: SymbolComponent, canActivate: [AuthGuard], data: { section: 'research', subSection: 'symbol', action: '' } },
 
-  
-  // Otherwise redirect to home
-  { path: '**', redirectTo: '' }  
+
+		]
+	},
+
+	// Centcom App
+	{
+		path: 'centcom', component: CentcomCoreComponent, children: [
+			{ path: 'users', component: CentcomUsersComponent, canActivate: [AuthGuard], data: {} },
+		]
+	},
+
+
+	// Otherwise redirect to home
+	{ path: '**', redirectTo: '' }
 ];
 
 

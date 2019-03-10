@@ -18,7 +18,7 @@
 
           <div class="select-container select-container--size3">
             <div class="select select--primary">
-              <select name="dateSelect" [(ngModel)]="dateSelect" (change)="dateChange()">
+              <select name="dateSelect" [(ngModel)]="dateSelect" (change)="onDateChange()">
                 <option value="1-year">Last 1 Year</option>
                 <option value="2-year">Last 2 Year</option>
                 <option value="3-year">Last 3 Year</option>
@@ -32,22 +32,22 @@
           </div>
 
           <div class="field-container mr-20 ml-20" *ngIf="dateSelect == 'custom'">
-            <input type="date" class="field field--size-2-plus" (change)="dateChange()" name="startDateInput" [(ngModel)]="startDateInput" />
+            <input type="date" class="field field--size-2-plus" (change)="onDateChange()" name="startDateInput" [(ngModel)]="startDateInput" />
             <h6>To</h6>
-            <input type="date" class="field field--size-2-plus" (change)="dateChange()" name="endDateInput" [(ngModel)]="endDateInput" />
+            <input type="date" class="field field--size-2-plus" (change)="onDateChange()" name="endDateInput" [(ngModel)]="endDateInput" />
           </div>
 
-          <div class="select-container select-container--size3">
+          <!-- <div class="select-container select-container--size3">
             <h6>Group By</h6>
 
             <div class="select select--primary">
-              <select name="groupBy" [(ngModel)]="groupBy" (change)="chartChange()">
+              <select name="groupBy" [(ngModel)]="groupBy" (change)="doBuildPage()">
                 <option value="month">Month</option>
                 <option value="year">Year</option>
                 <option value="day">Day</option>
               </select>
             </div>
-          </div>
+          </div> -->
 
           <!--           <div class="select-container select-container--size3">
 
@@ -93,7 +93,7 @@
           <ul class="list-actions-alt list-actions-alt--primary">
 
             <li>
-              <a class="btn btn--border btn--size3" (click)="exportCSV()">
+              <a class="btn btn--border btn--size3" (click)="doExportCSV()">
                 <i class="ico-download"></i>
                 CSV
               </a>
@@ -124,8 +124,6 @@
       </div>
 
 
-
-
       <div class="article__body" *ngIf="! showFirstRun">
 
         <div class="report">
@@ -137,87 +135,26 @@
           <table>
             <thead>
               <tr>
-                <th class="hidden-desktop">Date</th>
-
-                <th *ngIf="cumulative">
-                  <ins>Cumulative Earnings</ins>
-                </th>
-
-                <th *ngIf="! cumulative">
-                  <ins>Profit & Loss</ins>
-                </th>
-
-                <th>
-                  <ins># of Closing Trades</ins>
-                </th>
-
-
-                <th>
-                  <ins>Commissions</ins>
-                </th>
-
-
-                <th>
-                  <ins>Profit / Trade</ins>
-                </th>
-
-                <th>
-                  <ins>Win Ratio</ins>
-                </th>
+                <th><ins>Date</ins></th>
+                <th><ins>Account Value</ins></th>
+                <th><ins>% Gain / Loss</ins></th>
               </tr>
             </thead>
 
             <tbody>
-              <tr *ngFor="let row of listData;">
+              <tr *ngFor="let row of arData;">
                 <td>
-                  <p *ngIf="groupBy == 'year'">{{ row.Date | date:'yyyy' }}</p>
-                  <p *ngIf="groupBy == 'month'">{{ row.Date | date:'MM/yyyy' }}</p>
-                  <p *ngIf="groupBy == 'day'">{{ row.Date | date:'shortDate' }}</p>
+                  <p>{{ row.Date | date:'shortDate' }}</p>
                 </td>
 
                 <td>
-                  <strong class="green" [ngClass]="{ 'green': (row.Profit > 0), 'red': (row.Profit < 0) }">{{ row.Profit | currency }}</strong>
+                  <strong>{{ row.AccountValue | currency }}</strong>
                 </td>
 
                 <td>
-                  <strong>{{ row.TradeCount }}</strong>
-                </td>
-
-                <td>
-                  <strong>{{ row.Commissions | currency }}</strong>
-                </td>
-
-                <td>
-                  <strong>{{ row.ProfitPerTrade | currency }}</strong>
-                </td>
-
-                <td>
-                  <strong>{{ row.WinRatio | number:'1.2-2' }}%</strong>
+                  <strong class="green" [ngClass]="{ 'green': (row.Percent > 0), 'red': (row.Percent < 0) }">{{ row.Percent | percent }}</strong>
                 </td>
               </tr>
-
-              <tr class="table-totals" *ngIf="! cumulative">
-                <td>
-                  <strong>Totals</strong>
-                </td>
-
-                <td>
-                  <strong>{{ getProfitTotal(listData) | currency }}</strong>
-                </td>
-
-                <td>
-                  <strong>{{ getTradeTotal(listData) }}</strong>
-                </td>
-
-                <td>
-                  <strong>{{ getCommissionsTotal(listData) | currency }}</strong>
-                </td>
-
-                <td>&nbsp;</td>
-
-                <td>&nbsp;</td>
-              </tr>
-
             </tbody>
           </table>
 
@@ -227,7 +164,7 @@
     </div>
 
     <div class="section-small" *ngIf="! showFirstRun">
-      <p>* Profit &amp; Loss includes commission costs.</p>
+      <p>* % gain / loss do not change if you deposit or widthdraw money.</p>
     </div>
 
   </div>

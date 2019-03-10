@@ -114,6 +114,7 @@ import { SymbolComponent } from './research/symbol/symbol.component';
 // Centcom
 import { CoreComponent as CentcomCoreComponent } from './centcom/layouts/core/core.component';
 import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.component';
+import { AccountReturnsComponent } from './reports/custom-reports/account-returns/account-returns.component';
 
 @NgModule({
   declarations: [
@@ -193,6 +194,7 @@ import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.c
     LongCallButterflyComponent,
     LongPutButterflyComponent,
     AnalyzeComponent,
+    AccountReturnsComponent,
   ],
   
   imports: [

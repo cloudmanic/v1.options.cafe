@@ -13,6 +13,7 @@ import { ProfitLoss, AccountReturn } from '../../models/reports';
 import { Component, OnInit } from '@angular/core';
 import { StateService } from '../../providers/state/state.service';
 import { ReportsService } from '../../providers/http/reports.service';
+import { Router } from '@angular/router';
 
 @Component({
 	selector: 'app-reports-custom-reports',
@@ -31,11 +32,6 @@ export class CustomReportsComponent implements OnInit {
 	endDate: Date = moment().toDate();
 	startDateInput: Date = moment(moment().year() + "-01-01").format('YYYY-MM-DD');
 	endDateInput: Date = moment().format('YYYY-MM-DD');
-
-	plTable: boolean = true;
-	arTable: boolean = false;
-
-	arData: AccountReturn[] = [];
 
 	listData: ProfitLoss[] = [];
 	Highcharts = Highcharts;
@@ -114,22 +110,7 @@ export class CustomReportsComponent implements OnInit {
 	//
 	// Construct.
 	//
-	constructor(private stateService: StateService, private reportsService: ReportsService) {
-
-	}
-
-	//
-	// Set chart type.
-	//
-	setChartType(type: string) {
-		this.chartType = type;
-		this.buildChart();
-	}
-
-	//
-	// NG Init
-	//
-	ngOnInit() {
+	constructor(private router: Router, private stateService: StateService, private reportsService: ReportsService) {
 		// Subscribe to changes in the selected broker.
 		this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
 			this.buildChart();
@@ -142,6 +123,15 @@ export class CustomReportsComponent implements OnInit {
 	}
 
 	//
+	// OnInit....
+	//
+	ngOnInit() {
+		// Load page.
+		this.buildChart();
+		this.getProfitLoss();
+	}
+
+	//
 	// OnDestroy
 	//
 	ngOnDestroy() {
@@ -149,6 +139,13 @@ export class CustomReportsComponent implements OnInit {
 		this.destory.complete();
 	}
 
+	//
+	// Set chart type.
+	//
+	setChartType(type: string) {
+		this.chartType = type;
+		this.buildChart();
+	}
 
 	//
 	// Data type change.
@@ -164,7 +161,7 @@ export class CustomReportsComponent implements OnInit {
 				break;
 
 			case "account-returns":
-				this.doAccountReturns();
+				this.router.navigate(['/reports/custom/account-returns']);
 				break;
 		}
 
@@ -187,7 +184,7 @@ export class CustomReportsComponent implements OnInit {
 				break;
 
 			case "account-returns":
-				this.doAccountReturns();
+				this.router.navigate(['/reports/custom/account-returns']);
 				break;
 		}
 	}
@@ -366,49 +363,6 @@ export class CustomReportsComponent implements OnInit {
 		};
 
 		new Angular2Csv(data, 'options-cafe-profit-loss', options);
-	}
-
-	//
-	// Do account returns graph
-	//
-	doAccountReturns() {
-		this.plTable = false;
-		this.arTable = false;
-
-		// AJAX call to get data`
-		this.reportsService.getAccountReturns(Number(this.stateService.GetStoredActiveAccountId()), this.startDate, this.endDate).subscribe((res) => {
-			// Show first run
-			if (res.length > 0) {
-				this.showFirstRun = false;
-			} else {
-				this.showFirstRun = true;
-				return;
-			}
-
-			// Set data
-			this.arData = res;
-			this.plTable = false;
-			this.arTable = true;
-
-			// Build chart
-			var data = [];
-
-			for (var i = 0; i < res.length; i++) {
-				let color = "#5cb85c";
-
-				if (res[i].Percent < 0) {
-					color = "#ce4260";
-				}
-
-				data.push({ x: res[i].Date, y: res[i].Percent, color: color });
-			}
-
-			// Rebuilt the chart
-			this.chartOptions.chart.type = this.chartType;
-			this.chartOptions.series[0].data = data;
-			this.chartOptions.series[0].name = "Account Returns";
-			this.chartUpdateFlag = true;
-		});
 	}
 }
 
