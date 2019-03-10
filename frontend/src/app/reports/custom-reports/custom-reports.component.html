@@ -10,7 +10,8 @@
             <div class="select select--primary">
               <select name="dataType" [(ngModel)]="dataType" (change)="dataTypeChange()">
                 <option value="profit-loss">Profit & Loss</option>
-                <option value="profit-loss-cumulative">Cumulative Earnings</option>                
+                <option value="account-returns">Account Returns</option>
+                <option value="profit-loss-cumulative">Cumulative Earnings</option>
               </select>
             </div>
           </div>
@@ -21,13 +22,13 @@
                 <option value="1-year">Last 1 Year</option>
                 <option value="2-year">Last 2 Year</option>
                 <option value="3-year">Last 3 Year</option>
-                <option value="4-year">Last 4 Year</option>                
+                <option value="4-year">Last 4 Year</option>
                 <option value="5-year">Last 5 Year</option>
                 <option value="10-year">Last 10 Year</option>
                 <option value="ytd">Year to Date</option>
                 <option value="custom">Custom Dates</option>
               </select>
-            </div>            
+            </div>
           </div>
 
           <div class="field-container mr-20 ml-20" *ngIf="dateSelect == 'custom'">
@@ -38,17 +39,17 @@
 
           <div class="select-container select-container--size3">
             <h6>Group By</h6>
-            
+
             <div class="select select--primary">
               <select name="groupBy" [(ngModel)]="groupBy" (change)="chartChange()">
                 <option value="month">Month</option>
                 <option value="year">Year</option>
-                <option value="day">Day</option>                
+                <option value="day">Day</option>
               </select>
             </div>
           </div>
 
-<!--           <div class="select-container select-container--size3">
+          <!--           <div class="select-container select-container--size3">
 
             <ul class="list-actions-alt list-actions-alt--primary">
               <li>
@@ -98,10 +99,10 @@
               </a>
             </li>
 
-<!--             <li>
+            <!--             <li>
               <a href="#" class="btn btn--border btn--size3">
                 <i class="ico-download"></i>
-                
+
                 PDF
               </a>
             </li> -->
@@ -126,14 +127,52 @@
 
 
       <div class="article__body" *ngIf="! showFirstRun">
-        
+
         <div class="report">
           <highcharts-chart [Highcharts]="Highcharts" [constructorType]="chartConstructor" [options]="chartOptions" [(update)]="chartUpdateFlag" style="width: 100%; height: 500px; display: block;"></highcharts-chart>
         </div>
 
 
+        <!-- Account Return table -->
+        <div class="table-simple table-simple--alt js-table" *ngIf="arTable">
 
-        <div class="table-simple table-simple--alt js-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+
+                <th>
+                  <ins>Account Value</ins>
+                </th>
+
+                <th>
+                  <ins>Percent Gain</ins>
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let row of arData;">
+                <td>
+                  <p>{{ row.Date | date:'shortDate' }}</p>
+                </td>
+
+                <td>
+                  <strong>{{ row.AccountValue | currency }}</strong>
+                </td>
+
+                <td>
+                  <strong class="green" [ngClass]="{ 'green': (row.Percent > 0), 'red': (row.Percent < 0) }">{{ row.Percent | percent }}</strong>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+
+
+        <!-- Profit & Loss Table -->
+        <div class="table-simple table-simple--alt js-table" *ngIf="plTable">
 
           <table>
             <thead>
@@ -143,7 +182,7 @@
                 <th *ngIf="cumulative">
                   <ins>Cumulative Earnings</ins>
                 </th>
-                
+
                 <th *ngIf="! cumulative">
                   <ins>Profit & Loss</ins>
                 </th>
@@ -176,7 +215,7 @@
                   <p *ngIf="groupBy == 'day'">{{ row.Date | date:'shortDate' }}</p>
                 </td>
 
-                <td> 
+                <td>
                   <strong class="green" [ngClass]="{ 'green': (row.Profit > 0), 'red': (row.Profit < 0) }">{{ row.Profit | currency }}</strong>
                 </td>
 
@@ -202,7 +241,7 @@
                   <strong>Totals</strong>
                 </td>
 
-                <td> 
+                <td>
                   <strong>{{ getProfitTotal(listData) | currency }}</strong>
                 </td>
 
@@ -217,12 +256,13 @@
                 <td>&nbsp;</td>
 
                 <td>&nbsp;</td>
-              </tr>              
+              </tr>
 
             </tbody>
           </table>
 
         </div>
+
       </div>
     </div>
 
