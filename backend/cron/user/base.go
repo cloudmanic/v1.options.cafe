@@ -41,7 +41,7 @@ func ClearExpiredSessions(db *models.DB) {
 	if personalApp.Id > 0 {
 
 		// Clear all sessions that have not had activity in the last 14 days (2 weeks)
-		db.New().Where("last_activity <= ? AND application_id != ?", time.Now().AddDate(0, 0, -14), personalApp.Id).Delete(&models.Session{})
+		db.New().Debug().Where("last_activity <= ? AND application_id != ?", time.Now().AddDate(0, 0, -14), personalApp.Id).Delete(&models.Session{})
 
 		// Log cleared sessions.
 		services.Info("All expired sessions cleared.")

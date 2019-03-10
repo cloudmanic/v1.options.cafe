@@ -8,8 +8,10 @@
 package test
 
 import (
+	"fmt"
 	"go/build"
-	"io/ioutil"
+	"os/exec"
+	"strings"
 
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
@@ -19,18 +21,21 @@ import (
 // a data file into our database. These dataset strings are mysql dumps
 //
 func LoadSqlDump(db models.Datastore, dataSet string) error {
+	// Get DB name - yes, very hacky
+	s := fmt.Sprintf("%s", db.New().CommonDB())
+	s1 := strings.Split(s, "(127.0.0.1:9906)/")
+	s2 := strings.Split(s1[1], "?charset=")
+	dbName := s2[0]
+
 	// Set file
 	dataFile := build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/library/test/data/" + dataSet + ".sql"
 
-	// Read JSON file
-	dat, err := ioutil.ReadFile(dataFile)
+	// Run CLI command to import data
+	_, err := exec.Command("bash", "-c", "mysql --host=127.0.0.1 --port=9906 -u root -pfoobar "+dbName+" < "+dataFile).Output()
 
 	if err != nil {
 		return err
 	}
-
-	// Run SQL dump we got from file.
-	db.New().Exec(string(dat))
 
 	// Return happy
 	return nil
