@@ -1,7 +1,7 @@
 //
-// Date: 3/9/2019
+// Date: 10/20/2018
 // Author(s): Spicer Matthews (spicer@options.cafe)
-// Copyright: 2019 Cloudmanic Labs, LLC. All rights reserved.
+// Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
 import * as moment from 'moment-timezone';
@@ -13,14 +13,16 @@ import { ProfitLoss, AccountReturn } from '../../../models/reports';
 import { Component, OnInit } from '@angular/core';
 import { StateService } from '../../../providers/state/state.service';
 import { ReportsService } from '../../../providers/http/reports.service';
-import { Router } from '@angular/router';
+import { Router, Params, ActivatedRoute } from '@angular/router';
 
 @Component({
-	selector: 'app-reports-custom-reports-account-returns',
-	templateUrl: './account-returns.component.html'
+	selector: 'app-reports-custom-reports-profit-loss',
+	templateUrl: './profit-loss.component.html'
 })
-export class AccountReturnsComponent implements OnInit {
-	dataType: string = "account-returns";
+
+export class ProfitLossComponent implements OnInit {
+	cumulative: boolean = false;
+	dataType: string = "profit-loss";
 	showFirstRun: boolean = false;
 	dateSelect: string = "1-year";
 	chartType: string = "column";
@@ -30,8 +32,7 @@ export class AccountReturnsComponent implements OnInit {
 	startDateInput: Date = moment(moment().year() + "-01-01").format('YYYY-MM-DD');
 	endDateInput: Date = moment().format('YYYY-MM-DD');
 
-	arData: AccountReturn[] = [];
-
+	listData: ProfitLoss[] = [];
 	Highcharts = Highcharts;
 
 	chartConstructor = 'chart';
@@ -67,7 +68,7 @@ export class AccountReturnsComponent implements OnInit {
 
 		tooltip: {
 			formatter: function() {
-				return "<b>" + this.points[0].series.name + ": </b><br />" + Highcharts.dateFormat('%b \'%y', this.points[0].x) + " : " + Highcharts.numberFormat(this.points[0].y, 0, '.', ',') + "%";
+				return "<b>" + this.points[0].series.name + ": </b><br />" + Highcharts.dateFormat('%b \'%y', this.points[0].x) + " : $" + Highcharts.numberFormat(this.points[0].y, 0, '.', ',');
 			},
 
 			shared: true
@@ -75,12 +76,12 @@ export class AccountReturnsComponent implements OnInit {
 
 		yAxis: {
 			title: {
-				text: '% Gain / Loss'
+				text: 'Profit & Loss'
 			},
 
 			labels: {
 				formatter: function() {
-					return Highcharts.numberFormat(this.axis.defaultLabelFormatter.call(this), 0, '.', ',') + '%';
+					return '$' + Highcharts.numberFormat(this.axis.defaultLabelFormatter.call(this), 0, '.', ',');
 				}
 			}
 		},
@@ -100,7 +101,7 @@ export class AccountReturnsComponent implements OnInit {
 		},
 
 		series: [{
-			name: 'Account Returns',
+			name: 'Profit & Loss',
 			data: []
 		}]
 	};
@@ -108,10 +109,20 @@ export class AccountReturnsComponent implements OnInit {
 	//
 	// Construct.
 	//
-	constructor(private router: Router, private stateService: StateService, private reportsService: ReportsService) {
+	constructor(private router: Router, private stateService: StateService, private reportsService: ReportsService, private activatedRoute: ActivatedRoute) {
+		// subscribe to router event
+		this.activatedRoute.queryParams.subscribe((params: Params) => {
+			// See what type profit / loss we have
+			if (params['type']) {
+				this.dataType = params['type'];
+				this.dataTypeChange();
+			}
+		});
+
 		// Subscribe to changes in the selected broker.
 		this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
-			this.doBuildPage();
+			this.buildChart();
+			this.getProfitLoss();
 		});
 	}
 
@@ -120,7 +131,8 @@ export class AccountReturnsComponent implements OnInit {
 	//
 	ngOnInit() {
 		// Load page.
-		this.doBuildPage();
+		this.buildChart();
+		this.getProfitLoss();
 	}
 
 	//
@@ -136,7 +148,7 @@ export class AccountReturnsComponent implements OnInit {
 	//
 	setChartType(type: string) {
 		this.chartType = type;
-		this.doBuildPage();
+		this.buildChart();
 	}
 
 	//
@@ -145,61 +157,46 @@ export class AccountReturnsComponent implements OnInit {
 	dataTypeChange() {
 		switch (this.dataType) {
 			case "profit-loss":
-				this.router.navigate(['/reports/custom/profit-loss']);
+				this.cumulative = false;
 				break;
 
 			case "profit-loss-cumulative":
-				this.router.navigate(['/reports/custom'], { queryParams: { type: "profit-loss-cumulative" } });
+				this.cumulative = true;
 				break;
 
 			case "account-returns":
-				this.doBuildPage();
+				this.router.navigate(['/reports/custom/account-returns']);
+				break;
+		}
+
+		this.chartChange();
+	}
+
+	//
+	// Chart change
+	//
+	chartChange() {
+		switch (this.dataType) {
+			case "profit-loss":
+				this.buildChart();
+				this.getProfitLoss();
+				break;
+
+			case "profit-loss-cumulative":
+				this.buildChart();
+				this.getProfitLoss();
+				break;
+
+			case "account-returns":
+				this.router.navigate(['/reports/custom/account-returns']);
 				break;
 		}
 	}
 
 	//
-	// Do account returns graph
-	//
-	doBuildPage() {
-		// AJAX call to get data`
-		this.reportsService.getAccountReturns(Number(this.stateService.GetStoredActiveAccountId()), this.startDate, this.endDate).subscribe((res) => {
-			// Show first run
-			if (res.length > 0) {
-				this.showFirstRun = false;
-			} else {
-				this.showFirstRun = true;
-				return;
-			}
-
-			// Set data
-			this.arData = res;
-
-			// Build chart
-			var data = [];
-
-			for (var i = 0; i < res.length; i++) {
-				let color = "#5cb85c";
-
-				if (res[i].Percent < 0) {
-					color = "#ce4260";
-				}
-
-				data.push({ x: res[i].Date, y: (res[i].Percent * 100), color: color });
-			}
-
-			// Rebuilt the chart
-			this.chartOptions.chart.type = this.chartType;
-			this.chartOptions.series[0].data = data;
-			this.chartOptions.series[0].name = "Account Returns";
-			this.chartUpdateFlag = true;
-		});
-	}
-
-	//
 	// Deal with date change
 	//
-	onDateChange() {
+	dateChange() {
 		// Set start and stop dates based on predefined selector
 		switch (this.dateSelect) {
 			case "1-year":
@@ -243,27 +240,118 @@ export class AccountReturnsComponent implements OnInit {
 				break;
 		}
 
-		// Rebuilt the page.
-		this.doBuildPage();
+		this.buildChart();
+		this.getProfitLoss();
+	}
+
+	//
+	// Get chart data
+	//
+	buildChart() {
+		// Ajax call to get data
+		this.reportsService.getProfitLoss(Number(this.stateService.GetStoredActiveAccountId()), this.startDate, this.endDate, this.groupBy, "asc", this.cumulative).subscribe((res) => {
+
+			// Show first run
+			if (res.length > 0) {
+				this.showFirstRun = false;
+			} else {
+				this.showFirstRun = true;
+			}
+
+			var data = [];
+
+			for (var i = 0; i < res.length; i++) {
+				let color = "#5cb85c";
+
+				if (res[i].Profit < 0) {
+					color = "#ce4260";
+				}
+
+				data.push({ x: res[i].Date, y: res[i].Profit, color: color });
+			}
+
+			// Rebuilt the chart
+			this.chartOptions.chart.type = this.chartType;
+			this.chartOptions.series[0].data = data;
+			this.chartOptions.series[0].name = "Profit & Loss";
+			this.chartUpdateFlag = true;
+
+		});
+	}
+
+	//
+	// Get Data = Profit Loss
+	//
+	getProfitLoss() {
+		let sort = "desc";
+
+		if (this.cumulative) {
+			sort = "asc";
+		}
+
+		this.reportsService.getProfitLoss(Number(this.stateService.GetStoredActiveAccountId()), this.startDate, this.endDate, this.groupBy, sort, this.cumulative).subscribe((res) => {
+			this.listData = res;
+		});
+	}
+
+	//
+	// Get profit total
+	//
+	getProfitTotal(rows: ProfitLoss[]): number {
+		let total = 0;
+
+		for (let i = 0; i < rows.length; i++) {
+			total += rows[i].Profit;
+		}
+
+		return total;
+	}
+
+	//
+	// Get trade total
+	//
+	getTradeTotal(rows: ProfitLoss[]): number {
+		let total = 0;
+
+		for (let i = 0; i < rows.length; i++) {
+			total += rows[i].TradeCount;
+		}
+
+		return total;
+	}
+
+	//
+	// Get trade total
+	//
+	getCommissionsTotal(rows: ProfitLoss[]): number {
+		let total = 0;
+
+		for (let i = 0; i < rows.length; i++) {
+			total += rows[i].Commissions;
+		}
+
+		return total;
 	}
 
 	//
 	// Export CSV
 	//
-	doExportCSV() {
+	exportCSV() {
 		let data = [];
 
 		// Build data
-		for (let i = 0; i < this.arData.length; i++) {
-			let row = this.arData[i];
+		for (let i = 0; i < this.listData.length; i++) {
+			let row = this.listData[i];
 
 			data.push({
 				Date: moment(row.Date).format('YYYY-MM-DD'),
-				Percent: row.Percent,
-				TotalCash: row.TotalCash,
-				AccountValue: row.AccountValue,
-				PricePer: row.PricePer,
-				Units: row.Units
+				Profit: row.Profit,
+				TradeCount: row.TradeCount,
+				Commissions: row.Commissions,
+				ProfitPerTrade: row.ProfitPerTrade,
+				WinRatio: row.WinRatio,
+				LossCount: row.LossCount,
+				WinCount: row.WinCount
 			});
 		}
 
@@ -271,14 +359,14 @@ export class AccountReturnsComponent implements OnInit {
 			fieldSeparator: ',',
 			quoteStrings: '"',
 			decimalseparator: '.',
-			headers: ['Date', 'Percent', 'TotalCash', 'AccountValue', 'PricePer', 'Units'],
+			headers: ['Date', 'Profit', 'TradeCount', 'Commissions', 'ProfitPerTrade', 'WinRatio', 'LossCount', 'WinCount'],
 			showTitle: false,
 			useBom: true,
 			removeNewLines: false,
 			keys: []
 		};
 
-		new Angular2Csv(data, 'options-cafe-account-returns', options);
+		new Angular2Csv(data, 'options-cafe-profit-loss', options);
 	}
 }
 

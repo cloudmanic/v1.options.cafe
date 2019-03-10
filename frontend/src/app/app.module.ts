@@ -115,6 +115,7 @@ import { SymbolComponent } from './research/symbol/symbol.component';
 import { CoreComponent as CentcomCoreComponent } from './centcom/layouts/core/core.component';
 import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.component';
 import { AccountReturnsComponent } from './reports/custom-reports/account-returns/account-returns.component';
+import { ProfitLossComponent } from './reports/custom-reports/profit-loss/profit-loss.component';
 
 @NgModule({
   declarations: [
@@ -195,6 +196,7 @@ import { AccountReturnsComponent } from './reports/custom-reports/account-return
     LongPutButterflyComponent,
     AnalyzeComponent,
     AccountReturnsComponent,
+    ProfitLossComponent,
   ],
   
   imports: [
