@@ -123,17 +123,19 @@ func GetAccountReturns(db models.Datastore, brokerAccount models.BrokerAccount, 
 	units := balances[0].AccountValue
 
 	// Loop through the balances and set returns
-	for _, row := range balances {
+	for key, row := range balances {
 		// Set price per
 		pricePer := row.AccountValue / units
 
-		// See if we had any ACHs today
-		if val, ok := achMap[row.Date.Format("2006-01-02")]; ok {
-			// Adding or removing money to account
-			if val > 0 {
-				units = units + (val / pricePer)
-			} else if val < 0 {
-				units = units - (val / pricePer)
+		// See if we had any ACHs today. Key > 0 solves for case when start day we also added money.
+		if key > 0 {
+			if val, ok := achMap[row.Date.Format("2006-01-02")]; ok {
+				// Adding or removing money to account
+				if val > 0 {
+					units = units + (val / pricePer)
+				} else if val < 0 {
+					units = units - (val / pricePer)
+				}
 			}
 		}
 
