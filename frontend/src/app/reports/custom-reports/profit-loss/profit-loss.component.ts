@@ -24,7 +24,7 @@ export class ProfitLossComponent implements OnInit {
 	cumulative: boolean = false;
 	dataType: string = "profit-loss";
 	showFirstRun: boolean = false;
-	dateSelect: string = "1-year";
+	dateSelect: string = "ytd";
 	chartType: string = "column";
 	groupBy: string = "month";
 	startDate: Date = moment(moment().year() + "-01-01").toDate();
