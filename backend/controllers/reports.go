@@ -9,16 +9,16 @@ package controllers
 import (
 	"strconv"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/reports"
-	"github.com/gin-gonic/gin"
 )
 
 //
-// Return profit and losses
+// ReportsGetProfitLoss - Return profit and losses
 //
 func (t *Controller) ReportsGetProfitLoss(c *gin.Context) {
-
 	// Make sure the UserId is correct.
 	userId := c.MustGet("userId").(uint)
 
@@ -57,7 +57,7 @@ func (t *Controller) ReportsGetProfitLoss(c *gin.Context) {
 }
 
 //
-// Return a list of years that have trade groups
+// ReportsGetTradeGroupYears - Return a list of years that have trade groups
 //
 func (t *Controller) ReportsGetTradeGroupYears(c *gin.Context) {
 
@@ -86,7 +86,7 @@ func (t *Controller) ReportsGetTradeGroupYears(c *gin.Context) {
 }
 
 //
-// Get a yearly summary based on account, year
+// ReportsGetAccountYearlySummary - Get a yearly summary based on account, year
 //
 func (t *Controller) ReportsGetAccountYearlySummary(c *gin.Context) {
 
@@ -119,6 +119,37 @@ func (t *Controller) ReportsGetAccountYearlySummary(c *gin.Context) {
 
 	// Return happy JSON
 	c.JSON(200, summary)
+}
+
+//
+// ReportsGetAccountReturns - return an array of account returns.
+//
+func (t *Controller) ReportsGetAccountReturns(c *gin.Context) {
+	// Make sure the UserId is correct.
+	userId := c.MustGet("userId").(uint)
+
+	// Set as int - brokerAccountId
+	brokerAccountId, err := strconv.ParseInt(c.Param("brokerAccount"), 10, 32)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Get broker account
+	brokerAccount, err := t.DB.GetBrokerAccountByIdUserId(uint(brokerAccountId), userId)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Get account returns
+	r := reports.GetAccountReturns(t.DB, brokerAccount, reports.BalancesParams{
+		StartDate: helpers.ParseDateNoError(c.Query("start")),
+		EndDate:   helpers.ParseDateNoError(c.Query("end")),
+	})
+
+	// Return happy JSON
+	c.JSON(200, r)
 }
 
 /* End File */

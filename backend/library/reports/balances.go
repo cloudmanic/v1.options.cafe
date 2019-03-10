@@ -36,8 +36,8 @@ type Returns struct {
 	Percent      float64 `json:"percent"`
 	AccountValue float64 `json:"account_value"`
 	TotalCash    float64 `json:"total_cash"`
-	PricePer     float64 `json:"-"`
-	Units        float64 `json:"-"`
+	PricePer     float64 `json:"price_per"`
+	Units        float64 `json:"units"`
 }
 
 //
