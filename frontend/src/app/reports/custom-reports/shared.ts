@@ -21,7 +21,7 @@ export class Shared {
 	static readonly ReportTypes: ReportType[] = [
 		{ Name: "Profit & Loss", Key: "profit-loss", Route: "/reports/custom/profit-loss", Query: false },
 		{ Name: "Account Cash", Key: "account-cash", Route: "/reports/custom/account-cash", Query: false },
-		{ Name: "Account Values", Key: "account-values", Route: "/reports/custom/account-values", Query: false },
+		{ Name: "Account Value", Key: "account-values", Route: "/reports/custom/account-values", Query: false },
 		{ Name: "Account Returns", Key: "account-returns", Route: "/reports/custom/account-returns", Query: false },
 		{ Name: "Cumulative Earnings", Key: "profit-loss-cumulative", Route: "/reports/custom/profit-loss", Query: true },
 	]
