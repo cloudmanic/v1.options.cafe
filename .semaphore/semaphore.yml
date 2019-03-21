@@ -22,7 +22,7 @@ blocks:
           - checkout
           - sem-version go 1.12
           - echo $GOPATH $GOBIN $SEMAPHORE_GIT_DIR
-          #- pwd
+          - pwd
           - cd $SEMAPHORE_GIT_DIR/backend
           # - dep ensure
           # - rm .env
