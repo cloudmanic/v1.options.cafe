@@ -26,6 +26,6 @@ blocks:
           - cd $SEMAPHORE_GIT_DIR/backend
           # - dep ensure
           # - rm .env
-          # - go test -v ./...
+          - go test -v ./...
           - go get
           - go build -ldflags="-s -w" -o builds/app.options.cafe
