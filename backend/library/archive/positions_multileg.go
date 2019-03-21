@@ -29,6 +29,11 @@ func DoMultiLegOrders(db models.Datastore, userId uint, brokerId uint) error {
 		return nil
 	}
 
+	// Most likely not needed but just incase.
+	if len(orders) <= 0 {
+		return nil
+	}
+
 	// Loop through the different orders and process.
 	for _, row := range orders {
 
@@ -37,7 +42,6 @@ func DoMultiLegOrders(db models.Datastore, userId uint, brokerId uint) error {
 
 		// Loop through the legs and store
 		for _, row2 := range row.Legs {
-
 			// Deal with sides
 			switch row2.Side {
 
@@ -67,7 +71,6 @@ func DoMultiLegOrders(db models.Datastore, userId uint, brokerId uint) error {
 				services.Critical("DoMultiLegOrders() : Unknown Side")
 				loopErr = errors.New("DoMultiLegOrders() : Unknown Side")
 			}
-
 		}
 
 		// Did we have an err
