@@ -12,18 +12,18 @@ blocks:
         commands:
           - export "GOPATH=$(go env GOPATH)"
           - export "GOBIN=$(go env GOPATH)/bin"
-          - export "SEMAPHORE_GIT_DIR=$(go env GOPATH)/src/${SEMAPHORE_PROJECT_NAME}"
+          - export "SEMAPHORE_GIT_DIR=$(go env GOPATH)/src/github.com/cloudmanic/${SEMAPHORE_PROJECT_NAME}"
           - export "PATH=$GOBIN:${PATH}"
           - mkdir -vp "${SEMAPHORE_GIT_DIR}" "$(go env GOPATH)/bin"
           - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
       jobs:
-      - name: Get Portal code and packages
+      - name: Get app code and packages
         commands:
           - checkout
           - sem-version go 1.12
           - echo $GOPATH $GOBIN $SEMAPHORE_GIT_DIR
           - pwd
-          - cd $SEMAPHORE_GIT_DIR
+          - cd $SEMAPHORE_GIT_DIR/backend
           # - dep ensure
           # - rm .env
           # - go test -v ./...
