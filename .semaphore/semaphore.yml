@@ -1,56 +1,30 @@
 version: v1.0
-name: First pipeline example
+name: app.options.cafe
 agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
+
 blocks:
-  - name: "Build"
+  - name: Build app
     task:
-      env_vars:
-        - name: APP_ENV
-          value: prod
+      prologue:
+        commands:
+          - export "GOPATH=$(go env GOPATH)"
+          - export "GOBIN=$(go env GOPATH)/bin"
+          - export "SEMAPHORE_GIT_DIR=$(go env GOPATH)/src/${SEMAPHORE_PROJECT_NAME}"
+          - export "PATH=$GOBIN:${PATH}"
+          - mkdir -vp "${SEMAPHORE_GIT_DIR}" "$(go env GOPATH)/bin"
+          - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
       jobs:
-      - name: Docker build
+      - name: Get Portal code and packages
         commands:
           - checkout
-          - ls -1
-          - echo $APP_ENV
-          - echo "Docker build..."
-          - echo "done"
-  - name: "Smoke tests"
-    task:
-      jobs:
-      - name: Smoke
-        commands:
-          - checkout
-          - echo "make smoke"
-  - name: "Unit tests"
-    task:
-      jobs:
-      - name: RSpec
-        commands:
-          - checkout
-          - echo "make rspec"
-      - name: Lint code
-        commands:
-          - checkout
-          - echo "make lint"
-      - name: Check security
-        commands:
-          - checkout
-          - echo "make security"
-  - name: "Integration tests"
-    task:
-      jobs:
-      - name: Cucumber
-        commands:
-          - checkout
-          - echo "make cucumber"
-  - name: "Push Image"
-    task:
-      jobs:
-      - name: Push
-        commands:
-          - checkout
-          - echo "make docker.push"
+          - sem-version go 1.12
+          - echo $GOPATH $GOBIN $SEMAPHORE_GIT_DIR
+          - pwd
+          - cd $SEMAPHORE_GIT_DIR
+          # - dep ensure
+          # - rm .env
+          # - go test -v ./...
+          - go build -ldflags="-s -w" -o builds/app.options.cafe
