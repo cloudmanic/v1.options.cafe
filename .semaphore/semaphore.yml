@@ -27,4 +27,5 @@ blocks:
           # - dep ensure
           # - rm .env
           # - go test -v ./...
+          - go get
           - go build -ldflags="-s -w" -o builds/app.options.cafe
