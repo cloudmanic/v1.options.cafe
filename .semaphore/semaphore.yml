@@ -16,6 +16,7 @@ blocks:
           - export "PATH=$GOBIN:${PATH}"
           - mkdir -vp "${SEMAPHORE_GIT_DIR}" "$(go env GOPATH)/bin"
           - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+          - docker run --name options_cafe_testing -e MYSQL_ROOT_PASSWORD=foobar --tmpfs /var/lib/mysql -p 127.0.0.1:9906:3306 -d mariadb:10.2
       jobs:
       - name: Get app code and packages
         commands:
