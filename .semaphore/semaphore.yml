@@ -8,7 +8,8 @@ agent:
 blocks:
   - name: Build app
     task:
-      prologue:
+      jobs:
+      - name: Get app code, get packages, build, test
         commands:
           - export "GOPATH=$(go env GOPATH)"
           - export "GOBIN=$(go env GOPATH)/bin"
@@ -17,17 +18,12 @@ blocks:
           - mkdir -vp "${SEMAPHORE_GIT_DIR}" "$(go env GOPATH)/bin"
           - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
           - docker run --name options_cafe_testing -e MYSQL_ROOT_PASSWORD=foobar --tmpfs /var/lib/mysql -p 127.0.0.1:9906:3306 -d mariadb:10.2
-      jobs:
-      - name: Get app code, get packages, build, test
-        commands:
           - checkout
           - sem-version go 1.12
           - echo $GOPATH $GOBIN $SEMAPHORE_GIT_DIR
           - pwd
           - cd $SEMAPHORE_GIT_DIR/backend
-          # - dep ensure
-          # - rm .env
+          - dep ensure
           # - go test -v ./...
-          - go get
           - go build -ldflags="-s -w" -o builds/app.options.cafe
-          # - go test ./models/...
+          - go test ./models/...
