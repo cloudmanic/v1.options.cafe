@@ -1,0 +1,16 @@
+# notify-on-fail.yml
+apiVersion: v1alpha
+kind: Notification
+metadata:
+  name: notify-slack
+spec:
+  rules:
+    - name: "Options Cafe Slack Notification"
+      filter:
+        projects:
+          - app.options.cafe
+        results:
+          - failed
+      notify:
+        slack:
+          endpoint: https://hooks.slack.com/services/T5X493UMP/BGXG6BDLZ/k7VSTI9M43mrFxxBi5MmPLd
