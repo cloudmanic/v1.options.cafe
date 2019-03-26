@@ -12,11 +12,17 @@ blocks:
         - name: APP_ENV
           value: local
 
+        - name: CACHE_DIR
+          value: /tmp
+
         - name: SITE_URL
           value: http://localhost:9090
 
         - name: ENCRYPTION_KEY
           value: 3NeoysNC8&zktUZVPg;dahXuQsic8jpH
+
+        - name: TRIAL_DAY_COUNT
+          value: "30"
 
         - name: STRIPE_MONTHLY_PLAN
           value: plan_DjnVqjDqkRnmOc
@@ -44,7 +50,7 @@ blocks:
 
         - name: SENDY_NO_BROKER_LIST
           value: 71ZYTpleM25ufqWpbxuclw
-          
+
       jobs:
       - name: Get app code, get packages, build, test
         commands:
