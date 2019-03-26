@@ -14,7 +14,7 @@ blocks:
 
         - name: SITE_URL
           value: http://localhost:9090
-          
+
         - name: ENCRYPTION_KEY
           value: 3NeoysNC8&zktUZVPg;dahXuQsic8jpH
 
@@ -30,6 +30,21 @@ blocks:
         - name: STRIPE_SIGNING_SECRET
           value: whsec_LDYaFsNlc9uHLsFch7v9S38Is6oLLu4J
 
+        - name: SENDY_API_KEY
+          value: TIkbi9DaLBsGjpvM24Sj
+
+        - name: SENDY_TRIAL_LIST
+          value: U0ftkhdWTYTfJ2KJENw892Zw
+
+        - name: SENDY_EXPIRED_LIST
+          value: nqpFGhdwbxE6ym2JCXpD763g
+
+        - name: SENDY_SUBSCRIBE_LIST
+          value: THdIQhgouYj7e8928ZADQdjg
+
+        - name: SENDY_NO_BROKER_LIST
+          value: 71ZYTpleM25ufqWpbxuclw
+          
       jobs:
       - name: Get app code, get packages, build, test
         commands:
