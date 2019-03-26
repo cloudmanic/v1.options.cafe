@@ -2,7 +2,7 @@
 apiVersion: v1alpha
 kind: Notification
 metadata:
-  name: notify-slack
+  name: options-cafe-slack-notify
 spec:
   rules:
     - name: "Options Cafe Slack Notification"
