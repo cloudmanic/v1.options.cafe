@@ -8,6 +8,14 @@ agent:
 blocks:
   - name: Build app
     task:
+      env_vars:
+        - name: APP_ENV
+          value: local
+        - name: SITE_URL
+          value: http://localhost:9090
+        - name: ENCRYPTION_KEY
+          value: 3NeoysNC8&zktUZVPg;dahXuQsic8jpH
+
       jobs:
       - name: Get app code, get packages, build, test
         commands:
@@ -19,9 +27,7 @@ blocks:
           - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
           - docker run --name options_cafe_testing -e MYSQL_ROOT_PASSWORD=foobar --tmpfs /var/lib/mysql -p 127.0.0.1:9906:3306 -d mariadb:10.2
           - checkout
-          - sem-version go 1.12
-          - echo $GOPATH $GOBIN $SEMAPHORE_GIT_DIR
-          - pwd
+          - sem-version go 1.11
           - cd $SEMAPHORE_GIT_DIR/backend
           - dep ensure
           # - go test -v ./...
