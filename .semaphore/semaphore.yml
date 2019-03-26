@@ -18,6 +18,9 @@ blocks:
         - name: SITE_URL
           value: http://localhost:9090
 
+        - name: REDIS_HOST
+          value: 127.0.0.1:6379
+
         - name: ENCRYPTION_KEY
           value: 3NeoysNC8&zktUZVPg;dahXuQsic8jpH
 
@@ -61,6 +64,7 @@ blocks:
           - mkdir -vp "${SEMAPHORE_GIT_DIR}" "$(go env GOPATH)/bin"
           - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
           - docker run --name options_cafe_testing -e MYSQL_ROOT_PASSWORD=foobar --tmpfs /var/lib/mysql -p 127.0.0.1:9906:3306 -d mariadb:10.2
+          - docker run --name options_cafe_testing_redis -p 127.0.0.1:6379:6379 -d redis:5.0
           - checkout
           - sem-version go 1.11
           - cd $SEMAPHORE_GIT_DIR/backend
