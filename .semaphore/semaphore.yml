@@ -11,10 +11,24 @@ blocks:
       env_vars:
         - name: APP_ENV
           value: local
+
         - name: SITE_URL
           value: http://localhost:9090
+          
         - name: ENCRYPTION_KEY
           value: 3NeoysNC8&zktUZVPg;dahXuQsic8jpH
+
+        - name: STRIPE_MONTHLY_PLAN
+          value: plan_DjnVqjDqkRnmOc
+
+        - name: STRIPE_YEARLY_PLAN
+          value: plan_DjnWwzHMV7lhsL
+
+        - name: STRIPE_SECRET_KEY
+          value: sk_test_CR6tEHNYfvQz8ljjYhg7aFES
+
+        - name: STRIPE_SIGNING_SECRET
+          value: whsec_LDYaFsNlc9uHLsFch7v9S38Is6oLLu4J
 
       jobs:
       - name: Get app code, get packages, build, test
