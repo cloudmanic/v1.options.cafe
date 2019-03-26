@@ -23,6 +23,9 @@ import (
 // Test - GetGetOptionsChainByExpiration01
 //
 func TestGetOptionsChainByExpiration01(t *testing.T) {
+	if testing.Short() {
+		t.Skipf("Skipping test since it requires a broker token and --short was requested")
+	}
 
 	// Start the db connection.
 	db, dbName, _ := models.NewTestDB("")
@@ -51,6 +54,9 @@ func TestGetOptionsChainByExpiration01(t *testing.T) {
 // Test - GetOptionsExpirationsBySymbol01
 //
 func TestGetOptionsExpirationsBySymbol01(t *testing.T) {
+	if testing.Short() {
+		t.Skipf("Skipping test since it requires a broker token and --short was requested")
+	}
 
 	// Start the db connection.
 	db, dbName, _ := models.NewTestDB("")
@@ -76,6 +82,9 @@ func TestGetOptionsExpirationsBySymbol01(t *testing.T) {
 // TestGetOptionsByExpirationType01
 //
 func TestGetOptionsByExpirationType01(t *testing.T) {
+	if testing.Short() {
+		t.Skipf("Skipping test since it requires a broker token and --short was requested")
+	}
 
 	// Start the db connection.
 	db, dbName, _ := models.NewTestDB("")

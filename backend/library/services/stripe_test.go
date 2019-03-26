@@ -7,10 +7,11 @@
 package services
 
 import (
+	"go/build"
 	"os"
 	"testing"
 
-	"github.com/joho/godotenv"
+	env "github.com/jpfuentes2/go-env"
 	"github.com/nbio/st"
 )
 
@@ -71,11 +72,7 @@ func TestGetBalanceTransaction01(t *testing.T) {
 func TestApplyCoupon01(t *testing.T) {
 
 	// Load .env file
-	err := godotenv.Load("../../.env")
-
-	if err != nil {
-		panic(err)
-	}
+	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/.env")
 
 	// Create a new coupon
 	couponId, err := StripeCreateNewCoupon("Unit Test Coupon 1", 55.00)
@@ -128,11 +125,7 @@ func TestApplyCoupon01(t *testing.T) {
 func TestCreateNewCoupon01(t *testing.T) {
 
 	// Load .env file
-	err := godotenv.Load("../../.env")
-
-	if err != nil {
-		panic(err)
-	}
+	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/.env")
 
 	// Create a new coupon
 	id, err := StripeCreateNewCoupon("Unit Test Coupon 1", 55.00)

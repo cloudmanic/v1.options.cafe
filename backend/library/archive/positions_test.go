@@ -7,6 +7,7 @@
 package archive
 
 import (
+	"go/build"
 	"testing"
 	"time"
 
@@ -20,8 +21,12 @@ import (
 // Test reviewing current positions for expired options.
 //
 func TestReviewCurrentPositionsForExpiredOptions01(t *testing.T) {
-	// Load config file.
-	env.ReadEnv("../../.env")
+	if testing.Short() {
+		t.Skipf("Skipping test since --short was requested")
+	}
+
+	// Load .env file
+	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/.env")
 
 	// Start the db connection.
 	db, dbName, _ := models.NewTestDB("")
@@ -129,6 +134,10 @@ func TestReviewCurrentPositionsForExpiredOptions01(t *testing.T) {
 // Test reviewing current positions for expired options.
 //
 func TestReviewCurrentPositionsForExpiredOptions02(t *testing.T) {
+	if testing.Short() {
+		t.Skipf("Skipping test since --short was requested")
+	}
+
 	// Start the db connection.
 	db, dbName, _ := models.NewTestDB("")
 	defer models.TestingTearDown(db, dbName)

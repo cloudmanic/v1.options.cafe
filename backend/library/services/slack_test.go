@@ -7,52 +7,47 @@
 package services
 
 import (
-  "os"
-  "testing"
-  "github.com/joho/godotenv"
-  "github.com/nbio/st"
-  "gopkg.in/h2non/gock.v1"  
+	"go/build"
+	"os"
+	"testing"
+
+	env "github.com/jpfuentes2/go-env"
+	"github.com/nbio/st"
+	"gopkg.in/h2non/gock.v1"
 )
 
 //
 // Test - SlackNotify
 //
 func TestSlackNotify(t *testing.T) {
-  
-  // Load .env file 
-  err := godotenv.Load("../../.env")
-  
-  if err != nil {
-    panic(err)
-  }  
-  
-  if len(os.Getenv("SLACK_HOOK")) > 0 {
-  
-    // Flush pending mocks after test execution
-    defer gock.Off() 
-  
-    // Setup mock request.
-    gock.New(os.Getenv("SLACK_HOOK")).
-      Reply(200).
-      BodyString("ok")
-  
-  
-  
-    // Run a test webhook to slack.
-    res, err := SlackNotify("#events", "Test from unit testing")
-    
-    if err != nil {
-      panic(err)
-    }  
-    
-    // Verify the data was return as expected
-    st.Expect(t, res, "ok")    
-    
-    // Verify that we don't have pending mocks
-    st.Expect(t, gock.IsDone(), true)
-    
-  }
-  
+	// Load .env file
+	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/.env")
+
+	if len(os.Getenv("SLACK_HOOK")) > 0 {
+
+		// Flush pending mocks after test execution
+		defer gock.Off()
+
+		// Setup mock request.
+		gock.New(os.Getenv("SLACK_HOOK")).
+			Reply(200).
+			BodyString("ok")
+
+		// Run a test webhook to slack.
+		res, err := SlackNotify("#events", "Test from unit testing")
+
+		if err != nil {
+			panic(err)
+		}
+
+		// Verify the data was return as expected
+		st.Expect(t, res, "ok")
+
+		// Verify that we don't have pending mocks
+		st.Expect(t, gock.IsDone(), true)
+
+	}
+
 }
 
 /* End File */

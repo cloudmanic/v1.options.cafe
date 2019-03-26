@@ -199,14 +199,6 @@
   revision = "8019e6774408f0ef24753bccba660ae36ff4038d"
 
 [[projects]]
-  digest = "1:ecd9aa82687cf31d1585d4ac61d0ba180e42e8a6182b85bd785fcca8dfeefc1b"
-  name = "github.com/joho/godotenv"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "23d116af351c84513e1946b527c88823e476be13"
-  version = "v1.3.0"
-
-[[projects]]
   branch = "master"
   digest = "1:b7f0a4f6b099c99741c05bc333eae197bfb1a137bd48c6e490fa606080e0e822"
   name = "github.com/jpfuentes2/go-env"
@@ -616,7 +608,6 @@
     "github.com/jinzhu/gorm/dialects/sqlite",
     "github.com/jinzhu/now",
     "github.com/jlaffaye/ftp",
-    "github.com/joho/godotenv",
     "github.com/jpfuentes2/go-env",
     "github.com/jpfuentes2/go-env/autoload",
     "github.com/mgutz/ansi",

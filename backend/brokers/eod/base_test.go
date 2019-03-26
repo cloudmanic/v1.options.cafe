@@ -25,6 +25,9 @@ import (
 // Test - GetGetOptionsBySymbol01
 //
 func TestGetOptionsBySymbol01(t *testing.T) {
+	if testing.Short() {
+		t.Skipf("Skipping GetGetOptionsBySymbol01 test since it requires a broker token and --short was requested")
+	}
 
 	// Start the db connection.
 	db, dbName, _ := models.NewTestDB("")
@@ -50,6 +53,10 @@ func TestGetOptionsBySymbol01(t *testing.T) {
 //
 func TestGetTradeDatesBySymbols01(t *testing.T) {
 
+	if testing.Short() {
+		t.Skipf("Skipping TestGetTradeDatesBySymbols01 test since it requires a broker token and --short was requested")
+	}
+
 	// Get dates from S3 store
 	dates, err := GetTradeDatesBySymbols("spy")
 
@@ -64,6 +71,10 @@ func TestGetTradeDatesBySymbols01(t *testing.T) {
 //
 func TestGetTradeDateKeysBySymbol01(t *testing.T) {
 
+	if testing.Short() {
+		t.Skipf("Skipping TestGetTradeDateKeysBySymbol01 test since it requires a broker token and --short was requested")
+	}
+
 	// Get dates from S3 store
 	keys, err := GetTradeDateKeysBySymbol("spy")
 
@@ -77,6 +88,10 @@ func TestGetTradeDateKeysBySymbol01(t *testing.T) {
 // Test - downloadEodSymbol01
 //
 func TestDownloadEodSymbol01(t *testing.T) {
+	if testing.Short() {
+		t.Skipf("Skipping TestDownloadEodSymbol01 test since it requires a broker token and --short was requested")
+	}
+
 	// Download File
 	dFile := "options-eod/SPY/2018-10-18.csv.zip"
 	lFile := os.Getenv("CACHE_DIR") + "/object-store/" + dFile
@@ -97,6 +112,10 @@ func TestDownloadEodSymbol01(t *testing.T) {
 // Test - TestUnzipSymbolCSV01
 //
 func TestUnzipSymbolCSV01(t *testing.T) {
+	if testing.Short() {
+		t.Skipf("Skipping TestUnzipSymbolCSV01 test since it requires a broker token and --short was requested")
+	}
+
 	// Download File
 	dFile := "options-eod/SPY/2018-10-18.csv.zip"
 	lFile := os.Getenv("CACHE_DIR") + "/object-store/" + dFile

@@ -20,6 +20,9 @@ import (
 // Test - GetQuotes - 01
 //
 func TestGetQuotes01(t *testing.T) {
+	if testing.Short() {
+		t.Skipf("Skipping test since it requires a broker token and --short was requested")
+	}
 
 	// Start the db connection.
 	db, dbName, _ := models.NewTestDB("")
