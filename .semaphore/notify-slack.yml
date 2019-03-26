@@ -13,4 +13,4 @@ spec:
           - failed
       notify:
         slack:
-          endpoint: https://hooks.slack.com/services/T5X493UMP/BGXG6BDLZ/k7VSTI9M43mrFxxBi5MmPLd
+          endpoint: https://hooks.slack.com/services/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
