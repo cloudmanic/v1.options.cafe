@@ -55,7 +55,6 @@ func (t *Controller) AddPagingInfoToHeaders(c *gin.Context, meta models.QueryMet
 // Validate and Create object.
 //
 func (t *Controller) ValidateRequest(c *gin.Context, obj ValidateRequest) error {
-
 	// Bind the JSON that got sent into an object and validate.
 	if err := c.ShouldBindJSON(obj); err == nil {
 
