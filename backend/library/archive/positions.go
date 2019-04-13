@@ -65,6 +65,7 @@ func StorePositions(db models.Datastore, userId uint, brokerId uint) error {
 		err = ReviewCurrentPositionsForExpiredOptions(db, userId, row.Id)
 
 		if err != nil {
+			services.Info("archive.ReviewCurrentPositionsForExpiredOptions returned error " + strconv.Itoa(int(userId)) + " Broker Id: " + strconv.Itoa(int(brokerId)) + " Broker Account Id: " + strconv.Itoa(int(row.Id)))
 			return err
 		}
 	}
@@ -188,8 +189,12 @@ func ReviewCurrentPositionsForExpiredOptions(db models.Datastore, userId uint, b
 			stockQuote, err := market.GetUnderlayingQuoteByDate(db, userId, row.Symbol.OptionUnderlying, parts.Expire)
 
 			if err != nil {
-				services.BetterError(err)
-				continue
+				services.ErrorMsg(err, "market.GetUnderlayingQuoteByDate returned error UserId: "+strconv.Itoa(int(userId))+" Broker Id: "+strconv.Itoa(int(brokerId))+" OptionUnderlying: "+row.Symbol.OptionUnderlying+" Today: "+parts.Expire.Format("2006-01-02"))
+
+				// This is hacky but if we can't get a quote we need to do something.
+				stockQuote = 0.00
+
+				// TODO(spicer): Notify user or something. (we put a note in the tradegroup below)
 			}
 
 			// Figure out profit.
@@ -258,11 +263,18 @@ func ReviewCurrentPositionsForExpiredOptions(db models.Datastore, userId uint, b
 				tradeGroup.PercentGain = (((tradeGroup.Risked + profit) - tradeGroup.Risked) / tradeGroup.Risked) * 100
 				tradeGroup.Status = tradeGroupStatus
 				tradeGroup.ClosedDate = tradeGroup.Positions[0].ClosedDate
+
+				// Poor Tradier note
+				if stockQuote == 0 {
+					tradeGroup.Note = tradeGroup.Note + "Due to Tradier's poor historical data it is expected the trade data here is not correct. Please contact help@options.cafe for support."
+				}
+
 				db.UpdateTradeGroup(&tradeGroup)
 
 				// Log success
 				services.Info("New TradeGroup updated (ReviewCurrentPositionsForExpiredOptions) for user " + strconv.Itoa(int(userId)) + " TradeGroup Id: " + strconv.Itoa(int(tradeGroup.Id)))
 			}
+
 		}
 
 	}

@@ -19,13 +19,15 @@ import (
 )
 
 //
-// Do get balances. Main thing we are doing here is populating the cache with the results
+// DoGetBalances - Main thing we are doing here is populating the cache with the results
 //
 func DoGetBalances(db models.Datastore, api brokers.Api, user models.User, broker models.Broker) error {
 
 	balances, err := api.GetBalances()
 
 	if err != nil {
+		// We call DoGetBalances every 5 seconds. So we do not think we need to call this on every polling function.
+		CheckErrorForDisableBroker("pull.DoGetBalances", err, db, user, broker)
 		return err
 	}
 

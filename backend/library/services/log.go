@@ -81,14 +81,26 @@ func Warning(err error) {
 }
 
 //
-// Error Log. TODO: Convert this to normal Error Bettererror sucks as a name
+// BetterError - Error Log. TODO: Convert this to normal Error Bettererror sucks as a name
 //
 func BetterError(err error) {
-
 	caller := MyCaller()
 
 	// Standard out
 	log.Println(ansi.Color("[App:Error] "+caller+" : "+err.Error(), "red"))
+
+	// Rollbar
+	RollbarError(err)
+}
+
+//
+// ErrorMsg - Error with a message Log.
+//
+func ErrorMsg(err error, message string) {
+	caller := MyCaller()
+
+	// Standard out
+	log.Println(ansi.Color("[App:Error] "+caller+" : "+err.Error()+" : "+message, "red"))
 
 	// Rollbar
 	RollbarError(err)
@@ -100,7 +112,6 @@ func BetterError(err error) {
 func RollbarInfo(message string) {
 
 	if len(os.Getenv("ROLLBAR_TOKEN")) > 0 {
-
 		go func() {
 			rollbar.Token = os.Getenv("ROLLBAR_TOKEN")
 			rollbar.Environment = os.Getenv("ROLLBAR_ENV")

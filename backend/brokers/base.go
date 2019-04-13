@@ -11,9 +11,11 @@ package brokers
 import (
 	"errors"
 	"os"
+	"strconv"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
 
@@ -35,7 +37,7 @@ func GetPrimaryTradierConnection(db models.Datastore, userId uint) (tradier.Api,
 	brokers := []models.Broker{}
 
 	// Run the query to get brokers. For now we always get Tradier
-	db.New().Where("user_id = ?", user.Id).Find(&brokers)
+	db.New().Where("user_id = ? AND status = ?", user.Id, "Active").Find(&brokers)
 
 	// If we have no brokers found so we return our default admin broker. Mostly used for unit testing and customers without tradier.
 	if len(brokers) <= 0 {
@@ -63,7 +65,8 @@ func GetPrimaryTradierConnection(db models.Datastore, userId uint) (tradier.Api,
 	accessToken, err := helpers.Decrypt(broker.AccessToken)
 
 	if err != nil {
-		panic(err)
+		services.Info("GetPrimaryTradierConnection Error: for user " + strconv.Itoa(int(userId)) + " due to " + err.Error())
+		return tradier.Api{}, err
 	}
 
 	// Figure out which broker connection to setup.

@@ -98,10 +98,9 @@ func (t *Api) SendPostRequest(urlStr string, params url.Values) (string, error) 
 }
 
 //
-// Send a GET request to Tradier. Returns the JSON string or an error
+// SendGetRequest - Send a GET request to Tradier. Returns the JSON string or an error
 //
 func (t *Api) SendGetRequest(urlStr string) (string, error) {
-
 	// Setup http client
 	client := &http.Client{}
 
