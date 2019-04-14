@@ -39,10 +39,11 @@ func NewDB() (*DB, error) {
 
 	var err error
 
-	dbName := os.Getenv("DB_DATABASE")
+	// Build connection string
+	conStr := os.Getenv("DB_USERNAME") + ":" + os.Getenv("DB_PASSWORD") + "@tcp(" + os.Getenv("DB_HOST") + ":" + os.Getenv("DB_PORT") + ")/" + os.Getenv("DB_DATABASE")
 
 	// Connect to Mysql
-	db, err := gorm.Open("mysql", os.Getenv("DB_USERNAME")+":"+os.Getenv("DB_PASSWORD")+"@"+os.Getenv("DB_HOST")+"/"+dbName+"?charset=utf8&parseTime=True&loc=Local")
+	db, err := gorm.Open("mysql", conStr+"?charset=utf8&parseTime=True&loc=Local")
 
 	if err != nil {
 		services.Fatal(errors.New(err.Error() + "Failed to connect database"))
