@@ -22,7 +22,6 @@ import (
 // Get the balance of a particular broker account.
 //
 func (t *Controller) BrokerAccountGetBalance(c *gin.Context) {
-
 	// Make sure the UserId is correct.
 	userId := c.MustGet("userId").(uint)
 
