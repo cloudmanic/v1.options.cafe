@@ -9,6 +9,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/cron"
 	"github.com/cloudmanic/app.options.cafe/backend/library/polling"
 	"github.com/cloudmanic/app.options.cafe/backend/library/queue"
+	"github.com/cloudmanic/app.options.cafe/backend/library/seed"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/library/worker/jobs"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
@@ -30,6 +31,9 @@ func main() {
 	if err != nil {
 		services.Fatal(err)
 	}
+
+	// See local database (if we are in local dev ENV)
+	seed.LocalDatabase(db)
 
 	// Fire up the queue connection
 	queue.Start()
