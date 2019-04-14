@@ -64,7 +64,7 @@ func (t *Controller) DoSymbolSearch(c *gin.Context) {
 	symbols, err := t.DB.SearchSymbols(search, "Equity")
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": httpGenericErrMsg})
 		return
 	}
@@ -100,7 +100,7 @@ func (t *Controller) AddActiveSymbol(c *gin.Context) {
 	act, err := t.DB.CreateActiveSymbol(userId, symbol)
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": httpGenericErrMsg})
 		return
 	}
@@ -146,7 +146,7 @@ func (t *Controller) GetOptionSymbolFromParts(c *gin.Context) {
 		_, err2 := t.DB.CreateActiveSymbol(userId, sym.ShortName)
 
 		if err2 != nil {
-			services.BetterError(err2)
+			services.Info(err2)
 			c.JSON(http.StatusBadRequest, gin.H{"error": httpGenericErrMsg})
 			return
 		}
@@ -178,7 +178,7 @@ func (t *Controller) GetOptionSymbolFromParts(c *gin.Context) {
 	chain, err := broker.GetOptionsChainByExpiration(symbol, expire)
 
 	if err != nil {
-		services.Warning(err)
+		services.Info(err)
 		t.RespondError(c, err, httpGenericErrMsg)
 		return
 	}
@@ -214,7 +214,7 @@ func (t *Controller) GetOptionSymbolFromParts(c *gin.Context) {
 	_, err2 := t.DB.CreateActiveSymbol(userId, symb.ShortName)
 
 	if err2 != nil {
-		services.BetterError(err2)
+		services.Info(err2)
 		c.JSON(http.StatusBadRequest, gin.H{"error": httpGenericErrMsg})
 		return
 	}

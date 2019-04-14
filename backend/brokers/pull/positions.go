@@ -22,7 +22,7 @@ func DoGetPositions(db models.Datastore, api brokers.Api, user models.User, brok
 
 	// We do not call this until a user is boot strapped
 	if user.Bootstrapped == "No" {
-		services.Info("Skipping DoGetPositions() for user " + user.Email + " as the user is not bootstrapped yet.")
+		services.InfoMsg("Skipping DoGetPositions() for user " + user.Email + " as the user is not bootstrapped yet.")
 		return nil
 	}
 
@@ -44,7 +44,7 @@ func DoGetPositions(db models.Datastore, api brokers.Api, user models.User, brok
 		err = archive.PastCreateTradeGroupFromPosition(db, user.Id, broker.Id, row)
 
 		if err != nil {
-			services.BetterError(err)
+			services.Info(err)
 			continue
 		}
 	}

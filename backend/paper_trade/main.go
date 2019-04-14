@@ -26,7 +26,7 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	// Lets get started
-	services.Critical("Paper Trade Started: " + os.Getenv("APP_ENV"))
+	services.InfoMsg("Paper Trade Started: " + os.Getenv("APP_ENV"))
 
 	// Start the db connection.
 	db, err := models.NewDB()

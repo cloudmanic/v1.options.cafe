@@ -18,7 +18,7 @@ import (
 func (t *Controller) AuthenticateConnection(conn *WebsocketConnection, accessToken string, device_id string) {
 
 	// log connection
-	services.Info("Connected Device Id : " + device_id)
+	services.InfoMsg("Connected Device Id : " + device_id)
 
 	// Store the device id
 	conn.muDeviceId.Lock()
@@ -29,7 +29,7 @@ func (t *Controller) AuthenticateConnection(conn *WebsocketConnection, accessTok
 	session, err := t.DB.GetByAccessToken(accessToken)
 
 	if err != nil {
-		services.Critical("Access Token Not Found - Unable to Authenticate")
+		services.InfoMsg("Access Token Not Found - Unable to Authenticate")
 		return
 	}
 
@@ -37,11 +37,11 @@ func (t *Controller) AuthenticateConnection(conn *WebsocketConnection, accessTok
 	user, err := t.DB.GetUserById(session.UserId)
 
 	if err != nil {
-		services.Critical("User Not Found - Unable to Authenticate - UserId : " + fmt.Sprint(session.UserId) + " - Session Id : " + fmt.Sprint(session.Id))
+		services.InfoMsg("User Not Found - Unable to Authenticate - UserId : " + fmt.Sprint(session.UserId) + " - Session Id : " + fmt.Sprint(session.Id))
 		return
 	}
 
-	services.Info("Authenticated : " + user.Email)
+	services.InfoMsg("Authenticated : " + user.Email)
 
 	// Store the user id from this connection because the auth was successful
 	conn.muUserId.Lock()

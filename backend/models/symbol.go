@@ -68,7 +68,7 @@ func (t *DB) CreateNewOptionSymbol(short string) (Symbol, error) {
 	parts, err := helpers.OptionParse(short)
 
 	if err != nil {
-		services.Error(err, "[Models:CreateNewOptionSymbol] - Unable to parse option symbol. - "+short)
+		services.Critical(errors.New(err.Error() + "[Models:CreateNewOptionSymbol] - Unable to parse option symbol. - " + short))
 		return Symbol{}, err
 	}
 
@@ -96,7 +96,7 @@ func (t *DB) CreateNewSymbol(short string, name string, sType string) (Symbol, e
 			parts, err := helpers.OptionParse(short)
 
 			if err != nil {
-				services.Error(err, "[Models:CreateNewSymbol] - Unable to parse option symbol. - "+short)
+				services.Critical(errors.New(err.Error() + "[Models:CreateNewSymbol] - Unable to parse option symbol. - " + short))
 				return Symbol{}, err
 			}
 
@@ -110,7 +110,7 @@ func (t *DB) CreateNewSymbol(short string, name string, sType string) (Symbol, e
 		t.Create(&symb)
 
 		// Log Symbol creation.
-		services.Info("[Models:CreateNewSymbol] - Created a new Symbol entry - (" + short + ") " + name)
+		services.InfoMsg("[Models:CreateNewSymbol] - Created a new Symbol entry - (" + short + ") " + name)
 
 	}
 
@@ -133,12 +133,12 @@ func (t *DB) UpdateSymbol(id uint, short string, name string, sType string) (Sym
 	err := t.Save(&symb).Error
 
 	if err != nil {
-		services.Error(err, "[Models:UpdateSymbol] - Unable to update symbol.")
+		services.Critical(errors.New(err.Error() + "[Models:UpdateSymbol] - Unable to update symbol."))
 		return symb, err
 	}
 
 	// Log Symbol creation.
-	services.Info("[Models:CreateNewSymbol] - Update a new Symbol entry - (" + short + ") " + name)
+	services.InfoMsg("[Models:CreateNewSymbol] - Update a new Symbol entry - (" + short + ") " + name)
 
 	// Return the user.
 	return symb, nil
@@ -178,7 +178,7 @@ func (t *DB) SearchSymbols(query string, sType string) ([]Symbol, error) {
 	rows, err := t.Raw(sql, query, "%"+query+"%", query+"%", query+"%", "%"+query+"%", "%"+query+"%", "%"+query+"%", sType).Rows()
 
 	if err != nil {
-		services.Error(err, "[Models:SearchSymbols] - Unable to search for symbols.")
+		services.Critical(errors.New(err.Error() + "[Models:SearchSymbols] - Unable to search for symbols."))
 		return symbols, err
 	}
 

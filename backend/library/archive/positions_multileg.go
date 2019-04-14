@@ -68,14 +68,14 @@ func DoMultiLegOrders(db models.Datastore, userId uint, brokerId uint) error {
 				loopErr = err
 
 			default:
-				services.Critical("DoMultiLegOrders() : Unknown Side")
+				services.InfoMsg("DoMultiLegOrders() : Unknown Side")
 				loopErr = errors.New("DoMultiLegOrders() : Unknown Side")
 			}
 		}
 
 		// Did we have an err
 		if loopErr != nil {
-			services.BetterError(loopErr)
+			services.Info(loopErr)
 
 			// Mark the order as reviewed
 			row.PositionReviewed = "Error"

@@ -9,6 +9,7 @@
 package queue
 
 import (
+	"errors"
 	"os"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
@@ -30,7 +31,7 @@ func Start() {
 	c, err := nsq.NewProducer(os.Getenv("NSQD_HOST"), config)
 
 	if err != nil {
-		services.FatalMsg(err, "PollOrders (NewProducer): NSQ Could not connect.")
+		services.Fatal(errors.New(err.Error() + "PollOrders (NewProducer): NSQ Could not connect."))
 	}
 
 	// Set package global
@@ -54,7 +55,7 @@ func Write(topic string, msg string) {
 	err := nsqConn.Publish(topic, []byte(msg))
 
 	if err != nil {
-		services.FatalMsg(err, "queue.Write: NSQ Could not connect. - "+topic+" : "+msg)
+		services.Fatal(errors.New(err.Error() + "queue.Write: NSQ Could not connect. - " + topic + " : " + msg))
 	}
 
 }

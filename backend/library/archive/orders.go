@@ -86,7 +86,7 @@ func StoreOrders(db models.Datastore, orders []types.Order, userId uint, brokerI
 			sO, err := db.CreateNewOptionSymbol(row.OptionSymbol)
 
 			if err != nil {
-				services.BetterError(err)
+				services.Info(err)
 				continue
 			}
 
@@ -124,7 +124,7 @@ func StoreOrders(db models.Datastore, orders []types.Order, userId uint, brokerI
 		err = db.CreateOrder(order)
 
 		if err != nil {
-			services.BetterError(err)
+			services.Info(err)
 			continue
 		}
 
@@ -137,7 +137,7 @@ func StoreOrders(db models.Datastore, orders []types.Order, userId uint, brokerI
 			sym, err := db.CreateNewOptionSymbol(row2.OptionSymbol)
 
 			if err != nil {
-				services.BetterError(err)
+				services.Info(err)
 				continue
 			}
 

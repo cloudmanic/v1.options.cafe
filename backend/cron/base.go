@@ -23,7 +23,7 @@ import (
 func Start(db *models.DB) {
 
 	// Lets get started
-	services.Critical("Cron Started: " + os.Getenv("APP_ENV"))
+	services.InfoMsg("Cron Started: " + os.Getenv("APP_ENV"))
 
 	// Stuff we do on start as well
 	user.ExpireTrails(db)

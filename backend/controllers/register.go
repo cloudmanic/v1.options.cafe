@@ -41,7 +41,7 @@ func (t *Controller) DoRegister(c *gin.Context) {
 	err := decoder.Decode(&post)
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong while logging into your account. Please try again or contact help@options.cafe. Sorry for the trouble."})
 		return
 	}
@@ -68,7 +68,7 @@ func (t *Controller) DoRegister(c *gin.Context) {
 	user, err := t.DB.CreateUser(post.First, post.Last, post.Email, post.Password, 0, c.Request.UserAgent(), realip.RealIP(c.Request))
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 
 		// Respond with error
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong while logging into your account. Please try again or contact help@options.cafe. Sorry for the trouble."})

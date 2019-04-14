@@ -63,7 +63,7 @@ func (t *Controller) DoOauthToken(c *gin.Context) {
 	user, err := t.DB.LoginUserByEmailPass(username, password, app.Id, c.Request.UserAgent(), realip.RealIP(c.Request))
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 
 		// Respond with error
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Sorry, we could not find your account."})
@@ -89,7 +89,7 @@ func (t *Controller) DoLogOut(c *gin.Context) {
 	sess, err := t.DB.GetByAccessToken(c.Query("access_token"))
 
 	if err != nil {
-		services.Warning(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"status": "error", "error": "Sorry, we could not find your session."})
 		return
 	}

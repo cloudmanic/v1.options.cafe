@@ -32,12 +32,12 @@ func SendyIsUnSubscribed(listId string, email string) (bool, error) {
 	resp, err := http.PostForm("https://sendy.cloudmanic.com/api/subscribers/subscription-status.php", form)
 
 	if err != nil {
-		BetterError(errors.New("SendySubscriberStatus - Unable to get subscribe status " + email + " to Sendy Subscriber list. (" + err.Error() + ")"))
+		Info(errors.New("SendySubscriberStatus - Unable to get subscribe status " + email + " to Sendy Subscriber list. (" + err.Error() + ")"))
 		return false, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		BetterError(errors.New("SendySubscriberStatus (no 200) - Unable to get subscribe status " + email + " to Sendy Subscriber list. (" + err.Error() + ")"))
+		Info(errors.New("SendySubscriberStatus (no 200) - Unable to get subscribe status " + email + " to Sendy Subscriber list. (" + err.Error() + ")"))
 		return false, err
 	}
 
@@ -98,21 +98,21 @@ func SendySubscribe(listId string, email string, first string, last string, paid
 	unsubscribed, err := SendyIsUnSubscribed(listId, email)
 
 	if err != nil {
-		BetterError(errors.New("SendySubscribe - Unable to check if unsubscribed " + email + " to Sendy Subscriber list. (" + err.Error() + ")"))
+		Info(errors.New("SendySubscribe - Unable to check if unsubscribed " + email + " to Sendy Subscriber list. (" + err.Error() + ")"))
 	}
 
 	// Log
-	Info("Subscribing " + email + " to Sendy List - " + listIdString)
+	Info(errors.New("Subscribing " + email + " to Sendy List - " + listIdString))
 
 	// Send request.
 	resp, err := http.PostForm("https://sendy.cloudmanic.com/subscribe", form)
 
 	if err != nil {
-		BetterError(errors.New("SendySubscribe - Unable to subscribe " + email + " to Sendy Subscriber list. (" + err.Error() + ")"))
+		Info(errors.New("SendySubscribe - Unable to subscribe " + email + " to Sendy Subscriber list. (" + err.Error() + ")"))
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		BetterError(errors.New("SendySubscribe (no 200) - Unable to subscribe " + email + " to Sendy Subscriber list. (" + err.Error() + ")"))
+		Info(errors.New("SendySubscribe (no 200) - Unable to subscribe " + email + " to Sendy Subscriber list. (" + err.Error() + ")"))
 	}
 
 	// If the user was already unsubscripted set it back to unsubbed. We often just want to update a var with the subscriber. The action above will subscribe them.
@@ -138,17 +138,17 @@ func SendyUnsubscribe(listId string, email string) {
 	}
 
 	// Log
-	Info("Unsubscribing " + email + " to Sendy List - " + listIdString)
+	Info(errors.New("Unsubscribing " + email + " to Sendy List - " + listIdString))
 
 	// Send request.
 	resp, err := http.PostForm("https://sendy.cloudmanic.com/unsubscribe", form)
 
 	if err != nil {
-		BetterError(errors.New("SendySubscribe - Unable to unsubscribe " + email + " to Sendy Subscriber list. (" + err.Error() + ")"))
+		Info(errors.New("SendySubscribe - Unable to unsubscribe " + email + " to Sendy Subscriber list. (" + err.Error() + ")"))
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		BetterError(errors.New("SendySubscribe (no 200) - Unable to unsubscribe " + email + " to Sendy Subscriber list. (" + err.Error() + ")"))
+		Info(errors.New("SendySubscribe (no 200) - Unable to unsubscribe " + email + " to Sendy Subscriber list. (" + err.Error() + ")"))
 	}
 
 	defer resp.Body.Close()
@@ -167,37 +167,29 @@ func GetListId(listId string) string {
 
 	case "trial":
 		if len(os.Getenv("SENDY_TRIAL_LIST")) > 0 {
-
 			listIdString = os.Getenv("SENDY_TRIAL_LIST")
-
 		}
 
 	case "expired":
 		if len(os.Getenv("SENDY_EXPIRED_LIST")) > 0 {
-
 			listIdString = os.Getenv("SENDY_EXPIRED_LIST")
-
 		}
 
 	case "subscribers":
 		if len(os.Getenv("SENDY_SUBSCRIBE_LIST")) > 0 {
-
 			listIdString = os.Getenv("SENDY_SUBSCRIBE_LIST")
-
 		}
 
 	case "no-brokers":
 		if len(os.Getenv("SENDY_NO_BROKER_LIST")) > 0 {
-
 			listIdString = os.Getenv("SENDY_NO_BROKER_LIST")
-
 		}
 
 	}
 
 	// Make sure we have a list id.
 	if len(listIdString) == 0 {
-		Critical("No listIdString found in SendySubscribe : " + listId + " - " + listIdString)
+		Critical(errors.New("No listIdString found in SendySubscribe : " + listId + " - " + listIdString))
 		return ""
 	}
 

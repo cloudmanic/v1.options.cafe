@@ -34,7 +34,7 @@ func (t *Controller) AuthMiddleware() gin.HandlerFunc {
 
 		// We only allow this request from a few IP addresses
 		if _, ok := allowedIps[realip.RealIP(c.Request)]; !ok {
-			services.Critical("UnAuthorization IP address. - " + realip.RealIP(c.Request))
+			services.InfoMsg("UnAuthorization IP address. - " + realip.RealIP(c.Request))
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization Failed (#005)"})
 			c.AbortWithStatus(401)
 			return
@@ -73,7 +73,7 @@ func (t *Controller) AuthMiddleware() gin.HandlerFunc {
 		session, err := t.DB.GetByAccessToken(access_token)
 
 		if err != nil {
-			services.Critical("Access Token Not Found - Unable to Authenticate via HTTP (#002)")
+			services.InfoMsg("Access Token Not Found - Unable to Authenticate via HTTP (#002)")
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization Failed (#002)"})
 			c.AbortWithStatus(401)
 			return
@@ -83,7 +83,7 @@ func (t *Controller) AuthMiddleware() gin.HandlerFunc {
 		user, err := t.DB.GetUserById(session.UserId)
 
 		if err != nil {
-			services.Critical("User Not Found - Unable to Authenticate - UserId (HTTP) : " + fmt.Sprint(session.UserId) + " - Session Id : " + fmt.Sprint(session.Id))
+			services.InfoMsg("User Not Found - Unable to Authenticate - UserId (HTTP) : " + fmt.Sprint(session.UserId) + " - Session Id : " + fmt.Sprint(session.Id))
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization Failed (#003)"})
 			c.AbortWithStatus(401)
 			return
@@ -91,7 +91,7 @@ func (t *Controller) AuthMiddleware() gin.HandlerFunc {
 
 		// Make sure this is an admin user (Options Cafe Employee)
 		if user.Admin != "Yes" {
-			services.Critical("User Not Found - Unable to Authenticate - UserId (HTTP) : " + fmt.Sprint(session.UserId) + " - Session Id : " + fmt.Sprint(session.Id))
+			services.InfoMsg("User Not Found - Unable to Authenticate - UserId (HTTP) : " + fmt.Sprint(session.UserId) + " - Session Id : " + fmt.Sprint(session.Id))
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization Failed (#004)"})
 			c.AbortWithStatus(401)
 			return

@@ -44,8 +44,7 @@ func NewDB() (*DB, error) {
 	db, err := gorm.Open("mysql", os.Getenv("DB_USERNAME")+":"+os.Getenv("DB_PASSWORD")+"@"+os.Getenv("DB_HOST")+"/"+dbName+"?charset=utf8&parseTime=True&loc=Local")
 
 	if err != nil {
-		services.Error(err, "Failed to connect database")
-		log.Fatal(err)
+		services.Fatal(errors.New(err.Error() + "Failed to connect database"))
 	}
 
 	// Migrate the schemas (one per table).

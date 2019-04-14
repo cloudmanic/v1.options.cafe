@@ -84,7 +84,7 @@ func Start(db models.Datastore) {
 		log.Panic("Could not connect")
 	}
 
-	services.Critical("Worker Started...")
+	services.InfoMsg("Worker Started...")
 
 	// Wait for messages
 	wg.Wait()
@@ -98,7 +98,7 @@ func HandleRequest(db models.Datastore, msg string) {
 	job := worker.JobRequest{DB: db}
 
 	if err := json.Unmarshal([]byte(msg), &job); err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		return
 	}
 
@@ -109,7 +109,7 @@ func HandleRequest(db models.Datastore, msg string) {
 		err := jobActions[job.Action](job)
 
 		if err != nil {
-			services.BetterError(err)
+			services.Info(err)
 			return
 		}
 
@@ -129,7 +129,7 @@ func HandleRequest(db models.Datastore, msg string) {
 		api, user, broker, err := GetBrokerFeedParms(db, job.UserId, job.BrokerId)
 
 		if err != nil {
-			services.BetterError(err)
+			services.Info(err)
 			return
 		}
 
@@ -137,7 +137,7 @@ func HandleRequest(db models.Datastore, msg string) {
 		err = brokerFeedActions[job.Action](db, api, user, broker)
 
 		if err != nil {
-			services.BetterError(err)
+			services.Info(err)
 			return
 		}
 

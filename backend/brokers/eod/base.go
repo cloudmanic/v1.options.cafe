@@ -90,7 +90,7 @@ func (t *Api) GetOptionsBySymbol(symbol string) ([]types.OptionsChainItem, float
 	zipFile, err := downloadEodSymbol(symbol, t.Day)
 
 	if err != nil {
-		services.FatalMsg(err, "Could not download file - "+zipFile)
+		services.Critical(errors.New(err.Error() + "Could not download file - " + zipFile))
 	}
 
 	// Convert CSV to Struct
@@ -248,14 +248,14 @@ func unzipSymbolCSV(symb string, zipFile string) ([]types.OptionsChainItem, floa
 	err = os.Remove(f[0])
 
 	if err != nil {
-		services.FatalMsg(err, "Could not delete file - "+f[0])
+		services.Critical(errors.New(err.Error() + "Could not delete file - " + f[0]))
 	}
 
 	// Delete CSV Zip file
 	err = os.Remove(zipFile)
 
 	if err != nil {
-		services.FatalMsg(err, "Could not delete file - "+zipFile)
+		services.Critical(errors.New(err.Error() + "Could not delete file - " + zipFile))
 	}
 
 	// Return happy
@@ -330,7 +330,7 @@ func DownloadAllEodSymbolFiles(symbol string, debug bool) []string {
 	list, err := object.ListObjects("options-eod/" + strings.ToUpper(symbol) + "/")
 
 	if err != nil {
-		services.Warning(err)
+		services.Info(err)
 		return allFiles
 	}
 
@@ -386,7 +386,7 @@ func downloadWorker(jobs <-chan Job, results chan<- Job) {
 		_, err := object.DownloadObject(job.Path)
 
 		if err != nil {
-			services.Warning(err)
+			services.Info(err)
 			return
 		}
 

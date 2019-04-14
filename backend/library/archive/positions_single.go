@@ -61,13 +61,13 @@ func DoSingleOptionOrder(db models.Datastore, userId uint, brokerId uint) error 
 			loopErr = err
 
 		default:
-			services.Critical("doSingleOptionOrder() : Unknown Side")
+			services.InfoMsg("doSingleOptionOrder() : Unknown Side")
 			loopErr = errors.New("doSingleOptionOrder() : Unknown Side")
 		}
 
 		// Did we have an err
 		if loopErr != nil {
-			services.BetterError(loopErr)
+			services.Info(loopErr)
 
 			// Mark the order as reviewed
 			row.PositionReviewed = "Error"

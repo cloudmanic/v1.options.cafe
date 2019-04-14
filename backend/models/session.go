@@ -58,7 +58,7 @@ func (db *DB) CreateSession(UserId uint, appId uint, UserAgent string, LastIpAdd
 	access_token, err := helpers.GenerateRandomString(50)
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		return Session{}, err
 	}
 

@@ -65,7 +65,7 @@ func (t *Controller) AuthMiddleware() gin.HandlerFunc {
 		session, err := t.DB.GetByAccessToken(access_token)
 
 		if err != nil {
-			services.Critical("Access Token Not Found - Unable to Authenticate via HTTP (#002) - " + access_token)
+			services.InfoMsg("Access Token Not Found - Unable to Authenticate via HTTP (#002) - " + access_token)
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization Failed (#002)"})
 			c.AbortWithStatus(401)
 			return
@@ -75,7 +75,7 @@ func (t *Controller) AuthMiddleware() gin.HandlerFunc {
 		user, err := t.DB.GetUserById(session.UserId)
 
 		if err != nil {
-			services.Critical("User Not Found - Unable to Authenticate - UserId (HTTP) : " + fmt.Sprint(session.UserId) + " - Session Id : " + fmt.Sprint(session.Id))
+			services.InfoMsg("User Not Found - Unable to Authenticate - UserId (HTTP) : " + fmt.Sprint(session.UserId) + " - Session Id : " + fmt.Sprint(session.Id))
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization Failed (#003)"})
 			c.AbortWithStatus(401)
 			return
@@ -83,7 +83,7 @@ func (t *Controller) AuthMiddleware() gin.HandlerFunc {
 
 		// Make sure we really have a user.
 		if user.Id <= 0 {
-			services.Critical("User Not Found - Unable to Authenticate - UserId <= 0 (HTTP) : " + fmt.Sprint(session.UserId) + " - Session Id : " + fmt.Sprint(session.Id))
+			services.InfoMsg("User Not Found - Unable to Authenticate - UserId <= 0 (HTTP) : " + fmt.Sprint(session.UserId) + " - Session Id : " + fmt.Sprint(session.Id))
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization Failed (#004)"})
 			c.AbortWithStatus(401)
 			return

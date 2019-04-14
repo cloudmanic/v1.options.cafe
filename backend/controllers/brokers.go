@@ -197,7 +197,7 @@ func (t *Controller) GetBalances(c *gin.Context) {
 	// 	brokerCont = tradier.Api{ApiKey: apiKey, DB: t.DB, Sandbox: true}
 
 	// default:
-	// 	services.Critical("Order: Unknown Broker : " + broker.Name)
+	// 	services.InfoMsg("Order: Unknown Broker : " + broker.Name)
 
 	// }
 

@@ -44,7 +44,7 @@ func (t *Base) RunShortStrangle(screen models.Screener) ([]Result, error) {
 	expires, err := t.Broker.GetOptionsExpirationsBySymbol(screen.Symbol)
 
 	if err != nil {
-		services.Warning(err)
+		services.Info(err)
 		return result, err
 	}
 

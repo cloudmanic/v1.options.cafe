@@ -70,13 +70,13 @@ func (t *Controller) GetRank(c *gin.Context) {
 	q, err := broker.GetQuotes([]string{c.Param("symb")})
 
 	if err != nil {
-		services.Warning(err)
+		services.Info(err)
 		t.RespondError(c, err, httpGenericErrMsg)
 		return
 	}
 
 	if len(q) <= 0 {
-		services.Warning(errors.New("No quote found."))
+		services.Info(errors.New("No quote found."))
 		t.RespondError(c, err, httpGenericErrMsg)
 		return
 	}
@@ -88,13 +88,13 @@ func (t *Controller) GetRank(c *gin.Context) {
 	quotes, err2 := broker.GetHistoricalQuotes(c.Param("symb"), back365, now, "daily")
 
 	if err2 != nil {
-		services.Warning(err2)
+		services.Info(err2)
 		t.RespondError(c, err2, httpGenericErrMsg)
 		return
 	}
 
 	if len(quotes) <= 0 {
-		services.Warning(errors.New("No historical data returned from Tradier API for GetIvr()."))
+		services.Info(errors.New("No historical data returned from Tradier API for GetIvr()."))
 		t.RespondError(c, err, httpGenericErrMsg)
 		return
 	}

@@ -39,12 +39,12 @@ func (t *Controller) DoStripeWebhook(c *gin.Context) {
 	defer c.Request.Body.Close()
 
 	// Log the event.
-	services.Info("Stripe Webhook Received : " + event.Type + " - " + event.ID)
+	services.InfoMsg("Stripe Webhook Received : " + event.Type + " - " + event.ID)
 
 	// If there is no customer value there is nothing we need to do.
 	// As of now all the events we care about have a customer attached to them.
 	if len(event.GetObjectValue("customer")) == 0 {
-		services.Info("Stripe no customer data found (this is expected).")
+		services.InfoMsg("Stripe no customer data found (this is expected).")
 		c.JSON(200, gin.H{"status": "success"})
 		return
 	}
@@ -91,13 +91,13 @@ func (t *Controller) StripeEventChargeSucceeded(user models.User, balanceTransac
 	t.DB.UpdateUser(&user)
 
 	// Log event.
-	services.Info("Stripe Subscription Update State Changed To " + user.Status + " : " + user.Email)
+	services.InfoMsg("Stripe Subscription Update State Changed To " + user.Status + " : " + user.Email)
 
 	// Get the amount we received and fee. This is something we could later send into Skyclerk
 	tb, err := services.StripeGetBalanceTransaction(balanceTransaction)
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		return
 	}
 
@@ -105,7 +105,7 @@ func (t *Controller) StripeEventChargeSucceeded(user models.User, balanceTransac
 	fee := float32(float32(tb.Fee) / 100)
 	amount := float32(float32(tb.Amount) / 100)
 
-	services.Info("Stripe Payment Received From " + user.Email + ": Amount $" + fmt.Sprintf("%f", amount) + " Fee: $" + fmt.Sprintf("%f", fee))
+	services.InfoMsg("Stripe Payment Received From " + user.Email + ": Amount $" + fmt.Sprintf("%f", amount) + " Fee: $" + fmt.Sprintf("%f", fee))
 }
 
 //
@@ -120,7 +120,7 @@ func (t *Controller) StripeEventPaymentFailed(user models.User) {
 	t.DB.UpdateUser(&user)
 
 	// Log event.
-	services.Info("Stripe Subscription Update State Changed To " + user.Status + " : " + user.Email)
+	services.InfoMsg("Stripe Subscription Update State Changed To " + user.Status + " : " + user.Email)
 
 	// Tell slack about this.
 	go services.SlackNotify("#events", "Options Cafe User State Changed To "+user.Status+" : "+user.Email)
@@ -137,7 +137,7 @@ func (t *Controller) StripeEventSubscriptionDeleted(user models.User) {
 	t.DB.UpdateUser(&user)
 
 	// Log event.
-	services.Info("Stripe Subscription Deleted: " + user.Email)
+	services.InfoMsg("Stripe Subscription Deleted: " + user.Email)
 
 	// // Send email telling the user this happened.
 	// var url = "https://app.options.cafe"

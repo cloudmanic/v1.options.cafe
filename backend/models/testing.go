@@ -34,7 +34,7 @@ func NewTestDB(dbName string) (*DB, string, error) {
 
 	// Make sure our docker mysql container for testing is running.
 	if !isDockerMysqlRunning() {
-		log.Fatal(errors.New("Docker testing Mysql container is not running. Please run scripts/start_testing_db.sh."))
+		services.Fatal(errors.New("Docker testing Mysql container is not running. Please run scripts/start_testing_db.sh."))
 	}
 
 	// If dbName is empty we create our own.
@@ -49,8 +49,7 @@ func NewTestDB(dbName string) (*DB, string, error) {
 	db, err := gorm.Open("mysql", "root:foobar@tcp(127.0.0.1:9906)/"+dbName+"?charset=utf8&parseTime=True&loc=Local")
 
 	if err != nil {
-		services.Error(err, "Failed to connect database")
-		log.Fatal(err)
+		services.Fatal(errors.New(err.Error() + "Failed to connect database"))
 	}
 
 	// Run doMigrations

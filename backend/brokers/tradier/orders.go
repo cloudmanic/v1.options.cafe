@@ -16,7 +16,7 @@ import (
 //
 func (t *Api) CancelOrder(accountId string, orderId string) error {
 	// Log order cancel
-	services.Info("Canceling order for account - " + accountId + " : " + orderId)
+	services.InfoMsg("Canceling order for account - " + accountId + " : " + orderId)
 
 	// Get the JSON
 	_, err := t.SendDeleteRequest("/accounts/" + accountId + "/orders/" + orderId)
@@ -34,7 +34,7 @@ func (t *Api) CancelOrder(accountId string, orderId string) error {
 func (t *Api) SubmitOrder(accountId string, order types.Order) (types.OrderSubmit, error) {
 	// Log order
 	orderJson, _ := json.Marshal(order)
-	services.Info("Placing order for account - " + accountId + " : " + string(orderJson))
+	services.InfoMsg("Placing order for account - " + accountId + " : " + string(orderJson))
 
 	// Prep Order
 	params := prepOrder(order)
@@ -130,7 +130,7 @@ func (t *Api) GetAllOrders() ([]types.Order, error) {
 			err := t.processOrderDataForGetAllOrders(row.AccountNumber, &tmp, page, 1000)
 
 			if err != nil {
-				services.BetterError(err)
+				services.Info(err)
 			}
 
 			// Add orders into master var.

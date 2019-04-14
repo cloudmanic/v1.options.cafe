@@ -92,7 +92,7 @@ func PrimeScreenerCachesByUser(db models.Datastore, api brokers.Api, user models
 		screen, err := db.GetScreenerByIdAndUserId(row.Id, row.UserId)
 
 		if err != nil {
-			services.BetterError(err)
+			services.Info(err)
 			continue
 		}
 
@@ -100,7 +100,7 @@ func PrimeScreenerCachesByUser(db models.Datastore, api brokers.Api, user models
 		result, err := t.ScreenFuncs[row.Strategy](screen)
 
 		if err != nil {
-			services.BetterError(err)
+			services.Info(err)
 			continue
 		}
 

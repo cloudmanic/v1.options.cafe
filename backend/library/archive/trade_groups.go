@@ -85,7 +85,7 @@ func DoTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 		count, err := db.Count(&models.TradeGroup{}, models.QueryParam{Wheres: []models.KeyValue{{Key: "user_id", Value: strconv.Itoa(int(userId))}}})
 
 		if err != nil {
-			services.BetterError(err)
+			services.Info(err)
 		}
 
 		countPlus := strconv.Itoa(int(count) + 1)
@@ -119,7 +119,7 @@ func DoTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 		tradeGroupId = tradeGroup.Id
 
 		// Log success
-		services.Info("New TradeGroup created for user " + strconv.Itoa(int(userId)) + " TradeGroup Id: " + strconv.Itoa(int(tradeGroupId)))
+		services.InfoMsg("New TradeGroup created for user " + strconv.Itoa(int(userId)) + " TradeGroup Id: " + strconv.Itoa(int(tradeGroupId)))
 	} else {
 
 		// Update tradegroup with additional OrderIds
@@ -148,7 +148,7 @@ func DoTradeGroupBuildFromPositions(order models.Order, positions *[]models.Posi
 		db.UpdateTradeGroup(&tradeGroup)
 
 		// Log success
-		services.Info("New TradeGroup updated for user " + strconv.Itoa(int(userId)) + " TradeGroup Id: " + strconv.Itoa(int(tradeGroupId)))
+		services.InfoMsg("New TradeGroup updated for user " + strconv.Itoa(int(userId)) + " TradeGroup Id: " + strconv.Itoa(int(tradeGroupId)))
 	}
 
 	// Loop through the positions and add the trade group id

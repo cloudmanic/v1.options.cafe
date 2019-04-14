@@ -36,13 +36,13 @@ import (
 func DoEodOptionsImport() {
 
 	// Log
-	services.Info("Starting DoEodOptionsImport().")
+	services.InfoMsg("Starting DoEodOptionsImport().")
 
 	// Get files we should skip.
 	proccessedFiles, err := GetProccessedFiles()
 
 	if err != nil {
-		services.FatalMsg(err, "Could not get proccessedFiles files in GetProccessedFiles()")
+		services.Critical(errors.New(err.Error() + "Could not get proccessedFiles files in GetProccessedFiles()"))
 		return
 	}
 
@@ -50,7 +50,7 @@ func DoEodOptionsImport() {
 	ftpFiles, err := GetOptionsDailyData()
 
 	if err != nil {
-		services.FatalMsg(err, "Could not get ftp files in GetOptionsDailyData()")
+		services.Critical(errors.New(err.Error() + "Could not get ftp files in GetOptionsDailyData()"))
 		return
 	}
 
@@ -63,13 +63,13 @@ func DoEodOptionsImport() {
 		}
 
 		// Processing Log
-		services.Info("Processing " + row.Name + " from data provider.")
+		services.InfoMsg("Processing " + row.Name + " from data provider.")
 
 		// Download file.
 		filePath, err := DownloadOptionsDailyDataByName(row.Name)
 
 		if err != nil {
-			services.FatalMsg(err, "Could not download ftp file in DownloadOptionsDailyDataByName() - "+row.Name)
+			services.Critical(errors.New(err.Error() + "Could not download ftp file in DownloadOptionsDailyDataByName() - " + row.Name))
 			continue
 		}
 
@@ -77,7 +77,7 @@ func DoEodOptionsImport() {
 		err = SymbolImport(filePath)
 
 		if err != nil {
-			services.FatalMsg(err, "Could not import DatabaseImport() - "+row.Name)
+			services.Critical(errors.New(err.Error() + "Could not import DatabaseImport() - " + row.Name))
 			continue
 		}
 
@@ -85,18 +85,18 @@ func DoEodOptionsImport() {
 		err = object.UploadObject(filePath, "options-eod-daily/"+filepath.Base(filePath))
 
 		if err != nil {
-			services.FatalMsg(err, "Could not upload to Object Store - "+row.Name)
+			services.Critical(errors.New(err.Error() + "Could not upload to Object Store - " + row.Name))
 			continue
 		}
 
 		// Log file
-		services.Info("Finished uploading " + row.Name + " to Object Store.")
+		services.InfoMsg("Finished uploading " + row.Name + " to Object Store.")
 
 		// Open file we upload.
 		file, err := os.Open(filePath)
 
 		if err != nil {
-			services.FatalMsg(err, "Could not open ftp file os.Open() - "+row.Name)
+			services.Critical(errors.New(err.Error() + "Could not open ftp file os.Open() - " + row.Name))
 			continue
 		}
 
@@ -105,18 +105,18 @@ func DoEodOptionsImport() {
 		client.Upload("/data/options-eod-daily/"+row.Name, file)
 
 		if err != nil {
-			services.FatalMsg(err, "Could not upload to Dropbox - "+row.Name)
+			services.Critical(errors.New(err.Error() + "Could not upload to Dropbox - " + row.Name))
 			continue
 		}
 
 		// Log file
-		services.Info("Finished uploading " + row.Name + " to Dropbox.")
+		services.InfoMsg("Finished uploading " + row.Name + " to Dropbox.")
 
 		// Delete file we uploaded to Dropbox
 		err = os.Remove(filePath)
 
 		if err != nil {
-			services.FatalMsg(err, "Could not delete file - "+filePath)
+			services.Critical(errors.New(err.Error() + "Could not delete file - " + filePath))
 			continue
 		}
 
@@ -128,7 +128,7 @@ func DoEodOptionsImport() {
 		resp, err := http.Get(os.Getenv("HEALTH_CHECK_DOEODOPTIONSIMPORT_URL"))
 
 		if err != nil {
-			services.FatalMsg(err, "Could send health check - "+os.Getenv("HEALTH_CHECK_DOEODOPTIONSIMPORT_URL"))
+			services.Critical(errors.New(err.Error() + "Could send health check - " + os.Getenv("HEALTH_CHECK_DOEODOPTIONSIMPORT_URL")))
 		}
 
 		defer resp.Body.Close()
@@ -136,7 +136,7 @@ func DoEodOptionsImport() {
 	}
 
 	// Log
-	services.Info("Done DoEodOptionsImport().")
+	services.InfoMsg("Done DoEodOptionsImport().")
 }
 
 //
@@ -145,7 +145,7 @@ func DoEodOptionsImport() {
 func SymbolImport(filePath string) error {
 
 	// Log
-	services.Info("Start SymbolImport - " + filePath)
+	services.InfoMsg("Start SymbolImport - " + filePath)
 
 	// Unzip CSV files.
 	files, err := files.Unzip(filePath, "/tmp/output/")
@@ -168,7 +168,7 @@ func SymbolImport(filePath string) error {
 			err := os.Remove(row)
 
 			if err != nil {
-				services.FatalMsg(err, "Could not delete file - "+row)
+				services.Critical(errors.New(err.Error() + "Could not delete file - " + row))
 			}
 		}
 
@@ -196,7 +196,7 @@ func SymbolImport(filePath string) error {
 	}
 
 	// Log import
-	services.Info("Importing option EOD quotes for - " + string(lines[0][7]))
+	services.InfoMsg("Importing option EOD quotes for - " + string(lines[0][7]))
 
 	// Figure out quote date
 	date, err := dateparse.ParseAny(string(lines[0][7]))
@@ -243,11 +243,11 @@ func SymbolImport(filePath string) error {
 	err = os.Remove(file)
 
 	if err != nil {
-		services.FatalMsg(err, "Could not delete file - "+file)
+		services.Critical(errors.New(err.Error() + "Could not delete file - " + file))
 	}
 
 	// Log
-	services.Info("Done SymbolImport - " + filePath)
+	services.InfoMsg("Done SymbolImport - " + filePath)
 
 	// Return happy.
 	return nil

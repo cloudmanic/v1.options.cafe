@@ -56,11 +56,11 @@ func (t *Controller) DoWebsocketConnection(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		return
 	}
 
-	services.Info("New Websocket Connection - Standard")
+	services.InfoMsg("New Websocket Connection - Standard")
 
 	// Close connection when this function ends
 	defer conn.Close()

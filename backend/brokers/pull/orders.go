@@ -30,7 +30,7 @@ func DoGetAllOrders(db models.Datastore, api brokers.Api, user models.User, brok
 	var orders []types.Order
 
 	// Helpful log.
-	services.Info("DoGetAllOrders() : Getting all orders for " + user.Email + ".")
+	services.InfoMsg("DoGetAllOrders() : Getting all orders for " + user.Email + ".")
 
 	// Make API call
 	orders, err := api.GetAllOrders()
@@ -60,7 +60,7 @@ func DoGetOrders(db models.Datastore, api brokers.Api, user models.User, broker 
 
 	// We do not call this until a user is boot strapped
 	if user.Bootstrapped == "No" {
-		services.Info("Skipping DoGetOrders() for user " + user.Email + " as the user is not bootstrapped yet.")
+		services.InfoMsg("Skipping DoGetOrders() for user " + user.Email + " as the user is not bootstrapped yet.")
 		return nil
 	}
 
@@ -112,7 +112,7 @@ func endBookstrapping(db models.Datastore, userID uint, email string) {
 	db.New().Model(&models.User{}).Where("id = ?", userID).Update("bootstrapped", "Yes")
 
 	// Log action
-	services.Info("DoGetAllOrders() : Setting user " + email + " to fully bootstrapped.")
+	services.InfoMsg("DoGetAllOrders() : Setting user " + email + " to fully bootstrapped.")
 
 	// Return Happy
 	return

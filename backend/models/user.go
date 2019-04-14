@@ -210,7 +210,7 @@ func (t *DB) SetDefaultWatchList(user User) {
 		wList, err := t.CreateWatchlist(user.Id, "My Watchlist")
 
 		if err != nil {
-			services.Error(err, "(CreateNewWatchlist) Unable to create watchlist Default")
+			services.InfoMsg(err.Error() + "(CreateNewWatchlist) Unable to create watchlist Default")
 			return
 		}
 
@@ -220,7 +220,7 @@ func (t *DB) SetDefaultWatchList(user User) {
 			symb, err := t.CreateNewSymbol(row.SymShort, row.SymLong, "Equity")
 
 			if err != nil {
-				services.Error(err, "(VerifyDefaultWatchList) Unable to create symbol "+row.SymShort)
+				services.InfoMsg(err.Error() + "(VerifyDefaultWatchList) Unable to create symbol " + row.SymShort)
 				return
 			}
 
@@ -228,7 +228,7 @@ func (t *DB) SetDefaultWatchList(user User) {
 			_, err2 := t.CreateWatchlistSymbol(wList, symb, user, uint(key))
 
 			if err2 != nil {
-				services.Error(err2, "(CreateNewWatchlistSymbol) Unable to create symbol "+row.SymShort+" lookup")
+				services.InfoMsg(err2.Error() + "(CreateNewWatchlistSymbol) Unable to create symbol " + row.SymShort + " lookup")
 				return
 			}
 
@@ -367,7 +367,7 @@ func (t *DB) LoginUserById(id uint, appId uint, userAgent string, ipAddress stri
 		session, err := t.CreateSession(user.Id, appId, userAgent, ipAddress)
 
 		if err != nil {
-			services.Error(err, "LoginUserById - Unable to create session in CreateSession()")
+			services.InfoMsg(err.Error() + "LoginUserById - Unable to create session in CreateSession()")
 			return User{}, err
 		}
 
@@ -405,7 +405,7 @@ func (t *DB) LoginUserByEmailPass(email string, password string, appId uint, use
 		session, err := t.CreateSession(user.Id, appId, userAgent, ipAddress)
 
 		if err != nil {
-			services.Error(err, "LoginUserByEmailPass - Unable to create session in CreateSession()")
+			services.InfoMsg(err.Error() + "LoginUserByEmailPass - Unable to create session in CreateSession()")
 			return User{}, err
 		}
 
@@ -432,13 +432,13 @@ func (t *DB) ResetUserPassword(id uint, password string) error {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 
 	if err != nil {
-		services.Error(err, "ResetUserPassword - Unable to create password hash (password hash)")
+		services.InfoMsg(err.Error() + "ResetUserPassword - Unable to create password hash (password hash)")
 		return err
 	}
 
 	// Update the database with the new password
 	if err := t.Model(&user).Update("password", hash).Error; err != nil {
-		services.Error(err, "ResetUserPassword - Unable update the password (mysql query)")
+		services.InfoMsg(err.Error() + "ResetUserPassword - Unable update the password (mysql query)")
 		return err
 	}
 
@@ -473,13 +473,13 @@ func (t *DB) CreateUserFromGoogle(first string, last string, email string, subId
 	t.Create(&user)
 
 	// Log user creation.
-	services.Info("CreateUser - Created a new user account (from Google Auth) - " + first + " " + last + " " + email)
+	services.InfoMsg("CreateUser - Created a new user account (from Google Auth) - " + first + " " + last + " " + email)
 
 	// Create a session so we get an access_token
 	session, err := t.CreateSession(user.Id, appId, userAgent, ipAddress)
 
 	if err != nil {
-		services.Error(err, "CreateUser - Unable to create session in CreateSession()")
+		services.InfoMsg(err.Error() + "CreateUser - Unable to create session in CreateSession()")
 		return User{}, err
 	}
 
@@ -512,7 +512,7 @@ func (t *DB) CreateUser(first string, last string, email string, password string
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 
 	if err != nil {
-		services.Error(err, "CreateUser - Unable to create password hash (password hash)")
+		services.InfoMsg(err.Error() + "CreateUser - Unable to create password hash (password hash)")
 		return User{}, err
 	}
 
@@ -531,13 +531,13 @@ func (t *DB) CreateUser(first string, last string, email string, password string
 	t.Create(&user)
 
 	// Log user creation.
-	services.Info("CreateUser - Created a new user account - " + first + " " + last + " " + email)
+	services.InfoMsg("CreateUser - Created a new user account - " + first + " " + last + " " + email)
 
 	// Create a session so we get an access_token
 	session, err := t.CreateSession(user.Id, appId, userAgent, ipAddress)
 
 	if err != nil {
-		services.Error(err, "CreateUser - Unable to create session in CreateSession()")
+		services.InfoMsg(err.Error() + "CreateUser - Unable to create session in CreateSession()")
 		return User{}, err
 	}
 
@@ -570,7 +570,7 @@ func (t *DB) CreateNewUserWithStripe(user User, plan string, token string, coupo
 			custId2, err := services.StripeAddCustomer(user.FirstName, user.LastName, user.Email, int(user.Id))
 
 			if err != nil {
-				services.Error(err, "CreateNewUserWithStripe - Unable to create a customer account at services. - "+user.Email)
+				services.InfoMsg(err.Error() + "CreateNewUserWithStripe - Unable to create a customer account at services. - " + user.Email)
 				return err
 			}
 
@@ -587,7 +587,7 @@ func (t *DB) CreateNewUserWithStripe(user User, plan string, token string, coupo
 			err := t.UpdateCreditCard(user, token)
 
 			if err != nil {
-				services.BetterError(err)
+				services.Info(err)
 				return err
 			}
 		}
@@ -600,7 +600,7 @@ func (t *DB) CreateNewUserWithStripe(user User, plan string, token string, coupo
 			subId2, err := services.StripeAddSubscription(custId, plan, coupon)
 
 			if err != nil {
-				services.Error(err, "CreateNewUserWithStripe - Unable to create a subscription at services. - "+user.Email)
+				services.InfoMsg(err.Error() + "CreateNewUserWithStripe - Unable to create a subscription at services. - " + user.Email)
 				return err
 			}
 
@@ -645,7 +645,7 @@ func (t *DB) DeleteUserWithStripe(user User) error {
 		err := services.StripeDeleteCustomer(user.StripeCustomer)
 
 		if err != nil {
-			services.Error(err, "DeleteUserWithStripe - Unable to delete a customer account at services. - "+user.Email)
+			services.InfoMsg(err.Error() + "DeleteUserWithStripe - Unable to delete a customer account at services. - " + user.Email)
 			return err
 		}
 
@@ -682,7 +682,7 @@ func (t *DB) UpdateCreditCard(user User, stripeToken string) error {
 		cards, err := services.StripeListAllCreditCards(user.StripeCustomer)
 
 		if err != nil {
-			services.Error(err, "AddCreditCardByToken - Unable to add a card to account. - "+user.Email)
+			services.InfoMsg(err.Error() + "AddCreditCardByToken - Unable to add a card to account. - " + user.Email)
 			return err
 		}
 
@@ -697,7 +697,7 @@ func (t *DB) UpdateCreditCard(user User, stripeToken string) error {
 		_, err2 := services.StripeAddCreditCardByToken(user.StripeCustomer, stripeToken)
 
 		if err2 != nil {
-			services.Error(err, "AddCreditCardByToken - Unable to add a card to account. - "+user.Email)
+			services.InfoMsg(err.Error() + "AddCreditCardByToken - Unable to add a card to account. - " + user.Email)
 			return err
 		}
 
@@ -721,7 +721,7 @@ func (t *DB) ApplyCoupon(user User, couponCode string) error {
 		err := services.StripeApplyCoupon(user.StripeSubscription, couponCode)
 
 		if err != nil {
-			services.Error(err, "ApplyCoupon - Unable to apply a coupon. - "+user.Email)
+			services.InfoMsg(err.Error() + "ApplyCoupon - Unable to apply a coupon. - " + user.Email)
 			return err
 		}
 
@@ -747,7 +747,7 @@ func (t *DB) GetSubscriptionWithStripe(user User) (UserSubscription, error) {
 		cust, err := services.StripeGetCustomer(user.StripeCustomer)
 
 		if err != nil {
-			services.Error(err, "GetSubscriptionWithStripe - Unable to get customer. - "+user.Email)
+			services.InfoMsg(err.Error() + "GetSubscriptionWithStripe - Unable to get customer. - " + user.Email)
 			return UserSubscription{}, err
 		}
 
@@ -816,7 +816,7 @@ func (t *DB) GetInvoiceHistoryWithStripe(user User) ([]UserInvoice, error) {
 		charges, err := services.StripeGetChargesByCustomer(user.StripeCustomer)
 
 		if err != nil {
-			services.Error(err, "GetInvoiceHistoryWithStripe - Unable to get charges by customer. - "+user.Email)
+			services.InfoMsg(err.Error() + "GetInvoiceHistoryWithStripe - Unable to get charges by customer. - " + user.Email)
 			return []UserInvoice{}, err
 		}
 

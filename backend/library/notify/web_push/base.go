@@ -30,7 +30,7 @@ func DoOneSignalWebPushSend(deviceIds []string, heading string, content string) 
 	if len(os.Getenv("ONESIGNAL_APP_ID")) > 0 {
 
 		// Log
-		services.Info("Sending web push notification: " + content)
+		services.InfoMsg("Sending web push notification: " + content)
 
 		// One Signal Stuff.
 		client := onesignal.NewClient(nil)
@@ -48,7 +48,7 @@ func DoOneSignalWebPushSend(deviceIds []string, heading string, content string) 
 		_, _, err := client.Notifications.Create(notificationReq)
 
 		if err != nil {
-			services.BetterError(err)
+			services.Info(err)
 		}
 
 	}

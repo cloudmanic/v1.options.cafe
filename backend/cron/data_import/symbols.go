@@ -7,6 +7,7 @@
 package data_import
 
 import (
+	"errors"
 	"net/http"
 	"os"
 	"strconv"
@@ -33,7 +34,7 @@ func DoSymbolImport(db *models.DB) {
 	}
 
 	// Log...
-	services.Info("[DoSymbolImport] Found " + strconv.Itoa(len(knownSymbols)) + " known symbols.")
+	services.InfoMsg("[DoSymbolImport] Found " + strconv.Itoa(len(knownSymbols)) + " known symbols.")
 
 	// Loop through each char and import into db.
 	for _, row := range chars {
@@ -46,7 +47,7 @@ func DoSymbolImport(db *models.DB) {
 		resp, err := http.Get(os.Getenv("HEALTH_CHECK_SYMBOLS_IMPORT_URL"))
 
 		if err != nil {
-			services.Error(err, "Could send health check - "+os.Getenv("HEALTH_CHECK_SYMBOLS_IMPORT_URL"))
+			services.Critical(errors.New(err.Error() + "Could send health check - " + os.Getenv("HEALTH_CHECK_SYMBOLS_IMPORT_URL")))
 		}
 
 		defer resp.Body.Close()
@@ -65,12 +66,12 @@ func ProcessLetter(db *models.DB, letter string, knownSymbols map[string]models.
 	symbols, err := tr.SearchBySymbolName(letter)
 
 	if err != nil {
-		services.Error(err, "[DoSymbolImport] SearchBySymbolOrCompanyName failed.")
+		services.Info(errors.New(err.Error() + "[DoSymbolImport] SearchBySymbolOrCompanyName failed."))
 		return
 	}
 
 	// Log...
-	services.Info("[DoSymbolImport] Processing letter " + letter + " found " + strconv.Itoa(len(symbols)) + " symbols from Tradier.")
+	services.InfoMsg("[DoSymbolImport] Processing letter " + letter + " found " + strconv.Itoa(len(symbols)) + " symbols from Tradier.")
 
 	// Loop through each result and add to db.
 	for _, row := range symbols {

@@ -116,7 +116,7 @@ func (t *DB) FirstOrCreateBrokerAccount(brokerAccount *BrokerAccount) (bool, err
 		t.Create(brokerAccount)
 
 		// Log user creation.
-		services.Info("FirstOrCreateBrokerAccount - Created a new broker account - " + strconv.Itoa(int(brokerAccount.Id)))
+		services.InfoMsg("FirstOrCreateBrokerAccount - Created a new broker account - " + strconv.Itoa(int(brokerAccount.Id)))
 	} else {
 		return false, nil
 	}

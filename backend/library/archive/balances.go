@@ -30,7 +30,7 @@ func StoreBalance(db models.Datastore, balances []types.Balance, userId uint, br
 		db.New().Where("broker_id = ? AND account_number = ?", brokerId, row.AccountNumber).First(&brokerAccount)
 
 		if brokerAccount.Id <= 0 {
-			services.BetterError(errors.New("Broker account not found - " + row.AccountNumber))
+			services.Info(errors.New("Broker account not found - " + row.AccountNumber))
 			continue
 		}
 

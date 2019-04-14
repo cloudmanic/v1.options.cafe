@@ -91,16 +91,18 @@ func GetMarketStatus(job worker.JobRequest) error {
 // Detect Change
 //
 func DetectChange(db models.Datastore, status MarketStatus) {
-
 	// Take md5 of the status
 	hash, err := structhash.Hash(status, 1)
-	services.Warning(err)
+
+	if err != nil {
+		services.Info(err)
+	}
 
 	// If the hashes do not match we know the market status has changed
 	if hash != storedHash {
 
 		// Log event
-		services.Info("StartMarketStatusFeed() : Market status has changed to " + status.State)
+		services.InfoMsg("StartMarketStatusFeed() : Market status has changed to " + status.State)
 
 		// Just with this special case do we not go through the notify package.
 		s := status.State

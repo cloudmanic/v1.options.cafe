@@ -267,7 +267,7 @@ func (t *Controller) GetScreenerResultsFromFilters(c *gin.Context) {
 	hash, err := structhash.Hash(screen, 1)
 
 	if t.RespondError(c, err, httpNoRecordFound) {
-		services.Warning(err)
+		services.Info(err)
 		return
 	}
 

@@ -31,7 +31,7 @@ func StripeGetInvoice(id string) (*stripe.Invoice, error) {
 
 	// Make sure we have a STRIPE_SECRET_KEY
 	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
-		Critical("No STRIPE_SECRET_KEY found in StripeGetInvoice")
+		Critical(errors.New("No STRIPE_SECRET_KEY found in StripeGetInvoice"))
 		return nil, errors.New("No STRIPE_SECRET_KEY found in StripeGetInvoice")
 	}
 
@@ -42,7 +42,7 @@ func StripeGetInvoice(id string) (*stripe.Invoice, error) {
 	iv, err := invoice.Get(id, nil)
 
 	if err != nil {
-		BetterError(errors.New("StripeGetInvoice : Unable to get an invoice. " + id + " (" + err.Error() + ")"))
+		Info(errors.New("StripeGetInvoice : Unable to get an invoice. " + id + " (" + err.Error() + ")"))
 		return nil, err
 	}
 
@@ -58,7 +58,7 @@ func StripeGetChargesByCustomer(id string) ([]*stripe.Charge, error) {
 
 	// Make sure we have a STRIPE_SECRET_KEY
 	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
-		Critical("No STRIPE_SECRET_KEY found in StripeGetBalanceTransaction")
+		Critical(errors.New("No STRIPE_SECRET_KEY found in StripeGetBalanceTransaction"))
 		return nil, errors.New("No STRIPE_SECRET_KEY found in StripeGetChargesByCustomer")
 	}
 
@@ -90,7 +90,7 @@ func StripeGetBalanceTransaction(id string) (*stripe.BalanceTransaction, error) 
 
 	// Make sure we have a STRIPE_SECRET_KEY
 	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
-		Critical("No STRIPE_SECRET_KEY found in StripeGetBalanceTransaction")
+		Critical(errors.New("No STRIPE_SECRET_KEY found in StripeGetBalanceTransaction"))
 		return nil, errors.New("No STRIPE_SECRET_KEY found in StripeGetBalanceTransaction")
 	}
 
@@ -101,7 +101,7 @@ func StripeGetBalanceTransaction(id string) (*stripe.BalanceTransaction, error) 
 	bt, err := balance.GetBalanceTransaction(id, nil)
 
 	if err != nil {
-		BetterError(errors.New("StripeGetBalanceTransaction : Unable to get a transaction balance. " + id + " (" + err.Error() + ")"))
+		Info(errors.New("StripeGetBalanceTransaction : Unable to get a transaction balance. " + id + " (" + err.Error() + ")"))
 		return nil, err
 	}
 
@@ -116,7 +116,7 @@ func StripeApplyCoupon(subId string, couponId string) error {
 
 	// Make sure we have a STRIPE_SECRET_KEY
 	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
-		Critical("No STRIPE_SECRET_KEY found in StripeDeleteCoupon")
+		Critical(errors.New("No STRIPE_SECRET_KEY found in StripeDeleteCoupon"))
 		return errors.New("No STRIPE_SECRET_KEY found in StripeDeleteNewCoupon")
 	}
 
@@ -130,7 +130,7 @@ func StripeApplyCoupon(subId string, couponId string) error {
 	_, err := sub.Update(subId, params)
 
 	if err != nil {
-		BetterError(errors.New("StripeApplyCoupon : Unable to apply a coupon. " + couponId + " (" + err.Error() + ")"))
+		Info(errors.New("StripeApplyCoupon : Unable to apply a coupon. " + couponId + " (" + err.Error() + ")"))
 		return err
 	}
 
@@ -146,7 +146,7 @@ func StripeGetCoupon(id string) (*stripe.Coupon, error) {
 
 	// Make sure we have a STRIPE_SECRET_KEY
 	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
-		Critical("No STRIPE_SECRET_KEY found in StripeAddCustomer")
+		Critical(errors.New("No STRIPE_SECRET_KEY found in StripeAddCustomer"))
 		return nil, errors.New("No STRIPE_SECRET_KEY found in StripeGetCoupon")
 	}
 
@@ -157,7 +157,7 @@ func StripeGetCoupon(id string) (*stripe.Coupon, error) {
 	c, err := coupon.Get(id, nil)
 
 	if err != nil {
-		BetterError(errors.New("StripeGetCoupon : Unable to get a coupon. " + id + " (" + err.Error() + ")"))
+		Info(errors.New("StripeGetCoupon : Unable to get a coupon. " + id + " (" + err.Error() + ")"))
 		return nil, err
 	}
 
@@ -173,7 +173,7 @@ func StripeDeleteCoupon(id string) error {
 
 	// Make sure we have a STRIPE_SECRET_KEY
 	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
-		Critical("No STRIPE_SECRET_KEY found in StripeDeleteCoupon")
+		Critical(errors.New("No STRIPE_SECRET_KEY found in StripeDeleteCoupon"))
 		return errors.New("No STRIPE_SECRET_KEY found in StripeDeleteNewCoupon")
 	}
 
@@ -183,7 +183,7 @@ func StripeDeleteCoupon(id string) error {
 	_, err := coupon.Del(id, nil)
 
 	if err != nil {
-		BetterError(errors.New("StripeDeleteCoupon : Unable to create a new coupon. (" + err.Error() + ")"))
+		Info(errors.New("StripeDeleteCoupon : Unable to create a new coupon. (" + err.Error() + ")"))
 		return err
 	}
 
@@ -198,7 +198,7 @@ func StripeCreateNewCoupon(name string, percentOff float64) (string, error) {
 
 	// Make sure we have a STRIPE_SECRET_KEY
 	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
-		Critical("No STRIPE_SECRET_KEY found in CreateNewCoupon")
+		Critical(errors.New("No STRIPE_SECRET_KEY found in CreateNewCoupon"))
 		return "", errors.New("No STRIPE_SECRET_KEY found in StripeCreateNewCoupon")
 	}
 
@@ -215,7 +215,7 @@ func StripeCreateNewCoupon(name string, percentOff float64) (string, error) {
 	couponObj, err := coupon.New(params)
 
 	if err != nil {
-		BetterError(errors.New("StripeCreateNewCoupon : Unable to create a new coupon. (" + err.Error() + ")"))
+		Info(errors.New("StripeCreateNewCoupon : Unable to create a new coupon. (" + err.Error() + ")"))
 		return "", err
 	}
 
@@ -230,7 +230,7 @@ func StripeAddCustomer(first string, last string, email string, accountId int) (
 
 	// Make sure we have a STRIPE_SECRET_KEY
 	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
-		Critical("No STRIPE_SECRET_KEY found in StripeAddCustomer")
+		Critical(errors.New("No STRIPE_SECRET_KEY found in StripeAddCustomer"))
 		return "", errors.New("No STRIPE_SECRET_KEY found in StripeAddCustomer")
 	}
 
@@ -246,7 +246,7 @@ func StripeAddCustomer(first string, last string, email string, accountId int) (
 	customer, err := customer.New(customerParams)
 
 	if err != nil {
-		BetterError(errors.New("StripeAddCustomer : Unable to create a new customer. (" + err.Error() + ")"))
+		Info(errors.New("StripeAddCustomer : Unable to create a new customer. (" + err.Error() + ")"))
 		return "", err
 	}
 
@@ -262,7 +262,7 @@ func StripeDeleteCustomer(custToken string) error {
 
 	// Make sure we have a STRIPE_SECRET_KEY
 	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
-		Critical("No STRIPE_SECRET_KEY found in StripeAddCustomer")
+		Critical(errors.New("No STRIPE_SECRET_KEY found in StripeAddCustomer"))
 		return errors.New("No STRIPE_SECRET_KEY found in StripeDeleteCustomer")
 	}
 
@@ -274,7 +274,7 @@ func StripeDeleteCustomer(custToken string) error {
 	_, err := customer.Del(custToken, params)
 
 	if err != nil {
-		BetterError(errors.New("StripeDeleteCustomer : Unable to delete a customer. " + custToken + " (" + err.Error() + ")"))
+		Info(errors.New("StripeDeleteCustomer : Unable to delete a customer. " + custToken + " (" + err.Error() + ")"))
 		return err
 	}
 
@@ -290,7 +290,7 @@ func StripeGetCustomer(custToken string) (*stripe.Customer, error) {
 
 	// Make sure we have a STRIPE_SECRET_KEY
 	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
-		Critical("No STRIPE_SECRET_KEY found in StripeAddCustomer")
+		Critical(errors.New("No STRIPE_SECRET_KEY found in StripeAddCustomer"))
 		return nil, errors.New("No STRIPE_SECRET_KEY found in StripeDeleteCustomer")
 	}
 
@@ -301,7 +301,7 @@ func StripeGetCustomer(custToken string) (*stripe.Customer, error) {
 	cust, err := customer.Get(custToken, nil)
 
 	if err != nil {
-		BetterError(errors.New("StripeDeleteCustomer : Unable to get a customer. " + custToken + " (" + err.Error() + ")"))
+		Info(errors.New("StripeDeleteCustomer : Unable to get a customer. " + custToken + " (" + err.Error() + ")"))
 		return nil, err
 	}
 
@@ -317,7 +317,7 @@ func StripeAddSubscription(custId string, plan string, coupon string) (string, e
 
 	// Make sure we have a STRIPE_SECRET_KEY
 	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
-		Critical("No STRIPE_SECRET_KEY found in StripeAddSubscription")
+		Critical(errors.New("No STRIPE_SECRET_KEY found in StripeAddSubscription"))
 		return "", errors.New("No STRIPE_SECRET_KEY found in StripeAddSubscription")
 	}
 
@@ -337,14 +337,14 @@ func StripeAddSubscription(custId string, plan string, coupon string) (string, e
 	// Do we have a coupon code?
 	if len(coupon) > 0 {
 		subParams.Coupon = stripe.String(coupon)
-		Info("Coupon code passed with subscribe token: " + coupon + " - " + custId)
+		Info(errors.New("Coupon code passed with subscribe token: " + coupon + " - " + custId))
 	}
 
 	// Create new subscription.
 	subscription, err := sub.New(subParams)
 
 	if err != nil {
-		BetterError(errors.New("StripeAddSubscription : Unable to create a new subscription. (" + err.Error() + ")"))
+		Info(errors.New("StripeAddSubscription : Unable to create a new subscription. (" + err.Error() + ")"))
 		return "", err
 	}
 
@@ -360,7 +360,7 @@ func StripeAddCreditCardByToken(custId string, token string) (string, error) {
 
 	// Make sure we have a STRIPE_SECRET_KEY
 	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
-		Critical("No STRIPE_SECRET_KEY found in AddCreditCardByToken")
+		Critical(errors.New("No STRIPE_SECRET_KEY found in AddCreditCardByToken"))
 		return "", errors.New("No STRIPE_SECRET_KEY found in AddCreditCardByToken")
 	}
 
@@ -375,7 +375,7 @@ func StripeAddCreditCardByToken(custId string, token string) (string, error) {
 	c, err := card.New(params)
 
 	if err != nil {
-		BetterError(errors.New("AddCreditCardByToken : Unable to add card. (" + err.Error() + ")"))
+		Info(errors.New("AddCreditCardByToken : Unable to add card. (" + err.Error() + ")"))
 		return "", err
 	}
 
@@ -393,7 +393,7 @@ func StripeListAllCreditCards(custId string) ([]string, error) {
 
 	// Make sure we have a STRIPE_SECRET_KEY
 	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
-		Critical("No STRIPE_SECRET_KEY found in ListAllCreditCards")
+		Critical(errors.New("No STRIPE_SECRET_KEY found in ListAllCreditCards"))
 		return nil, errors.New("No STRIPE_SECRET_KEY found in ListAllCreditCards")
 	}
 
@@ -424,7 +424,7 @@ func StripeDeleteCreditCard(custId string, cardId string) error {
 
 	// Make sure we have a STRIPE_SECRET_KEY
 	if len(os.Getenv("STRIPE_SECRET_KEY")) == 0 {
-		Critical("No STRIPE_SECRET_KEY found in DeleteCreditCard")
+		Critical(errors.New("No STRIPE_SECRET_KEY found in DeleteCreditCard"))
 		return errors.New("No STRIPE_SECRET_KEY found in DeleteCreditCard")
 	}
 
@@ -438,7 +438,7 @@ func StripeDeleteCreditCard(custId string, cardId string) error {
 	_, err := card.Del(cardId, params)
 
 	if err != nil {
-		BetterError(errors.New("DeleteCreditCard : Unable to delete card. (" + err.Error() + ")"))
+		Info(errors.New("DeleteCreditCard : Unable to delete card. (" + err.Error() + ")"))
 		return err
 	}
 

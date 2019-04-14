@@ -2,11 +2,12 @@ package email
 
 import (
 	"errors"
+	"os"
+	"strconv"
+
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"gopkg.in/gomail.v2"
 	"gopkg.in/mailgun/mailgun-go.v1"
-	"os"
-	"strconv"
 )
 
 var (
@@ -34,7 +35,7 @@ func Send(to string, subject string, html string, text string) error {
 
 	// We should never get here if we are configured correctly.
 	var err = errors.New("No mail driver found.")
-	services.Error(err, "library/email/Send/Send() - No mail driver found.")
+	services.Info(errors.New(err.Error() + "library/email/Send/Send() - No mail driver found."))
 	return err
 
 }
@@ -56,7 +57,7 @@ func MailgunSend(to string, subject string, html string, text string) error {
 	_, _, err := mg.Send(message)
 
 	if err != nil {
-		services.Error(err, "library/email/Send/MailgunSend() - Unable to send email.")
+		services.Info(errors.New(err.Error() + "library/email/Send/MailgunSend() - Unable to send email."))
 		return err
 	}
 
@@ -90,7 +91,7 @@ func SmtpSend(to string, subject string, html string, text string) error {
 
 	// Send Da Email
 	if err := d.DialAndSend(m); err != nil {
-		services.Error(err, "library/email/Send/SmtpSend() - Unable to send email.")
+		services.Info(errors.New(err.Error() + "library/email/Send/SmtpSend() - Unable to send email."))
 		return err
 	}
 

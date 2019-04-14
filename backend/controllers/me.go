@@ -202,11 +202,11 @@ func (t *Controller) UpdateCreditCard(c *gin.Context) {
 	couponCode := gjson.Get(string(body), "coupon_code").String()
 
 	if len(couponCode) > 0 {
-		services.Info("Coupon code passed with credit card token: " + couponCode + " - " + user.Email)
+		services.InfoMsg("Coupon code passed with credit card token: " + couponCode + " - " + user.Email)
 		err = t.DB.ApplyCoupon(user, couponCode)
 
 		if err != nil {
-			services.BetterError(err)
+			services.Info(err)
 		}
 	}
 
@@ -345,7 +345,7 @@ func (t *Controller) ResetPassword(c *gin.Context) {
 	err = t.DB.ValidatePassword(newPass)
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Please enter a password at least 6 chars long."})
 		return
 	}
@@ -354,7 +354,7 @@ func (t *Controller) ResetPassword(c *gin.Context) {
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(currentPass))
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Incorrect current password."})
 		return
 	}
@@ -363,7 +363,7 @@ func (t *Controller) ResetPassword(c *gin.Context) {
 	err = t.DB.ResetUserPassword(user.Id, newPass)
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to reset password."})
 		return
 	}

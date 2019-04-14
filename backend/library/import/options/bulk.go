@@ -42,7 +42,7 @@ func DoBulkEodImportToPerSymbolDay() {
 	}
 
 	// Success processing.
-	services.Info("DoHistoricalMonthlyEodData Done.")
+	services.InfoMsg("DoHistoricalMonthlyEodData Done.")
 }
 
 //
@@ -109,7 +109,7 @@ func DoHistoricalMonthlyEodData() error {
 
 		// Check to see if we already did this key (maybe the program died and we are resuming)
 		if _, ok := monthlyDone[filepath.Base(row.Key)]; ok {
-			services.Info("Skipping (already done): " + row.Key)
+			services.InfoMsg("Skipping (already done): " + row.Key)
 			continue
 		}
 
@@ -163,7 +163,7 @@ func DoOneMonthsEodData(key string) error {
 func DownloadOneMonthEodData(key string) (string, error) {
 
 	// Download file to our cache dir.
-	services.Info("Downloading: " + key)
+	services.InfoMsg("Downloading: " + key)
 
 	path, err := object.DownloadObject(key)
 
@@ -257,7 +257,7 @@ func OneDayEodImport(csvFile string) error {
 	}
 
 	// Log import
-	services.Info("Importing option EOD quotes for - " + string(lines[1][7]))
+	services.InfoMsg("Importing option EOD quotes for - " + string(lines[1][7]))
 
 	// Figure out quote date
 	date, err := dateparse.ParseAny(string(lines[1][7]))

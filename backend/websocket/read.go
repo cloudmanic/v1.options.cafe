@@ -34,7 +34,7 @@ func (t *Controller) ProcessRead(conn *WebsocketConnection, message string, data
 
 	// Default we send over to the user feed.
 	default:
-		services.Info("Unknown message coming from websocket - " + message)
+		services.InfoMsg("Unknown message coming from websocket - " + message)
 		//t.WsReadChan <- ReceivedStruct{UserId: conn.userId, Body: message, Connection: conn}
 		break
 
@@ -59,7 +59,7 @@ func (t *Controller) DoWsReading(conn *WebsocketConnection) {
 
 			if ok {
 				delete(t.Connections, conn.connection)
-				services.Info("Client Disconnected (" + conn.deviceId + ") ...")
+				services.InfoMsg("Client Disconnected (" + conn.deviceId + ") ...")
 			}
 
 			break
@@ -67,14 +67,14 @@ func (t *Controller) DoWsReading(conn *WebsocketConnection) {
 
 		// this should come after the mt test.
 		if err != nil {
-			services.BetterError(err)
+			services.Info(err)
 			break
 		}
 
 		// Json decode message.
 		var data map[string]interface{}
 		if err := json.Unmarshal(message, &data); err != nil {
-			services.BetterError(err)
+			services.Info(err)
 			break
 		}
 

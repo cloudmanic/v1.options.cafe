@@ -63,7 +63,7 @@ func (t *Controller) GetQuotes(c *gin.Context) {
 		quotes, err := broker.GetQuotes(smbs)
 
 		if err != nil {
-			services.BetterError(err)
+			services.Info(err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to get quotes."})
 			return
 		}

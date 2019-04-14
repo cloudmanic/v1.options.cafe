@@ -66,7 +66,7 @@ func Start(db models.Datastore) {
 	}
 
 	// Log
-	services.Critical("Broker Feed Poller Started...")
+	services.InfoMsg("Broker Feed Poller Started...")
 }
 
 //
@@ -74,7 +74,7 @@ func Start(db models.Datastore) {
 //
 func StartPoll(db models.Datastore, poll Poll) {
 
-	services.Info("Starting polling for " + poll.Name + ".")
+	services.InfoMsg("Starting polling for " + poll.Name + ".")
 
 	// Delay before starting
 	if poll.Delay > 0 {

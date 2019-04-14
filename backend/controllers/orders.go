@@ -72,7 +72,7 @@ func (t *Controller) CancelOrder(c *gin.Context) {
 	apiKey, err := helpers.Decrypt(broker.AccessToken)
 
 	if err != nil {
-		services.Warning(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "API invalid."})
 	}
 
@@ -88,7 +88,7 @@ func (t *Controller) CancelOrder(c *gin.Context) {
 		brokerCont = tradier.Api{ApiKey: apiKey, DB: t.DB, Sandbox: true}
 
 	default:
-		services.Critical("Order: Unknown Broker : " + broker.Name)
+		services.InfoMsg("Order: Unknown Broker : " + broker.Name)
 
 	}
 
@@ -96,7 +96,7 @@ func (t *Controller) CancelOrder(c *gin.Context) {
 	err = brokerCont.CancelOrder(brokerAccount.AccountNumber, c.Param("brokerOrderId"))
 
 	if err != nil {
-		services.Warning(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Cancel order error."})
 		return
 	}
@@ -117,7 +117,7 @@ func (t *Controller) PreviewOrder(c *gin.Context) {
 	order, brokerCont, brokerAccount, err := orderBuildRequest(t, c)
 
 	if err != nil {
-		services.Warning(err)
+		services.Info(err)
 		return
 	}
 
@@ -138,7 +138,7 @@ func (t *Controller) PreviewOrder(c *gin.Context) {
 	preview, err := brokerCont.PreviewOrder(brokerAccount.AccountNumber, order)
 
 	if err != nil {
-		services.Warning(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Preview error."})
 		return
 	}
@@ -159,7 +159,7 @@ func (t *Controller) SubmitOrder(c *gin.Context) {
 	order, brokerCont, brokerAccount, err := orderBuildRequest(t, c)
 
 	if err != nil {
-		services.Warning(err)
+		services.Info(err)
 		return
 	}
 
@@ -180,7 +180,7 @@ func (t *Controller) SubmitOrder(c *gin.Context) {
 	orderRequest, err := brokerCont.SubmitOrder(brokerAccount.AccountNumber, order)
 
 	if err != nil {
-		services.Warning(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Order error."})
 		return
 	}
@@ -247,7 +247,7 @@ func orderBuildRequest(t *Controller, c *gin.Context) (types.Order, tradier.Api,
 		brokerCont = tradier.Api{ApiKey: apiKey, DB: t.DB, Sandbox: true}
 
 	default:
-		services.Critical("Order: Unknown Broker : " + broker.Name)
+		services.InfoMsg("Order: Unknown Broker : " + broker.Name)
 
 	}
 

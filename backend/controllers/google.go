@@ -184,7 +184,7 @@ func (t *Controller) DoGoogleCallback(c *gin.Context) {
 	}
 
 	// Log for later support issues.
-	services.Info("Google auth user information: " + string(data))
+	services.InfoMsg("Google auth user information: " + string(data))
 
 	// Get data google returned.
 	subId := gjson.Get(string(data), "sub").String()
@@ -309,7 +309,7 @@ func (t *Controller) DoGetAccessTokenAfterGoogleAuth(c *gin.Context) {
 	user, err := t.DB.LoginUserById(uint(redisSession.UserId), app.Id, c.Request.UserAgent(), realip.RealIP(c.Request))
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 
 		// Are we logging in or registering
 		if redisSession.Type == "login" {
@@ -326,7 +326,7 @@ func (t *Controller) DoGetAccessTokenAfterGoogleAuth(c *gin.Context) {
 			if err != nil {
 
 				// Respond with error
-				services.BetterError(err)
+				services.Info(err)
 				c.JSON(http.StatusBadRequest, gin.H{"error": "Sorry, we could not register your account."})
 				return
 

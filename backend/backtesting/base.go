@@ -229,20 +229,20 @@ func (t *Base) tradeResultsWorker(jobs <-chan Job, results chan<- Job) {
 		}
 
 		// Log where we are in the backtest. TODO(spicer): Send this up websocket
-		services.Info("Backtesting " + job.Backtest.Screen.Strategy + " " + job.Backtest.Screen.Symbol + " on " + job.Day.Format("2006-01-02"))
+		services.InfoMsg("Backtesting " + job.Backtest.Screen.Strategy + " " + job.Backtest.Screen.Symbol + " on " + job.Day.Format("2006-01-02"))
 
 		// Get all options for this symbol and day.
 		options, underlyingLast, err := o.GetOptionsBySymbol(job.Backtest.Screen.Symbol)
 
 		if err != nil {
-			services.Warning(err)
+			services.Info(err)
 		}
 
 		// Run backtest strategy function for this backtest
 		job.Results, err = t.ResultsFuncs[job.Backtest.Screen.Strategy](job.Day, job.Backtest, underlyingLast, options)
 
 		if err != nil {
-			services.Warning(err)
+			services.Info(err)
 		}
 
 		// Add options to job

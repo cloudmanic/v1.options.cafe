@@ -30,7 +30,7 @@ func DoTwilioSend(to string, message string) {
 	if len(os.Getenv("TWILIO_ACCOUNT_SID")) > 0 {
 
 		// Log
-		services.Info("Sending SMS notification: " + to + " - " + message)
+		services.InfoMsg("Sending SMS notification: " + to + " - " + message)
 
 		// Setup twilio
 		twilio := gotwilio.NewTwilioClient(os.Getenv("TWILIO_ACCOUNT_SID"), os.Getenv("TWILIO_AUTH_TOKEN"))

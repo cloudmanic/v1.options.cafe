@@ -81,7 +81,7 @@ func (t *DB) DoResetPassword(user_email string, ip string) error {
 	hash, err := t.GenerateRandomString(30)
 
 	if err != nil {
-		services.Error(err, "DoResetPassword - Unable to create hash (GenerateRandomString)")
+		services.Critical(errors.New(err.Error() + "DoResetPassword - Unable to create hash (GenerateRandomString)"))
 		return err
 	}
 
@@ -90,7 +90,7 @@ func (t *DB) DoResetPassword(user_email string, ip string) error {
 	t.Create(&rsp)
 
 	// Log user creation.
-	services.Info("DoResetPassword - Reset password token for " + user.Email)
+	services.InfoMsg("DoResetPassword - Reset password token for " + user.Email)
 
 	// Build the url to reset the password.
 	var url = os.Getenv("SITE_URL") + "/reset-password?hash=" + hash
@@ -119,17 +119,17 @@ func (t *DB) DoResetPassword(user_email string, ip string) error {
 func (t *DB) GetForgotPasswordStepOneEmailText(name string, email string, url string) string {
 	return string(`
     Hi ` + name + `,
-    
+
     Can't remember your password? Don't worry about it — it happens.
-    
+
     So you know, your username is: ` + email + `
-    
-    Visit this url to reset your password. 
-    
+
+    Visit this url to reset your password.
+
     ` + url + `
-    
+
     Have questions? Need help? Contact our support team here - https://options.cafe/support - and we'll get back to you very quickly.
-    
+
     Thanks!
     - The Options Cafe Team
   `)
@@ -193,44 +193,44 @@ func (t *DB) GetForgotPasswordStepOneEmailHtml(name string, email string, url st
 			td.container-padding {
 				display: none !important;
 			}
-			
+
 			table {
 				min-width: initial !important;
 			}
 			td {
 				min-width: initial !important;
 			}
-			
+
 			.desktop-only { display: none !important; }
 			.mobile-only { display: block !important; }
-			
+
 			.hide {
 				max-height: none !important;
 				display: block !important;
 				overflow: visible !important;
 			}
-			
+
 			.EQ-00 { width: 320px !important; }
 			.EQ-01 { width: 320px !important; height: 32px !important; }
-			
+
 			.EQ-02 { width: 7px !important; }
 			.EQ-03 { width: 16px !important; }
 			.EQ-04 { width: 297px !important; }
 			.EQ-05 { height:12px !important; } /* vertical spacer */
-			
+
 			.EQ-06 { width: 12px !important; }
 			.EQ-07 { width: 6px !important; }
 			.EQ-08 { width: 302px !important; }
-			
+
 			.EQ-09 { width: 6px !important; }
 			.EQ-0A { width: 6px !important; }
 			.EQ-0B { width: 308px !important; }
 			.EQ-0C { width: 298px !important; height: 46px !important; }
-			
+
 			.EQ-0D { width: 12px !important; }
 			.EQ-0E { width: 6px !important; }
 			.EQ-0F { width: 302px !important; }
-			
+
 			.EQ-10 { width: 6px !important; }
 			.EQ-11 { width: 6px !important; }
 			.EQ-12 { width: 308px !important; }
@@ -269,7 +269,7 @@ func (t *DB) GetForgotPasswordStepOneEmailHtml(name string, email string, url st
 <v:background xmlns:v="urn:schemas-microsoft-com:vml" fill="t">
 <v:fill type="tile" src="https://cdn.options.cafe/email/forgot-password-step-1/box-bg.jpg?v=1" />
 </v:background>
-<![endif]--> 
+<![endif]-->
 
 <table width="100%" cellspacing="0" cellpadding="0" id="page-wrap" align="center" background="https://cdn.options.cafe/email/forgot-password-step-1/box-bg.jpg?v=1">
 <tbody><tr>
@@ -279,10 +279,10 @@ func (t *DB) GetForgotPasswordStepOneEmailHtml(name string, email string, url st
 <tbody><tr>
 	<td width="30" class="page-bg-show-thru">&nbsp;<!--Left page bg show-thru --></td>
 	<td width="550" id="page-body">
-		
+
 		<!--Begin of layout container -->
 		<div id="eqLayoutContainer">
-			
+
 			<div width="100%">
 				<!--[if !mso 15]><!--><table width="550" cellspacing="0" cellpadding="0" class="mso-fixed-width-wrapping-table" style="mso-hide:all; min-width: 550px; ">
 					<tbody><tr>
@@ -302,7 +302,7 @@ func (t *DB) GetForgotPasswordStepOneEmailHtml(name string, email string, url st
 			<!--<![endif]--><!--[if gte mso 9]><table cellspacing="0" cellpadding="0" class="mso-fixed-width-wrapping-table" width="550">
 <tr><td valign="top" class="layout-block-full-width"><div class="layout-block-image"><a href="https://options.cafe"><img height="55" alt="" src="https://cdn.options.cafe/email/forgot-password-step-1/image-1.png" border="0" style="display: block;"  class="img-EQMST-414F061F-0A35-4461-A492-2F9B6543416D" width="550"></img><div style="width:0px;height:0px;max-height:0;max-width:0;overflow:hidden;display:none;visibility:hidden;mso-hide:all;"></div></a></div></td>
 </tr></table><![endif]--></div>
-			
+
 			<div width="100%">
 				<!--[if !mso 15]><!--><table width="550" cellspacing="0" cellpadding="0" class="layout-block-wrapping-table" style="mso-hide:all; min-width: 550px; ">
 					<tbody><tr>
@@ -316,7 +316,7 @@ func (t *DB) GetForgotPasswordStepOneEmailHtml(name string, email string, url st
 			<!--<![endif]--><!--[if gte mso 9]><table cellspacing="0" cellpadding="0" class="layout-block-wrapping-table" width="550">
 <tr><td width="12" class="layout-block-padding-left" style="font-size:0">&nbsp; </td><td class="layout-block-content-cell" style="font-size:0;" width="511" height="20"><v:rect style="width:511px;height:20px;" stroke="f"><v:fill type="tile" src="https://cdn.options.cafe/email/forgot-password-step-1/box-bg.jpg?v=1" color="#ffffff"></v:fill><div class="spacer"></div></v:rect></td><td width="27" class="layout-block-padding-right" style="font-size:0">&nbsp; </td>
 </tr></table><![endif]--></div>
-			
+
 			<div width="100%">
 				<!--[if !mso 15]><!--><table width="550" cellspacing="0" cellpadding="0" class="layout-block-wrapping-table" style="mso-hide:all; min-width: 550px; ">
 					<tbody><tr>
@@ -344,7 +344,7 @@ func (t *DB) GetForgotPasswordStepOneEmailHtml(name string, email string, url st
 <tr><td style="font-size:1px;" width="10">&nbsp; </td><td align="left" class="layout-block-column" width="500"><div class="text" style="font-size: 16px; font-family: sans-serif; line-height: 120%;"><font face="Times New Roman, sans-serif" style="line-height: 120%; font-size: 17px;">Hi John,</font><div style="line-height: 120%;"><font face="Times New Roman, sans-serif" style="font-size: 17px;"><br></font></div><div style="line-height: 120%;"><span style="color: rgb(31, 31, 31); font-variant-ligatures: normal; letter-spacing: -0.1px; orphans: 2; widows: 2; font-size: 17px;"><font face="sans-serif">Can't remember your password? Don't worry about it — it happens.</font></span></div><div style="line-height: 120%;"><span style="color: rgb(31, 31, 31); font-variant-ligatures: normal; letter-spacing: -0.1px; orphans: 2; widows: 2; font-size: 17px;"><font face="sans-serif"><br></font></span></div><div style="line-height: 120%;"><span style="color: rgb(31, 31, 31); font-variant-ligatures: normal; letter-spacing: -0.1px; orphans: 2; widows: 2; font-size: 17px;"><font face="sans-serif"><span style="font-variant-ligatures: normal; letter-spacing: -0.1px;">So you know, your username is: </span><span style="font-variant-ligatures: normal; font-variant-numeric: inherit; font-stretch: inherit; line-height: inherit; letter-spacing: -0.1px;"><b>` + email + `</b></span></font></span></div></div></td><td style="font-size:1px;" width="10">&nbsp; </td>
 </tr></table></div></div></v:textbox></v:rect></td><td width="10" class="layout-block-padding-right">&nbsp; </td>
 </tr></table><![endif]--></div>
-			
+
 			<div width="100%">
 				<!--[if !mso 15]><!--><table width="550" cellspacing="0" cellpadding="0" class="layout-block-wrapping-table" style="mso-hide:all; min-width: 550px; ">
 					<tbody><tr>
@@ -368,7 +368,7 @@ func (t *DB) GetForgotPasswordStepOneEmailHtml(name string, email string, url st
 <tr><td valign="top" class="layout-block-padded-column" align="center"><div class="layout-block-image"><a href="` + url + `"><img height="79" alt="Options Cafe Reset Password" src="https://cdn.options.cafe/email/forgot-password-step-1/image-2.png" border="0"  style="display: block;" class="img-EQMST-CCAE6821-F243-43A3-84D0-AFDB050CF64E" width="510"></img><div style="width:0px;height:0px;max-height:0;max-width:0;overflow:hidden;display:none;visibility:hidden;mso-hide:all;"></div></a></div></td>
 </tr></table></div></div></v:textbox></v:rect></td><td width="10" class="layout-block-padding-right">&nbsp; </td>
 </tr></table><![endif]--></div>
-			
+
 			<div width="100%">
 				<!--[if !mso 15]><!--><table width="550" cellspacing="0" cellpadding="0" class="layout-block-wrapping-table" style="mso-hide:all; min-width: 550px; ">
 					<tbody><tr>
@@ -396,7 +396,7 @@ func (t *DB) GetForgotPasswordStepOneEmailHtml(name string, email string, url st
 <tr><td style="font-size:1px;" width="10">&nbsp; </td><td align="left" class="layout-block-column" width="500"><div class="text" style="font-size: 16px; font-family: sans-serif;"><div style="text-align: left;"><span style="font-size: 17px;"><font face="sans-serif"><span style="color: rgb(31, 31, 31); font-variant-ligatures: normal; letter-spacing: -0.1px; orphans: 2; text-align: center; widows: 2;">Have questions? Need help? </span><a href="https://options.cafe/support" style="color: rgb(22, 108, 197);">Contact our support team</a><span style="color: rgb(31, 31, 31); font-variant-ligatures: normal; letter-spacing: -0.1px; orphans: 2; text-align: center; widows: 2;"> and </span></font><font face="sans-serif" style="text-align: center;"><span style="color: rgb(31, 31, 31); font-variant-ligatures: normal; letter-spacing: -0.1px; orphans: 2; widows: 2;">we'll get back to you very quickly</span></font><span style="text-align: center; color: rgb(31, 31, 31); font-family: sans-serif; font-variant-ligatures: normal; letter-spacing: -0.1px; orphans: 2; widows: 2;">.</span></span></div><div style="text-align: left;"><span style="text-align: center; color: rgb(31, 31, 31); font-family: sans-serif; font-variant-ligatures: normal; letter-spacing: -0.1px; orphans: 2; widows: 2; font-size: 17px;"><br></span></div><div style="text-align: left;"><div style="line-height: 120%;"><font face="Times New Roman, sans-serif" style="font-size: 17px;">Thanks!</font></div><div style="line-height: 120%;"><font face="Times New Roman, sans-serif" style="font-size: 17px;">- The Options Cafe Team</font></div><div><br></div></div></div></td><td style="font-size:1px;" width="10">&nbsp; </td>
 </tr></table></div></div></v:textbox></v:rect></td><td width="10" class="layout-block-padding-right">&nbsp; </td>
 </tr></table><![endif]--></div>
-			
+
 			<div width="100%">
 				<!--[if !mso 15]><!--><table width="550" cellspacing="0" cellpadding="0" class="layout-block-wrapping-table" style="mso-hide:all; min-width: 550px; ">
 					<tbody><tr>
@@ -410,10 +410,10 @@ func (t *DB) GetForgotPasswordStepOneEmailHtml(name string, email string, url st
 			<!--<![endif]--><!--[if gte mso 9]><table cellspacing="0" cellpadding="0" class="layout-block-wrapping-table" width="550">
 <tr><td width="10" class="layout-block-padding-left" style="font-size:0">&nbsp; </td><td class="layout-block-content-cell" style="font-size:0;" width="530" height="20"><v:rect style="width:530px;height:20px;" stroke="f"><v:fill type="tile" src="https://cdn.options.cafe/email/forgot-password-step-1/box-bg.jpg?v=1" color="#ffffff"></v:fill><div class="spacer"></div></v:rect></td><td width="10" class="layout-block-padding-right" style="font-size:0">&nbsp; </td>
 </tr></table><![endif]--></div>
-			
+
 		</div>
 		<!--End of layout container -->
-		
+
 	</td>
 	<td width="30" class="page-bg-show-thru">&nbsp;<!--Right page bg show-thru --></td>
 </tr>
@@ -424,7 +424,7 @@ func (t *DB) GetForgotPasswordStepOneEmailHtml(name string, email string, url st
 </tbody></table><!--page-wrap -->
 
 
-</body></html> 
+</body></html>
   `)
 
 }

@@ -111,7 +111,7 @@ func (t *DB) tradeGroupAddSymbolsToPositions(tgs []TradeGroup) error {
 
 		// Stupid code to make it so GoFMT does not delete in range statement
 		if row.Id < 0 {
-			services.Info("This should never happen.")
+			services.InfoMsg("This should never happen.")
 		}
 	}
 

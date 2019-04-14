@@ -33,7 +33,7 @@ func (t *Controller) DoResetPassword(c *gin.Context) {
 	err := decoder.Decode(&post)
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong while logging into your account. Please try again or contact help@options.cafe. Sorry for the trouble."})
 		return
 	}
@@ -44,7 +44,7 @@ func (t *Controller) DoResetPassword(c *gin.Context) {
 	user, err := t.DB.GetUserFromToken(post.Hash)
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Sorry, It seems your reset token has expired."})
 		return
 	}
@@ -53,7 +53,7 @@ func (t *Controller) DoResetPassword(c *gin.Context) {
 	err = t.DB.ValidatePassword(post.Password)
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Please enter a password at least 6 chars long."})
 		return
 	}
@@ -62,7 +62,7 @@ func (t *Controller) DoResetPassword(c *gin.Context) {
 	err = t.DB.ResetUserPassword(user.Id, post.Password)
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong while logging into your account. Please try again or contact help@options.cafe. Sorry for the trouble."})
 		return
 	}
@@ -71,7 +71,7 @@ func (t *Controller) DoResetPassword(c *gin.Context) {
 	err = t.DB.DeleteForgotPasswordByToken(post.Hash)
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 	}
 
 	// Build response
@@ -107,7 +107,7 @@ func (t *Controller) DoForgotPassword(c *gin.Context) {
 	err := decoder.Decode(&post)
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong while logging into your account. Please try again or contact help@options.cafe. Sorry for the trouble."})
 		return
 	}
@@ -118,7 +118,7 @@ func (t *Controller) DoForgotPassword(c *gin.Context) {
 	err = t.DB.DoResetPassword(post.Email, realip.RealIP(c.Request))
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Sorry, we could not find your account."})
 		return
 	}

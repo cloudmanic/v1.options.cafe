@@ -65,7 +65,7 @@ func GetPrimaryTradierConnection(db models.Datastore, userId uint) (tradier.Api,
 	accessToken, err := helpers.Decrypt(broker.AccessToken)
 
 	if err != nil {
-		services.Info("GetPrimaryTradierConnection Error: for user " + strconv.Itoa(int(userId)) + " due to " + err.Error())
+		services.InfoMsg("GetPrimaryTradierConnection Error: for user " + strconv.Itoa(int(userId)) + " due to " + err.Error())
 		return tradier.Api{}, err
 	}
 

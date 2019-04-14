@@ -22,7 +22,7 @@ import (
 //
 func CheckErrorForDisableBroker(loc string, err error, db models.Datastore, user models.User, broker models.Broker) {
 
-	services.Info(loc + ": Error with User: " + strconv.Itoa(int(user.Id)) + " : " + err.Error())
+	services.InfoMsg(loc + ": Error with User: " + strconv.Itoa(int(user.Id)) + " : " + err.Error())
 
 	// If the error has this string we disable the broker.
 	if strings.Contains(err.Error(), "Invalid Access Token") {
@@ -56,7 +56,7 @@ func CheckErrorForDisableBroker(loc string, err error, db models.Datastore, user
 		// Store in DB
 		if n.Id == 0 {
 			db.New().Save(&ob)
-			services.Info("Disabled broker account " + strconv.Itoa(int(broker.Id)) + " for user " + strconv.Itoa(int(user.Id)) + " due to invalid access token")
+			services.InfoMsg("Disabled broker account " + strconv.Itoa(int(broker.Id)) + " for user " + strconv.Itoa(int(user.Id)) + " due to invalid access token")
 		}
 
 		// TODO(spicer): Send user an email.

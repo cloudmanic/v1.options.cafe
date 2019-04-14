@@ -30,7 +30,7 @@ func ClearExpiredSessions(db *models.DB) {
 		db.New().Where("last_activity <= ? AND application_id = ?", time.Now().AddDate(0, 0, -1), centcomApp.Id).Delete(&models.Session{})
 
 		// Just cleared Centcom sessions
-		services.Info("Centcom sessions cleared.")
+		services.InfoMsg("Centcom sessions cleared.")
 
 	}
 
@@ -44,7 +44,7 @@ func ClearExpiredSessions(db *models.DB) {
 		db.New().Where("last_activity <= ? AND application_id != ?", time.Now().AddDate(0, 0, -14), personalApp.Id).Delete(&models.Session{})
 
 		// Log cleared sessions.
-		services.Info("All expired sessions cleared.")
+		services.InfoMsg("All expired sessions cleared.")
 
 	}
 
@@ -66,14 +66,14 @@ func ExpireTrails(db *models.DB) {
 
 		row.Status = "Expired"
 		db.New().Save(&row)
-		services.Info("Free trial has just expired : " + row.Email)
+		services.InfoMsg("Free trial has just expired : " + row.Email)
 		go services.SlackNotify("#events", "New Options Cafe User Free Trial Expired : "+row.Email)
 		go services.SendyUnsubscribe("trial", row.Email)
 		go services.SendySubscribe("expired", row.Email, row.FirstName, row.LastName, "", "", "", "No")
 
 	}
 
-	services.Info("All expire trails set to expired.")
+	services.InfoMsg("All expire trails set to expired.")
 }
 
 /* End File */

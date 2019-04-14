@@ -64,7 +64,7 @@ func (t *Controller) StartWebServer() {
 	}
 
 	// Lets get started
-	services.Critical("HTTP Server Started : " + os.Getenv("SITE_URL"))
+	services.InfoMsg("HTTP Server Started : " + os.Getenv("SITE_URL"))
 
 	log.Fatal(s.ListenAndServe())
 

@@ -60,7 +60,7 @@ func (t *DB) CreateNewBroker(name string, user User, accessToken string, refresh
 	encryptAccessToken, err := helpers.Encrypt(accessToken)
 
 	if err != nil {
-		services.Error(err, "[Models:CreateNewBroker] Unable to encrypt message (#1)")
+		services.Info(errors.New(err.Error() + "[Models:CreateNewBroker] Unable to encrypt message (#1)"))
 		return Broker{}, errors.New("[CreateNewBroker] Unable to encrypt message (#1)")
 	}
 
@@ -68,7 +68,7 @@ func (t *DB) CreateNewBroker(name string, user User, accessToken string, refresh
 	encryptRefreshToken, err := helpers.Encrypt(refreshToken)
 
 	if err != nil {
-		services.Error(err, "[Models:CreateNewBroker] Unable to encrypt message (#2)")
+		services.Info(errors.New(err.Error() + "[Models:CreateNewBroker] Unable to encrypt message (#2)"))
 		return Broker{}, errors.New("[Models:CreateNewBroker] Unable to encrypt message (#2)")
 	}
 
@@ -84,7 +84,7 @@ func (t *DB) CreateNewBroker(name string, user User, accessToken string, refresh
 	t.Create(&broker)
 
 	// Log broker creation.
-	services.Info("[Models:CreateNewBroker] - Created a new broker entry - " + name + " " + user.Email)
+	services.InfoMsg("[Models:CreateNewBroker] - Created a new broker entry - " + name + " " + user.Email)
 
 	// Return the user.
 	return broker, nil
@@ -98,7 +98,7 @@ func (t *DB) UpdateBroker(broker Broker) error {
 	encryptAccessToken, err := helpers.Encrypt(broker.AccessToken)
 
 	if err != nil {
-		services.Error(err, "(UpdateBroker) Unable to encrypt message (#1)")
+		services.Info(errors.New(err.Error() + "(UpdateBroker) Unable to encrypt message (#1)"))
 		return errors.New("(UpdateBroker) Unable to encrypt message (#1)")
 	}
 
@@ -108,7 +108,7 @@ func (t *DB) UpdateBroker(broker Broker) error {
 	encryptRefreshToken, err := helpers.Encrypt(broker.RefreshToken)
 
 	if err != nil {
-		services.Error(err, "(UpdateBroker) Unable to encrypt message (#2)")
+		services.Info(errors.New(err.Error() + "(UpdateBroker) Unable to encrypt message (#2)"))
 		return errors.New("(UpdateBroker) Unable to encrypt message (#2)")
 	}
 

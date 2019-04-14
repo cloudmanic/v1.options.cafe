@@ -7,6 +7,7 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -18,108 +19,40 @@ import (
 	"github.com/stvp/rollbar"
 )
 
-// --------------- TODO: Get Rid Of These Functions ----------- //
-
-func Error(err error, message string) {
-	BetterError(err)
-}
-
-// -------------- END Get Rid Of -------------------- //
-
 //
-// Info Log.
+// Info Log. Used to log inportant information but a human does not need to review unless they are debugging something.
 //
-func Info(message string) {
-	if !strings.HasSuffix(os.Args[0], ".test") {
-		log.Println("[App:Info] " + MyCaller() + " : " + ansi.Color(message, "magenta"))
-	}
+func Info(err error) {
+	log.Println("[App:Info] " + MyCaller() + " : " + ansi.Color(err.Error(), "magenta"))
 }
 
 //
-// Critical.
+// Allow us to pass in just text instead of an error. Not always do we have a err to pass in.
 //
-func Critical(message string) {
+func InfoMsg(msg string) {
+	Info(errors.New(msg))
+}
 
-	caller := MyCaller()
-
+//
+// Critical - We used this when we want to make splash. All Critical errors should be reviewed by a human.
+//
+func Critical(err error) {
 	// Standard out
-	log.Println(ansi.Color("[App:Critical] "+caller+" : "+message, "yellow"))
+	log.Println(ansi.Color("[App:Critical] "+MyCaller()+" : "+err.Error(), "yellow"))
 
 	// Rollbar
-	RollbarInfo(caller + " : " + message)
+	RollbarError(err)
 }
 
 //
-// Fatal Log.
+// Fatal Log. We use this wehn the app should die and not continue running.
 //
 func Fatal(err error) {
-
+	// Standard out
 	log.Fatal(ansi.Color("[App:Fatal] "+MyCaller()+" : "+err.Error(), "red"))
 
 	// Rollbar
 	RollbarError(err)
-}
-
-//
-// Fatal with a message Log.
-//
-func FatalMsg(err error, message string) {
-
-	log.Fatal(ansi.Color("[App:Fatal] "+MyCaller()+" : "+err.Error()+" - "+message, "red"))
-
-	// Rollbar
-	RollbarError(err)
-}
-
-//
-// Warning Log. (error type only)
-//
-func Warning(err error) {
-	if err != nil {
-		log.Println(ansi.Color("[App:Warning] "+MyCaller()+" : "+err.Error(), "yellow+b"))
-	}
-}
-
-//
-// BetterError - Error Log. TODO: Convert this to normal Error Bettererror sucks as a name
-//
-func BetterError(err error) {
-	caller := MyCaller()
-
-	// Standard out
-	log.Println(ansi.Color("[App:Error] "+caller+" : "+err.Error(), "red"))
-
-	// Rollbar
-	RollbarError(err)
-}
-
-//
-// ErrorMsg - Error with a message Log.
-//
-func ErrorMsg(err error, message string) {
-	caller := MyCaller()
-
-	// Standard out
-	log.Println(ansi.Color("[App:Error] "+caller+" : "+err.Error()+" : "+message, "red"))
-
-	// Rollbar
-	RollbarError(err)
-}
-
-//
-// Send log to rollbar
-//
-func RollbarInfo(message string) {
-
-	if len(os.Getenv("ROLLBAR_TOKEN")) > 0 {
-		go func() {
-			rollbar.Token = os.Getenv("ROLLBAR_TOKEN")
-			rollbar.Environment = os.Getenv("ROLLBAR_ENV")
-			rollbar.Message("info", message)
-			rollbar.Wait()
-		}()
-
-	}
 }
 
 //

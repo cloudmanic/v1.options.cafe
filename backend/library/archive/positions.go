@@ -7,6 +7,7 @@
 package archive
 
 import (
+	"errors"
 	"math"
 	"strconv"
 	"time"
@@ -64,7 +65,7 @@ func StorePositions(db models.Datastore, userId uint, brokerId uint) error {
 		err = ReviewCurrentPositionsForExpiredOptions(db, userId, row.Id)
 
 		if err != nil {
-			services.Info("archive.ReviewCurrentPositionsForExpiredOptions returned error " + strconv.Itoa(int(userId)) + " Broker Id: " + strconv.Itoa(int(brokerId)) + " Broker Account Id: " + strconv.Itoa(int(row.Id)))
+			services.InfoMsg("archive.ReviewCurrentPositionsForExpiredOptions returned error " + strconv.Itoa(int(userId)) + " Broker Id: " + strconv.Itoa(int(brokerId)) + " Broker Account Id: " + strconv.Itoa(int(row.Id)))
 			return err
 		}
 	}
@@ -139,7 +140,7 @@ func PastCreateTradeGroupFromPosition(db models.Datastore, userId uint, brokerId
 		db.CreatePosition(&newPos)
 
 		// Log success
-		services.Info("New Past TradeGroup created for user " + strconv.Itoa(int(userId)) + " TradeGroup Id: " + strconv.Itoa(int(tg.Id)))
+		services.InfoMsg("New Past TradeGroup created for user " + strconv.Itoa(int(userId)) + " TradeGroup Id: " + strconv.Itoa(int(tg.Id)))
 	}
 
 	// Return Happy
@@ -188,7 +189,7 @@ func ReviewCurrentPositionsForExpiredOptions(db models.Datastore, userId uint, b
 			stockQuote, err := market.GetUnderlayingQuoteByDate(db, userId, row.Symbol.OptionUnderlying, parts.Expire)
 
 			if err != nil {
-				services.ErrorMsg(err, "market.GetUnderlayingQuoteByDate returned error UserId: "+strconv.Itoa(int(userId))+" Broker Id: "+strconv.Itoa(int(brokerId))+" OptionUnderlying: "+row.Symbol.OptionUnderlying+" Today: "+parts.Expire.Format("2006-01-02"))
+				services.Critical(errors.New(err.Error() + "market.GetUnderlayingQuoteByDate returned error UserId: " + strconv.Itoa(int(userId)) + " Broker Id: " + strconv.Itoa(int(brokerId)) + " OptionUnderlying: " + row.Symbol.OptionUnderlying + " Today: " + parts.Expire.Format("2006-01-02")))
 
 				// This is hacky but if we can't get a quote we need to do something.
 				// Common issue is Tradier does not give historical quotes on futures.
@@ -272,7 +273,7 @@ func ReviewCurrentPositionsForExpiredOptions(db models.Datastore, userId uint, b
 				db.UpdateTradeGroup(&tradeGroup)
 
 				// Log success
-				services.Info("New TradeGroup updated (ReviewCurrentPositionsForExpiredOptions) for user " + strconv.Itoa(int(userId)) + " TradeGroup Id: " + strconv.Itoa(int(tradeGroup.Id)))
+				services.InfoMsg("New TradeGroup updated (ReviewCurrentPositionsForExpiredOptions) for user " + strconv.Itoa(int(userId)) + " TradeGroup Id: " + strconv.Itoa(int(tradeGroup.Id)))
 			}
 
 		}

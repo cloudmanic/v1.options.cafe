@@ -57,7 +57,7 @@ func (t *Controller) AuthMiddleware() gin.HandlerFunc {
 		t.DB.New().Where("access_token = ?", access_token).Find(&account)
 
 		if account.Id <= 0 {
-			services.Critical("Access Token Not Found - Unable to Authenticate via HTTP (#002)")
+			services.InfoMsg("Access Token Not Found - Unable to Authenticate via HTTP (#002)")
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization Failed (#002)"})
 			c.AbortWithStatus(401)
 			return

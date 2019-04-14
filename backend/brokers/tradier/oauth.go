@@ -49,13 +49,13 @@ func (t *TradierAuth) DoAuthCode(c *gin.Context) {
 	userId := c.Query("user")
 
 	if userId == "" {
-		services.BetterError(errors.New("Tradier - DoAuthCode - No user id provided."))
+		services.Info(errors.New("Tradier - DoAuthCode - No user id provided."))
 		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
 
 	if userId == "" {
-		services.BetterError(errors.New("Tradier - DoAuthCode - No user id provided."))
+		services.Info(errors.New("Tradier - DoAuthCode - No user id provided."))
 		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
@@ -65,7 +65,7 @@ func (t *TradierAuth) DoAuthCode(c *gin.Context) {
 	user, err := t.DB.GetUserById(uint(u))
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
@@ -74,13 +74,13 @@ func (t *TradierAuth) DoAuthCode(c *gin.Context) {
 	brokerId := c.Query("broker_id")
 
 	if brokerId == "" {
-		services.BetterError(errors.New("Tradier - DoAuthCode - No broker id provided."))
+		services.Info(errors.New("Tradier - DoAuthCode - No broker id provided."))
 		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
 
 	if brokerId == "" {
-		services.BetterError(errors.New("Tradier - DoAuthCode - No broker id provided."))
+		services.Info(errors.New("Tradier - DoAuthCode - No broker id provided."))
 		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
@@ -89,13 +89,13 @@ func (t *TradierAuth) DoAuthCode(c *gin.Context) {
 	broker := models.Broker{}
 
 	if t.DB.New().Where("user_id = ? AND name = ? AND id = ?", user.Id, "Tradier", brokerId).Find(&broker).RecordNotFound() {
-		services.BetterError(errors.New("Tradier - DoAuthCode - No broker found."))
+		services.Info(errors.New("Tradier - DoAuthCode - No broker found."))
 		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
 
 	// Log
-	services.Info("Tradier authorization starting for " + user.Email)
+	services.InfoMsg("Tradier authorization starting for " + user.Email)
 
 	// Redirect to tradier to auth
 	var url = apiBaseUrl + "/oauth/authorize?client_id=" + os.Getenv("TRADIER_CONSUMER_KEY") + "&scope=read,write,market,trade,stream&state=" + strconv.Itoa(int((broker.Id)))
@@ -111,7 +111,7 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 	code := c.Query("code")
 
 	if code == "" {
-		services.BetterError(errors.New("Tradier - DoAuthCallback - No auth code provided. (#1)"))
+		services.Info(errors.New("Tradier - DoAuthCallback - No auth code provided. (#1)"))
 		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
@@ -120,7 +120,7 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 	state := c.Query("state")
 
 	if state == "" {
-		services.BetterError(errors.New("Tradier - DoAuthCallback - No auth code provided. (#2)"))
+		services.Info(errors.New("Tradier - DoAuthCallback - No auth code provided. (#2)"))
 		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
@@ -129,7 +129,7 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 	broker := models.Broker{}
 
 	if t.DB.New().Where("name = ? AND id = ?", "Tradier", state).Find(&broker).RecordNotFound() {
-		services.BetterError(errors.New("Tradier - DoAuthCallback - No broker found."))
+		services.Info(errors.New("Tradier - DoAuthCallback - No broker found."))
 		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
@@ -140,7 +140,7 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 	req, err := http.NewRequest("POST", apiBaseUrl+"/oauth/accesstoken", data)
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
@@ -152,7 +152,7 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 	resp, err := client.Do(req)
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
@@ -161,7 +161,7 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 
 	// Make sure we got a good status code
 	if resp.StatusCode != http.StatusOK {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
@@ -170,7 +170,7 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 	jsonBody, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
@@ -181,14 +181,14 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 	err = json.Unmarshal(jsonBody, &tr)
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
 
 	// Make sure this request was approved.
 	if tr.Status != "approved" {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
@@ -197,7 +197,7 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 	user, err := t.DB.GetUserById(broker.UserId)
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": genericError})
 		return
 	}
@@ -218,7 +218,7 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 	time.Sleep(time.Second * 2)
 
 	// Log
-	services.Info("Tradier authorization completed for " + user.Email)
+	services.InfoMsg("Tradier authorization completed for " + user.Email)
 
 	// Return success redirect
 	c.Redirect(302, os.Getenv("SITE_URL"))
@@ -232,7 +232,7 @@ func (t *Api) DoRefreshAccessTokenIfNeeded(user models.User) error {
 	brokers, err := t.DB.GetBrokerTypeAndUserId(user.Id, "Tradier")
 
 	if err != nil {
-		services.BetterError(err)
+		services.Info(err)
 		return err
 	}
 
@@ -256,11 +256,11 @@ func (t *Api) DoRefreshAccessTokenIfNeeded(user models.User) error {
 				t.ApiKey = msg
 				t.muApiKey.Unlock()
 
-				services.Info("Refreshed Tradier token : " + user.Email)
+				services.InfoMsg("Refreshed Tradier token : " + user.Email)
 
 			} else {
-				services.Info("Refreshed Tradier error : " + msg)
-				services.BetterError(err)
+				services.InfoMsg("Refreshed Tradier error : " + msg)
+				services.Info(err)
 			}
 
 		}
