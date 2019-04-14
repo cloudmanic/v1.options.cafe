@@ -60,10 +60,25 @@ type OrderLeg struct {
 }
 
 //
-// Store a new order.
+// GetOrdersByUser - Return all orders by user
+//
+func (t *DB) GetOrdersByUser(userId uint) []Order {
+	// Query and get all orders we have not reviewed before.
+	orders := []Order{}
+
+	// Run query
+	t.Preload("Legs", func(db *gorm.DB) *gorm.DB {
+		return db.Preload("Symbol").Order("id asc")
+	}).Preload("Symbol").Preload("OptionSymbol").Where("user_id = ?", userId).Order("transaction_date asc").Find(&orders)
+
+	// Return happy
+	return orders
+}
+
+//
+// CreateOrder - Store a new order.
 //
 func (t *DB) CreateOrder(order *Order) error {
-
 	// Create order
 	t.Create(order)
 
@@ -72,10 +87,9 @@ func (t *DB) CreateOrder(order *Order) error {
 }
 
 //
-// Store a order.
+// UpdateOrder - Store a order.
 //
 func (t *DB) UpdateOrder(order *Order) error {
-
 	// Update entry.
 	t.Save(&order)
 
@@ -84,7 +98,7 @@ func (t *DB) UpdateOrder(order *Order) error {
 }
 
 //
-// Get orders by User and class and status and reviewed
+// GetOrdersByUserClassStatusReviewed - Get orders by User and class and status and reviewed
 //
 func (t *DB) GetOrdersByUserClassStatusReviewed(userId uint, class string, status string, reviewed string) ([]Order, error) {
 

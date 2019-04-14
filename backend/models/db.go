@@ -89,6 +89,7 @@ func doMigrations(db *gorm.DB) {
 	db.AutoMigrate(&TradeGroup{})
 	db.AutoMigrate(&ActiveSymbol{})
 	db.AutoMigrate(&Application{})
+	db.AutoMigrate(&HistoricalQuote{})
 	db.AutoMigrate(&Notification{})
 	db.AutoMigrate(&NotifyChannel{})
 	db.AutoMigrate(&BrokerAccount{})

@@ -102,6 +102,7 @@ type Datastore interface {
 	CreateUserFromGoogle(first string, last string, email string, subId string, appId uint, userAgent string, ipAddress string) (User, error)
 
 	// Orders
+	GetOrdersByUser(userId uint) []Order
 	CreateOrder(order *Order) error
 	UpdateOrder(order *Order) error
 	HasOrderByBrokerRefUserId(brokerRef string, userId uint) bool

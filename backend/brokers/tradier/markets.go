@@ -85,10 +85,10 @@ func (t *Api) GetTimeSalesQuotes(symbol string, start time.Time, end time.Time, 
 }
 
 //
-// Get historical quotes
+// GetHistoricalQuotes - Get historical quotes
 //
 func (t *Api) GetHistoricalQuotes(symbol string, start time.Time, end time.Time, interval string) ([]types.HistoryQuote, error) {
-
+	// Quotes to return
 	quotes := []types.HistoryQuote{}
 
 	// Setup http client
@@ -104,15 +104,15 @@ func (t *Api) GetHistoricalQuotes(symbol string, start time.Time, end time.Time,
 
 	res, err := client.Do(req)
 
-	// Close Body
-	defer res.Body.Close()
-
 	// Get body
 	body, _ := ioutil.ReadAll(res.Body)
 
 	if err != nil {
 		return quotes, errors.New(fmt.Sprint("GetHistoricalQuotes API did not return 200, It returned ", res.StatusCode, " with a body : ", string(body)))
 	}
+
+	// Close Body
+	defer res.Body.Close()
 
 	// Make sure the api responded with a 200
 	if res.StatusCode != 200 {
@@ -151,7 +151,6 @@ func (t *Api) GetHistoricalQuotes(symbol string, start time.Time, end time.Time,
 
 	// Return happy
 	return quotes, nil
-
 }
 
 /* End File */

@@ -10,8 +10,8 @@ import (
 	"testing"
 
 	"github.com/nbio/st"
-	"github.com/optionscafe/options-cafe-cli/helpers"
 
+	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/test"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )

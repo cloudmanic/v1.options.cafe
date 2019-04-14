@@ -88,6 +88,11 @@ func createTestDatabase(name string) {
 // TestingTearDown - used to delete database we created
 //
 func TestingTearDown(db *DB, dbName string) {
+	// special case for testing_db
+	if dbName == "testing_db" {
+		return
+	}
+
 	db.Exec("DROP DATABASE IF EXISTS " + dbName + ";")
 }
 
@@ -114,6 +119,7 @@ func TruncateAllTables(db *gorm.DB) {
 	db.Exec("TRUNCATE TABLE screener_items;")
 	db.Exec("TRUNCATE TABLE orders;")
 	db.Exec("TRUNCATE TABLE order_legs;")
+	db.Exec("TRUNCATE TABLE historical_quotes;")
 }
 
 //

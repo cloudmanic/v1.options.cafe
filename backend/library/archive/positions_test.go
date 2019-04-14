@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"github.com/cloudmanic/app.options.cafe/backend/library/test"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	env "github.com/jpfuentes2/go-env"
 	"github.com/nbio/st"
@@ -381,6 +382,81 @@ func TestStorePositions01(t *testing.T) {
 	// st.Expect(t, results[6].Proceeds, 0.00)
 	// st.Expect(t, results[6].Commission, 7.00)
 	// st.Expect(t, results[6].PercentGain, 40.45)
+}
+
+//
+// TestStorePositions02 - chadwick.mchugh@zoho.com Account - 4/13/19
+//
+func TestStorePositions02(t *testing.T) {
+	// Start the db connection.
+	db, dbName, _ := models.NewTestDB("testing_db")
+	defer models.TestingTearDown(db, dbName)
+
+	// Set vars
+	var userId uint = 56
+	var brokerId uint = 1
+
+	// Users
+	db.Create(&models.User{Id: userId, FirstName: "Rob", LastName: "Tester", Email: "spicer+robtester@options.cafe", Status: "Active"})
+
+	// Brokers
+	db.Create(&models.Broker{Id: brokerId, Name: "Tradier", UserId: userId})
+
+	// Put test data into database
+	brokerAccount := models.BrokerAccount{
+		Id:                35,
+		UserId:            userId,
+		BrokerId:          brokerId,
+		Name:              "Unit Test Account #1",
+		AccountNumber:     "test12345",
+		StockCommission:   5.00,
+		StockMin:          0.00,
+		OptionCommission:  0.35,
+		OptionSingleMin:   5.00,
+		OptionMultiLegMin: 7.00,
+		OptionBase:        0.00,
+	}
+
+	// Insert into database.
+	db.Create(&brokerAccount)
+
+	// Load testing data.
+	err := test.LoadSqlDump(db, "orders_1")
+	st.Expect(t, err, nil)
+
+	err = test.LoadSqlDump(db, "orders_legs_1")
+	st.Expect(t, err, nil)
+
+	err = test.LoadSqlDump(db, "symbols_1")
+	st.Expect(t, err, nil)
+
+	err = test.LoadSqlDump(db, "historical_quotes_1")
+	st.Expect(t, err, nil)
+
+	// Store orders
+	err = StorePositions(db, userId, brokerId)
+	st.Expect(t, err, nil)
+
+	// Get all the trade groups and verify
+	tgs := []models.TradeGroup{}
+	db.New().Order("id ASC").Find(&tgs)
+
+	// Verify Stored data (spot check)
+	st.Expect(t, len(tgs), 15)
+	st.Expect(t, tgs[5].Name, "Trade #6 - Long Put Butterfly Trade")
+	st.Expect(t, tgs[6].Type, "Long Call Butterfly")
+	st.Expect(t, tgs[9].OrderIds, "2298,2299")
+	st.Expect(t, tgs[9].Note, " Trade Expired.")
+	st.Expect(t, tgs[10].Note, " Trade Expired.")
+
+	// Get all the positions and verify
+	ps := []models.Position{}
+	db.New().Order("id ASC").Find(&ps)
+
+	// Verify Stored data (spot check)
+	st.Expect(t, len(ps), 38)
+	st.Expect(t, ps[6].CostBasis, 982.00)
+	st.Expect(t, ps[6].TradeGroupId, uint(2))
 }
 
 //

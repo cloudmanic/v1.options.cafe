@@ -19,11 +19,10 @@ import (
 )
 
 //
-// Here we loop through all the order data and create positions. We do this because
-// brokers do not offer an api of past positions.
+// StorePositions - Here we loop through all the order data and create positions.
+// We do this because brokers do not offer an api of past positions.
 //
 func StorePositions(db models.Datastore, userId uint, brokerId uint) error {
-
 	// Just easier to do this since we often comment stuff out for testing
 	var err error
 
@@ -192,6 +191,7 @@ func ReviewCurrentPositionsForExpiredOptions(db models.Datastore, userId uint, b
 				services.ErrorMsg(err, "market.GetUnderlayingQuoteByDate returned error UserId: "+strconv.Itoa(int(userId))+" Broker Id: "+strconv.Itoa(int(brokerId))+" OptionUnderlying: "+row.Symbol.OptionUnderlying+" Today: "+parts.Expire.Format("2006-01-02"))
 
 				// This is hacky but if we can't get a quote we need to do something.
+				// Common issue is Tradier does not give historical quotes on futures.
 				stockQuote = 0.00
 
 				// TODO(spicer): Notify user or something. (we put a note in the tradegroup below)
@@ -266,7 +266,7 @@ func ReviewCurrentPositionsForExpiredOptions(db models.Datastore, userId uint, b
 
 				// Poor Tradier note
 				if stockQuote == 0 {
-					tradeGroup.Note = tradeGroup.Note + "Due to Tradier's poor historical data it is expected the trade data here is not correct. Please contact help@options.cafe for support."
+					tradeGroup.Note = tradeGroup.Note + " Due to Tradier's poor historical data it is expected the trade data here is not correct. Please contact help@options.cafe to update."
 				}
 
 				db.UpdateTradeGroup(&tradeGroup)

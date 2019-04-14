@@ -33,10 +33,9 @@ type Quote struct {
 }
 
 //
-// Get a quote.
+// GetQuotes - Get a quote.
 //
 func (t *Api) GetQuotes(symbols []string) ([]types.Quote, error) {
-
 	// No symbols, no quotes.
 	if len(symbols) == 0 {
 		return nil, nil
@@ -47,12 +46,12 @@ func (t *Api) GetQuotes(symbols []string) ([]types.Quote, error) {
 	// Setup http client
 	client := &http.Client{}
 
-  // Get url to api
-  apiUrl := apiBaseUrl
+	// Get url to api
+	apiUrl := apiBaseUrl
 
-  if t.Sandbox {
-    apiUrl = sandBaseUrl
-  }
+	if t.Sandbox {
+		apiUrl = sandBaseUrl
+	}
 
 	// Setup api request
 	req, _ := http.NewRequest("GET", apiUrl+"/markets/quotes", nil)
