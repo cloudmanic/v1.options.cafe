@@ -24,11 +24,11 @@ services:
 
     image: app.options.cafe/golang:1.8.1-alpine
 
-    # logging:
-    #   driver: "syslog"
-    #   options:
-    #     syslog-address: tcp+tls://logs6.papertrailapp.com:49242
-    #     tag: app.options.cafe
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: tcp+tls://logs6.papertrailapp.com:49242
+        tag: app.options.cafe
 
     volumes:
       - ../cache:/cache:rw
@@ -65,11 +65,11 @@ services:
 
     command: ./app --cmd=worker
 
-    # logging:
-    #   driver: "syslog"
-    #   options:
-    #     syslog-address: tcp+tls://logs6.papertrailapp.com:49242
-    #     tag: worker1.options.cafe
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: tcp+tls://logs6.papertrailapp.com:49242
+        tag: worker1.options.cafe
 
     restart: always
 
@@ -97,11 +97,11 @@ services:
 
     command: ./app --cmd=broker-feed-poller
 
-    # logging:
-    #   driver: "syslog"
-    #   options:
-    #     syslog-address: tcp+tls://logs6.papertrailapp.com:49242
-    #     tag: broker-feed-poller.options.cafe
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: tcp+tls://logs6.papertrailapp.com:49242
+        tag: broker-feed-poller.options.cafe
 
     restart: always
 
@@ -132,11 +132,11 @@ services:
 
     command: ./app --cmd=cron
 
-    # logging:
-    #   driver: "syslog"
-    #   options:
-    #     syslog-address: tcp+tls://logs6.papertrailapp.com:49242
-    #     tag: cron.options.cafe
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: tcp+tls://logs6.papertrailapp.com:49242
+        tag: cron.options.cafe
 
     volumes:
       - ../cache:/cache:rw
@@ -163,11 +163,11 @@ services:
 
     restart: always
 
-    # logging:
-    #   driver: "syslog"
-    #   options:
-    #     syslog-address: tcp+tls://logs6.papertrailapp.com:49242
-    #     tag: redis.options.cafe
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: tcp+tls://logs6.papertrailapp.com:49242
+        tag: redis.options.cafe
 
     networks:
       - shared
