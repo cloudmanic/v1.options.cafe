@@ -95,7 +95,7 @@ func (t *Controller) GetUsers(c *gin.Context) {
 
 	// List the users
 	err := t.DB.Query(&users, models.QueryParam{
-		Order: "id",
+		Order: "last_activity",
 		Sort:  "desc",
 	})
 

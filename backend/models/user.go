@@ -37,7 +37,7 @@ type User struct {
 	Zip                string    `sql:"not null" json:"zip"`
 	Country            string    `sql:"not null" json:"country"`
 	Admin              string    `sql:"not null;type:ENUM('Yes', 'No');default:'No'" json:"-"`
-	Status             string    `sql:"not null;type:ENUM('Active', 'Disable', 'Delinquent', 'Expired', 'Trial');default:'Trial'" json:"-"`
+	Status             string    `sql:"not null;type:ENUM('Active', 'Disable', 'Delinquent', 'Expired', 'Trial');default:'Trial'" json:"status"`
 	Session            Session   `json:"-"`
 	Brokers            []Broker  `json:"brokers"`
 	StripeCustomer     string    `sql:"not null" json:"-"`

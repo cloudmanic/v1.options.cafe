@@ -6,8 +6,9 @@
         <th>First</th>
         <th>Last</th>
         <th>Email</th>
-        <th>Last Activity</th> 
-        <th>&nbsp;</th>               
+        <th>Last Activity</th>
+        <th>Status</th>
+        <th>&nbsp;</th>
       </tr>
     </thead>
 
@@ -17,9 +18,10 @@
         <td>{{ row.last_name }}</td>
         <td>{{ row.email }}</td>
         <td>{{ row.last_activity | date:'shortDate' }}</td>
+        <td>{{ row.status }}</td>
         <td>
           <a (click)="deleteUser(row)">Delete</a> |
-          <a (click)="loginAsUser(row)">Login</a> 
+          <a (click)="loginAsUser(row)">Login</a>
         </td>
       </tr>
     </tbody>
