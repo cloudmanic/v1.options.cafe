@@ -2,7 +2,6 @@ package tradier
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -73,14 +72,9 @@ func (t *Api) GetQuotes(symbols []string) ([]types.Quote, error) {
 	// Close Body
 	defer res.Body.Close()
 
-	//fmt.Println(res.Header.Get("X-Ratelimit-Allowed"))
-	//fmt.Println(res.Header.Get("X-Ratelimit-Used"))
-	//fmt.Println(res.Header.Get("X-Ratelimit-Available"))
-	//fmt.Println(res.Header.Get("X-Ratelimit-Expiry"))
-
 	// Make sure the api responded with a 200
 	if res.StatusCode != 200 {
-		return nil, errors.New(fmt.Sprint("GetQuotes API did not return 200, It returned ", res.StatusCode))
+		return nil, fmt.Errorf("GetQuotes API did not return 200, Code: %d, Body: %s, Limit: %s, Used: %s, Available: %s, Expiry: %s, Symbols: %s", res.StatusCode, res.Body, res.Header.Get("X-Ratelimit-Allowed"), res.Header.Get("X-Ratelimit-Used"), res.Header.Get("X-Ratelimit-Available"), res.Header.Get("X-Ratelimit-Expiry"), strings.Join(symbols, ","))
 	}
 
 	// Read the data we got.

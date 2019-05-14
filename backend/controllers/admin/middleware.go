@@ -21,7 +21,7 @@ import (
 // IPs allowed to access these admin routes
 var allowedIps = map[string]bool{
 	"127.0.0.1":      true,
-	"71.238.46.175":  true, // Spicer home
+	"73.157.196.45":  true, // Spicer home
 	"208.100.153.45": true, // Bend Condo
 }
 

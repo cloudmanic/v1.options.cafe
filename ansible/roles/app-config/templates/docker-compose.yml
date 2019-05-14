@@ -44,6 +44,10 @@ services:
     env_file:
       - .env
 
+    depends_on:
+      - nsqd
+      - redis
+
     networks:
       - shared
 
@@ -75,6 +79,10 @@ services:
 
     env_file:
       - .env
+
+    depends_on:
+      - nsqd
+      - redis
 
     networks:
       - shared
@@ -110,6 +118,7 @@ services:
 
     depends_on:
       - nsqd
+      - redis
 
     networks:
       - shared
@@ -146,6 +155,10 @@ services:
     env_file:
       - .env
 
+    depends_on:
+      - nsqd
+      - redis
+
     networks:
       - shared
 
@@ -159,7 +172,7 @@ services:
     ports:
       - "127.0.0.1:6379:6379"
 
-    image: redis:4.0
+    image: redis:5.0.4
 
     restart: always
 

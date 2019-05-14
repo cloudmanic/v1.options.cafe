@@ -65,7 +65,6 @@ func (t *Controller) AuthMiddleware() gin.HandlerFunc {
 		session, err := t.DB.GetByAccessToken(access_token)
 
 		if err != nil {
-			services.InfoMsg("Access Token Not Found - Unable to Authenticate via HTTP (#002) - " + access_token)
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization Failed (#002)"})
 			c.AbortWithStatus(401)
 			return
