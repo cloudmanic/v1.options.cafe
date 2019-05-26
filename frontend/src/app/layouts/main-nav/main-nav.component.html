@@ -1,34 +1,34 @@
 <header class="header">
   <nav class="nav">
-  	<ul>
-  		<li [ngClass]="{ 'current': (section == 'trading') }">
-  			<a routerLink="/">Trading</a>
-  		</li><!-- /.current -->
+    <ul>
+      <li [ngClass]="{ 'current': (section == 'trading') }">
+        <a routerLink="/">Trading</a>
+      </li><!-- /.current -->
 
       <li [ngClass]="{ 'current': (section == 'reports') }">
         <a routerLink="/reports/account-summary">Reports</a>
       </li>
 
-  		<li [ngClass]="{ 'current': (section == 'backtest') }">
-  			<a routerLink="/backtest">Backtest</a>
-  		</li>
+      <li [ngClass]="{ 'current': (section == 'backtest') }">
+        <a routerLink="/backtest">Backtest</a>
+      </li>
 
-  	</ul>
+    </ul>
   </nav>
 
   <nav class="nav-utilities">
-  	<ul>
+    <ul>
       <li>
         <a (click)="logBackIntoCentcom()" *ngIf="showCentcom">Centcom</a>
       </li>
 
-  		<li>
-  			<a (click)="onHelpClick()">Help</a>
-  		</li>
+      <li>
+        <a href="https://options.cafe/help" target="_blank">Help</a>
+      </li>
 
-  		<li>
-  			<a routerLink="/settings/account">Settings</a>
-  		</li>
-  	</ul>
+      <li>
+        <a routerLink="/settings/account">Settings</a>
+      </li>
+    </ul>
   </nav>
 </header>

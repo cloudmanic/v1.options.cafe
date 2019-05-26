@@ -282,7 +282,7 @@ func (t *DB) GetUserByEmail(email string) (User, error) {
 // Get a user by stripe customer.
 //
 func (t *DB) GetUserByStripeCustomer(customerId string) (User, error) {
-
+	// User....
 	var u User
 
 	if t.Where("stripe_customer = ?", customerId).First(&u).RecordNotFound() {
@@ -291,14 +291,13 @@ func (t *DB) GetUserByStripeCustomer(customerId string) (User, error) {
 
 	// Return the user.
 	return u, nil
-
 }
 
 //
 // Return an array of all users.
 //
 func (t *DB) GetAllUsers() []User {
-
+	// Users.....
 	var users []User
 
 	t.Find(&users)
@@ -309,7 +308,6 @@ func (t *DB) GetAllUsers() []User {
 	}
 
 	return users
-
 }
 
 //

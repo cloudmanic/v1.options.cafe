@@ -1,39 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <base href="/" />
-	<meta charset="utf-8" />
+  <meta charset="utf-8" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />  
-	<title>Options Cafe Trading</title>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Options Cafe Trading</title>
 
-	<link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
 
-	<link rel="stylesheet" href="/vendor/font-awesome.min.css" />
-	<link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">
+  <link rel="stylesheet" href="/vendor/font-awesome.min.css" />
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">
 
-	<script src="/vendor/jquery-1.12.4.min.js"></script>
-	<script src="/vendor/jquery-scrollLock.min.js"></script>
-	<script src="/vendor/client.min.js"></script>
-	<script src="/js/functions.js"></script>	
+  <script src="/vendor/jquery-1.12.4.min.js"></script>
+  <script src="/vendor/jquery-scrollLock.min.js"></script>
+  <script src="/vendor/client.min.js"></script>
+  <script src="/js/functions.js"></script>
 
   <link rel="manifest" href="/manifest.json" />
   <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js"></script>
 </head>
 
 <body>
-  <app-root></app-root> 
+  <app-root></app-root>
 
-  <script type="text/javascript" src="https://js.stripe.com/v2/"></script> 
+  <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-  
-  <script id="grv-widget">
-    /*<![CDATA[*/
-    window.groove = window.groove || {}; groove.widget = function(){ groove._widgetQueue.push(Array.prototype.slice.call(arguments)); }; groove._widgetQueue = [];
-    groove.widget('setWidgetId', '5ca8758a-6a43-b8ab-c5a4-d11ee5788cf1');
-    !function(g,r,v){var a,n,c=r.createElement("iframe");(c.frameElement||c).style.cssText="width: 0; height: 0; border: 0",c.title="",c.role="presentation",c.src="javascript:false",r.body.appendChild(c);try{a=c.contentWindow.document}catch(i){n=r.domain;var b=["javascript:document.write('<he","ad><scri","pt>document.domain=","\"",n,"\";</scri","pt></he","ad><bo","dy></bo","dy>')"];c.src=b.join(""),a=c.contentWindow.document}var d="https:"==r.location.protocol?"https://":"http://",s="http://groove-widget-production.s3.amazonaws.com".replace("http://",d);c.className="grv-widget-tag",a.open()._l=function(){n&&(this.domain=n);var t=this.createElement("script");t.type="text/javascript",t.charset="utf-8",t.async=!0,t.src=s+"/loader.js",this.body.appendChild(t)};var p=["<bo",'dy onload="document._l();">'];a.write(p.join("")),a.close()}(window,document)
-    /*]]>*/
-  </script>
-  
 </body>
+
 </html>
