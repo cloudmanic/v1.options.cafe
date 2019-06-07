@@ -110,4 +110,18 @@ func (t *Controller) AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
+//
+// ServeHTTP implements http.Handler.
+//
+func MiddlewareHSTS(next http.Handler) http.Handler {
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		w.Header().Set("Strict-Transport-Security", "max-age=86400; includeSubDomains")
+
+		// On to next request in the Middleware chain.
+		next.ServeHTTP(w, r)
+	})
+}
+
 /* End File */

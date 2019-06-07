@@ -7,6 +7,7 @@
 package controllers
 
 import (
+	"crypto/tls"
 	"log"
 	"net/http"
 	"os"
@@ -85,8 +86,31 @@ func (t *Controller) StartWebServer() {
 			HostPolicy: autocert.HostWhitelist("app.options.cafe"),
 		}
 
-		// Start a secure server:
-		StartSecureServer(router, m.GetCertificate)
+		// Setup TLS config
+		t := m.TLSConfig()
+		t.ClientSessionCache = tls.NewLRUClientSessionCache(0)
+		t.MinVersion = tls.VersionTLS11
+		t.CurvePreferences = []tls.CurveID{
+			tls.X25519,
+			tls.CurveP521,
+			tls.CurveP384,
+			tls.CurveP256,
+		}
+
+		// Setup server
+		s := &http.Server{
+			Addr:         ":7043",
+			ReadTimeout:  120 * time.Second,
+			WriteTimeout: 120 * time.Second,
+			IdleTimeout:  120 * time.Second,
+			TLSConfig:    t,
+			Handler:      router,
+		}
+
+		// Start http and https
+		log.Printf("Starting secure server")
+		go http.ListenAndServe(":7080", m.HTTPHandler(nil))
+		log.Fatal(s.ListenAndServeTLS("", ""))
 	}
 }
 
