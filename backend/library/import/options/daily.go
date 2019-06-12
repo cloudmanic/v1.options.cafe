@@ -26,6 +26,8 @@ import (
 	dropy "github.com/tj/go-dropy"
 )
 
+const ftpURL = "L2.deltaneutral.net:21"
+
 //
 // Do End of Day Options Import. We run this every day from "Cron". It will
 // connect to the FTP site at DeltaNeutral (our EOD options data provider) and
@@ -329,7 +331,7 @@ func StoreOneDaySymbol(symbol string, date time.Time, data [][]string) (string, 
 //
 func DownloadOptionsDailyDataByName(name string) (string, error) {
 
-	client, err := ftp.Dial("eodftp.deltaneutral.com:21")
+	client, err := ftp.Dial(ftpURL)
 
 	defer client.Quit()
 
@@ -341,7 +343,7 @@ func DownloadOptionsDailyDataByName(name string) (string, error) {
 		return "", err
 	}
 
-	reader, err := client.Retr("/dbupdate/" + name)
+	reader, err := client.Retr("/classic/" + name)
 
 	if err != nil {
 		return "", err
@@ -367,7 +369,7 @@ func DownloadOptionsDailyDataByName(name string) (string, error) {
 //
 func GetOptionsDailyData() ([]*ftp.Entry, error) {
 
-	client, err := ftp.Dial("eodftp.deltaneutral.com:21")
+	client, err := ftp.Dial(ftpURL)
 
 	defer client.Quit()
 
@@ -379,7 +381,7 @@ func GetOptionsDailyData() ([]*ftp.Entry, error) {
 		return nil, err
 	}
 
-	entries, _ := client.List("/dbupdate/options_*.zip")
+	entries, _ := client.List("/classic/options_*.zip")
 
 	return entries, nil
 }
