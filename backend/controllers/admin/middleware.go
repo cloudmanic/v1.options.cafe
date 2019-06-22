@@ -21,7 +21,8 @@ import (
 // IPs allowed to access these admin routes
 var allowedIps = map[string]bool{
 	"127.0.0.1":      true,
-	"73.157.196.45":  true, // Spicer home
+	"73.157.194.182": true, // Spicer home
+	"35.199.150.98":  true, // vpn.cloudmanic.com
 	"208.100.153.45": true, // Bend Condo
 }
 
