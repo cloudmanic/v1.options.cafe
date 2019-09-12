@@ -33,11 +33,7 @@ export class AppComponent {
 					let email = localStorage.getItem('user_email');
 
 					if (email.length) {
-						//_paq.push(['setUserId', email]);
-
-						// We do this instead of "setUserId" since it creates new logs for the user if they are
-						// not logged in and we want to track public website actions too. 
-						_paq.push(['setCustomVariable', 1, "Email", email, "visit"]);
+						_paq.push(['setUserId', email]);
 					}
 
 					_paq.push(['setCustomUrl', event.urlAfterRedirects]);
