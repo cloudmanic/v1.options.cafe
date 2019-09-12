@@ -90,8 +90,9 @@ export class UsersComponent implements OnInit {
 			localStorage.setItem('active_account_centcom', localStorage.getItem('active_account'));
 			localStorage.setItem('active_watchlist_centcom', localStorage.getItem('active_watchlist'));
 
-			// Remove local storage
+			// Remove local storage			
 			localStorage.removeItem('user_id');
+			localStorage.removeItem('user_email');
 			localStorage.removeItem('redirect');
 			localStorage.removeItem('broker_new_id');
 			localStorage.removeItem('access_token');
