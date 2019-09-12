@@ -14,250 +14,243 @@ import { SummaryYearly } from '../../models/reports';
 import { StateService } from '../../providers/state/state.service';
 import { ReportsService } from '../../providers/http/reports.service';
 import { DropdownAction } from '../../shared/dropdown-select/dropdown-select.component';
+import { environment } from 'environments/environment';
+import { Title } from '@angular/platform-browser';
+
+const pageTitle: string = environment.title_prefix + "Reports Account Summary";
 
 @Component({
-  selector: 'app-account-summary',
-  templateUrl: './account-summary.component.html',
-  styleUrls: []
+	selector: 'app-account-summary',
+	templateUrl: './account-summary.component.html',
+	styleUrls: []
 })
 
-export class AccountSummaryComponent implements OnInit 
-{
-  tradeGroupYears: number[];
-  summaryByYear: SummaryYearly;
-  summaryByYearSelected: number;
-  summaryActions: DropdownAction[] = null;
+export class AccountSummaryComponent implements OnInit {
+	tradeGroupYears: number[];
+	summaryByYear: SummaryYearly;
+	summaryByYearSelected: number;
+	summaryActions: DropdownAction[] = null;
 
-  private destory: Subject<boolean> = new Subject<boolean>(); 
+	private destory: Subject<boolean> = new Subject<boolean>();
 
-  // High charts config
-  showFirstRun: boolean = false;
+	// High charts config
+	showFirstRun: boolean = false;
 
-  Highcharts = Highcharts;
+	Highcharts = Highcharts;
 
-  groupBy: string = "month";
+	groupBy: string = "month";
 
-  startDate: Date = moment(moment().year() + "-01-01").toDate();
-  
-  endDate: Date = moment().toDate();  
+	startDate: Date = moment(moment().year() + "-01-01").toDate();
 
-  chartType: string = "column";
+	endDate: Date = moment().toDate();
 
-  chartConstructor = 'chart';
+	chartType: string = "column";
 
-  chartUpdateFlag: boolean = false;
+	chartConstructor = 'chart';
 
-  chartOptions = {
+	chartUpdateFlag: boolean = false;
 
-    chart: { type: 'column' },
+	chartOptions = {
 
-    title: { text: '' },
-    credits: { enabled: false },
+		chart: { type: 'column' },
 
-    rangeSelector: { enabled: false },
+		title: { text: '' },
+		credits: { enabled: false },
 
-    scrollbar: { enabled: false },
+		rangeSelector: { enabled: false },
 
-    navigator: { enabled: false },
+		scrollbar: { enabled: false },
 
-    legend: { enabled: false },
+		navigator: { enabled: false },
 
-    time: {
-      getTimezoneOffset: function(timestamp) {
-        // America/Los_Angeles
-        // America/New_York
-        let timezoneOffset = -moment.tz(timestamp, 'America/Los_Angeles').utcOffset();
-        return timezoneOffset;
-      }
-    },
+		legend: { enabled: false },
 
-    tooltip: {
-      formatter: function() {
-        return "<b>" + this.points[0].series.name + ": </b><br />" + Highcharts.dateFormat('%b \'%y', this.points[0].x) + " : $" + Highcharts.numberFormat(this.points[0].y, 0, '.', ',');
-      },
+		time: {
+			getTimezoneOffset: function(timestamp) {
+				// America/Los_Angeles
+				// America/New_York
+				let timezoneOffset = -moment.tz(timestamp, 'America/Los_Angeles').utcOffset();
+				return timezoneOffset;
+			}
+		},
 
-      shared: true
-    },    
+		tooltip: {
+			formatter: function() {
+				return "<b>" + this.points[0].series.name + ": </b><br />" + Highcharts.dateFormat('%b \'%y', this.points[0].x) + " : $" + Highcharts.numberFormat(this.points[0].y, 0, '.', ',');
+			},
 
-    yAxis: {
-      title: {
-        text: 'Profit & Loss'
-      },
+			shared: true
+		},
 
-      labels: {
-        formatter: function() {
-          return '$' + Highcharts.numberFormat(this.axis.defaultLabelFormatter.call(this), 0, '.', ',');
-        }
-      }
-    },    
+		yAxis: {
+			title: {
+				text: 'Profit & Loss'
+			},
 
-    xAxis: {
-      type: 'datetime',
+			labels: {
+				formatter: function() {
+					return '$' + Highcharts.numberFormat(this.axis.defaultLabelFormatter.call(this), 0, '.', ',');
+				}
+			}
+		},
 
-      dateTimeLabelFormats: {
-        month: '%b \'%y',
-        year: '%Y',
-        day: '%e. %b'
-      },
+		xAxis: {
+			type: 'datetime',
 
-      title: {
-        text: ''
-      }
-    },
+			dateTimeLabelFormats: {
+				month: '%b \'%y',
+				year: '%Y',
+				day: '%e. %b'
+			},
 
-    series: [{
-      name: 'Profit & Loss',
-      data: []
-    }]
-  }; 
+			title: {
+				text: ''
+			}
+		},
+
+		series: [{
+			name: 'Profit & Loss',
+			data: []
+		}]
+	};
 
 
-  //
-  // Construct.
-  //
-  constructor(private stateService: StateService, private reportsService: ReportsService) 
-  {
-    // Get data from site state.
-    this.summaryByYear = this.stateService.GetReportsSummaryByYear();
-    this.summaryByYearSelected = this.stateService.GetReportsSummaryByYearSelectedYear();
-  }
+	//
+	// Construct.
+	//
+	constructor(private stateService: StateService, private reportsService: ReportsService, private titleService: Title) {
+		// Get data from site state.
+		this.summaryByYear = this.stateService.GetReportsSummaryByYear();
+		this.summaryByYearSelected = this.stateService.GetReportsSummaryByYearSelectedYear();
+	}
 
-  //
-  // NG Init
-  //
-  ngOnInit() 
-  {
-    // Subscribe to changes in the selected broker.
-    this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
-      this.summaryByYearSelected = new Date().getFullYear();
-      this.stateService.SetReportsSummaryByYearSelectedYear(this.summaryByYearSelected);
-      this.buildChart();
-      this.getAccountSummary();
-      this.getTradeGroupYears();
-    });
+	//
+	// NG Init
+	//
+	ngOnInit() {
+		// Set page title.
+		this.titleService.setTitle(pageTitle);
 
-    // Get data on page load.
-    this.buildChart();
-    this.getAccountSummary();
-    this.getTradeGroupYears();
-  }
+		// Subscribe to changes in the selected broker.
+		this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
+			this.summaryByYearSelected = new Date().getFullYear();
+			this.stateService.SetReportsSummaryByYearSelectedYear(this.summaryByYearSelected);
+			this.buildChart();
+			this.getAccountSummary();
+			this.getTradeGroupYears();
+		});
 
-  //
-  // OnDestroy
-  //
-  ngOnDestroy() 
-  {
-    this.destory.next();
-    this.destory.complete();
-  } 
+		// Get data on page load.
+		this.buildChart();
+		this.getAccountSummary();
+		this.getTradeGroupYears();
+	}
 
-  //
-  // Set chart type.
-  //
-  setChartType(type: string)
-  {
-    this.chartType = type;
-    this.buildChart();
-  }
+	//
+	// OnDestroy
+	//
+	ngOnDestroy() {
+		this.destory.next();
+		this.destory.complete();
+	}
 
-  //
-  // Get chart data
-  //
-  buildChart()
-  {
-    this.startDate = moment(this.summaryByYearSelected + "-01-01").toDate();
-    this.endDate = moment(this.summaryByYearSelected + "-12-31").toDate(); 
+	//
+	// Set chart type.
+	//
+	setChartType(type: string) {
+		this.chartType = type;
+		this.buildChart();
+	}
 
-    // Ajax call to get data
-    this.reportsService.getProfitLoss(Number(this.stateService.GetStoredActiveAccountId()), this.startDate, this.endDate, this.groupBy, "asc", false).subscribe((res) => {
+	//
+	// Get chart data
+	//
+	buildChart() {
+		this.startDate = moment(this.summaryByYearSelected + "-01-01").toDate();
+		this.endDate = moment(this.summaryByYearSelected + "-12-31").toDate();
 
-      // Show first run
-      if(res.length > 0) 
-      {
-        this.showFirstRun = false;
-      } else 
-      {
-        this.showFirstRun = true;
-      }
+		// Ajax call to get data
+		this.reportsService.getProfitLoss(Number(this.stateService.GetStoredActiveAccountId()), this.startDate, this.endDate, this.groupBy, "asc", false).subscribe((res) => {
 
-      var data = [];
+			// Show first run
+			if (res.length > 0) {
+				this.showFirstRun = false;
+			} else {
+				this.showFirstRun = true;
+			}
 
-      for (var i = 0; i < res.length; i++) 
-      {
-        let color = "#5cb85c";
+			var data = [];
 
-        if (res[i].Profit < 0) 
-        {
-          color = "#ce4260";
-        }
+			for (var i = 0; i < res.length; i++) {
+				let color = "#5cb85c";
 
-        data.push({ x: res[i].Date, y: res[i].Profit, color: color });
-      }
+				if (res[i].Profit < 0) {
+					color = "#ce4260";
+				}
 
-      // Rebuilt the chart
-      this.chartOptions.chart.type = this.chartType;
-      this.chartOptions.series[0].data = data;
-      this.chartOptions.series[0].name = "Profit & Loss";
-      this.chartUpdateFlag = true;
+				data.push({ x: res[i].Date, y: res[i].Profit, color: color });
+			}
 
-    });
-  }  
+			// Rebuilt the chart
+			this.chartOptions.chart.type = this.chartType;
+			this.chartOptions.series[0].data = data;
+			this.chartOptions.series[0].name = "Profit & Loss";
+			this.chartUpdateFlag = true;
 
-  //
-  // Setup Summary actions.
-  //
-  setupSummaryActions() 
-  {
-    let das = []
-    this.summaryActions = []
+		});
+	}
 
-    // Loop through add dates to the drop down
-    for(let i = 0; i < this.tradeGroupYears.length; i++)
-    {
-      // First action
-      let da = new DropdownAction();
-      da.title = 'Year ' + this.tradeGroupYears[i];
+	//
+	// Setup Summary actions.
+	//
+	setupSummaryActions() {
+		let das = []
+		this.summaryActions = []
 
-      // Click on year
-      da.click = (row: number[]) => {
-        this.summaryByYearSelected = this.tradeGroupYears[i];
-        this.getAccountSummary();
-        this.stateService.SetReportsSummaryByYearSelectedYear(this.summaryByYearSelected);
+		// Loop through add dates to the drop down
+		for (let i = 0; i < this.tradeGroupYears.length; i++) {
+			// First action
+			let da = new DropdownAction();
+			da.title = 'Year ' + this.tradeGroupYears[i];
 
-        // Hack to get it to close;
-        this.buildChart();
-        this.setupSummaryActions();
-      };
+			// Click on year
+			da.click = (row: number[]) => {
+				this.summaryByYearSelected = this.tradeGroupYears[i];
+				this.getAccountSummary();
+				this.stateService.SetReportsSummaryByYearSelectedYear(this.summaryByYearSelected);
 
-      das.push(da);
-    }
+				// Hack to get it to close;
+				this.buildChart();
+				this.setupSummaryActions();
+			};
 
-    this.summaryActions = das;
-  }  
+			das.push(da);
+		}
 
-  //
-  // Get Data = Trade Group Years
-  //
-  getTradeGroupYears()
-  {
-    // Make api call to get years
-    this.reportsService.getTradeGroupYears(Number(this.stateService.GetStoredActiveAccountId())).subscribe((res) => {
-      this.tradeGroupYears = res;
-      this.setupSummaryActions();
-    });    
-  }
+		this.summaryActions = das;
+	}
 
-  //
-  // Get Data - Account Summary
-  //
-  getAccountSummary() 
-  {
-    // Make api call to get account summary
-    this.reportsService.getSummaryByYear(Number(this.stateService.GetStoredActiveAccountId()), this.summaryByYearSelected).subscribe((res) => {
-      this.summaryByYear = res;
-      this.stateService.SetReportsSummaryByYear(this.summaryByYear);
-    });
-  }
+	//
+	// Get Data = Trade Group Years
+	//
+	getTradeGroupYears() {
+		// Make api call to get years
+		this.reportsService.getTradeGroupYears(Number(this.stateService.GetStoredActiveAccountId())).subscribe((res) => {
+			this.tradeGroupYears = res;
+			this.setupSummaryActions();
+		});
+	}
+
+	//
+	// Get Data - Account Summary
+	//
+	getAccountSummary() {
+		// Make api call to get account summary
+		this.reportsService.getSummaryByYear(Number(this.stateService.GetStoredActiveAccountId()), this.summaryByYearSelected).subscribe((res) => {
+			this.summaryByYear = res;
+			this.stateService.SetReportsSummaryByYear(this.summaryByYear);
+		});
+	}
 
 }
 

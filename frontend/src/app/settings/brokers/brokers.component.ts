@@ -9,264 +9,247 @@ import { Broker } from '../../models/broker';
 import { BrokerAccount } from '../../models/broker-account';
 import { BrokerService } from '../../providers/http/broker.service';
 import { environment } from '../../../environments/environment';
+import { Title } from '@angular/platform-browser';
+
+const pageTitle: string = environment.title_prefix + "Settings Brokers";
 
 @Component({
-  selector: 'app-brokers',
-  templateUrl: './brokers.component.html',
-  styleUrls: []
+	selector: 'app-brokers',
+	templateUrl: './brokers.component.html',
+	styleUrls: []
 })
 
-export class BrokersComponent implements OnInit 
-{
-  brokers: Broker[] = []
-  
-  // Add Broker Stuff
-  showAddBroker: boolean = false;
-  addBrokerType: string = "Tradier";
-  addBrokerError: string = "";
-  addBrokerDisplayName: string = "";
+export class BrokersComponent implements OnInit {
+	brokers: Broker[] = []
 
-  // Edit Broker Stuff
-  editBrokerError: string = "";
-  showEditBroker: boolean = false;  
-  editBroker: BrokerEdit = new BrokerEdit();
+	// Add Broker Stuff
+	showAddBroker: boolean = false;
+	addBrokerType: string = "Tradier";
+	addBrokerError: string = "";
+	addBrokerDisplayName: string = "";
 
-  //
-  // Construct.
-  //
-  constructor(private brokerService: BrokerService) 
-  { 
-    // TODO: Do some sort of notice with this.`
-    localStorage.removeItem('broker_new_id');
+	// Edit Broker Stuff
+	editBrokerError: string = "";
+	showEditBroker: boolean = false;
+	editBroker: BrokerEdit = new BrokerEdit();
 
-    // Load data.
-    this.getBrokers();
-  }
+	//
+	// Construct.
+	//
+	constructor(private brokerService: BrokerService, private titleService: Title) {
+		// TODO: Do some sort of notice with this.`
+		localStorage.removeItem('broker_new_id');
 
-  //
-  // NgInit
-  //
-  ngOnInit() {}
+		// Load data.
+		this.getBrokers();
+	}
 
-  //
-  // Edit a broker.
-  //
-  showEditBrokerToggle(broker: Broker)
-  {
-    this.editBroker.Id = broker.Id;
-    this.editBroker.Name = broker.Name;
-    this.editBroker.DisplayName = broker.DisplayName;
-    this.editBroker.StockCommission = Number(broker.SettingsActiveBrokerAccount.StockCommission.toFixed(2));
-    this.editBroker.OptionBase = Number(broker.SettingsActiveBrokerAccount.OptionBase.toFixed(2));
-    this.editBroker.OptionCommission = Number(broker.SettingsActiveBrokerAccount.OptionCommission.toFixed(2));
-    this.editBroker.StockMin = Number(broker.SettingsActiveBrokerAccount.StockMin.toFixed(2));
-    this.editBroker.OptionMultiLegMin = Number(broker.SettingsActiveBrokerAccount.OptionMultiLegMin.toFixed(2));
-    this.editBroker.OptionSingleMin = Number(broker.SettingsActiveBrokerAccount.OptionSingleMin.toFixed(2));
-    this.editBroker.Accounts = broker.BrokerAccounts;
-    this.showEditBroker = true;
-  }
+	//
+	// NgInit
+	//
+	ngOnInit() {
+		// Set page title.
+		this.titleService.setTitle(pageTitle);
+	}
 
-  //
-  // Close edit broker
-  //
-  closeShowEditBroker() {
-    this.showEditBroker = false;
-  }  
+	//
+	// Edit a broker.
+	//
+	showEditBrokerToggle(broker: Broker) {
+		this.editBroker.Id = broker.Id;
+		this.editBroker.Name = broker.Name;
+		this.editBroker.DisplayName = broker.DisplayName;
+		this.editBroker.StockCommission = Number(broker.SettingsActiveBrokerAccount.StockCommission.toFixed(2));
+		this.editBroker.OptionBase = Number(broker.SettingsActiveBrokerAccount.OptionBase.toFixed(2));
+		this.editBroker.OptionCommission = Number(broker.SettingsActiveBrokerAccount.OptionCommission.toFixed(2));
+		this.editBroker.StockMin = Number(broker.SettingsActiveBrokerAccount.StockMin.toFixed(2));
+		this.editBroker.OptionMultiLegMin = Number(broker.SettingsActiveBrokerAccount.OptionMultiLegMin.toFixed(2));
+		this.editBroker.OptionSingleMin = Number(broker.SettingsActiveBrokerAccount.OptionSingleMin.toFixed(2));
+		this.editBroker.Accounts = broker.BrokerAccounts;
+		this.showEditBroker = true;
+	}
 
-  //
-  // Save broker
-  //
-  saveEditBroker() {
+	//
+	// Close edit broker
+	//
+	closeShowEditBroker() {
+		this.showEditBroker = false;
+	}
 
-    this.editBrokerError = "";
+	//
+	// Save broker
+	//
+	saveEditBroker() {
 
-    // Validate display name.
-    if (this.editBroker.DisplayName.length <= 0) 
-    {
-      this.editBrokerError = "A broker display name is required.";
-      return;
-    } 
+		this.editBrokerError = "";
 
-    // Validate commission fields.
-    let fields = ['StockCommission', 'OptionBase', 'OptionCommission', 'StockMin', 'OptionMultiLegMin', 'OptionSingleMin'];
+		// Validate display name.
+		if (this.editBroker.DisplayName.length <= 0) {
+			this.editBrokerError = "A broker display name is required.";
+			return;
+		}
 
-    for(let i = 0; i < fields.length; i++)
-    {
-      if(this.editBroker[fields[i]] == null) 
-      {
-        this.editBrokerError = "All Commission fields are required.";
-        return;
-      }     
-    } 
+		// Validate commission fields.
+		let fields = ['StockCommission', 'OptionBase', 'OptionCommission', 'StockMin', 'OptionMultiLegMin', 'OptionSingleMin'];
 
-    // Ajax call to edit broker.
-    this.brokerService.update(this.editBroker.Id, this.editBroker.DisplayName).subscribe((res) => { 
-      this.getBrokers();
-    }); 
+		for (let i = 0; i < fields.length; i++) {
+			if (this.editBroker[fields[i]] == null) {
+				this.editBrokerError = "All Commission fields are required.";
+				return;
+			}
+		}
 
-    // Ajax call to edit broker account. This is hacky because of how the UI works. WE do not have a way to 
-    // control the commissions per broker account. 
-    // Loop through the different broker accounts. 
-    for (let k = 0; k < this.editBroker.Accounts.length; k++) 
-    {
-      let name = this.editBroker.Accounts[k].Name;
+		// Ajax call to edit broker.
+		this.brokerService.update(this.editBroker.Id, this.editBroker.DisplayName).subscribe((res) => {
+			this.getBrokers();
+		});
 
-      if(name.length <= 0)
-      {
-        name = this.editBroker.Accounts[k].AccountNumber;
-      }
+		// Ajax call to edit broker account. This is hacky because of how the UI works. WE do not have a way to
+		// control the commissions per broker account.
+		// Loop through the different broker accounts.
+		for (let k = 0; k < this.editBroker.Accounts.length; k++) {
+			let name = this.editBroker.Accounts[k].Name;
 
-      this.brokerService.updateBrokerAccount(this.editBroker.Id, this.editBroker.Accounts[k].Id, name, this.editBroker.StockCommission, this.editBroker.StockMin, this.editBroker.OptionCommission, this.editBroker.OptionSingleMin, this.editBroker.OptionMultiLegMin, this.editBroker.OptionBase).subscribe((res) => {
-        this.getBrokers();
-      });
-    } 
+			if (name.length <= 0) {
+				name = this.editBroker.Accounts[k].AccountNumber;
+			}
 
-    this.showEditBroker = false;
-  } 
+			this.brokerService.updateBrokerAccount(this.editBroker.Id, this.editBroker.Accounts[k].Id, name, this.editBroker.StockCommission, this.editBroker.StockMin, this.editBroker.OptionCommission, this.editBroker.OptionSingleMin, this.editBroker.OptionMultiLegMin, this.editBroker.OptionBase).subscribe((res) => {
+				this.getBrokers();
+			});
+		}
 
-  //
-  // Unlink broker
-  //
-  unlinkBroker() 
-  {
-    alert("Please contact us via the help section or email help@options.cafe and we can unlink this broker for you.");
-    this.showEditBroker = false;
-  } 
+		this.showEditBroker = false;
+	}
 
-  //
-  // Relink broker
-  //
-  relinkBroker(broker: Broker)
-  {
-    // Set redirect for after auth with brpker
-    localStorage.setItem('redirect', '/settings/brokers');
-    localStorage.setItem('broker_new_id', String(broker.Id));
+	//
+	// Unlink broker
+	//
+	unlinkBroker() {
+		alert("Please contact us via the help section or email help@options.cafe and we can unlink this broker for you.");
+		this.showEditBroker = false;
+	}
 
-    // Switch based on broker selected - Redirect to login to broker and get access token.
-    switch(broker.Name)
-    {
-      case 'Tradier':
-        window.location.href = environment.app_server + '/tradier/authorize?user=' + localStorage.getItem('user_id') + '&broker_id=' + broker.Id;
-      break;
-    }
-  }
+	//
+	// Relink broker
+	//
+	relinkBroker(broker: Broker) {
+		// Set redirect for after auth with brpker
+		localStorage.setItem('redirect', '/settings/brokers');
+		localStorage.setItem('broker_new_id', String(broker.Id));
 
-  //
-  // Add broker
-  //
-  addBroker()
-  {
-    if(this.addBrokerDisplayName.length <= 0)
-    {
-      this.addBrokerError = "A broker display name is required.";
-      return;
-    } else
-    {
-      this.addBrokerError = "";
-    }
+		// Switch based on broker selected - Redirect to login to broker and get access token.
+		switch (broker.Name) {
+			case 'Tradier':
+				window.location.href = environment.app_server + '/tradier/authorize?user=' + localStorage.getItem('user_id') + '&broker_id=' + broker.Id;
+				break;
+		}
+	}
 
-    // Ajax call to add broker.
-    this.brokerService.create(this.addBrokerType, this.addBrokerDisplayName).subscribe((res) => {
+	//
+	// Add broker
+	//
+	addBroker() {
+		if (this.addBrokerDisplayName.length <= 0) {
+			this.addBrokerError = "A broker display name is required.";
+			return;
+		} else {
+			this.addBrokerError = "";
+		}
 
-      // Set redirect for after auth with brpker
-      localStorage.setItem('redirect', '/settings/brokers');
-      localStorage.setItem('broker_new_id', String(res.Id));
+		// Ajax call to add broker.
+		this.brokerService.create(this.addBrokerType, this.addBrokerDisplayName).subscribe((res) => {
 
-      // Switch based on broker selected - Redirect to login to broker and get access token.
-      switch (this.addBrokerType) 
-      {
-        case 'Tradier':
-          window.location.href = environment.app_server + '/tradier/authorize?user=' + localStorage.getItem('user_id') + '&broker_id=' + res.Id;
-        break;
-      }
+			// Set redirect for after auth with brpker
+			localStorage.setItem('redirect', '/settings/brokers');
+			localStorage.setItem('broker_new_id', String(res.Id));
 
-    });    
-  }
+			// Switch based on broker selected - Redirect to login to broker and get access token.
+			switch (this.addBrokerType) {
+				case 'Tradier':
+					window.location.href = environment.app_server + '/tradier/authorize?user=' + localStorage.getItem('user_id') + '&broker_id=' + res.Id;
+					break;
+			}
 
-  //
-  // Show add broker
-  //
-  showAddBrokerPopup()
-  {
-    this.addBrokerError = "";
-    this.addBrokerDisplayName = "";
-    this.showAddBroker = true;
-  }
+		});
+	}
 
-  //
-  // Close add broker
-  //
-  closeShowAddBroker() 
-  {
-    this.showAddBroker = false;    
-  }
+	//
+	// Show add broker
+	//
+	showAddBrokerPopup() {
+		this.addBrokerError = "";
+		this.addBrokerDisplayName = "";
+		this.showAddBroker = true;
+	}
 
-  //
-  // Get brokers.
-  //
-  getBrokers()
-  {
-    // Ajax call to get brokers.
-    this.brokerService.get().subscribe((res) => {
-      this.brokers = res;
+	//
+	// Close add broker
+	//
+	closeShowAddBroker() {
+		this.showAddBroker = false;
+	}
 
-      for (let i = 0; i < this.brokers.length; i++)
-      {
-        if (this.brokers[i].BrokerAccounts.length > 0) 
-        {
-          this.brokers[i].SettingsActiveBrokerAccount = this.brokers[i].BrokerAccounts[0];
-        }
-      }  
-    });
-  }
+	//
+	// Get brokers.
+	//
+	getBrokers() {
+		// Ajax call to get brokers.
+		this.brokerService.get().subscribe((res) => {
+			this.brokers = res;
 
-  //
-  // Broker account click
-  //
-  brokerAccountClick(broker: Broker, row: BrokerAccount)
-  {
-    broker.SettingsActiveBrokerAccount = row;
-  }
+			for (let i = 0; i < this.brokers.length; i++) {
+				if (this.brokers[i].BrokerAccounts.length > 0) {
+					this.brokers[i].SettingsActiveBrokerAccount = this.brokers[i].BrokerAccounts[0];
+				}
+			}
+		});
+	}
 
-  //
-  // Return a CSS for the logo of this broker.
-  //
-  getLogoClass(row: Broker) : string 
-  {
-    let cssClass: string = '';
+	//
+	// Broker account click
+	//
+	brokerAccountClick(broker: Broker, row: BrokerAccount) {
+		broker.SettingsActiveBrokerAccount = row;
+	}
 
-    switch(row.Name)
-    {
-      case 'Tradier':
-        cssClass = 'logo-tradier';
-      break;
+	//
+	// Return a CSS for the logo of this broker.
+	//
+	getLogoClass(row: Broker): string {
+		let cssClass: string = '';
 
-      case 'Tradier Sandbox':
-        cssClass = 'logo-tradier';
-      break;
-    }
+		switch (row.Name) {
+			case 'Tradier':
+				cssClass = 'logo-tradier';
+				break;
 
-    return cssClass;
-  }
+			case 'Tradier Sandbox':
+				cssClass = 'logo-tradier';
+				break;
+		}
+
+		return cssClass;
+	}
 }
 
 //
 // Broker Edit class
 //
 export class BrokerEdit {
-  Id: number;
-  Status: string; // ignore
-  Name: string;
-  DisplayName: string;
-  StockCommission: number;
-  OptionBase: number;
-  OptionCommission: number;
-  StockMin: number;
-  OptionSingleMin: number;
-  OptionMultiLegMin: number;
-  Accounts: BrokerAccount[];
-  BrokerAccounts: BrokerAccount[]; // ignore
-  SettingsActiveBrokerAccount: BrokerAccount; // ignore
+	Id: number;
+	Status: string; // ignore
+	Name: string;
+	DisplayName: string;
+	StockCommission: number;
+	OptionBase: number;
+	OptionCommission: number;
+	StockMin: number;
+	OptionSingleMin: number;
+	OptionMultiLegMin: number;
+	Accounts: BrokerAccount[];
+	BrokerAccounts: BrokerAccount[]; // ignore
+	SettingsActiveBrokerAccount: BrokerAccount; // ignore
 }
 
 /* End File */

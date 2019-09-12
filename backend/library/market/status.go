@@ -22,6 +22,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/worker"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/cnf/structhash"
+	"github.com/davecgh/go-spew/spew"
 )
 
 var storedHash string = ""
@@ -113,6 +114,9 @@ func DetectChange(db models.Datastore, status MarketStatus) {
 
 		// Some times s is empty.
 		if (status.NextState != "premarket") && ((s == "closed") || (s == "open")) {
+
+			spew.Dump(status)
+
 			tDate := helpers.ParseDateNoError(status.Date)
 			msg := tDate.Format("1/2/2006") + " - The market is now " + s + "."
 			notify.Push(db, notify.NotifyRequest{Uri: "market-status-" + s, ShortMsg: msg, UserId: 0, Date: tDate})

@@ -12,105 +12,107 @@ import { BrokerAccount } from '../../models/broker-account';
 import { TradeGroupService } from '../../providers/http/trade-group.service';
 import { StateService } from '../../providers/state/state.service';
 import { environment } from '../../../environments/environment';
+import { Title } from '@angular/platform-browser';
+
+const pageTitle: string = environment.title_prefix + "Trades";
 
 @Component({
-  selector: 'app-trades',
-  templateUrl: './home.component.html'
+	selector: 'app-trades',
+	templateUrl: './home.component.html'
 })
 export class TradesComponent implements OnInit {
 
-  page: number = 1;
-  count: number = 0;
-  limit: number = 0;
-  noLimitCount: number = 0;  
-  tradesList: TradeGroup[];
-  searchTerm: string = ""
-  tradeSelect: string = "All"
-  activeAccount: BrokerAccount
-  destory: Subject<boolean> = new Subject<boolean>();
-  
-  //
-  // Construct
-  //
-  constructor(private tradeGroupService: TradeGroupService, private stateService: StateService) {}
+	page: number = 1;
+	count: number = 0;
+	limit: number = 0;
+	noLimitCount: number = 0;
+	tradesList: TradeGroup[];
+	searchTerm: string = ""
+	tradeSelect: string = "All"
+	activeAccount: BrokerAccount
+	destory: Subject<boolean> = new Subject<boolean>();
 
-  //
-  // On Init
-  //
-  ngOnInit() 
-  {
-    // Set the page
-    this.page = this.stateService.GetTradeGroupPage();
+	//
+	// Construct
+	//
+	constructor(private tradeGroupService: TradeGroupService, private stateService: StateService, private titleService: Title) { }
 
-    // Set the search term from cache
-    this.searchTerm = this.stateService.GetTradeGroupSearchTerm();
+	//
+	// On Init
+	//
+	ngOnInit() {
+		// Set page title.
+		this.titleService.setTitle(pageTitle);
 
-    // Set the cached trade select
-    this.tradeSelect = this.stateService.GetTradeGroupTradeSelect();
+		// Set the page
+		this.page = this.stateService.GetTradeGroupPage();
 
-    // Load trade groups from cache.
-    this.tradesList = this.stateService.GetActiveTradeGroups(); 
+		// Set the search term from cache
+		this.searchTerm = this.stateService.GetTradeGroupSearchTerm();
 
-    // Subscribe to changes in the selected broker.
-    this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
-      this.getTradeGroups();
-    });
+		// Set the cached trade select
+		this.tradeSelect = this.stateService.GetTradeGroupTradeSelect();
 
-    // Load tradegroups from server
-    this.getTradeGroups();
-  }
+		// Load trade groups from cache.
+		this.tradesList = this.stateService.GetActiveTradeGroups();
 
-  //
-  // OnDestroy
-  //
-  ngOnDestroy()
-  {
-    this.destory.next();
-    this.destory.complete();
-  }
+		// Subscribe to changes in the selected broker.
+		this.stateService.BrokerChange.takeUntil(this.destory).subscribe(data => {
+			this.getTradeGroups();
+		});
 
-  //
-  // Get trade groups
-  //
-  getTradeGroups() 
-  {
-    // Get tradegroup data
-    this.tradeGroupService.get(Number(this.stateService.GetStoredActiveAccountId()), 25, this.page, 'open_date', 'desc', this.searchTerm, this.tradeSelect).subscribe((res) => {
-      this.limit = res.Limit;
-      this.noLimitCount = res.NoLimitCount;
-      this.tradesList = res.Data;
-      this.count = res.Data.length;      
-      this.stateService.SetActiveTradeGroups(res.Data);
-      this.stateService.SetTradeGroupPage(this.page);
-    });    
-  }
+		// Load tradegroups from server
+		this.getTradeGroups();
+	}
 
-  //
-  // On Trade select...
-  //
-  onTradeSelect(event) {
-    this.page = 1;
-    this.getTradeGroups();
-    this.stateService.SetTradeGroupTradeSelect(this.tradeSelect);    
-  }
+	//
+	// OnDestroy
+	//
+	ngOnDestroy() {
+		this.destory.next();
+		this.destory.complete();
+	}
 
-  //
-  // On search...
-  //
-  onSearchKeyUp(event) {
-    this.page = 1;    
-    this.getTradeGroups();
-    this.stateService.SetTradeGroupSearchTerm(this.searchTerm);
-  }
+	//
+	// Get trade groups
+	//
+	getTradeGroups() {
+		// Get tradegroup data
+		this.tradeGroupService.get(Number(this.stateService.GetStoredActiveAccountId()), 25, this.page, 'open_date', 'desc', this.searchTerm, this.tradeSelect).subscribe((res) => {
+			this.limit = res.Limit;
+			this.noLimitCount = res.NoLimitCount;
+			this.tradesList = res.Data;
+			this.count = res.Data.length;
+			this.stateService.SetActiveTradeGroups(res.Data);
+			this.stateService.SetTradeGroupPage(this.page);
+		});
+	}
 
-  //
-  // On paging click.
-  //
-  onPagingClick(page: number) 
-  {
-    this.page = page;
-    this.getTradeGroups();
-  }   
+	//
+	// On Trade select...
+	//
+	onTradeSelect(event) {
+		this.page = 1;
+		this.getTradeGroups();
+		this.stateService.SetTradeGroupTradeSelect(this.tradeSelect);
+	}
+
+	//
+	// On search...
+	//
+	onSearchKeyUp(event) {
+		this.page = 1;
+		this.getTradeGroups();
+		this.stateService.SetTradeGroupSearchTerm(this.searchTerm);
+	}
+
+	//
+	// On paging click.
+	//
+	onPagingClick(page: number) {
+		this.page = page;
+		this.getTradeGroups();
+	}
 }
 
 /* End File */

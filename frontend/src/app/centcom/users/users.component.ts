@@ -9,6 +9,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+
+const pageTitle: string = environment.title_prefix + "Centcom Users";
 
 @Component({
 	selector: 'app-users',
@@ -22,12 +25,16 @@ export class UsersComponent implements OnInit {
 	//
 	// Constructor
 	//
-	constructor(private http: HttpClient) { }
+	constructor(private http: HttpClient, private titleService: Title) { }
 
 	//
 	// NgInit
 	//
 	ngOnInit() {
+		// Set page title.
+		this.titleService.setTitle(pageTitle);
+
+		// Get Users
 		this.getUsers();
 	}
 

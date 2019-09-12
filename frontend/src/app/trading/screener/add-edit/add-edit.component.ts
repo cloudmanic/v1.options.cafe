@@ -4,7 +4,6 @@
 // Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Settings } from '../../../models/settings';
@@ -17,6 +16,10 @@ import { DropdownAction } from '../../../shared/dropdown-select/dropdown-select.
 import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../../../providers/http/trade.service';
 import { AnalyzeService, AnalyzeTrade } from '../../../providers/http/analyze.service';
 import { AnalyzeLeg } from '../../../models/analyze-result';
+import { environment } from 'environments/environment';
+import { Title } from '@angular/platform-browser';
+
+const pageTitle: string = environment.title_prefix + "Screener Add / Edit";
 
 @Component({
 	selector: 'app-add-edit',
@@ -60,7 +63,8 @@ export class AddEditComponent implements OnInit {
 		private route: ActivatedRoute,
 		private screenerService: ScreenerService,
 		private settingsService: SettingsService,
-		private analyzeService: AnalyzeService) {
+		private analyzeService: AnalyzeService,
+		private titleService: Title) {
 		this.setupToolTips();
 		this.setupItemSettings();
 		this.settings = this.stateService.GetSettings();
@@ -70,6 +74,9 @@ export class AddEditComponent implements OnInit {
 	// Ng Init
 	//
 	ngOnInit() {
+		// Set page title.
+		this.titleService.setTitle(pageTitle);
+
 		// Setup Dropdown actions
 		this.setupDropdownActions();
 

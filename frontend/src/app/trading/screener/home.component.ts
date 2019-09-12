@@ -17,6 +17,10 @@ import { faListAlt, faTh, faCaretRight, faCaretDown } from '@fortawesome/free-so
 import { TradeService, TradeEvent, TradeDetails, TradeOptionLegs } from '../../providers/http/trade.service';
 import { Settings } from 'app/models/settings';
 import { SettingsService } from 'app/providers/http/settings.service';
+import { environment } from 'environments/environment';
+import { Title } from '@angular/platform-browser';
+
+const pageTitle: string = environment.title_prefix + "Screener";
 
 @Component({
 	selector: 'app-screener',
@@ -35,7 +39,7 @@ export class ScreenerComponent implements OnInit {
 	//
 	// Constructor....
 	//
-	constructor(private stateService: StateService, private screenerService: ScreenerService, private tradeService: TradeService, private router: Router, private settingsService: SettingsService) {
+	constructor(private stateService: StateService, private screenerService: ScreenerService, private tradeService: TradeService, private router: Router, private settingsService: SettingsService, private titleService: Title) {
 		// Load settings
 		this.loadSettingsData();
 	}
@@ -44,6 +48,9 @@ export class ScreenerComponent implements OnInit {
 	// OnInit....
 	//
 	ngOnInit() {
+		// Set page title.
+		this.titleService.setTitle(pageTitle);
+
 		// Default start timer
 		let startTimer: number = (1000 * 10);
 

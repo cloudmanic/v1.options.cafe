@@ -8,6 +8,10 @@ import { AnalyzeService } from '../../providers/http/analyze.service'
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { WebsocketService } from '../../providers/http/websocket.service';
 import { NotificationsService } from '../../providers/http/notifications.service';
+import { environment } from 'environments/environment';
+import { Title } from '@angular/platform-browser';
+
+const pageTitle: string = environment.title_prefix + "Dashboard";
 
 @Component({
 	selector: 'app-dashboard',
@@ -25,7 +29,7 @@ export class DashboardComponent implements OnInit {
 	//
 	// Construct...
 	//
-	constructor(private notificationsService: NotificationsService, private websocketService: WebsocketService, private changeDetect: ChangeDetectorRef) {
+	constructor(private notificationsService: NotificationsService, private websocketService: WebsocketService, private changeDetect: ChangeDetectorRef, private titleService: Title) {
 		// Load data for page.
 		this.getNotifications();
 	}
@@ -34,6 +38,9 @@ export class DashboardComponent implements OnInit {
 	// On Init...
 	//
 	ngOnInit() {
+		// Set page title.
+		this.titleService.setTitle(pageTitle);
+
 		// Subscribe to when we are reconnecting to a websocket - Core
 		this.websocketService.wsReconnecting.subscribe(data => {
 			this.ws_reconnecting = data;
