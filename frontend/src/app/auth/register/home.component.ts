@@ -11,6 +11,8 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { Title } from '@angular/platform-browser';
 
+declare let _paq: any;
+
 interface RegisterResponse {
 	status: number,
 	user_id: number,
@@ -102,6 +104,9 @@ export class AuthRegisterComponent implements OnInit {
 				localStorage.setItem('user_id', data.user_id.toString());
 				localStorage.setItem('access_token', data.access_token);
 
+				// Event logged in with google.
+				_paq.push(['trackEvent', 'auth', 'login', 'google']);
+
 				// Redirect to broker select
 				this.router.navigate(['/broker-select']);
 			},
@@ -167,6 +172,9 @@ export class AuthRegisterComponent implements OnInit {
 				// Store access token in local storage.
 				localStorage.setItem('user_id', data.user_id.toString());
 				localStorage.setItem('access_token', data.access_token);
+
+				// Event logged in with email.
+				_paq.push(['trackEvent', 'auth', 'login', 'email']);
 
 				// Redirect to broker select
 				this.router.navigate(['/broker-select']);
