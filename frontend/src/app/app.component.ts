@@ -29,6 +29,13 @@ export class AppComponent {
 			if (event instanceof NavigationEnd) {
 				// We give it a timeout so we give time for the title to update.
 				setTimeout(() => {
+					// Set user id for piwik
+					let email = localStorage.getItem('user_email');
+
+					if (email.length) {
+						_paq.push(['setUserId', email]);
+					}
+
 					_paq.push(['setCustomUrl', event.urlAfterRedirects]);
 					_paq.push(['setDocumentTitle', this.titleService.getTitle()]);
 					_paq.push(['setGenerationTimeMs', 0]);
