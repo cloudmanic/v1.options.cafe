@@ -151,7 +151,7 @@ func TestGetSubscriptionWithStripe01(t *testing.T) {
 	st.Expect(t, sub.BillingInterval, "month")
 	st.Expect(t, sub.CardBrand, "American Express")
 	st.Expect(t, sub.CardLast4, "8431")
-	st.Expect(t, sub.CardExpYear, 2020)
+	st.Expect(t, sub.CardExpYear, 2021)
 
 	// Clean things up at stripe
 	db.DeleteUserWithStripe(dbUser)
@@ -204,7 +204,7 @@ func TestGetSubscriptionWithStripe02(t *testing.T) {
 	st.Expect(t, sub.BillingInterval, "month")
 	st.Expect(t, sub.CardBrand, "Visa")
 	st.Expect(t, sub.CardLast4, "4242")
-	st.Expect(t, sub.CardExpYear, 2020)
+	st.Expect(t, sub.CardExpYear, 2021)
 
 	// Clean things up at stripe
 	db.DeleteUserWithStripe(dbUser)
