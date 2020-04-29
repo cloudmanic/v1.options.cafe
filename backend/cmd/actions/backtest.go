@@ -38,7 +38,7 @@ func RunBackTest(db *models.DB, userId int) {
 			{UserId: 1, Key: "short-strike-percent-away", Operator: ">", ValueNumber: 4.0},
 			{UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
 			{UserId: 1, Key: "open-credit", Operator: ">", ValueNumber: 0.18},
-			{UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.20},
+			{UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.30},
 			{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 46},
 			{UserId: 1, Key: "days-to-expire", Operator: ">", ValueNumber: 0},
 		},
@@ -47,10 +47,11 @@ func RunBackTest(db *models.DB, userId int) {
 	// Set backtest
 	btM := models.Backtest{
 		UserId:          1,
-		StartingBalance: 2000.00,
-		EndingBalance:   2000.00,
+		StartingBalance: 10000.00,
+		EndingBalance:   10000.00,
+		PositionSize:    "10-percent", // one-at-time, *-percent
 		StartDate:       models.Date{helpers.ParseDateNoError("2018-01-01")},
-		EndDate:         models.Date{helpers.ParseDateNoError("2019-01-01")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2020-12-31")},
 		Midpoint:        true,
 		TradeSelect:     "highest-credit",
 		Screen:          screen,
@@ -79,8 +80,20 @@ func RunBackTest(db *models.DB, userId int) {
 	}
 	table.Render()
 
+	// Summary data
+	tradeCount := len(btM.Positions)
+	profit := (btM.EndingBalance - btM.StartingBalance)
+	returnPercent := (((btM.EndingBalance - btM.StartingBalance) / btM.StartingBalance) * 100)
+
 	// Show how long the backtest took.
 	log.Printf("Backtest took %s", btM.TimeElapsed)
+	log.Println("")
+	log.Println("Summmary")
+	log.Println("-------------")
+	log.Printf("Return: %s%%", humanize.BigCommaf(big.NewFloat(returnPercent)))
+	log.Printf("Profit: $%s", humanize.BigCommaf(big.NewFloat(profit)))
+	log.Printf("Trade Count: %d", tradeCount)
+	log.Println("")
 }
 
 /* End File */

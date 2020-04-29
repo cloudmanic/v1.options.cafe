@@ -17,16 +17,14 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/screener"
 )
 
-const workerCount int = 30
-
-// Used to cache all symbols in the DB to avoid too many sql queries
-var cachedSymbols map[string]models.Symbol = make(map[string]models.Symbol)
+const workerCount int = 5
 
 // Base struct
 type Base struct {
-	DB           models.Datastore
-	TradeFuncs   map[string]func(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem)
-	ResultsFuncs map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) ([]screener.Result, error)
+	DB            models.Datastore
+	CachedSymbols map[string]models.Symbol
+	TradeFuncs    map[string]func(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem)
+	ResultsFuncs  map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) ([]screener.Result, error)
 }
 
 // Job struct
@@ -42,10 +40,18 @@ type Job struct {
 // New Backtest
 //
 func New(db models.Datastore) Base {
-
 	// New backtest instance
 	t := Base{
 		DB: db,
+	}
+
+	// Build cache of all symbols in the system
+	s := t.DB.GetAllSymbols()
+	t.CachedSymbols = make(map[string]models.Symbol)
+
+	// Loop through and build hash table
+	for _, row := range s {
+		t.CachedSymbols[row.ShortName] = row
 	}
 
 	// Build backtest functions - results
@@ -184,19 +190,8 @@ func (t *Base) GetExpirationDatesFromOptions(options []types.OptionsChainItem) [
 // GetSymbol - This is a wrapper function for models.Symbol. We want to do a bit of "caching".
 //
 func (t *Base) GetSymbol(short string, name string, sType string) (models.Symbol, error) {
-	// Build cache of all symbols in the system
-	if len(cachedSymbols) == 0 {
-		// Get all the symbols in the DB
-		s := t.DB.GetAllSymbols()
-
-		// Loop through and build hash table
-		for _, row := range s {
-			cachedSymbols[row.ShortName] = row
-		}
-	}
-
 	// See if we have this symbol in cache. If so return happy.
-	if val, ok := cachedSymbols[short]; ok {
+	if val, ok := t.CachedSymbols[short]; ok {
 		return val, nil
 	}
 
@@ -207,8 +202,8 @@ func (t *Base) GetSymbol(short string, name string, sType string) (models.Symbol
 		return symb, err
 	}
 
-	// Add symbol to map.
-	cachedSymbols[short] = symb
+	// Add symbol to map. TODO(spicer) have to do magic to manage concurrent access with go routines
+	//t.CachedSymbols[short] = symb
 
 	// Return happy.
 	return symb, nil

@@ -7,6 +7,9 @@
 package backtesting
 
 import (
+	"math"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/models"
@@ -17,8 +20,7 @@ import (
 // OpenMultiLegCredit - Open a new spread by adding a position
 //
 func (t *Base) OpenMultiLegCredit(today time.Time, backtest *models.Backtest, result screener.Result) {
-
-	// TODO(spicer): make this work from configs
+	// Default values
 	lots := 1
 
 	// TODO(spicer): figure which price to use to open
@@ -29,17 +31,25 @@ func (t *Base) OpenMultiLegCredit(today time.Time, backtest *models.Backtest, re
 		return
 	}
 
-	// Get the count of open positions
-	posCount := t.openPositionsCount(backtest)
-
-	// Only open one position at a time. TODO(spicer): make this a config.
-	if posCount > 0 {
-		return
-	}
-
 	// Amount of margin left after trade is opened.
 	diff := result.Legs[1].OptionStrike - result.Legs[0].OptionStrike
-	var margin float64 = (diff * 100 * float64(lots)) - openPrice
+
+	// Figure out position size
+	if backtest.PositionSize == "one-at-time" {
+		// Get the count of open positions
+		posCount := t.openPositionsCount(backtest)
+
+		// Only open one position at a time. TODO(spicer): make this a config.
+		if posCount > 0 {
+			return
+		}
+	} else if strings.Contains(backtest.PositionSize, "percent") { // percent of trade
+		totalToTrade := t.percentOfAccount(backtest, backtest.PositionSize)
+		lots = int(math.Floor(totalToTrade / (diff * 100.00)))
+	}
+
+	// Get margin used
+	margin := (diff * 100 * float64(lots)) - openPrice
 
 	// Get total margin needed
 	totalMarginNeeded := t.getTotalMarginUsed(backtest) + margin
@@ -70,6 +80,29 @@ func (t *Base) OpenMultiLegCredit(today time.Time, backtest *models.Backtest, re
 }
 
 // -------------- Private Helper Functions ------------------- //
+
+//
+// percentOfAccount - will return a percent of my total balance.
+//
+func (t *Base) percentOfAccount(backtest *models.Backtest, percentString string) float64 {
+	// Split string
+	y := strings.Split(percentString, "-")
+
+	// If this is not percent return 0.00 (this should not happen)
+	if y[1] != "percent" {
+		return 0.00
+	}
+
+	// Convert from string to float
+	percent, err := strconv.ParseFloat(y[0], 64)
+
+	if err != nil {
+		return 0.00
+	}
+
+	// Return percent of port we can trade.
+	return backtest.EndingBalance * (percent / 100)
+}
 
 //
 // openPositionsCount - Return a count of how many open trades we have.

@@ -26,7 +26,7 @@ import (
 //
 func TestDoPutCreditSpread01(t *testing.T) {
 	// Start the db connection.
-	db, dbName, _ := models.NewTestDB("")
+	db, dbName, _ := models.NewTestDB("testing")
 	defer models.TestingTearDown(db, dbName)
 
 	// Setup a new backtesting
@@ -52,6 +52,7 @@ func TestDoPutCreditSpread01(t *testing.T) {
 		UserId:          1,
 		StartingBalance: 2000.00,
 		EndingBalance:   2000.00,
+		PositionSize:    "10-percent",
 		StartDate:       models.Date{helpers.ParseDateNoError("2018-01-01")},
 		EndDate:         models.Date{helpers.ParseDateNoError("2019-01-01")},
 		Midpoint:        true,
