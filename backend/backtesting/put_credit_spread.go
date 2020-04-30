@@ -30,7 +30,7 @@ func (t *Base) PutCreditSpreadPlaceTrades(today time.Time, backtest *models.Back
 
 	// TODO(spicer): Figure which result to open
 	if len(results) > 0 {
-		t.OpenMultiLegCredit(today, backtest, results[0])
+		t.OpenMultiLegCredit(today, "put-credit-spread", backtest, results[0])
 	}
 
 	return

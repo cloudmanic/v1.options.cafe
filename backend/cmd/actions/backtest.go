@@ -7,6 +7,7 @@
 package actions
 
 import (
+	"encoding/csv"
 	"fmt"
 	"log"
 	"math/big"
@@ -14,15 +15,19 @@ import (
 
 	"github.com/cloudmanic/app.options.cafe/backend/backtesting"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
-	humanize "github.com/dustin/go-humanize"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/olekukonko/tablewriter"
 	"github.com/optionscafe/options-cafe-cli/helpers"
+
+	humanize "github.com/dustin/go-humanize"
 )
 
 //
 // RunBackTest run a back test
 //
 // go run main.go --cmd="backtest-run" --user_id=1
+//
+// gnuplot -e "set terminal jpeg size 3600,1600; set timefmt '%m/%d/%Y'; set datafile separator ','; set format x '%m/%d/%Y'; set xdata time; set title 'Account Balance Over Time';  plot for [col=2:2] '/Users/spicer/Downloads/graph.csv' using 1:col with lines" > /tmp/blah.jpeg && open /tmp/blah.jpeg
 //
 func RunBackTest(db *models.DB, userId int) {
 
@@ -47,11 +52,11 @@ func RunBackTest(db *models.DB, userId int) {
 	// Set backtest
 	btM := models.Backtest{
 		UserId:          1,
-		StartingBalance: 10000.00,
-		EndingBalance:   10000.00,
+		StartingBalance: 6000.00,
+		EndingBalance:   6000.00,
 		PositionSize:    "10-percent", // one-at-time, *-percent
-		StartDate:       models.Date{helpers.ParseDateNoError("2018-01-01")},
-		EndDate:         models.Date{helpers.ParseDateNoError("2020-12-31")},
+		StartDate:       models.Date{helpers.ParseDateNoError("2017-01-01")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2019-12-31")},
 		Midpoint:        true,
 		TradeSelect:     "highest-credit",
 		Screen:          screen,
@@ -60,11 +65,14 @@ func RunBackTest(db *models.DB, userId int) {
 	// Run blank backtest
 	bt.DoBacktestDays(&btM)
 
+	plotData := [][]string{}
+	csvData := [][]string{{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "% Away", "Margin", "Balance", "Status", "Note"}}
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "% Away", "Margin", "Balance", "Status", "Note"})
 
 	for _, row := range btM.Positions {
-		table.Append([]string{
+		// Build data string
+		d := []string{
 			row.OpenDate.Format("01/02/2006"),
 			row.CloseDate.Format("01/02/2006"),
 			fmt.Sprintf("%s %s %.2f / %.2f", row.Legs[0].OptionUnderlying, row.Legs[0].OptionExpire.Format("01/02/2006"), row.Legs[0].OptionStrike, row.Legs[1].OptionStrike),
@@ -76,7 +84,11 @@ func RunBackTest(db *models.DB, userId int) {
 			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.Balance))),
 			row.Status,
 			row.Note,
-		})
+		}
+
+		table.Append(d)
+		csvData = append(csvData, d)
+		plotData = append(plotData, []string{row.OpenDate.Format("01/02/2006"), humanize.BigCommaf(big.NewFloat(row.Balance))})
 	}
 	table.Render()
 
@@ -94,6 +106,50 @@ func RunBackTest(db *models.DB, userId int) {
 	log.Printf("Profit: $%s", humanize.BigCommaf(big.NewFloat(profit)))
 	log.Printf("Trade Count: %d", tradeCount)
 	log.Println("")
+
+	// ------------------ Export CSV ----------- //
+
+	file, err := os.Create("/Users/spicer/Downloads/result.csv")
+
+	if err != nil {
+		spew.Dump(err)
+	}
+
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	for _, value := range csvData {
+		err := writer.Write(value)
+
+		if err != nil {
+			spew.Dump(err)
+		}
+
+	}
+
+	// --------- Graph CSV -------- //
+
+	file, err = os.Create("/Users/spicer/Downloads/graph-balance.csv")
+
+	if err != nil {
+		spew.Dump(err)
+	}
+
+	defer file.Close()
+
+	writer = csv.NewWriter(file)
+	defer writer.Flush()
+
+	for _, value := range plotData {
+		err := writer.Write(value)
+
+		if err != nil {
+			spew.Dump(err)
+		}
+
+	}
 }
 
 /* End File */

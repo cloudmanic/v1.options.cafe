@@ -19,12 +19,9 @@ import (
 //
 // OpenMultiLegCredit - Open a new spread by adding a position
 //
-func (t *Base) OpenMultiLegCredit(today time.Time, backtest *models.Backtest, result screener.Result) {
+func (t *Base) OpenMultiLegCredit(today time.Time, strategy string, backtest *models.Backtest, result screener.Result) {
 	// Default values
 	lots := 1
-
-	// TODO(spicer): figure which price to use to open
-	openPrice := result.MidPoint * 100 * float64(lots)
 
 	// First see if we already have this position
 	if !t.checkForCurrentPosition(backtest, result) {
@@ -46,7 +43,11 @@ func (t *Base) OpenMultiLegCredit(today time.Time, backtest *models.Backtest, re
 	} else if strings.Contains(backtest.PositionSize, "percent") { // percent of trade
 		totalToTrade := t.percentOfAccount(backtest, backtest.PositionSize)
 		lots = int(math.Floor(totalToTrade / (diff * 100.00)))
+		lots = 3
 	}
+
+	// TODO(spicer): figure which price to use to open (Midpoint, ask, bid)
+	openPrice := result.MidPoint * 100 * float64(lots)
 
 	// Get margin used
 	margin := (diff * 100 * float64(lots)) - openPrice
@@ -62,6 +63,7 @@ func (t *Base) OpenMultiLegCredit(today time.Time, backtest *models.Backtest, re
 	// Add position
 	backtest.Positions = append(backtest.Positions, models.BacktestPosition{
 		UserId:          backtest.UserId,
+		Strategy:        strategy,
 		Status:          "Open",
 		OpenDate:        models.Date{today},
 		OpenPrice:       openPrice,

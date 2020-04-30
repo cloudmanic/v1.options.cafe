@@ -25,7 +25,7 @@ func (t *Base) CloseMultiLegCredit(today time.Time, underlyingLast float64, back
 	t.closeOnDebit(today, underlyingLast, backtest, options)
 
 	// Expire positions
-	t.expirePositions(today, backtest)
+	t.expirePositions(today, underlyingLast, backtest)
 }
 
 //
@@ -35,9 +35,6 @@ func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *m
 
 	// TODO(spicer): make this work from configs
 	debitAmount := 0.03
-
-	// TODO(spicer): make this work from configs. Maybe it should be part of the backtest object
-	lots := 1
 
 	// Loop for expired postions
 	for key, row := range backtest.Positions {
@@ -52,7 +49,7 @@ func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *m
 		// Close trade at the debitAmount
 		if closePrice <= debitAmount {
 			backtest.Positions[key].Status = "Closed"
-			backtest.Positions[key].ClosePrice = debitAmount * 100 * float64(lots)
+			backtest.Positions[key].ClosePrice = closePrice * 100 * float64(row.Lots)
 			backtest.Positions[key].CloseDate = models.Date{today}
 			backtest.Positions[key].Note = "Triggered at debit amount."
 			backtest.EndingBalance = (backtest.EndingBalance - backtest.Positions[key].ClosePrice)
@@ -67,9 +64,6 @@ func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *m
 //
 func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backtest *models.Backtest, options []types.OptionsChainItem) {
 
-	// TODO(spicer): make this work from configs
-	lots := 1
-
 	// Loop for expired postions
 	for key, row := range backtest.Positions {
 
@@ -81,7 +75,12 @@ func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backte
 		if underlyingLast <= row.Legs[1].OptionStrike {
 
 			// Set closing Closing Price
-			closingPrice := (t.getClosedPrice(row, options) * 100.00 * float64(lots)) - 1
+			closingPrice := (t.getClosedPrice(row, options) * 100.00 * float64(row.Lots)) - 1
+
+			// Make sure close price is not bigger than our max risk
+			if closingPrice > row.Margin {
+				continue
+			}
 
 			// Close trade
 			backtest.Positions[key].Status = "Closed"
@@ -99,7 +98,7 @@ func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backte
 //
 // expirePositions - Loop through to see if we have any positions to expire.
 //
-func (t *Base) expirePositions(today time.Time, backtest *models.Backtest) {
+func (t *Base) expirePositions(today time.Time, underlyingLast float64, backtest *models.Backtest) {
 
 	// Loop for expired postions
 	for key, row := range backtest.Positions {
@@ -121,10 +120,41 @@ func (t *Base) expirePositions(today time.Time, backtest *models.Backtest) {
 
 		// If expired close out trade
 		if expired && row.Status == "Open" {
+
+			// Shared for all strats
 			backtest.Positions[key].Status = "Closed"
-			backtest.Positions[key].ClosePrice = 0.00
 			backtest.Positions[key].CloseDate = models.Date{today}
-			backtest.Positions[key].Note = "Expired worthless."
+
+			// Figure out how to close based on strategy
+			switch row.Strategy {
+
+			// Put credit spread
+			case "put-credit-spread":
+				diff := underlyingLast - row.Legs[1].OptionStrike
+
+				// Expired worthless or in the money
+				if diff > 0 {
+					backtest.Positions[key].ClosePrice = 0.00
+					backtest.Positions[key].Note = "Expired worthless."
+				} else {
+					spread := row.Legs[1].OptionStrike - row.Legs[0].OptionStrike
+
+					if (diff * -1) > spread {
+						backtest.Positions[key].ClosePrice = (spread * float64(row.Lots) * 100)
+					} else {
+						backtest.Positions[key].ClosePrice = ((diff * -1) * float64(row.Lots) * 100)
+					}
+
+					backtest.Positions[key].Note = "Expired in the money."
+				}
+
+			// Unknown strategy
+			default:
+				backtest.Positions[key].ClosePrice = 0.00
+				backtest.Positions[key].Note = "Expired unknown."
+
+			}
+
 		}
 	}
 
