@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/eod"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/cloudmanic/app.options.cafe/backend/screener"
 )
@@ -28,6 +29,9 @@ func (t *Base) OpenMultiLegCredit(today time.Time, strategy string, backtest *mo
 		return
 	}
 
+	// Set up a new screener so we can use it's Functions
+	screenObj := screener.NewScreen(t.DB, &eod.Api{})
+
 	// Amount of margin left after trade is opened.
 	diff := result.Legs[1].OptionStrike - result.Legs[0].OptionStrike
 
@@ -43,11 +47,15 @@ func (t *Base) OpenMultiLegCredit(today time.Time, strategy string, backtest *mo
 	} else if strings.Contains(backtest.PositionSize, "percent") { // percent of trade
 		totalToTrade := t.percentOfAccount(backtest, backtest.PositionSize)
 		lots = int(math.Floor(totalToTrade / (diff * 100.00)))
-		lots = 3
 	}
 
-	// TODO(spicer): figure which price to use to open (Midpoint, ask, bid)
-	openPrice := result.MidPoint * 100 * float64(lots)
+	// Figure out open price.
+	openPrice := result.Ask * 100 * float64(lots)
+
+	// we can configure to use midpoint.
+	if backtest.Midpoint {
+		openPrice = result.MidPoint * 100 * float64(lots)
+	}
 
 	// Get margin used
 	margin := (diff * 100 * float64(lots)) - openPrice
@@ -58,6 +66,52 @@ func (t *Base) OpenMultiLegCredit(today time.Time, strategy string, backtest *mo
 	// Make sure we have enough margin to continue
 	if totalMarginNeeded > backtest.EndingBalance {
 		return
+	}
+
+	// See if we are allowed to only have one strike
+	st, err := screenObj.FindFilterItemValue("allow-more-than-one-strike", backtest.Screen)
+
+	// Make sure we do not already have a trade on at this strike.
+	if (err == nil) && (st.ValueString == "no") {
+		for _, row := range backtest.Positions {
+			// Only open trades
+			if row.Status != "Open" {
+				continue
+			}
+
+			for _, row2 := range row.Legs {
+				if row2.OptionStrike == result.Legs[0].OptionStrike {
+					return
+				}
+
+				if row2.OptionStrike == result.Legs[1].OptionStrike {
+					return
+				}
+			}
+		}
+	}
+
+	// See if we are allowed to only have one expire
+	st2, err := screenObj.FindFilterItemValue("allow-more-than-one-expire", backtest.Screen)
+
+	// Make sure we do not already have a trade on at this expire.
+	if (err == nil) && (st2.ValueString == "no") {
+		for _, row := range backtest.Positions {
+			// Only open trades
+			if row.Status != "Open" {
+				continue
+			}
+
+			for _, row2 := range row.Legs {
+				if row2.OptionExpire == result.Legs[0].OptionExpire {
+					return
+				}
+
+				if row2.OptionExpire == result.Legs[1].OptionExpire {
+					return
+				}
+			}
+		}
 	}
 
 	// Add position

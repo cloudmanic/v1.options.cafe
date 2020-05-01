@@ -107,6 +107,8 @@ func (t *Base) PutCreditSpreadResults(today time.Time, backtest *models.Backtest
 			results = append(results, screener.Result{
 				Day:            types.Date{today},
 				Credit:         helpers.Round(credit, 2),
+				Bid:            helpers.Round(buyCost, 2),
+				Ask:            helpers.Round(credit, 2),
 				MidPoint:       helpers.Round(midPoint, 2),
 				UnderlyingLast: underlyingLast,
 				PutPrecentAway: helpers.Round(((1 - row2.Strike/underlyingLast) * 100), 2),

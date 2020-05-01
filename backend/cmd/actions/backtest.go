@@ -40,23 +40,25 @@ func RunBackTest(db *models.DB, userId int) {
 		Symbol:   "SPY",
 		Strategy: "put-credit-spread",
 		Items: []models.ScreenerItem{
-			{UserId: 1, Key: "short-strike-percent-away", Operator: ">", ValueNumber: 4.0},
+			{UserId: 1, Key: "short-strike-percent-away", Operator: ">", ValueNumber: 5.0},
 			{UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
 			{UserId: 1, Key: "open-credit", Operator: ">", ValueNumber: 0.18},
-			{UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.30},
+			{UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.50},
 			{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 46},
 			{UserId: 1, Key: "days-to-expire", Operator: ">", ValueNumber: 0},
+			{UserId: 1, Key: "allow-more-than-one-expire", Operator: "=", ValueString: "no"},
+			{UserId: 1, Key: "allow-more-than-one-strike", Operator: "=", ValueString: "no"},
 		},
 	}
 
 	// Set backtest
 	btM := models.Backtest{
 		UserId:          1,
-		StartingBalance: 6000.00,
-		EndingBalance:   6000.00,
-		PositionSize:    "10-percent", // one-at-time, *-percent
-		StartDate:       models.Date{helpers.ParseDateNoError("2017-01-01")},
-		EndDate:         models.Date{helpers.ParseDateNoError("2019-12-31")},
+		StartingBalance: 10000.00,
+		EndingBalance:   10000.00,
+		PositionSize:    "15-percent", // one-at-time, *-percent
+		StartDate:       models.Date{helpers.ParseDateNoError("2013-01-01")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2020-12-31")},
 		Midpoint:        true,
 		TradeSelect:     "highest-credit",
 		Screen:          screen,

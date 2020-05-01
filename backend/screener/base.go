@@ -30,7 +30,9 @@ type Base struct {
 type Result struct {
 	Day             types.Date      `gorm:"type:date" sql:"not null" json:"day"` // Used for backtesting. The day in the backtest
 	Debit           float64         `json:"debit"`
-	Credit          float64         `json:"credit"`
+	Credit          float64         `json:"credit"` // TODO(spicer): We should kill this for "Ask" instead
+	Bid             float64         `json:"bid"`
+	Ask             float64         `json:"ask"`
 	MidPoint        float64         `json:"midpoint"`
 	Expired         models.Date     `gorm:"type:expired" json:"expired"` // Used when all legs have the same expire
 	CallPrecentAway float64         `json:"call_percent_away"`
