@@ -58,6 +58,7 @@ func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *m
 			backtest.EndingBalance = (backtest.EndingBalance - backtest.Positions[key].ClosePrice)
 			backtest.Positions[key].Balance = backtest.EndingBalance
 			backtest.Positions[key].BenchmarkLast = benchmarkLast
+			backtest.Positions[key].ReturnFromStart = (((backtest.EndingBalance - backtest.StartingBalance) / backtest.StartingBalance) * 100)
 		}
 	}
 
@@ -97,6 +98,7 @@ func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backte
 			backtest.Positions[key].Balance -= closingPrice
 			backtest.EndingBalance -= closingPrice
 			backtest.Positions[key].BenchmarkLast = benchmarkLast
+			backtest.Positions[key].ReturnFromStart = (((backtest.EndingBalance - backtest.StartingBalance) / backtest.StartingBalance) * 100)
 		}
 	}
 
@@ -135,6 +137,7 @@ func (t *Base) expirePositions(today time.Time, underlyingLast float64, backtest
 			backtest.Positions[key].Status = "Closed"
 			backtest.Positions[key].CloseDate = models.Date{today}
 			backtest.Positions[key].BenchmarkLast = benchmarkLast
+			backtest.Positions[key].ReturnFromStart = (((backtest.EndingBalance - backtest.StartingBalance) / backtest.StartingBalance) * 100)
 
 			// Figure out how to close based on strategy
 			switch row.Strategy {

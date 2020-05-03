@@ -112,8 +112,16 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 		}
 
 		// We skip dates after our end date
-		if row.After(helpers.ParseDateNoError(backtest.EndDate.Format("2006-01-02"))) {
+		if (row.Format("2006-01-02") != backtest.EndDate.Format("2006-01-02")) && row.After(helpers.ParseDateNoError(backtest.EndDate.Format("2006-01-02"))) {
 			continue
+		}
+
+		// Set the benchmark start
+		backtest.BenchmarkEnd = t.getBenchmarkByDate(helpers.ParseDateNoError(row.Format("2006-01-02")))
+
+		// Figure out benchmark start value
+		if backtest.BenchmarkStart == 0.00 {
+			backtest.BenchmarkStart = t.getBenchmarkByDate(helpers.ParseDateNoError(row.Format("2006-01-02")))
 		}
 
 		// Add job to worker queue

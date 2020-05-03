@@ -25,6 +25,8 @@ type Backtest struct {
 	PositionSize    string             `sql:"not null" json:"one-at-time"`
 	TimeElapsed     time.Duration      `sql:"not null" json:"time_elapsed"`
 	Benchmark       string             `sql:"not null" json:"benchmark"`
+	BenchmarkStart  float64            `sql:"not null" json:"benchmark_start"`
+	BenchmarkEnd    float64            `sql:"not null" json:"benchmark_end"`
 	Screen          Screener           `json:"screen"`
 	Positions       []BacktestPosition `json:"positions"`
 }

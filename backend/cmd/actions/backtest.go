@@ -54,7 +54,7 @@ func RunBackTest(db *models.DB, userId int) {
 		StartingBalance: 10000.00,
 		EndingBalance:   10000.00,
 		PositionSize:    "15-percent", // one-at-time, *-percent
-		StartDate:       models.Date{helpers.ParseDateNoError("2017-01-01")},
+		StartDate:       models.Date{helpers.ParseDateNoError("2016-01-01")},
 		EndDate:         models.Date{helpers.ParseDateNoError("2020-12-31")},
 		Midpoint:        false,
 		TradeSelect:     "highest-credit",
@@ -69,11 +69,20 @@ func RunBackTest(db *models.DB, userId int) {
 	bt.DoBacktestDays(&btM)
 
 	plotData := [][]string{}
-	csvData := [][]string{{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "% Away", "Margin", "Balance", "Benchmark", "Status", "Note"}}
+	csvData := [][]string{{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "% Away", "Margin", "Balance", "Return", "Benchmark", "Benchmark Return", "Status", "Note"}}
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "% Away", "Margin", "Balance", "Benchmark", "Status", "Note"})
+	table.SetHeader([]string{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "% Away", "Margin", "Balance", "Return", "Benchmark", "Benchmark Return", "Status", "Note"})
+	closedReturn := 0.00
 
 	for _, row := range btM.Positions {
+		// Only record closed position
+		if row.Status == "Closed" {
+			closedReturn = row.ReturnFromStart
+		}
+
+		// Benchmark return
+		bReturn := (((row.BenchmarkLast - btM.BenchmarkStart) / btM.BenchmarkStart) * 100)
+
 		// Build data string
 		d := []string{
 			row.OpenDate.Format("01/02/2006"),
@@ -85,7 +94,9 @@ func RunBackTest(db *models.DB, userId int) {
 			fmt.Sprintf("%.2f", row.PutPrecentAway) + "%",
 			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.Margin))),
 			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.Balance))),
+			fmt.Sprintf("%.2f", row.ReturnFromStart) + "%",
 			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.BenchmarkLast))),
+			fmt.Sprintf("%.2f", bReturn) + "%",
 			row.Status,
 			row.Note,
 		}
@@ -99,16 +110,18 @@ func RunBackTest(db *models.DB, userId int) {
 	// Summary data
 	tradeCount := len(btM.Positions)
 	profit := (btM.EndingBalance - btM.StartingBalance)
-	returnPercent := (((btM.EndingBalance - btM.StartingBalance) / btM.StartingBalance) * 100)
+	benchmarkPercent := (((btM.BenchmarkEnd - btM.BenchmarkStart) / btM.BenchmarkStart) * 100)
 
 	// Show how long the backtest took.
 	log.Printf("Backtest took %s", btM.TimeElapsed)
 	log.Println("")
 	log.Println("Summmary")
 	log.Println("-------------")
-	log.Printf("Return: %s%%", humanize.BigCommaf(big.NewFloat(returnPercent)))
+	log.Printf("Return: %s%%", humanize.BigCommaf(big.NewFloat(closedReturn)))
 	log.Printf("Profit: $%s", humanize.BigCommaf(big.NewFloat(profit)))
 	log.Printf("Trade Count: %d", tradeCount)
+	log.Printf("Benchmark Start (%s): %s", btM.Benchmark, humanize.BigCommaf(big.NewFloat(btM.BenchmarkStart)))
+	log.Printf("Benchmark Return (%s): %s%%", btM.Benchmark, humanize.BigCommaf(big.NewFloat(benchmarkPercent)))
 	log.Println("")
 
 	// ------------------ Export CSV ----------- //

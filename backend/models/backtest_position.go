@@ -24,6 +24,7 @@ type BacktestPosition struct {
 	CloseDate       Date      `gorm:"type:date" sql:"not null" json:"close_date"`
 	OpenPrice       float64   `sql:"not null" json:"open_price"`
 	ClosePrice      float64   `sql:"not null" json:"close_price"`
+	ReturnFromStart float64   `sql:"not null" json:"return_from_start"`
 	Margin          float64   `sql:"not null" json:"margin"`
 	Balance         float64   `sql:"not null" json:"balance"`
 	PutPrecentAway  float64   `sql:"not null" json:"put_percent_away"`
