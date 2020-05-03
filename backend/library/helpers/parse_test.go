@@ -54,4 +54,25 @@ func TestOptionParse02(t *testing.T) {
 	st.Expect(t, parts.Strike, float64(295))
 }
 
+//
+// Test - Option parse 03 (notice SPY7)
+//
+func TestOptionParse03(t *testing.T) {
+
+	// Test the parser
+	parts, err := OptionParse("SPY7130328C00140000")
+
+	// Test results
+	st.Expect(t, err, nil)
+	st.Expect(t, parts.Name, "SPY7 Mar 28, 2013 $140.00 Call")
+	st.Expect(t, parts.Option, "SPY7130328C00140000")
+	st.Expect(t, parts.Symbol, "SPY7")
+	st.Expect(t, parts.Year, uint(2013))
+	st.Expect(t, parts.Month, uint(3))
+	st.Expect(t, parts.Day, uint(28))
+	st.Expect(t, parts.Expire.Format("2006-01-02"), "2013-03-28")
+	st.Expect(t, parts.Type, "Call")
+	st.Expect(t, parts.Strike, float64(140))
+}
+
 /* End File */

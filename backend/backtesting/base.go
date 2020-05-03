@@ -7,9 +7,11 @@
 package backtesting
 
 import (
+	"os"
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/eod"
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
@@ -17,14 +19,15 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/screener"
 )
 
-const workerCount int = 5
+const workerCount int = 3
 
 // Base struct
 type Base struct {
-	DB            models.Datastore
-	CachedSymbols map[string]models.Symbol
-	TradeFuncs    map[string]func(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem)
-	ResultsFuncs  map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) ([]screener.Result, error)
+	DB              models.Datastore
+	BenchmarkQuotes []types.HistoryQuote
+	CachedSymbols   map[string]models.Symbol
+	TradeFuncs      map[string]func(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem)
+	ResultsFuncs    map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) ([]screener.Result, error)
 }
 
 // Job struct
@@ -39,7 +42,7 @@ type Job struct {
 //
 // New Backtest
 //
-func New(db models.Datastore) Base {
+func New(db models.Datastore, benchmark string) Base {
 	// New backtest instance
 	t := Base{
 		DB: db,
@@ -66,6 +69,12 @@ func New(db models.Datastore) Base {
 
 	// Warm symbol cache (just random sumbol to warm cache)
 	t.GetSymbol("SPY190418P00269000", "SPY Apr 18 2019 $269.00 Put", "Option")
+
+	// Get benchmark data.
+	tr := &tradier.Api{ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN")}
+	startDate := time.Date(2009, 01, 01, 0, 0, 0, 0, time.UTC)
+	endDate := time.Date(2020, 12, 31, 0, 0, 0, 0, time.UTC)
+	t.BenchmarkQuotes, _ = tr.GetHistoricalQuotes(benchmark, startDate, endDate, "daily")
 
 	return t
 }
@@ -210,6 +219,18 @@ func (t *Base) GetSymbol(short string, name string, sType string) (models.Symbol
 }
 
 // ---------------- Private helper functions ------------------ //
+
+//
+// getBenchmarkByDate will return the close price of the benchmark
+//
+func (t *Base) getBenchmarkByDate(date time.Time) float64 {
+	for _, row := range t.BenchmarkQuotes {
+		if row.Date.Format("2006-01-02") == date.Format("2006-01-02") {
+			return row.Close
+		}
+	}
+	return 0.00
+}
 
 //
 // tradeResultsWorker - A worker for running trade results per day.

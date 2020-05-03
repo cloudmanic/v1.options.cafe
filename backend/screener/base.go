@@ -38,6 +38,7 @@ type Result struct {
 	CallPrecentAway float64         `json:"call_percent_away"`
 	PutPrecentAway  float64         `json:"put_percent_away"`
 	UnderlyingLast  float64         `json:"underlyng_last"`
+	BenchmarkLast   float64         `json:"benchmark_last"`
 	Legs            []models.Symbol `json:"legs"`
 }
 

@@ -36,6 +36,9 @@ func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *m
 	// TODO(spicer): make this work from configs
 	debitAmount := 0.03
 
+	// Get the benchmark last
+	benchmarkLast := t.getBenchmarkByDate(today)
+
 	// Loop for expired postions
 	for key, row := range backtest.Positions {
 
@@ -54,6 +57,7 @@ func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *m
 			backtest.Positions[key].Note = "Triggered at debit amount."
 			backtest.EndingBalance = (backtest.EndingBalance - backtest.Positions[key].ClosePrice)
 			backtest.Positions[key].Balance = backtest.EndingBalance
+			backtest.Positions[key].BenchmarkLast = benchmarkLast
 		}
 	}
 
@@ -63,6 +67,9 @@ func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *m
 // closeOnShortTouch - If our trade touches the short leg we close
 //
 func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backtest *models.Backtest, options []types.OptionsChainItem) {
+
+	// Get the benchmark last
+	benchmarkLast := t.getBenchmarkByDate(today)
 
 	// Loop for expired postions
 	for key, row := range backtest.Positions {
@@ -89,7 +96,7 @@ func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backte
 			backtest.Positions[key].Note = "Trade touched the short leg."
 			backtest.Positions[key].Balance -= closingPrice
 			backtest.EndingBalance -= closingPrice
-
+			backtest.Positions[key].BenchmarkLast = benchmarkLast
 		}
 	}
 
@@ -99,6 +106,9 @@ func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backte
 // expirePositions - Loop through to see if we have any positions to expire.
 //
 func (t *Base) expirePositions(today time.Time, underlyingLast float64, backtest *models.Backtest) {
+
+	// Get the benchmark last
+	benchmarkLast := t.getBenchmarkByDate(today)
 
 	// Loop for expired postions
 	for key, row := range backtest.Positions {
@@ -124,6 +134,7 @@ func (t *Base) expirePositions(today time.Time, underlyingLast float64, backtest
 			// Shared for all strats
 			backtest.Positions[key].Status = "Closed"
 			backtest.Positions[key].CloseDate = models.Date{today}
+			backtest.Positions[key].BenchmarkLast = benchmarkLast
 
 			// Figure out how to close based on strategy
 			switch row.Strategy {

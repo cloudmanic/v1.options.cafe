@@ -41,7 +41,7 @@ func OptionParse(optionSymb string) (OptionParts, error) {
 
 	// Parse the options string
 	// https://regex101.com/r/jEGDzO/1
-	var re = regexp.MustCompile(`(\D{1,6})(\d{2})(\d{2})(\d{2})(C|P)(\d{5})(\d{3})`)
+	var re = regexp.MustCompile(`(.{1,6})(\d{2})(\d{2})(\d{2})(C|P)(\d{5})(\d{3})`)
 
 	// Get the matches
 	matches := re.FindAllStringSubmatch(optionSymb, -1)

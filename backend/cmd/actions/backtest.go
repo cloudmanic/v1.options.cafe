@@ -31,9 +31,6 @@ import (
 //
 func RunBackTest(db *models.DB, userId int) {
 
-	// Setup a new backtesting
-	bt := backtesting.New(db)
-
 	// Build screener object
 	screen := models.Screener{
 		UserId:   1,
@@ -57,20 +54,24 @@ func RunBackTest(db *models.DB, userId int) {
 		StartingBalance: 10000.00,
 		EndingBalance:   10000.00,
 		PositionSize:    "15-percent", // one-at-time, *-percent
-		StartDate:       models.Date{helpers.ParseDateNoError("2013-01-01")},
+		StartDate:       models.Date{helpers.ParseDateNoError("2017-01-01")},
 		EndDate:         models.Date{helpers.ParseDateNoError("2020-12-31")},
-		Midpoint:        true,
+		Midpoint:        false,
 		TradeSelect:     "highest-credit",
+		Benchmark:       "SPY",
 		Screen:          screen,
 	}
+
+	// Setup a new backtesting
+	bt := backtesting.New(db, btM.Benchmark)
 
 	// Run blank backtest
 	bt.DoBacktestDays(&btM)
 
 	plotData := [][]string{}
-	csvData := [][]string{{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "% Away", "Margin", "Balance", "Status", "Note"}}
+	csvData := [][]string{{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "% Away", "Margin", "Balance", "Benchmark", "Status", "Note"}}
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "% Away", "Margin", "Balance", "Status", "Note"})
+	table.SetHeader([]string{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "% Away", "Margin", "Balance", "Benchmark", "Status", "Note"})
 
 	for _, row := range btM.Positions {
 		// Build data string
@@ -84,6 +85,7 @@ func RunBackTest(db *models.DB, userId int) {
 			fmt.Sprintf("%.2f", row.PutPrecentAway) + "%",
 			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.Margin))),
 			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.Balance))),
+			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.BenchmarkLast))),
 			row.Status,
 			row.Note,
 		}
@@ -133,15 +135,15 @@ func RunBackTest(db *models.DB, userId int) {
 
 	// --------- Graph CSV -------- //
 
-	file, err = os.Create("/Users/spicer/Downloads/graph-balance.csv")
+	file2, err := os.Create("/Users/spicer/Downloads/graph-balance.csv")
 
 	if err != nil {
 		spew.Dump(err)
 	}
 
-	defer file.Close()
+	defer file2.Close()
 
-	writer = csv.NewWriter(file)
+	writer = csv.NewWriter(file2)
 	defer writer.Flush()
 
 	for _, value := range plotData {

@@ -24,6 +24,7 @@ type Backtest struct {
 	Midpoint        bool               `sql:"not null" json:"midpoint"` // Open trade at the midpoint
 	PositionSize    string             `sql:"not null" json:"one-at-time"`
 	TimeElapsed     time.Duration      `sql:"not null" json:"time_elapsed"`
+	Benchmark       string             `sql:"not null" json:"benchmark"`
 	Screen          Screener           `json:"screen"`
 	Positions       []BacktestPosition `json:"positions"`
 }
