@@ -19,7 +19,6 @@ type BacktestPosition struct {
 	BacktestId      uint      `sql:"not null" index:BacktestId" json:"backtest_id"`
 	Strategy        string    `sql:"not null" index:BacktestId" json:"strategy"`
 	Status          string    `sql:"not null;type:ENUM('Open', 'Closed');default:'Open'" json:"status"`
-	BenchmarkLast   float64   `sql:"not null" json:"benchmark_last"`
 	OpenDate        Date      `gorm:"type:date" sql:"not null" json:"open_date"`
 	CloseDate       Date      `gorm:"type:date" sql:"not null" json:"close_date"`
 	OpenPrice       float64   `sql:"not null" json:"open_price"`
@@ -29,6 +28,7 @@ type BacktestPosition struct {
 	Balance         float64   `sql:"not null" json:"balance"`
 	PutPrecentAway  float64   `sql:"not null" json:"put_percent_away"`
 	CallPrecentAway float64   `sql:"not null" json:"call_percent_away"`
+	BenchmarkLast   float64   `sql:"not null" json:"benchmark_last"`
 	Lots            int       `sql:"not null" json:"lots"`
 	Legs            []Symbol  `sql:"not null" json:"legs" gorm:"many2many:backtest_positions_symbols;"`
 	Note            string    `sql:"not null" json:"note"`

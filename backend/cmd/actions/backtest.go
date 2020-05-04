@@ -10,6 +10,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"log"
+	"math"
 	"math/big"
 	"os"
 
@@ -54,7 +55,7 @@ func RunBackTest(db *models.DB, userId int) {
 		StartingBalance: 10000.00,
 		EndingBalance:   10000.00,
 		PositionSize:    "15-percent", // one-at-time, *-percent
-		StartDate:       models.Date{helpers.ParseDateNoError("2016-01-01")},
+		StartDate:       models.Date{helpers.ParseDateNoError("2017-01-01")},
 		EndDate:         models.Date{helpers.ParseDateNoError("2020-12-31")},
 		Midpoint:        false,
 		TradeSelect:     "highest-credit",
@@ -69,10 +70,12 @@ func RunBackTest(db *models.DB, userId int) {
 	bt.DoBacktestDays(&btM)
 
 	plotData := [][]string{}
-	csvData := [][]string{{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "% Away", "Margin", "Balance", "Return", "Benchmark", "Benchmark Return", "Status", "Note"}}
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "% Away", "Margin", "Balance", "Return", "Benchmark", "Benchmark Return", "Status", "Note"})
+	csvData := [][]string{{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "% Away", "Margin", "Balance", "Return", "Benchmark", "Benchmark Balance", "Benchmark Return", "Status", "Note"}}
+	table.SetHeader([]string{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "% Away", "Margin", "Balance", "Return", "Benchmark", "Benchmark Balance", "Benchmark Return", "Status", "Note"})
 	closedReturn := 0.00
+	investedBenchmark := math.Floor(btM.StartingBalance / btM.BenchmarkStart)
+	investedBenchmarkLeftOver := btM.StartingBalance - (investedBenchmark * btM.BenchmarkStart)
 
 	for _, row := range btM.Positions {
 		// Only record closed position
@@ -82,6 +85,7 @@ func RunBackTest(db *models.DB, userId int) {
 
 		// Benchmark return
 		bReturn := (((row.BenchmarkLast - btM.BenchmarkStart) / btM.BenchmarkStart) * 100)
+		bAmountReturn := (investedBenchmark * row.BenchmarkLast) + investedBenchmarkLeftOver
 
 		// Build data string
 		d := []string{
@@ -96,6 +100,7 @@ func RunBackTest(db *models.DB, userId int) {
 			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.Balance))),
 			fmt.Sprintf("%.2f", row.ReturnFromStart) + "%",
 			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.BenchmarkLast))),
+			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(bAmountReturn))),
 			fmt.Sprintf("%.2f", bReturn) + "%",
 			row.Status,
 			row.Note,
@@ -107,6 +112,13 @@ func RunBackTest(db *models.DB, userId int) {
 	}
 	table.Render()
 
+	// CAGR = (Ending value / Starting value)^(1 / # years) -1
+	s1 := helpers.ParseDateNoError(btM.StartDate.Format("01/02/2006"))
+	s2 := helpers.ParseDateNoError(btM.EndDate.Format("01/02/2006"))
+	years := (s2.Sub(s1).Hours() / 24) / 365
+	cagr := (math.Pow((btM.EndingBalance/btM.StartingBalance), (1/years)) - 1) * 100
+	benchmarkCagr := (math.Pow((btM.BenchmarkEnd/btM.BenchmarkStart), (1/years)) - 1) * 100
+
 	// Summary data
 	tradeCount := len(btM.Positions)
 	profit := (btM.EndingBalance - btM.StartingBalance)
@@ -117,11 +129,17 @@ func RunBackTest(db *models.DB, userId int) {
 	log.Println("")
 	log.Println("Summmary")
 	log.Println("-------------")
+	log.Printf("CAGR: %s%%", humanize.BigCommaf(big.NewFloat(cagr)))
 	log.Printf("Return: %s%%", humanize.BigCommaf(big.NewFloat(closedReturn)))
 	log.Printf("Profit: $%s", humanize.BigCommaf(big.NewFloat(profit)))
 	log.Printf("Trade Count: %d", tradeCount)
-	log.Printf("Benchmark Start (%s): %s", btM.Benchmark, humanize.BigCommaf(big.NewFloat(btM.BenchmarkStart)))
-	log.Printf("Benchmark Return (%s): %s%%", btM.Benchmark, humanize.BigCommaf(big.NewFloat(benchmarkPercent)))
+	log.Println("")
+	log.Println("Benchmark")
+	log.Println("-------------")
+	log.Printf("Start (%s): %s", btM.Benchmark, humanize.BigCommaf(big.NewFloat(btM.BenchmarkStart)))
+	log.Printf("End (%s): %s", btM.Benchmark, humanize.BigCommaf(big.NewFloat(btM.BenchmarkEnd)))
+	log.Printf("CAGR (%s): %s%%", btM.Benchmark, humanize.BigCommaf(big.NewFloat(benchmarkCagr)))
+	log.Printf("Return (%s): %s%%", btM.Benchmark, humanize.BigCommaf(big.NewFloat(benchmarkPercent)))
 	log.Println("")
 
 	// ------------------ Export CSV ----------- //
