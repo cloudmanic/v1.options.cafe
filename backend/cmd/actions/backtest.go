@@ -30,7 +30,7 @@ import (
 //
 // gnuplot -e "set terminal jpeg size 3600,1600; set timefmt '%m/%d/%Y'; set datafile separator ','; set format x '%m/%d/%Y'; set xdata time; set title 'Account Balance Over Time';  plot for [col=2:2] '/Users/spicer/Downloads/graph.csv' using 1:col with lines" > /tmp/blah.jpeg && open /tmp/blah.jpeg
 //
-func RunBackTest(db *models.DB, userId int) {
+func RunBackTest(db *models.DB, userID int) {
 
 	// Build screener object
 	screen := models.Screener{
@@ -51,14 +51,14 @@ func RunBackTest(db *models.DB, userId int) {
 
 	// Set backtest
 	btM := models.Backtest{
-		UserId:          1,
+		UserId:          uint(userID),
 		StartingBalance: 10000.00,
 		EndingBalance:   10000.00,
 		PositionSize:    "15-percent", // one-at-time, *-percent
-		StartDate:       models.Date{helpers.ParseDateNoError("2017-01-01")},
+		StartDate:       models.Date{helpers.ParseDateNoError("2019-01-01")},
 		EndDate:         models.Date{helpers.ParseDateNoError("2020-12-31")},
 		Midpoint:        false,
-		TradeSelect:     "highest-credit",
+		TradeSelect:     "highest-ask",
 		Benchmark:       "SPY",
 		Screen:          screen,
 	}

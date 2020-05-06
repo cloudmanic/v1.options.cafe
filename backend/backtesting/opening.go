@@ -15,6 +15,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/eod"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/cloudmanic/app.options.cafe/backend/screener"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //
@@ -31,6 +32,10 @@ func (t *Base) OpenMultiLegCredit(today time.Time, strategy string, backtest *mo
 
 	// Set up a new screener so we can use it's Functions
 	screenObj := screener.NewScreen(t.DB, &eod.Api{})
+
+	if result.Credit == 0 {
+		spew.Dump(result)
+	}
 
 	// Amount of margin left after trade is opened.
 	diff := result.Legs[1].OptionStrike - result.Legs[0].OptionStrike

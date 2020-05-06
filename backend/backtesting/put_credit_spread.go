@@ -7,6 +7,7 @@
 package backtesting
 
 import (
+	"errors"
 	"time"
 
 	"github.com/cloudmanic/app.options.cafe/backend/brokers/eod"
@@ -28,12 +29,74 @@ func (t *Base) PutCreditSpreadPlaceTrades(today time.Time, backtest *models.Back
 	// See if we have any positions to close
 	t.CloseMultiLegCredit(today, results[0].UnderlyingLast, backtest, options)
 
-	// TODO(spicer): Figure which result to open
-	if len(results) > 0 {
-		t.OpenMultiLegCredit(today, "put-credit-spread", backtest, results[0])
+	// Figure which result to open
+	result, err := t.PutCreditSpreadSelectTrade(backtest, results)
+
+	// Open trade
+	if err == nil {
+		t.OpenMultiLegCredit(today, "put-credit-spread", backtest, result)
 	}
 
 	return
+}
+
+//
+// PutCreditSpreadSelectTrade will figure out which trade we are placing today.
+//
+func (t *Base) PutCreditSpreadSelectTrade(backtest *models.Backtest, results []screener.Result) (screener.Result, error) {
+	// Result we return.
+	winner := screener.Result{}
+
+	// Temp holding after filtering out.
+	tempResults := []screener.Result{}
+
+	// Loop through and filter out results we do not need.
+	for _, row := range results {
+		// First see if we already have this position
+		if !t.checkForCurrentPosition(backtest, row) {
+			continue
+		}
+
+		tempResults = append(tempResults, row)
+	}
+
+	// Make sure we have some results.
+	if len(tempResults) == 0 {
+		return winner, errors.New("no results found")
+	}
+
+	// for _, row := range tempResults {
+	// 	fmt.Println(row.Legs[0].OptionExpire)
+	// }
+	//
+	// os.Exit(1)
+
+	// Loop through temp list to find the result we want based on TradeSelect
+	switch backtest.TradeSelect {
+
+	// Find the highest midpoint
+	case "highest-midpoint":
+		for _, row := range tempResults {
+			// first lap Midpoint will equal zero
+			if row.MidPoint > winner.MidPoint {
+				winner = row
+			}
+		}
+		break
+
+	// Find the highest ask
+	case "highest-ask":
+		for _, row := range tempResults {
+			// first lap Midpoint will equal zero
+			if row.Ask > winner.Ask {
+				winner = row
+			}
+		}
+		break
+
+	}
+
+	return winner, nil
 }
 
 //
@@ -54,6 +117,13 @@ func (t *Base) PutCreditSpreadResults(today time.Time, backtest *models.Backtest
 
 	// Loop through the expire dates
 	for _, row := range expireDates {
+		// Expire Date.
+		expireDate, _ := time.Parse("2006-01-02", row.Format("2006-01-02"))
+
+		// Filter for expire dates
+		if !screenObj.FilterDaysToExpireDaysToExpire(today, backtest.Screen, expireDate) {
+			continue
+		}
 
 		// Get the options and just pull out the PUT options for this expire date.
 		putOptions := t.GetOptionsByExpirationType(row, "Put", options)
