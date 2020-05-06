@@ -453,9 +453,9 @@ func (t *Base) FilterOpenDebit(screen models.Screener, debit float64) bool {
 }
 
 //
-// Review trade for days to expire.
+// FilterDaysToExpire  Review trade for days to expire.
 //
-func (t *Base) FilterDaysToExpireDaysToExpire(today time.Time, screen models.Screener, expire time.Time) bool {
+func (t *Base) FilterDaysToExpire(today time.Time, screen models.Screener, expire time.Time) bool {
 
 	// Get days to expire.
 	daysToExpire := int(today.Sub(expire).Hours()/24) * -1

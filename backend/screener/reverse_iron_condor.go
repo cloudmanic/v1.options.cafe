@@ -55,7 +55,7 @@ func (t *Base) RunReverseIronCondor(screen models.Screener) ([]Result, error) {
 		expireDate, _ := time.Parse("2006-01-02", row)
 
 		// Filter for expire dates
-		if !t.FilterDaysToExpireDaysToExpire(today, screen, expireDate) {
+		if !t.FilterDaysToExpire(today, screen, expireDate) {
 			continue
 		}
 

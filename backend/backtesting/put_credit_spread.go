@@ -30,7 +30,7 @@ func (t *Base) PutCreditSpreadPlaceTrades(today time.Time, backtest *models.Back
 	t.CloseMultiLegCredit(today, results[0].UnderlyingLast, backtest, options)
 
 	// Figure which result to open
-	result, err := t.PutCreditSpreadSelectTrade(backtest, results)
+	result, err := t.PutCreditSpreadSelectTrade(today, backtest, results)
 
 	// Open trade
 	if err == nil {
@@ -43,7 +43,7 @@ func (t *Base) PutCreditSpreadPlaceTrades(today time.Time, backtest *models.Back
 //
 // PutCreditSpreadSelectTrade will figure out which trade we are placing today.
 //
-func (t *Base) PutCreditSpreadSelectTrade(backtest *models.Backtest, results []screener.Result) (screener.Result, error) {
+func (t *Base) PutCreditSpreadSelectTrade(today time.Time, backtest *models.Backtest, results []screener.Result) (screener.Result, error) {
 	// Result we return.
 	winner := screener.Result{}
 
@@ -65,14 +65,23 @@ func (t *Base) PutCreditSpreadSelectTrade(backtest *models.Backtest, results []s
 		return winner, errors.New("no results found")
 	}
 
-	// for _, row := range tempResults {
-	// 	fmt.Println(row.Legs[0].OptionExpire)
-	// }
-	//
-	// os.Exit(1)
-
 	// Loop through temp list to find the result we want based on TradeSelect
 	switch backtest.TradeSelect {
+
+	// Least days to expire.
+	case "least-days-to-expire":
+		daysTracker := 10000000 // Random big number
+
+		for _, row := range tempResults {
+			expire, _ := time.Parse("2006-01-02", row.Legs[0].OptionExpire.Format("2006-01-02"))
+			daysToExpire := int(today.Sub(expire).Hours() / 24 * -1)
+
+			if daysTracker > daysToExpire {
+				daysTracker = daysToExpire
+				winner = row
+			}
+		}
+		break
 
 	// Find the highest midpoint
 	case "highest-midpoint":
@@ -121,7 +130,7 @@ func (t *Base) PutCreditSpreadResults(today time.Time, backtest *models.Backtest
 		expireDate, _ := time.Parse("2006-01-02", row.Format("2006-01-02"))
 
 		// Filter for expire dates
-		if !screenObj.FilterDaysToExpireDaysToExpire(today, backtest.Screen, expireDate) {
+		if !screenObj.FilterDaysToExpire(today, backtest.Screen, expireDate) {
 			continue
 		}
 

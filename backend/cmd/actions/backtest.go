@@ -55,10 +55,10 @@ func RunBackTest(db *models.DB, userID int) {
 		StartingBalance: 10000.00,
 		EndingBalance:   10000.00,
 		PositionSize:    "15-percent", // one-at-time, *-percent
-		StartDate:       models.Date{helpers.ParseDateNoError("2019-01-01")},
+		StartDate:       models.Date{helpers.ParseDateNoError("2014-01-01")},
 		EndDate:         models.Date{helpers.ParseDateNoError("2020-12-31")},
 		Midpoint:        false,
-		TradeSelect:     "highest-ask",
+		TradeSelect:     "least-days-to-expire", // least-days-to-expire, highest-midpoint, highest-ask
 		Benchmark:       "SPY",
 		Screen:          screen,
 	}
