@@ -55,7 +55,7 @@ func RunBackTest(db *models.DB, userID int) {
 		StartingBalance: 10000.00,
 		EndingBalance:   10000.00,
 		PositionSize:    "15-percent", // one-at-time, *-percent
-		StartDate:       models.Date{helpers.ParseDateNoError("2020-01-01")},
+		StartDate:       models.Date{helpers.ParseDateNoError("2019-01-01")},
 		EndDate:         models.Date{helpers.ParseDateNoError("2020-12-31")},
 		Midpoint:        false,
 		TradeSelect:     "least-days-to-expire", // least-days-to-expire, highest-midpoint, highest-ask
@@ -71,8 +71,8 @@ func RunBackTest(db *models.DB, userID int) {
 
 	plotData := [][]string{}
 	table := tablewriter.NewWriter(os.Stdout)
-	csvData := [][]string{{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "% Away", "Margin", "Balance", "Return", "Benchmark", "Benchmark Balance", "Benchmark Return", "Status", "Note"}}
-	table.SetHeader([]string{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "% Away", "Margin", "Balance", "Return", "Benchmark", "Benchmark Balance", "Benchmark Return", "Status", "Note"})
+	csvData := [][]string{{"Open Date", "Close Date", "Spread", "Open", "Close", "Credit", "Return", "Lots", "% Away", "Margin", "Balance", "Return", "Benchmark", "Benchmark Balance", "Benchmark Return", "Status", "Note"}}
+	table.SetHeader([]string{"Open Date", "Close Date", "Spread", "Open", "Close", "Credit", "Return", "Lots", "% Away", "Margin", "Balance", "Return", "Benchmark", "Benchmark Balance", "Benchmark Return", "Status", "Note"})
 	closedReturn := 0.00
 	investedBenchmark := math.Floor(btM.StartingBalance / btM.BenchmarkStart)
 	investedBenchmarkLeftOver := btM.StartingBalance - (investedBenchmark * btM.BenchmarkStart)
@@ -82,6 +82,9 @@ func RunBackTest(db *models.DB, userID int) {
 		if row.Status == "Closed" {
 			closedReturn = row.ReturnFromStart
 		}
+
+		// Return based on percent.
+		returnPercent := (((row.Margin + (row.OpenPrice - row.ClosePrice) - row.Margin) / row.Margin) * 100)
 
 		// Benchmark return
 		bReturn := (((row.BenchmarkLast - btM.BenchmarkStart) / btM.BenchmarkStart) * 100)
@@ -94,6 +97,8 @@ func RunBackTest(db *models.DB, userID int) {
 			fmt.Sprintf("%s %s %.2f / %.2f", row.Legs[0].OptionUnderlying, row.Legs[0].OptionExpire.Format("01/02/2006"), row.Legs[0].OptionStrike, row.Legs[1].OptionStrike),
 			fmt.Sprintf("$%.2f", row.OpenPrice),
 			fmt.Sprintf("$%.2f", row.ClosePrice),
+			fmt.Sprintf("$%.2f", ((row.OpenPrice / float64(row.Lots)) / 100)),
+			fmt.Sprintf("%.2f", returnPercent) + "%",
 			fmt.Sprintf("%d", row.Lots),
 			fmt.Sprintf("%.2f", row.PutPrecentAway) + "%",
 			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.Margin))),
