@@ -17,6 +17,8 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 	"github.com/cloudmanic/app.options.cafe/backend/screener"
+
+	screenerCache "github.com/cloudmanic/app.options.cafe/backend/screener/cache"
 )
 
 const workerCount int = 3
@@ -25,9 +27,8 @@ const workerCount int = 3
 type Base struct {
 	DB              models.Datastore
 	BenchmarkQuotes []types.HistoryQuote
-	CachedSymbols   map[string]models.Symbol
 	TradeFuncs      map[string]func(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem)
-	ResultsFuncs    map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) ([]screener.Result, error)
+	ResultsFuncs    map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem, cache screenerCache.Cache) ([]screener.Result, error)
 }
 
 // Job struct
@@ -48,17 +49,8 @@ func New(db models.Datastore, benchmark string) Base {
 		DB: db,
 	}
 
-	// Build cache of all symbols in the system
-	s := t.DB.GetAllSymbols()
-	t.CachedSymbols = make(map[string]models.Symbol)
-
-	// Loop through and build hash table
-	for _, row := range s {
-		t.CachedSymbols[row.ShortName] = row
-	}
-
 	// Build backtest functions - results
-	t.ResultsFuncs = map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem) ([]screener.Result, error){
+	t.ResultsFuncs = map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem, cache screenerCache.Cache) ([]screener.Result, error){
 		"put-credit-spread": t.PutCreditSpreadResults,
 	}
 
@@ -66,9 +58,6 @@ func New(db models.Datastore, benchmark string) Base {
 	t.TradeFuncs = map[string]func(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem){
 		"put-credit-spread": t.PutCreditSpreadPlaceTrades,
 	}
-
-	// Warm symbol cache (just random sumbol to warm cache)
-	t.GetSymbol("SPY190418P00269000", "SPY Apr 18 2019 $269.00 Put", "Option")
 
 	// Get benchmark data.
 	tr := &tradier.Api{ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN")}
@@ -87,6 +76,9 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 	// Let's time this backtest
 	start := time.Now()
 
+	// Build the cache for this screen.
+	cache := screenerCache.New(t.DB)
+
 	// Get dates by symbol
 	dates, err := eod.GetTradeDatesBySymbols(backtest.Screen.Symbol)
 
@@ -101,7 +93,7 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 
 	// Load up the workers
 	for w := 0; w < workerCount; w++ {
-		go t.tradeResultsWorker(jobs, results)
+		go t.tradeResultsWorker(jobs, results, cache)
 	}
 
 	// Loop through the dates and run backtest.
@@ -203,29 +195,6 @@ func (t *Base) GetExpirationDatesFromOptions(options []types.OptionsChainItem) [
 	return dates
 }
 
-//
-// GetSymbol - This is a wrapper function for models.Symbol. We want to do a bit of "caching".
-//
-func (t *Base) GetSymbol(short string, name string, sType string) (models.Symbol, error) {
-	// See if we have this symbol in cache. If so return happy.
-	if val, ok := t.CachedSymbols[short]; ok {
-		return val, nil
-	}
-
-	// Add symbol to the DB. Since we do not know about it.
-	symb, err := t.DB.CreateNewSymbol(short, name, sType)
-
-	if err != nil {
-		return symb, err
-	}
-
-	// Add symbol to map. TODO(spicer) have to do magic to manage concurrent access with go routines
-	//t.CachedSymbols[short] = symb
-
-	// Return happy.
-	return symb, nil
-}
-
 // ---------------- Private helper functions ------------------ //
 
 //
@@ -243,7 +212,7 @@ func (t *Base) getBenchmarkByDate(date time.Time) float64 {
 //
 // tradeResultsWorker - A worker for running trade results per day.
 //
-func (t *Base) tradeResultsWorker(jobs <-chan Job, results chan<- Job) {
+func (t *Base) tradeResultsWorker(jobs <-chan Job, results chan<- Job, cache screenerCache.Cache) {
 	// Wait for jobs to come in and process them.
 	for job := range jobs {
 		// Create broker object
@@ -263,7 +232,7 @@ func (t *Base) tradeResultsWorker(jobs <-chan Job, results chan<- Job) {
 		}
 
 		// Run backtest strategy function for this backtest
-		job.Results, err = t.ResultsFuncs[job.Backtest.Screen.Strategy](job.Day, job.Backtest, underlyingLast, options)
+		job.Results, err = t.ResultsFuncs[job.Backtest.Screen.Strategy](job.Day, job.Backtest, underlyingLast, options, cache)
 
 		if err != nil {
 			services.Info(err)

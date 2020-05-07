@@ -20,6 +20,7 @@ import (
 	"github.com/cloudmanic/app.options.cafe/backend/models"
 )
 
+// Base struct
 type Base struct {
 	Broker      brokers.Api
 	DB          models.Datastore
@@ -42,11 +43,13 @@ type Result struct {
 	Legs            []models.Symbol `json:"legs"`
 }
 
+// Spread struct
 type Spread struct {
 	Short types.OptionsChainItem
 	Long  types.OptionsChainItem
 }
 
+// IronCondor struct
 type IronCondor struct {
 	CallShort types.OptionsChainItem
 	CallLong  types.OptionsChainItem
@@ -55,10 +58,9 @@ type IronCondor struct {
 }
 
 //
-// New Screen
+// NewScreen will create a new screen.
 //
 func NewScreen(db models.Datastore, broker brokers.Api) Base {
-
 	// New screener instance
 	t := Base{
 		Broker: broker,

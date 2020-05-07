@@ -7,17 +7,21 @@
 package screener
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"time"
 
+	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
 	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
 	"github.com/cloudmanic/app.options.cafe/backend/library/services"
 	"github.com/cloudmanic/app.options.cafe/backend/models"
+
+	screenerCache "github.com/cloudmanic/app.options.cafe/backend/screener/cache"
 )
 
 //
-// Run a put credit spread screen
+// RunPutCreditSpread will run a put credit spread screen
 //
 func (t *Base) RunPutCreditSpread(screen models.Screener) ([]Result, error) {
 
@@ -46,8 +50,8 @@ func (t *Base) RunPutCreditSpread(screen models.Screener) ([]Result, error) {
 		return result, err
 	}
 
-	// Set params
-	spreadWidth := t.GetPutCreditSpreadParms(screen, quote.Last)
+	// Build the cache for this screen.
+	cache := screenerCache.New(t.DB)
 
 	// Loop through the expire dates
 	for _, row := range expires {
@@ -67,63 +71,9 @@ func (t *Base) RunPutCreditSpread(screen models.Screener) ([]Result, error) {
 			continue
 		}
 
-		for _, row2 := range chain.Puts {
-
-			// No need to pay attention to open interest of zero
-			if row2.OpenInterest == 0 {
-				continue
-			}
-
-			// Skip strikes that are higher than our min strike. Based on percent away.
-			if !t.FilterStrikeByPercentDown("short-strike-percent-away", screen, row2.Strike, quote.Last) {
-				continue
-			}
-
-			// We only want the first 100
-			if len(result) >= 100 {
-				return result, nil
-			}
-
-			// Find the strike that is x points away.
-			buyLeg, err := t.FindByStrike(chain.Puts, (row2.Strike - spreadWidth))
-
-			if err != nil {
-				continue
-			}
-
-			// See if there is enough credit
-			credit := row2.Bid - buyLeg.Ask
-
-			if !t.FilterOpenCredit(screen, credit) {
-				continue
-			}
-
-			// Figure out the credit spread amount.
-			buyCost := row2.Ask - buyLeg.Bid
-			midPoint := (credit + buyCost) / 2
-
-			// Add in Symbol Object - Buy leg
-			symbBuyLeg, err := t.DB.CreateNewSymbol(buyLeg.Symbol, buyLeg.Description, "Option")
-
-			if err != nil {
-				continue
-			}
-
-			// Add in Symbol Object - Sell leg
-			symbSellLeg, err := t.DB.CreateNewSymbol(row2.Symbol, row2.Description, "Option")
-
-			if err != nil {
-				continue
-			}
-
-			// We have a winner
-			result = append(result, Result{
-				Credit:         helpers.Round(credit, 2),
-				MidPoint:       helpers.Round(midPoint, 2),
-				PutPrecentAway: helpers.Round(((1 - row2.Strike/quote.Last) * 100), 2),
-				Legs:           []models.Symbol{symbBuyLeg, symbSellLeg},
-			})
-
+		// Core screen logic from our screener.
+		for _, row2 := range t.PutCreditSpreadCoreScreen(today, screen, chain.Puts, quote.Last, cache) {
+			result = append(result, row2)
 		}
 
 	}
@@ -133,11 +83,88 @@ func (t *Base) RunPutCreditSpread(screen models.Screener) ([]Result, error) {
 }
 
 //
-// Set Parms we need.
+// PutCreditSpreadCoreScreen will run our core screen and return results.
+//
+func (t *Base) PutCreditSpreadCoreScreen(today time.Time, screen models.Screener, puts []types.OptionsChainItem, underlyingLast float64, cache screenerCache.Cache) []Result {
+	result := []Result{}
+
+	// Set params
+	spreadWidth := t.GetPutCreditSpreadParms(screen, underlyingLast)
+
+	// Loop through all the puts.
+	for _, row := range puts {
+		// No need to pay attention to open interest of zero
+		if row.OpenInterest == 0 {
+			continue
+		}
+
+		// Skip strikes that are higher than our min strike. Based on percent away.
+		if !t.FilterStrikeByPercentDown("short-strike-percent-away", screen, row.Strike, underlyingLast) {
+			continue
+		}
+
+		// We only want the first 100
+		if len(result) >= 100 {
+			return result
+		}
+
+		// Find the strike that is x points away.
+		buyLeg, err := t.FindByStrike(puts, (row.Strike - spreadWidth))
+
+		if err != nil {
+			continue
+		}
+
+		// See if there is enough credit
+		credit := row.Bid - buyLeg.Ask
+
+		if !t.FilterOpenCredit(screen, credit) {
+			continue
+		}
+
+		// Figure out the credit spread amount.
+		buyCost := row.Ask - buyLeg.Bid
+		midPoint := (credit + buyCost) / 2
+
+		// Add in Symbol Object - Buy leg
+		symbBuyLeg, err := cache.GetSymbol(buyLeg.Symbol, buyLeg.Description, "Option")
+
+		if err != nil {
+			fmt.Println("HERE 1")
+			continue
+		}
+
+		// Add in Symbol Object - Sell leg
+		symbSellLeg, err := cache.GetSymbol(row.Symbol, row.Description, "Option")
+
+		if err != nil {
+			fmt.Println("HERE 2")
+			continue
+		}
+
+		// We have a winner
+		result = append(result, Result{
+			Day:            types.Date{today},
+			Credit:         helpers.Round(credit, 2),
+			Bid:            helpers.Round(buyCost, 2),
+			Ask:            helpers.Round(credit, 2),
+			MidPoint:       helpers.Round(midPoint, 2),
+			UnderlyingLast: underlyingLast,
+			PutPrecentAway: helpers.Round(((1 - row.Strike/underlyingLast) * 100), 2),
+			Legs:           []models.Symbol{symbBuyLeg, symbSellLeg},
+		})
+	}
+
+	// Return happy
+	return result
+}
+
+//
+// GetPutCreditSpreadParms will set Parms we need.
 //
 func (t *Base) GetPutCreditSpreadParms(screen models.Screener, lastQuote float64) float64 {
 
-	var spreadWidth float64 = 5.00
+	spreadWidth := 5.00
 
 	// See if we have a spread width
 	sw, err := t.FindFilterItemValue("spread-width", screen)
