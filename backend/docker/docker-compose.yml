@@ -1,0 +1,110 @@
+version: '2.1'
+
+services:
+
+  # mariadb 10.2
+  mariadb102:
+    image: mariadb:10.2
+
+    container_name: mariadb-10.2.app.options.cafe
+
+    ports:
+      - 127.0.0.1:9316:3306
+
+    volumes:
+      - ./mariadb102_data:/var/lib/mysql
+
+    environment:
+      MYSQL_DATABASE: app_options_cafe
+      MYSQL_ROOT_PASSWORD: foobar
+
+  # mariadb 10.2 Unit Testing DB
+  mariadb102Testing:
+    image: mariadb:10.2
+
+    container_name: mariadb-10.20-testing.app.options.cafe
+
+    ports:
+      - 127.0.0.1:9917:3306
+
+    # Memory file system, vs storing to the file system. Maybe don't need just delete container when done.
+    tmpfs:
+      - /var/lib/mysql
+
+    environment:
+      MYSQL_DATABASE: testing_db
+      MYSQL_ROOT_PASSWORD: foobar
+
+  # Mailhog
+  mailhog:
+
+    image: mailhog/mailhog
+
+    container_name: mailhog.app.options.cafe
+
+    ports:
+      - 127.0.0.1:9125:8025
+      - 127.0.0.1:9225:1025
+
+
+  # Redis 4.0
+  redis:
+    image: redis:5.0.4
+
+    hostname: redis.options.cafe
+
+    container_name: redis.options.cafe
+
+    ports:
+      - "127.0.0.1:9479:6379"
+
+  # nsqlookupd
+  nsqlookupd:
+
+    image: nsqio/nsq
+
+    container_name: nsqlookupd.options.cafe
+
+    hostname: nsqlookupd.options.cafe
+
+    command: /nsqlookupd
+
+    ports:
+      - 127.0.0.1:4160:4160
+      - 127.0.0.1:4161:4161
+
+  # nsqd
+  nsqd:
+
+    image: nsqio/nsq
+
+    container_name: nsqd.options.cafe
+
+    hostname: nsqd.options.cafe
+
+    command: /nsqd --lookupd-tcp-address=nsqlookupd:4160 --data-path=/tmp
+
+    ports:
+      - 127.0.0.1:4150:4150
+      - 127.0.0.1:4151:4151
+
+  # nsqadmin
+  nsqadmin:
+
+    image: nsqio/nsq
+
+    container_name: nsqadmin.options.cafe
+
+    hostname: nsqadmin.options.cafe
+
+    command: /nsqadmin --lookupd-http-address=nsqlookupd:4161
+
+    depends_on:
+      - nsqlookupd
+
+    ports:
+      - 127.0.0.1:4171:4171
+
+    environment:
+      VIRTUAL_PORT: 4171
+      VIRTUAL_HOST: nsqadmin.options.cafe

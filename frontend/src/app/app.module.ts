@@ -10,6 +10,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './providers/http/token.interceptor';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { HighchartsChartComponent } from './shared/highcharts/highcharts-chart.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 // Shared
 import { AnalyzeComponent } from './shared/analyze/analyze.component';
@@ -119,6 +120,7 @@ import { SymbolComponent } from './research/symbol/symbol.component';
 // Centcom
 import { CoreComponent as CentcomCoreComponent } from './centcom/layouts/core/core.component';
 import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.component';
+import { environment } from 'environments/environment';
 
 @NgModule({
 	declarations: [
@@ -211,7 +213,10 @@ import { UsersComponent as CentcomUsersComponent } from './centcom/users/users.c
 		BrowserModule,
 		SortablejsModule,
 		HttpClientModule,
-		FontAwesomeModule
+		FontAwesomeModule,
+
+		// Remember whenever we change the service worker we need to delete it in the browser. (unregister)
+		environment.production ? ServiceWorkerModule.register('ngsw-worker.js') : []
 	],
 
 	providers: [

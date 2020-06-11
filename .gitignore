@@ -13,3 +13,6 @@ deploy.retry
 
 Homestead.json
 Homestead.yaml
+
+# Docker stuff
+backend/docker/mariadb102_data

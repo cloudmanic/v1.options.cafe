@@ -32,7 +32,7 @@ export class AppComponent {
 					// Set user id for piwik
 					let email = localStorage.getItem('user_email');
 
-					if (email.length) {
+					if (email && email.length) {
 						//_paq.push(['setUserId', email]);
 
 						// We do this instead of "setUserId" since it creates new logs for the user if they are
