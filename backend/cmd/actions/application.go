@@ -10,8 +10,8 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/library/helpers"
+	"app.options.cafe/models"
 )
 
 //

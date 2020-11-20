@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"app.options.cafe/brokers/types"
+	"app.options.cafe/library/services"
 	"github.com/tidwall/gjson"
 )
 

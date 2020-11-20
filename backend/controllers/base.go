@@ -14,9 +14,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/cloudmanic/app.options.cafe/backend/websocket"
+	"app.options.cafe/library/services"
+	"app.options.cafe/models"
+	"app.options.cafe/websocket"
 	"github.com/gin-gonic/gin"
 	env "github.com/jpfuentes2/go-env"
 )
@@ -38,7 +38,7 @@ type ValidateRequest interface {
 // Start up the controller.
 //
 func init() {
-	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/.env")
+	env.ReadEnv(build.Default.GOPATH + "/src/app.options.cafe/.env")
 }
 
 //

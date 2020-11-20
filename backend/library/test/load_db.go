@@ -13,7 +13,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/models"
 )
 
 //
@@ -28,7 +28,7 @@ func LoadSqlDump(db models.Datastore, dataSet string) error {
 	dbName := s2[0]
 
 	// Set file
-	dataFile := build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/library/test/data/" + dataSet + ".sql"
+	dataFile := build.Default.GOPATH + "/src/app.options.cafe/library/test/data/" + dataSet + ".sql"
 
 	// Run CLI command to import data
 	_, err := exec.Command("bash", "-c", "mysql --host=127.0.0.1 --port=9906 -u root -pfoobar "+dbName+" < "+dataFile).Output()

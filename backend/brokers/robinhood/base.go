@@ -10,7 +10,7 @@
 
 package robinhood
 
-import "github.com/cloudmanic/app.options.cafe/backend/models"
+import "app.options.cafe/models"
 
 type Api struct {
 	DB models.Datastore

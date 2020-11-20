@@ -13,8 +13,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/brokers/tradier"
+	"app.options.cafe/models"
 	"github.com/nbio/st"
 )
 

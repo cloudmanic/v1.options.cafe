@@ -18,14 +18,14 @@ import (
 	"github.com/jinzhu/gorm"
 	env "github.com/jpfuentes2/go-env"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"app.options.cafe/library/services"
 )
 
 //
 // Init.
 //
 func init() {
-	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/.env")
+	env.ReadEnv(build.Default.GOPATH + "/src/app.options.cafe/.env")
 }
 
 //

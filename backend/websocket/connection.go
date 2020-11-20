@@ -9,7 +9,7 @@ package websocket
 import (
 	"net/http"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"app.options.cafe/library/services"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )

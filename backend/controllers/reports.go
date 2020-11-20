@@ -11,8 +11,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/library/reports"
+	"app.options.cafe/library/helpers"
+	"app.options.cafe/library/reports"
 )
 
 //

@@ -23,13 +23,13 @@ import (
 
 	env "github.com/jpfuentes2/go-env"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
-	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
-	"github.com/cloudmanic/app.options.cafe/backend/library/files"
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/library/store/object"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/brokers/types"
+	"app.options.cafe/library/cache"
+	"app.options.cafe/library/files"
+	"app.options.cafe/library/helpers"
+	"app.options.cafe/library/services"
+	"app.options.cafe/library/store/object"
+	"app.options.cafe/models"
 )
 
 const workerCount int = 100
@@ -60,7 +60,7 @@ type SymbolStore struct {
 //
 func init() {
 	// Helpful for testing
-	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/.env")
+	env.ReadEnv(build.Default.GOPATH + "/src/app.options.cafe/.env")
 
 	// Set cache dir
 	cacheDir = os.Getenv("CACHE_DIR") + "/" + cacheDirBase + "/"

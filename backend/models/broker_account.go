@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"app.options.cafe/library/services"
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 

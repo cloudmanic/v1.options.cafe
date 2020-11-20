@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"app.options.cafe/library/services"
 	"github.com/gorilla/websocket"
 	nsq "github.com/nsqio/go-nsq"
 	"github.com/tidwall/gjson"

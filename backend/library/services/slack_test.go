@@ -21,7 +21,7 @@ import (
 //
 func TestSlackNotify(t *testing.T) {
 	// Load .env file
-	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/.env")
+	env.ReadEnv(build.Default.GOPATH + "/src/app.options.cafe/.env")
 
 	if len(os.Getenv("SLACK_HOOK")) > 0 {
 

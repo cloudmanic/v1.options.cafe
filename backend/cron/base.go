@@ -9,11 +9,11 @@ package cron
 import (
 	"os"
 
-	"github.com/cloudmanic/app.options.cafe/backend/cron/data_import"
-	"github.com/cloudmanic/app.options.cafe/backend/cron/user"
-	"github.com/cloudmanic/app.options.cafe/backend/library/import/options"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/cron/data_import"
+	"app.options.cafe/cron/user"
+	"app.options.cafe/library/import/options"
+	"app.options.cafe/library/services"
+	"app.options.cafe/models"
 	"github.com/robfig/cron"
 )
 

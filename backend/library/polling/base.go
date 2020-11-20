@@ -14,9 +14,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/queue"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/library/queue"
+	"app.options.cafe/library/services"
+	"app.options.cafe/models"
 )
 
 var (

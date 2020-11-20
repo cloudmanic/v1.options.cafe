@@ -12,12 +12,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
-	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/cloudmanic/app.options.cafe/backend/screener"
+	"app.options.cafe/brokers/tradier"
+	"app.options.cafe/library/cache"
+	"app.options.cafe/library/helpers"
+	"app.options.cafe/library/services"
+	"app.options.cafe/models"
+	"app.options.cafe/screener"
 	"github.com/cnf/structhash"
 	"github.com/gin-gonic/gin"
 )

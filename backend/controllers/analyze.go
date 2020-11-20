@@ -11,7 +11,7 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/analyze"
+	"app.options.cafe/library/analyze"
 	"github.com/gin-gonic/gin"
 )
 

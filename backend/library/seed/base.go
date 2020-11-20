@@ -12,8 +12,8 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/library/services"
+	"app.options.cafe/models"
 )
 
 //
@@ -49,7 +49,7 @@ func LocalDatabase(db models.Datastore) {
 //
 func LoadSqlDump(db models.Datastore, dataSet string) {
 	// Set file
-	dataFile := build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/library/seed/data/" + dataSet + ".sql"
+	dataFile := build.Default.GOPATH + "/src/app.options.cafe/library/seed/data/" + dataSet + ".sql"
 
 	// Set CMD
 	cmd := "mysql --host=127.0.0.1 --port=" + os.Getenv("DB_PORT") + " -u " + os.Getenv("DB_USERNAME") + " -p" + os.Getenv("DB_PASSWORD") + " " + os.Getenv("DB_DATABASE") + " < " + dataFile

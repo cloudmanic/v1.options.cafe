@@ -9,7 +9,7 @@
 package analyze
 
 import (
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"app.options.cafe/library/helpers"
 )
 
 const NumProfitLossByUnderlyingPricePoints = 500

@@ -9,13 +9,13 @@ package cmd
 import (
 	"flag"
 
-	"github.com/cloudmanic/app.options.cafe/backend/cmd/actions"
-	"github.com/cloudmanic/app.options.cafe/backend/cron"
-	"github.com/cloudmanic/app.options.cafe/backend/cron/data_import"
-	"github.com/cloudmanic/app.options.cafe/backend/library/import/options"
-	"github.com/cloudmanic/app.options.cafe/backend/library/polling"
-	"github.com/cloudmanic/app.options.cafe/backend/library/worker/jobs"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/cmd/actions"
+	"app.options.cafe/cron"
+	"app.options.cafe/cron/data_import"
+	"app.options.cafe/library/import/options"
+	"app.options.cafe/library/polling"
+	"app.options.cafe/library/worker/jobs"
+	"app.options.cafe/models"
 )
 
 //

@@ -11,7 +11,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/models"
 	"github.com/gin-gonic/gin"
 	"github.com/nbio/st"
 )

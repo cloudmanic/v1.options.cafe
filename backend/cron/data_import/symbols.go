@@ -12,9 +12,9 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/brokers/tradier"
+	"app.options.cafe/library/services"
+	"app.options.cafe/models"
 )
 
 var chars = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}

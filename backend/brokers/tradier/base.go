@@ -11,7 +11,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/models"
 	env "github.com/jpfuentes2/go-env"
 )
 
@@ -37,7 +37,7 @@ type Api struct {
 //
 func init() {
 	// Helpful for testing
-	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/.env")
+	env.ReadEnv(build.Default.GOPATH + "/src/app.options.cafe/.env")
 }
 
 //

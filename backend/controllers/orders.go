@@ -10,12 +10,12 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
-	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/brokers/tradier"
+	"app.options.cafe/brokers/types"
+	"app.options.cafe/library/cache"
+	"app.options.cafe/library/helpers"
+	"app.options.cafe/library/services"
+	"app.options.cafe/models"
 	"github.com/gin-gonic/gin"
 )
 

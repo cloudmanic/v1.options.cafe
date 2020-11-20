@@ -12,11 +12,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/library/market"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/brokers/types"
+	"app.options.cafe/library/helpers"
+	"app.options.cafe/library/market"
+	"app.options.cafe/library/services"
+	"app.options.cafe/models"
 )
 
 //

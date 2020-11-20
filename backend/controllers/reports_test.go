@@ -17,9 +17,9 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/nbio/st"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/reports"
-	"github.com/cloudmanic/app.options.cafe/backend/library/test"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/library/reports"
+	"app.options.cafe/library/test"
+	"app.options.cafe/models"
 )
 
 //

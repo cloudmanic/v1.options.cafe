@@ -11,7 +11,7 @@ package pull
 import (
 	"testing"
 
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/models"
 	"github.com/nbio/st"
 )
 

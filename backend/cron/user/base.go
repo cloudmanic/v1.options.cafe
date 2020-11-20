@@ -11,8 +11,8 @@ package user
 import (
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/library/services"
+	"app.options.cafe/models"
 )
 
 //

@@ -14,8 +14,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/library/services"
+	"app.options.cafe/models"
 	"github.com/gin-gonic/gin"
 	"github.com/nbio/st"
 	"github.com/tidwall/gjson"

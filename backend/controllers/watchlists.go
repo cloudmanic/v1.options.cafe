@@ -12,8 +12,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/library/helpers"
+	"app.options.cafe/models"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 )

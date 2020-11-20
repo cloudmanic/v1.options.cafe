@@ -10,12 +10,12 @@ import (
 	"errors"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/eod"
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/cloudmanic/app.options.cafe/backend/screener"
+	"app.options.cafe/brokers/eod"
+	"app.options.cafe/brokers/types"
+	"app.options.cafe/models"
+	"app.options.cafe/screener"
 
-	screenerCache "github.com/cloudmanic/app.options.cafe/backend/screener/cache"
+	screenerCache "app.options.cafe/screener/cache"
 )
 
 //

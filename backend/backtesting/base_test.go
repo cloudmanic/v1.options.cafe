@@ -9,10 +9,10 @@ package backtesting
 import (
 	"testing"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/eod"
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/brokers/eod"
+	"app.options.cafe/brokers/types"
+	"app.options.cafe/library/helpers"
+	"app.options.cafe/models"
 	"github.com/nbio/st"
 )
 

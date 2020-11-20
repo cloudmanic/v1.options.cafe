@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"app.options.cafe/brokers/types"
+	"app.options.cafe/library/helpers"
+	"app.options.cafe/library/services"
 )
 
 type Symbol struct {

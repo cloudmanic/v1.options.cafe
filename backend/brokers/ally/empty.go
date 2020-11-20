@@ -13,8 +13,8 @@ package ally
 import (
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/brokers/types"
+	"app.options.cafe/models"
 )
 
 func (t *Api) GetBrokerConfig() *types.BrokerConfig {

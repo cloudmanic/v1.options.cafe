@@ -72,7 +72,7 @@ func TestGetBalanceTransaction01(t *testing.T) {
 func TestApplyCoupon01(t *testing.T) {
 
 	// Load .env file
-	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/.env")
+	env.ReadEnv(build.Default.GOPATH + "/src/app.options.cafe/.env")
 
 	// Create a new coupon
 	couponId, err := StripeCreateNewCoupon("Unit Test Coupon 1", 55.00)
@@ -125,7 +125,7 @@ func TestApplyCoupon01(t *testing.T) {
 func TestCreateNewCoupon01(t *testing.T) {
 
 	// Load .env file
-	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/.env")
+	env.ReadEnv(build.Default.GOPATH + "/src/app.options.cafe/.env")
 
 	// Create a new coupon
 	id, err := StripeCreateNewCoupon("Unit Test Coupon 1", 55.00)

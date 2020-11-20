@@ -11,9 +11,9 @@ import (
 
 	"github.com/nbio/st"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/library/test"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/library/helpers"
+	"app.options.cafe/library/test"
+	"app.options.cafe/models"
 )
 
 //

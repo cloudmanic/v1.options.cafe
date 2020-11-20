@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/controllers/admin"
+	"app.options.cafe/controllers/admin"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/acme/autocert"

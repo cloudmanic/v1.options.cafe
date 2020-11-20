@@ -15,9 +15,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/analyze"
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/library/analyze"
+	"app.options.cafe/library/helpers"
+	"app.options.cafe/models"
 	"github.com/gin-gonic/gin"
 	"github.com/nbio/st"
 )

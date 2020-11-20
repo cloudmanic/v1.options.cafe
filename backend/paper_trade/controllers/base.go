@@ -11,8 +11,8 @@ package controllers
 import (
 	"go/build"
 
-	masterModels "github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/cloudmanic/app.options.cafe/backend/paper_trade/models"
+	masterModels "app.options.cafe/models"
+	"app.options.cafe/paper_trade/models"
 	env "github.com/jpfuentes2/go-env"
 )
 
@@ -26,7 +26,7 @@ type Controller struct {
 // Start up the controller.
 //
 func init() {
-	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/paper_trade/.env")
+	env.ReadEnv(build.Default.GOPATH + "/src/app.options.cafe/paper_trade/.env")
 
 	// Start the db connection to our master db.
 	masterDB, _ := masterModels.NewDB()

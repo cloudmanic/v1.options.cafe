@@ -14,8 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/brokers/types"
+	"app.options.cafe/models"
 	"github.com/gin-gonic/gin"
 	"github.com/nbio/st"
 	gock "gopkg.in/h2non/gock.v1"

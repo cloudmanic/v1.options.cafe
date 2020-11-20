@@ -12,8 +12,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/brokers"
+	"app.options.cafe/models"
 )
 
 //

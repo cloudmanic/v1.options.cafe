@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"app.options.cafe/library/helpers"
+	"app.options.cafe/library/services"
 )
 
 type Session struct {

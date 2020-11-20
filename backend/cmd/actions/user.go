@@ -9,7 +9,7 @@
 package actions
 
 import (
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/models"
 )
 
 //

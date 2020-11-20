@@ -18,8 +18,8 @@ import (
 
 	"github.com/jinzhu/gorm"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"app.options.cafe/library/helpers"
+	"app.options.cafe/library/services"
 )
 
 const (

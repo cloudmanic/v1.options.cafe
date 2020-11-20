@@ -13,7 +13,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/models"
 	humanize "github.com/dustin/go-humanize"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/nbio/st"

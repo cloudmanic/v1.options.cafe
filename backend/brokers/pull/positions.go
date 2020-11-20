@@ -9,10 +9,10 @@
 package pull
 
 import (
-	"github.com/cloudmanic/app.options.cafe/backend/brokers"
-	"github.com/cloudmanic/app.options.cafe/backend/library/archive"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/brokers"
+	"app.options.cafe/library/archive"
+	"app.options.cafe/library/services"
+	"app.options.cafe/models"
 )
 
 //

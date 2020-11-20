@@ -12,7 +12,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"app.options.cafe/library/services"
 	"github.com/go-redis/redis"
 	env "github.com/jpfuentes2/go-env"
 )
@@ -27,7 +27,7 @@ var (
 func init() {
 
 	// Helpful for testing
-	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/.env")
+	env.ReadEnv(build.Default.GOPATH + "/src/app.options.cafe/.env")
 
 	// Setup Redis connection
 	redisConnection = redis.NewClient(&redis.Options{

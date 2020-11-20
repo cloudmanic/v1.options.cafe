@@ -9,8 +9,8 @@ package backtesting
 import (
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/brokers/types"
+	"app.options.cafe/models"
 	"github.com/optionscafe/options-cafe-cli/helpers"
 )
 

@@ -9,7 +9,7 @@ package websocket
 import (
 	"encoding/json"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"app.options.cafe/library/services"
 	"github.com/tidwall/gjson"
 )
 

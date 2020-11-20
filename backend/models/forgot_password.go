@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/email"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"app.options.cafe/library/email"
+	"app.options.cafe/library/services"
 )
 
 type ForgotPassword struct {

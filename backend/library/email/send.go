@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"app.options.cafe/library/services"
 	"gopkg.in/gomail.v2"
 	"gopkg.in/mailgun/mailgun-go.v1"
 )

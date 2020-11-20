@@ -9,7 +9,7 @@ package models
 import (
 	"testing"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"app.options.cafe/library/helpers"
 	env "github.com/jpfuentes2/go-env"
 	"github.com/nbio/st"
 )

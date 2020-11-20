@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/eod"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/cloudmanic/app.options.cafe/backend/screener"
+	"app.options.cafe/brokers/eod"
+	"app.options.cafe/models"
+	"app.options.cafe/screener"
 	"github.com/davecgh/go-spew/spew"
 )
 

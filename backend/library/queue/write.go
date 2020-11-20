@@ -12,7 +12,7 @@ import (
 	"errors"
 	"os"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"app.options.cafe/library/services"
 	nsq "github.com/nsqio/go-nsq"
 )
 

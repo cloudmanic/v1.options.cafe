@@ -7,8 +7,8 @@
 package archive
 
 import (
-	"github.com/cloudmanic/app.options.cafe/backend/library/archive/trade_types"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/library/archive/trade_types"
+	"app.options.cafe/models"
 )
 
 //

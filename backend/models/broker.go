@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/library/queue"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"app.options.cafe/library/helpers"
+	"app.options.cafe/library/queue"
+	"app.options.cafe/library/services"
 )
 
 type Broker struct {

@@ -12,8 +12,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/realip"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/library/realip"
+	"app.options.cafe/models"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 )

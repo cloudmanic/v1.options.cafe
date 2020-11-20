@@ -14,9 +14,9 @@ import (
 	"time"
 
 	"github.com/asaskevich/govalidator"
-	"github.com/cloudmanic/app.options.cafe/backend/library/checkmail"
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"app.options.cafe/library/checkmail"
+	"app.options.cafe/library/helpers"
+	"app.options.cafe/library/services"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"golang.org/x/crypto/bcrypt"
 )

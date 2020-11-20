@@ -11,7 +11,7 @@ package eod
 import (
 	"strings"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
+	"app.options.cafe/brokers/types"
 )
 
 //

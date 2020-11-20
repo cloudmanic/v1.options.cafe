@@ -17,9 +17,9 @@ import (
 	"time"
 
 	"github.com/araddon/dateparse"
-	"github.com/cloudmanic/app.options.cafe/backend/library/files"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/library/store/object"
+	"app.options.cafe/library/files"
+	"app.options.cafe/library/services"
+	"app.options.cafe/library/store/object"
 )
 
 //

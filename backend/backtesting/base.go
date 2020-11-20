@@ -10,15 +10,15 @@ import (
 	"os"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/eod"
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/cloudmanic/app.options.cafe/backend/screener"
+	"app.options.cafe/brokers/eod"
+	"app.options.cafe/brokers/tradier"
+	"app.options.cafe/brokers/types"
+	"app.options.cafe/library/helpers"
+	"app.options.cafe/library/services"
+	"app.options.cafe/models"
+	"app.options.cafe/screener"
 
-	screenerCache "github.com/cloudmanic/app.options.cafe/backend/screener/cache"
+	screenerCache "app.options.cafe/screener/cache"
 )
 
 const workerCount int = 3

@@ -12,9 +12,9 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/paper_trade/controllers"
-	"github.com/cloudmanic/app.options.cafe/backend/paper_trade/models"
+	"app.options.cafe/library/services"
+	"app.options.cafe/paper_trade/controllers"
+	"app.options.cafe/paper_trade/models"
 )
 
 //

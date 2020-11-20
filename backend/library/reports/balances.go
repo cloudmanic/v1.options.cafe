@@ -9,7 +9,7 @@ package reports
 import (
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/models"
 	"github.com/jinzhu/now"
 	"github.com/optionscafe/options-cafe-cli/helpers"
 )

@@ -4,16 +4,16 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/cloudmanic/app.options.cafe/backend/cmd"
-	"github.com/cloudmanic/app.options.cafe/backend/controllers"
-	"github.com/cloudmanic/app.options.cafe/backend/cron"
-	"github.com/cloudmanic/app.options.cafe/backend/library/polling"
-	"github.com/cloudmanic/app.options.cafe/backend/library/queue"
-	"github.com/cloudmanic/app.options.cafe/backend/library/seed"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/library/worker/jobs"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
-	"github.com/cloudmanic/app.options.cafe/backend/websocket"
+	"app.options.cafe/cmd"
+	"app.options.cafe/controllers"
+	"app.options.cafe/cron"
+	"app.options.cafe/library/polling"
+	"app.options.cafe/library/queue"
+	"app.options.cafe/library/seed"
+	"app.options.cafe/library/services"
+	"app.options.cafe/library/worker/jobs"
+	"app.options.cafe/models"
+	"app.options.cafe/websocket"
 	_ "github.com/jpfuentes2/go-env/autoload"
 )
 
@@ -21,7 +21,6 @@ import (
 // Main....
 //
 func main() {
-
 	// Setup CPU stuff.
 	runtime.GOMAXPROCS(runtime.NumCPU())
 

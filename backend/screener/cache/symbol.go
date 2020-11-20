@@ -8,7 +8,7 @@
 
 package cache
 
-import "github.com/cloudmanic/app.options.cafe/backend/models"
+import "app.options.cafe/models"
 
 //
 // GetSymbol - This is a wrapper function for models.Symbol. We want to do a bit of "caching".

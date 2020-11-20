@@ -9,9 +9,9 @@ package notify
 import (
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/notify/sms_push"
-	"github.com/cloudmanic/app.options.cafe/backend/library/notify/web_push"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/library/notify/sms_push"
+	"app.options.cafe/library/notify/web_push"
+	"app.options.cafe/models"
 )
 
 var channels []string = []string{"web-push", "sms-push"}

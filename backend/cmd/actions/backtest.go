@@ -14,8 +14,8 @@ import (
 	"math/big"
 	"os"
 
-	"github.com/cloudmanic/app.options.cafe/backend/backtesting"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/backtesting"
+	"app.options.cafe/models"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/olekukonko/tablewriter"
 	"github.com/optionscafe/options-cafe-cli/helpers"

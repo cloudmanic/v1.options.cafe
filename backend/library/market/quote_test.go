@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/library/helpers"
+	"app.options.cafe/models"
 	"github.com/nbio/st"
 	gock "gopkg.in/h2non/gock.v1"
 )

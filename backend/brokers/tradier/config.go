@@ -6,7 +6,7 @@
 
 package tradier
 
-import "github.com/cloudmanic/app.options.cafe/backend/brokers/types"
+import "app.options.cafe/brokers/types"
 
 //
 // Return default config struct. Each brokers might have config values

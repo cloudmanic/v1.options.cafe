@@ -9,7 +9,7 @@
 package controllers
 
 import (
-	"github.com/cloudmanic/app.options.cafe/backend/paper_trade/models"
+	"app.options.cafe/paper_trade/models"
 	"github.com/gin-gonic/gin"
 )
 

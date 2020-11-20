@@ -7,8 +7,8 @@
 package controllers
 
 import (
-	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
-	"github.com/cloudmanic/app.options.cafe/backend/library/market"
+	"app.options.cafe/library/cache"
+	"app.options.cafe/library/market"
 	"github.com/gin-gonic/gin"
 )
 

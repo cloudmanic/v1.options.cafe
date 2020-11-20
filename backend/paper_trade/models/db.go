@@ -15,7 +15,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"app.options.cafe/library/services"
 	"github.com/jinzhu/gorm"
 	env "github.com/jpfuentes2/go-env"
 )
@@ -24,7 +24,7 @@ import (
 // Init.
 //
 func init() {
-	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/paper_trade/.env")
+	env.ReadEnv(build.Default.GOPATH + "/src/app.options.cafe/paper_trade/.env")
 }
 
 //

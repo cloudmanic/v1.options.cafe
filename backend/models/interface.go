@@ -9,7 +9,7 @@ package models
 import (
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
+	"app.options.cafe/brokers/types"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 )

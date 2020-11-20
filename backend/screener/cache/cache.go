@@ -8,7 +8,7 @@
 
 package cache
 
-import "github.com/cloudmanic/app.options.cafe/backend/models"
+import "app.options.cafe/models"
 
 // Cache struct
 type Cache struct {

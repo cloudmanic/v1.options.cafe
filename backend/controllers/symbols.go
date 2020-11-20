@@ -12,9 +12,9 @@ import (
 	"os"
 
 	"github.com/araddon/dateparse"
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/brokers/tradier"
+	"app.options.cafe/library/services"
+	"app.options.cafe/models"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 )

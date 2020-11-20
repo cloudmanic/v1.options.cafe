@@ -4,7 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
+	"app.options.cafe/brokers/types"
 	"github.com/tidwall/gjson"
 )
 

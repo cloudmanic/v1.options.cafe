@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/queue"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/library/queue"
+	"app.options.cafe/models"
 	"github.com/gin-gonic/gin"
 	"github.com/nbio/st"
 )

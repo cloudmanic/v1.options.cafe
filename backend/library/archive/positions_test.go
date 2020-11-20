@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/library/test"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/library/helpers"
+	"app.options.cafe/library/test"
+	"app.options.cafe/models"
 	env "github.com/jpfuentes2/go-env"
 	"github.com/nbio/st"
 )
@@ -27,7 +27,7 @@ func TestReviewCurrentPositionsForExpiredOptions01(t *testing.T) {
 	}
 
 	// Load .env file
-	env.ReadEnv(build.Default.GOPATH + "/src/github.com/cloudmanic/app.options.cafe/backend/.env")
+	env.ReadEnv(build.Default.GOPATH + "/src/app.options.cafe/.env")
 
 	// Start the db connection.
 	db, dbName, _ := models.NewTestDB("")

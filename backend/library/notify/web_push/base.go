@@ -11,7 +11,7 @@ package web_push
 import (
 	"os"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"app.options.cafe/library/services"
 	onesignal "github.com/tbalthazar/onesignal-go"
 )
 

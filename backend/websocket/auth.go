@@ -9,7 +9,7 @@ package websocket
 import (
 	"fmt"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"app.options.cafe/library/services"
 )
 
 //

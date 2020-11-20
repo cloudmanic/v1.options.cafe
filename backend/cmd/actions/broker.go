@@ -12,10 +12,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers"
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/tradier"
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
-	"github.com/cloudmanic/app.options.cafe/backend/models"
+	"app.options.cafe/brokers"
+	"app.options.cafe/brokers/tradier"
+	"app.options.cafe/library/helpers"
+	"app.options.cafe/models"
 )
 
 //

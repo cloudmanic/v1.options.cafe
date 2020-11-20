@@ -8,7 +8,7 @@
 
 package worker
 
-import "github.com/cloudmanic/app.options.cafe/backend/models"
+import "app.options.cafe/models"
 
 type JobRequest struct {
 	DB       models.Datastore

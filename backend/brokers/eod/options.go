@@ -12,9 +12,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/cloudmanic/app.options.cafe/backend/brokers/types"
-	"github.com/cloudmanic/app.options.cafe/backend/library/cache"
-	"github.com/cloudmanic/app.options.cafe/backend/library/helpers"
+	"app.options.cafe/brokers/types"
+	"app.options.cafe/library/cache"
+	"app.options.cafe/library/helpers"
 )
 
 //

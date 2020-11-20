@@ -15,7 +15,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cloudmanic/app.options.cafe/backend/library/services"
+	"app.options.cafe/library/services"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
