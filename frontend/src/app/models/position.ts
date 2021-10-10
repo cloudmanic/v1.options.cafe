@@ -20,7 +20,7 @@ export class Position {
     public CostBasis: number,
     public Proceeds: number, 
     public Profit: number,        
-    public Symbol: Symbol    
+    public Symbol: Symbol  
   ){}
 }
 

@@ -14,11 +14,11 @@ import "app.options.cafe/brokers/types"
 //
 func (t *Api) GetBrokerConfig() *types.BrokerConfig {
 	return &types.BrokerConfig{
-		DefaultStockCommission:   3.95,
+		DefaultStockCommission:   0.00,
 		DefaultStockMin:          0.00,
-		DefaultOptionCommission:  0.35,
-		DefaultOptionSingleMin:   5.00,
-		DefaultOptionMultiLegMin: 7.00,
+		DefaultOptionCommission:  0.00,
+		DefaultOptionSingleMin:   0.00,
+		DefaultOptionMultiLegMin: 0.00,
 		DefaultOptionBase:        0.00,
 	}
 }

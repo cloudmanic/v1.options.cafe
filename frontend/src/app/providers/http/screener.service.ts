@@ -49,8 +49,8 @@ export class ScreenerService
   //
   // Get screener results.
   //
-  getResults(id: number): Observable<ScreenerResult[]> {
-    return this.http.get<ScreenerResult[]>(environment.app_server + '/api/v1/screeners/' + id + '/results')
+  getResults(id: number, brokerAccount: number): Observable<ScreenerResult[]> {
+    return this.http.get<ScreenerResult[]>(environment.app_server + '/api/v1/screeners/' + id + '/results?broker_account_id=' + brokerAccount)
       .map((data) => { return new ScreenerResult().fromJsonList(data); });
   }
 

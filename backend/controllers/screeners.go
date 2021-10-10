@@ -221,6 +221,32 @@ func (t *Controller) GetScreenerResults(c *gin.Context) {
 		return
 	}
 
+	// Get trade groups so we know which positions we already have on.
+	tradeGroups, _, _ := t.DB.GetTradeGroups(models.QueryParam{
+		UserId:     userId,
+		Order:      "open_date",
+		Sort:       "asc",
+		Limit:      1000,
+		Page:       1,
+		Debug:      false,
+		PreLoads:   []string{"Positions"},
+		SearchTerm: "",
+		SearchCols: []string{"id", "name", "open_date", "status", "type", "note"},
+		Wheres: []models.KeyValue{
+			{Key: "status", Value: "Open"},
+			{Key: "broker_account_id", Value: c.Query("broker_account_id")},
+		},
+	})
+
+	// Loop through and just get the symbols
+	positions := []uint{}
+
+	for _, row := range tradeGroups {
+		for _, row2 := range row.Positions {
+			positions = append(positions, row2.Symbol.Id)
+		}
+	}
+
 	// See if we have this result in the cache.
 	// We keep the cache up to date via a feed loop started from main.go
 	cachedResult := []screener.Result{}
@@ -229,7 +255,7 @@ func (t *Controller) GetScreenerResults(c *gin.Context) {
 
 	// Return happy JSON
 	if found {
-		c.JSON(200, cachedResult)
+		c.JSON(200, returnPositionOns(cachedResult, positions))
 		return
 	}
 
@@ -247,7 +273,7 @@ func (t *Controller) GetScreenerResults(c *gin.Context) {
 	}
 
 	// Return happy JSON
-	c.JSON(200, result)
+	c.JSON(200, returnPositionOns(result, positions))
 }
 
 //
@@ -336,6 +362,35 @@ func addUserIdAndValidateScreenerItems(o *models.Screener, c *gin.Context) bool 
 
 	// Return happy.
 	return true
+}
+
+//
+// returnPositionOns will set the boolean of symbols we already have on.
+//
+func returnPositionOns(results []screener.Result, positions []uint) []screener.Result {
+	// Match up any found positions
+	for key, row := range results {
+		for key2, row2 := range row.Legs {
+			if findPositionFromTradeGroups(positions, row2.Id) {
+				results[key].Legs[key2].PositionOn = true
+			}
+		}
+	}
+
+	return results
+}
+
+//
+// Search for positions in our trade groups.
+//
+func findPositionFromTradeGroups(positions []uint, symbolId uint) bool {
+	for _, row := range positions {
+		if row == symbolId {
+			return true
+		}
+	}
+
+	return false
 }
 
 /* End File */

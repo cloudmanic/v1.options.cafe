@@ -8,7 +8,6 @@
 package seed
 
 import (
-	"go/build"
 	"os"
 	"os/exec"
 
@@ -49,7 +48,7 @@ func LocalDatabase(db models.Datastore) {
 //
 func LoadSqlDump(db models.Datastore, dataSet string) {
 	// Set file
-	dataFile := build.Default.GOPATH + "/src/app.options.cafe/library/seed/data/" + dataSet + ".sql"
+	dataFile := os.Getenv("CODE_LOCATION") + "/library/seed/data/" + dataSet + ".sql"
 
 	// Set CMD
 	cmd := "mysql --host=127.0.0.1 --port=" + os.Getenv("DB_PORT") + " -u " + os.Getenv("DB_USERNAME") + " -p" + os.Getenv("DB_PASSWORD") + " " + os.Getenv("DB_DATABASE") + " < " + dataFile

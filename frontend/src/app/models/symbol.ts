@@ -19,6 +19,7 @@ export class Symbol
   OptionType: string;
   OptionExpire: Date;
   OptionStrike: number;
+  PositionOn: boolean; 
 
   //
   // Create a new object
@@ -52,6 +53,7 @@ export class Symbol
     this.OptionType = json["option_type"];
     this.OptionExpire = moment(json["option_expire"]).toDate();
     this.OptionStrike = json["option_strike"];
+    this.PositionOn = json["position_on"]
     return this;
   }
 

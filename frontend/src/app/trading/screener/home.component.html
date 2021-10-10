@@ -87,7 +87,10 @@
               <tr *ngFor="let row2 of row.Results | tableSort:row.ListSort:row.ListOrder">
                 <td>{{ row2.Legs[0].OptionUnderlying }}</td>
                 <td>{{ row2.Legs[0].OptionExpire | date:'shortDate' }}</td>
-                <td>{{ row2.Legs[0].OptionStrike }} / {{ row2.Legs[1].OptionStrike }}</td>                    
+                <td>
+                  <span [ngClass]="{'green': row2.Legs[0].PositionOn}">{{ row2.Legs[0].OptionStrike }}</span> / 
+                  <span [ngClass]="{'green': row2.Legs[1].PositionOn}">{{ row2.Legs[1].OptionStrike }}</span> 
+                </td>                    
                 <td>{{ row2.PutPrecentAway | number:'1.2-2' }}%</td>
                 <td>{{ row2.Credit | currency:'USD':'symbol':'1.2-2' }}</td>
                 <td>{{ row2.MidPoint | currency:'USD':'symbol':'1.2-2' }}</td>

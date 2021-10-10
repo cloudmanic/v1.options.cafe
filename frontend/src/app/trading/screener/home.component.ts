@@ -179,7 +179,7 @@ export class ScreenerComponent implements OnInit {
 
 				// Load results.
 				for (let i = 0; i < this.screeners.length; i++) {
-					this.screenerService.getResults(this.screeners[i].Id).subscribe((res) => {
+					this.screenerService.getResults(this.screeners[i].Id, this.stateService.GetActiveBrokerAccount().Id).subscribe((res) => {
 						this.screeners[i].Results = res;
 					});
 				}

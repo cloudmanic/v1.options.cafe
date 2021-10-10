@@ -15,13 +15,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"go/build"
 	"io/ioutil"
 	"os"
 	"strings"
 	"time"
-
-	env "github.com/jpfuentes2/go-env"
 
 	"app.options.cafe/brokers/types"
 	"app.options.cafe/library/cache"
@@ -30,6 +27,8 @@ import (
 	"app.options.cafe/library/services"
 	"app.options.cafe/library/store/object"
 	"app.options.cafe/models"
+
+	_ "github.com/jpfuentes2/go-env/autoload"
 )
 
 const workerCount int = 100
@@ -59,9 +58,6 @@ type SymbolStore struct {
 // Start up the controller.
 //
 func init() {
-	// Helpful for testing
-	env.ReadEnv(build.Default.GOPATH + "/src/app.options.cafe/.env")
-
 	// Set cache dir
 	cacheDir = os.Getenv("CACHE_DIR") + "/" + cacheDirBase + "/"
 
