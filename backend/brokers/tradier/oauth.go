@@ -7,10 +7,12 @@
 package tradier
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -106,7 +108,6 @@ func (t *TradierAuth) DoAuthCode(c *gin.Context) {
 // Do Obtain an Authorization Code Callback - http://localhost:7080/tradier/callback
 //
 func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
-
 	// Make sure we have a code.
 	code := c.Query("code")
 
@@ -134,10 +135,17 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 		return
 	}
 
-	// Request and get an access token.
-	data := strings.NewReader("grant_type=authorization_code&code=" + code)
+	params := url.Values{}
+	params.Set("scope", "read,write,trade,market,stream")
+	params.Set("code", code)
+	params.Set("grant_type", "authorization_code")
+	body := bytes.NewBufferString(params.Encode())
 
-	req, err := http.NewRequest("POST", apiBaseUrl+"/oauth/accesstoken", data)
+	// Create client
+	client := &http.Client{}
+
+	// Create request
+	req, err := http.NewRequest("POST", apiBaseUrl+"/oauth/accesstoken", body)
 
 	if err != nil {
 		services.Info(err)
@@ -145,10 +153,12 @@ func (t *TradierAuth) DoAuthCallback(c *gin.Context) {
 		return
 	}
 
-	req.SetBasicAuth(os.Getenv("TRADIER_CONSUMER_KEY"), os.Getenv("TRADIER_CONSUMER_SECRET"))
+	// Headers
 	req.Header.Add("Accept", "application/json")
+	req.SetBasicAuth(os.Getenv("TRADIER_CONSUMER_KEY"), os.Getenv("TRADIER_CONSUMER_SECRET"))
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
 
-	client := &http.Client{}
+	// Fetch Request
 	resp, err := client.Do(req)
 
 	if err != nil {

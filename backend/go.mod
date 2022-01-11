@@ -39,6 +39,7 @@ require (
 	github.com/tj/go-dropy v0.0.0-20151223190506-225699a12156
 	golang.org/x/crypto v0.0.0-20201117144127-c1f2f97bffc9
 	golang.org/x/oauth2 v0.0.0-20201109201403-9fd604954f58
+	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gopkg.in/h2non/gock.v1 v1.0.15
 	gopkg.in/mailgun/mailgun-go.v1 v1.1.1
