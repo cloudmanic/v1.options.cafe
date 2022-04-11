@@ -26,7 +26,7 @@ func TestDoBacktestDays01(t *testing.T) {
 	defer models.TestingTearDown(db, dbName)
 
 	// Setup a new backtesting
-	bt := New(db, "SPY")
+	bt := New(db, 1, "SPY")
 
 	// Build screener object
 	screen := models.Screener{
@@ -52,7 +52,7 @@ func TestGetOptionsByExpirationType01(t *testing.T) {
 	defer db.Close()
 
 	// Setup a new backtesting
-	bt := New(db, "SPY")
+	bt := New(db, 1, "SPY")
 
 	// Setup EOD Api
 	o := eod.Api{
@@ -104,7 +104,7 @@ func TestGetExpirationDatesFromOptions01(t *testing.T) {
 	defer models.TestingTearDown(db, dbName)
 
 	// Setup a new backtesting
-	bt := New(db, "SPY")
+	bt := New(db, 1, "SPY")
 
 	// Setup EOD Api
 	o := eod.Api{
@@ -137,7 +137,7 @@ func TestGetSymbol(t *testing.T) {
 	defer models.TestingTearDown(db, dbName)
 
 	// Setup a new backtesting
-	bt := New(db, "SPY")
+	bt := New(db, 1, "SPY")
 
 	// Get test symbol.
 	smb, err := bt.GetSymbol("SPY190418P00269000", "SPY Apr 18 2019 $269.00 Put", "Option")

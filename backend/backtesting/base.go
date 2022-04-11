@@ -8,12 +8,14 @@ package backtesting
 
 import (
 	"os"
+	"strconv"
 	"time"
 
 	"app.options.cafe/brokers/eod"
 	"app.options.cafe/brokers/tradier"
 	"app.options.cafe/brokers/types"
 	"app.options.cafe/library/helpers"
+	"app.options.cafe/library/queue"
 	"app.options.cafe/library/services"
 	"app.options.cafe/models"
 	"app.options.cafe/screener"
@@ -26,6 +28,7 @@ const workerCount int = 3
 // Base struct
 type Base struct {
 	DB              models.Datastore
+	UserID          int
 	BenchmarkQuotes []types.HistoryQuote
 	TradeFuncs      map[string]func(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem)
 	ResultsFuncs    map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem, cache screenerCache.Cache) ([]screener.Result, error)
@@ -33,20 +36,22 @@ type Base struct {
 
 // Job struct
 type Job struct {
-	Day      time.Time
-	Index    int
-	Backtest *models.Backtest
-	Results  []screener.Result
-	Options  []types.OptionsChainItem
+	Day       time.Time
+	Index     int
+	TotalDays int
+	Backtest  *models.Backtest
+	Results   []screener.Result
+	Options   []types.OptionsChainItem
 }
 
 //
 // New Backtest
 //
-func New(db models.Datastore, benchmark string) Base {
+func New(db models.Datastore, userID int, benchmark string) Base {
 	// New backtest instance
 	t := Base{
-		DB: db,
+		DB:     db,
+		UserID: userID,
 	}
 
 	// Build backtest functions - results
@@ -62,7 +67,7 @@ func New(db models.Datastore, benchmark string) Base {
 	// Get benchmark data.
 	tr := &tradier.Api{ApiKey: os.Getenv("TRADIER_ADMIN_ACCESS_TOKEN")}
 	startDate := time.Date(2009, 01, 01, 0, 0, 0, 0, time.UTC)
-	endDate := time.Date(2020, 12, 31, 0, 0, 0, 0, time.UTC)
+	endDate := time.Date(3000, 12, 31, 0, 0, 0, 0, time.UTC) // Some big future date, I hope someday this is a bug :)
 	t.BenchmarkQuotes, _ = tr.GetHistoricalQuotes(benchmark, startDate, endDate, "daily")
 
 	return t
@@ -75,6 +80,9 @@ func New(db models.Datastore, benchmark string) Base {
 func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 	// Let's time this backtest
 	start := time.Now()
+
+	// Send up websocket
+	queue.Write("oc-websocket-write", `{"uri":"backtest-start","user_id":`+strconv.Itoa(t.UserID)+`,"body":`+helpers.JsonEncode(backtest.Screen)+`}`)
 
 	// Build the cache for this screen.
 	cache := screenerCache.New(t.DB)
@@ -96,7 +104,9 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 		go t.tradeResultsWorker(jobs, results, cache)
 	}
 
-	// Loop through the dates and run backtest.
+	// Loop through and figure out what dates we need to test.
+	days := []time.Time{}
+
 	for _, row := range dates {
 		// We skip dates before our start date
 		if row.Before(helpers.ParseDateNoError(backtest.StartDate.Format("2006-01-02"))) {
@@ -108,6 +118,14 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 			continue
 		}
 
+		days = append(days, row)
+		totalJobs++
+	}
+
+	// Loop through the dates and run backtest.
+	c := 0
+
+	for _, row := range days {
 		// Set the benchmark start
 		backtest.BenchmarkEnd = t.getBenchmarkByDate(helpers.ParseDateNoError(row.Format("2006-01-02")))
 
@@ -117,9 +135,14 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 		}
 
 		// Add job to worker queue
-		jobs <- Job{Index: totalJobs, Day: row, Backtest: backtest}
-		totalJobs++
+		jobs <- Job{Index: c, TotalDays: totalJobs, Day: row, Backtest: backtest}
+
+		// Update index
+		c++
 	}
+
+	// Send total days to websocket
+	queue.Write("oc-websocket-write", `{"uri":"backtest-total-days","user_id":`+strconv.Itoa(t.UserID)+`,"body":{"backtest_id":`+strconv.Itoa(int(backtest.Id))+`,"total_days":`+strconv.Itoa(totalJobs)+`}}`)
 
 	// Close jobs so the workers return.
 	close(jobs)
@@ -141,6 +164,9 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 		// Send the results into a trade function.
 		t.TradeFuncs[backtest.Screen.Strategy](row.Day, backtest, row.Results, row.Options)
 	}
+
+	// Send up websocket
+	queue.Write("oc-websocket-write", `{"uri":"backtest-end","user_id":`+strconv.Itoa(t.UserID)+`,"body":`+helpers.JsonEncode(backtest.Screen)+`}`)
 
 	// Store how long the backtest took to run.
 	backtest.TimeElapsed = time.Since(start)
@@ -221,8 +247,26 @@ func (t *Base) tradeResultsWorker(jobs <-chan Job, results chan<- Job, cache scr
 			Day: job.Day,
 		}
 
-		// Log where we are in the backtest. TODO(spicer): Send this up websocket
-		services.InfoMsg("Backtesting " + job.Backtest.Screen.Strategy + " " + job.Backtest.Screen.Symbol + " on " + job.Day.Format("2006-01-02"))
+		// Websocket MSG
+		type Msg struct {
+			Day       time.Time
+			Screen    models.Screener
+			TotalDays int
+			Index     int
+		}
+
+		msg := Msg{
+			Day:       job.Day,
+			Screen:    job.Backtest.Screen,
+			Index:     job.Index,
+			TotalDays: job.TotalDays,
+		}
+
+		// Send up websocket
+		queue.Write("oc-websocket-write", `{"uri":"backtest-day-run","user_id":`+strconv.Itoa(t.UserID)+`,"body":`+helpers.JsonEncode(msg)+`}`)
+
+		// Log where we are in the backtest.
+		services.InfoMsg("Backtesting " + job.Backtest.Screen.Strategy + " " + job.Backtest.Screen.Symbol + " on " + job.Day.Format("2006-01-02") + " (" + strconv.Itoa(job.Index) + "/" + strconv.Itoa(job.TotalDays) + ")")
 
 		// Get all options for this symbol and day.
 		options, underlyingLast, err := o.GetOptionsBySymbol(job.Backtest.Screen.Symbol)

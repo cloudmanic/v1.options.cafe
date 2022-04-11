@@ -7,7 +7,6 @@
 package actions
 
 import (
-	"encoding/csv"
 	"fmt"
 	"log"
 	"math"
@@ -16,7 +15,6 @@ import (
 
 	"app.options.cafe/backtesting"
 	"app.options.cafe/models"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/olekukonko/tablewriter"
 	"github.com/optionscafe/options-cafe-cli/helpers"
 
@@ -55,8 +53,8 @@ func RunBackTest(db *models.DB, userID int) {
 		StartingBalance: 10000.00,
 		EndingBalance:   10000.00,
 		PositionSize:    "15-percent", // one-at-time, *-percent
-		StartDate:       models.Date{helpers.ParseDateNoError("2019-01-01")},
-		EndDate:         models.Date{helpers.ParseDateNoError("2020-12-31")},
+		StartDate:       models.Date{helpers.ParseDateNoError("2022-01-01")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2022-12-31")},
 		Midpoint:        false,
 		TradeSelect:     "least-days-to-expire", // least-days-to-expire, highest-midpoint, highest-ask
 		Benchmark:       "SPY",
@@ -64,9 +62,9 @@ func RunBackTest(db *models.DB, userID int) {
 	}
 
 	// Setup a new backtesting
-	bt := backtesting.New(db, btM.Benchmark)
+	bt := backtesting.New(db, userID, btM.Benchmark)
 
-	// Run blank backtest
+	// Run the backtest
 	bt.DoBacktestDays(&btM)
 
 	plotData := [][]string{}
@@ -147,49 +145,49 @@ func RunBackTest(db *models.DB, userID int) {
 	log.Printf("Return (%s): %s%%", btM.Benchmark, humanize.BigCommaf(big.NewFloat(benchmarkPercent)))
 	log.Println("")
 
-	// ------------------ Export CSV ----------- //
+	// // ------------------ Export CSV ----------- //
 
-	file, err := os.Create("/Users/spicer/Downloads/result.csv")
+	// file, err := os.Create("/Users/spicer/Downloads/result.csv")
 
-	if err != nil {
-		spew.Dump(err)
-	}
+	// if err != nil {
+	// 	spew.Dump(err)
+	// }
 
-	defer file.Close()
+	// defer file.Close()
 
-	writer := csv.NewWriter(file)
-	defer writer.Flush()
+	// writer := csv.NewWriter(file)
+	// defer writer.Flush()
 
-	for _, value := range csvData {
-		err := writer.Write(value)
+	// for _, value := range csvData {
+	// 	err := writer.Write(value)
 
-		if err != nil {
-			spew.Dump(err)
-		}
+	// 	if err != nil {
+	// 		spew.Dump(err)
+	// 	}
 
-	}
+	// }
 
-	// --------- Graph CSV -------- //
+	// // --------- Graph CSV -------- //
 
-	file2, err := os.Create("/Users/spicer/Downloads/graph-balance.csv")
+	// file2, err := os.Create("/Users/spicer/Downloads/graph-balance.csv")
 
-	if err != nil {
-		spew.Dump(err)
-	}
+	// if err != nil {
+	// 	spew.Dump(err)
+	// }
 
-	defer file2.Close()
+	// defer file2.Close()
 
-	writer = csv.NewWriter(file2)
-	defer writer.Flush()
+	// writer = csv.NewWriter(file2)
+	// defer writer.Flush()
 
-	for _, value := range plotData {
-		err := writer.Write(value)
+	// for _, value := range plotData {
+	// 	err := writer.Write(value)
 
-		if err != nil {
-			spew.Dump(err)
-		}
+	// 	if err != nil {
+	// 		spew.Dump(err)
+	// 	}
 
-	}
+	// }
 }
 
 /* End File */

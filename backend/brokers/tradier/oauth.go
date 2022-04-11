@@ -15,7 +15,6 @@ import (
 	"net/url"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"app.options.cafe/library/helpers"
@@ -292,19 +291,27 @@ func (t *Api) DoRefreshAccessToken(broker models.Broker) (error, string) {
 		return err, "Tradier - DoRefreshAccessToken - Unable to decrypt message (#1)"
 	}
 
-	// Request and get an access token.
-	data := strings.NewReader("grant_type=refresh_token&refresh_token=" + decryptRefreshToken)
+	params := url.Values{}
+	params.Set("refresh_token", decryptRefreshToken)
+	params.Set("grant_type", "refresh_token")
+	body := bytes.NewBufferString(params.Encode())
 
-	req, err := http.NewRequest("POST", apiBaseUrl+"/oauth/refreshtoken", data)
+	// Create client
+	client := &http.Client{}
+
+	// Create request
+	req, err := http.NewRequest("POST", apiBaseUrl+"/oauth/refreshtoken", body)
 
 	if err != nil {
 		return err, "Tradier - DoRefreshAccessToken - Failed to get access token. (#1)"
 	}
 
-	req.SetBasicAuth(os.Getenv("TRADIER_CONSUMER_KEY"), os.Getenv("TRADIER_CONSUMER_SECRET"))
+	// Headers
 	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
+	req.SetBasicAuth(os.Getenv("TRADIER_CONSUMER_KEY"), os.Getenv("TRADIER_CONSUMER_SECRET"))
 
-	client := &http.Client{}
+	// Fetch Request
 	resp, err := client.Do(req)
 
 	if err != nil {
