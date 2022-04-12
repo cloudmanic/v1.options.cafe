@@ -36,7 +36,7 @@ func RunBackTest(db *models.DB, userID int) {
 		Symbol:   "SPY",
 		Strategy: "put-credit-spread",
 		Items: []models.ScreenerItem{
-			{UserId: 1, Key: "short-strike-percent-away", Operator: ">", ValueNumber: 5.5},
+			{UserId: 1, Key: "short-strike-percent-away", Operator: ">", ValueNumber: 4.5},
 			{UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
 			{UserId: 1, Key: "open-credit", Operator: ">", ValueNumber: 0.18},
 			{UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.50},
@@ -50,12 +50,12 @@ func RunBackTest(db *models.DB, userID int) {
 	// Set backtest
 	btM := models.Backtest{
 		UserId:          uint(userID),
-		StartingBalance: 10000.00,
-		EndingBalance:   10000.00,
+		StartingBalance: 5000.00,
+		EndingBalance:   5000.00,
 		PositionSize:    "15-percent", // one-at-time, *-percent
 		StartDate:       models.Date{helpers.ParseDateNoError("2022-01-01")},
 		EndDate:         models.Date{helpers.ParseDateNoError("2022-12-31")},
-		Midpoint:        false,
+		Midpoint:        true,
 		TradeSelect:     "least-days-to-expire", // least-days-to-expire, highest-midpoint, highest-ask
 		Benchmark:       "SPY",
 		Screen:          screen,

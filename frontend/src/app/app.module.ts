@@ -57,6 +57,7 @@ import { AuthForgotPasswordComponent } from './auth/forgot-password/home.compone
 // Backtest
 import { BacktestSubnavComponent } from './backtest/sub-nav/subnav.component';
 import { BacktestHomeComponent } from './backtest/home/home.component';
+import { BacktestCreateComponent } from './backtest/create/create.component';
 
 // Reports
 import { BaseComponent } from './reports/custom-reports/base/base.component';
@@ -152,6 +153,7 @@ import { environment } from 'environments/environment';
 		// Backtest
 		BacktestSubnavComponent,
 		BacktestHomeComponent,
+		BacktestCreateComponent,
 
 		// Reports
 		AccountSummaryComponent,

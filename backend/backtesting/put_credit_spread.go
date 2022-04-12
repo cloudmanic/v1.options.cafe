@@ -106,6 +106,10 @@ func (t *Base) PutCreditSpreadSelectTrade(today time.Time, backtest *models.Back
 
 	}
 
+	// TODO(spicer): The short is furthest away from the current price. (biggest Put % Away)
+
+	// TODO(spicer): The short is furthest away from the current price. (shortest Put % Away)
+
 	return winner, nil
 }
 

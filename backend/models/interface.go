@@ -141,6 +141,11 @@ type Datastore interface {
 	// Screener
 	GetScreenersByUserId(userId uint) ([]Screener, error)
 	GetScreenerByIdAndUserId(id uint, userId uint) (Screener, error)
+
+	// Backtest
+	BacktestGetById(id uint) (Backtest, error)
+	CreateBacktest(backtest Backtest) (Backtest, error)
+	ValidateBacktestScreener(backtest Backtest, userId uint) error
 }
 
 /* End File */

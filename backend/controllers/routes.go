@@ -71,6 +71,9 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		apiV1.DELETE("/watchlists/:id/symbol/:symb", t.WatchlistDeleteSymbol)
 		apiV1.PUT("/watchlists/:id/reorder", t.WatchlistReorder)
 
+		// Backtest
+		apiV1.POST("/backtest", t.CreateBacktest)
+
 		// Trade Groups
 		apiV1.GET("/tradegroups", t.GetTradeGroups)
 

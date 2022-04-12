@@ -32,7 +32,6 @@ func (t *Base) CloseMultiLegCredit(today time.Time, underlyingLast float64, back
 // closeOnDebit - Close a trade if it hits our debit trigger
 //
 func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *models.Backtest, options []types.OptionsChainItem) {
-
 	// TODO(spicer): make this work from configs
 	debitAmount := 0.03
 

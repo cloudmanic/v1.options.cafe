@@ -19,7 +19,7 @@ type Screener struct {
 	CreatedAt  time.Time      `json:"-"`
 	UpdatedAt  time.Time      `json:"-"`
 	UserId     uint           `sql:"not null;index:UserId" json:"user_id"`
-	BacktestId uint           `sql:"not null;index:BacktestId" json:"backtest_id"`
+	BacktestId uint           `sql:"not null;index:BacktestId" json:"backtest_id"` // If this is non-zero it is just a backtest, not part of our normal screeners.
 	Name       string         `sql:"not null" json:"name"`
 	Strategy   string         `sql:"not null" json:"strategy"`
 	Symbol     string         `sql:"not null" json:"symbol"`

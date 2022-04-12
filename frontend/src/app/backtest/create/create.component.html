@@ -1,0 +1,126 @@
+<app-backtest-sub-nav></app-backtest-sub-nav>
+
+
+<div class="content__inner trade-builder mt-neg-40">
+  <div class="shell shell--large">
+
+    <aside class="section box--bordered">
+      <div class="tabs">
+        <div class="tabs__head box__head box__head--relative">
+          <h5>Create Backtest</h5>
+        </div>
+
+        <div class="tabs__body">
+
+          <div class="form-info form p-30">
+
+            <div class="form__row">
+              <label for="field-type">Name</label>
+  
+              <div class="form__controls">
+                <input type="text" name="name" class="field form__field" />
+              </div>
+            </div>
+
+
+            <div class="form__row">
+              <label for="field-type">Screener</label>
+  
+              <div class="form__controls">
+                <div class="select">
+                  <select name="Type" id="field-type">
+                    <option value="Call">Call</option>
+                    <option value="Put">Put</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form__row">
+              <label for="field-type">Starting Balance</label>
+            
+              <div class="form__controls">
+                <input type="text" name="StartingBalance" class="field form__field" />
+              </div>
+            </div>
+
+
+            <div class="form__row">
+              <label for="field-type">Start Date</label>
+            
+              <div class="form__controls">
+                <input type="text" name="StartDate" class="field form__field" />
+              </div>
+            </div>
+
+            <div class="form__row">
+              <label for="field-type">End Date</label>
+            
+              <div class="form__controls">
+                <input type="text" name="EndDate" class="field form__field" />
+              </div>
+            </div>
+
+
+            <div class="form__row">
+              <label for="field-type">Position Size</label>
+            
+              <div class="form__controls">
+                <div class="select">
+                  <select name="PositionSize" id="field-type">
+                    <option value="5-percent">5% per Position</option>
+                    <option value="10-percent">10% per Position</option>
+                    <option value="15-percent">15% per Position</option>
+                    <option value="20-percent">20% per Position</option>
+                    <option value="one-at-time">One at a Time</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+        
+            <div class="form__row">
+              <label for="field-type">Open at Midpoint</label>
+            
+              <div class="form__controls">
+                <div class="select">
+                  <select name="Midpoint" id="field-type">
+                    <option value="true">True</option>
+                    <option value="false">False</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="form__row">
+              <label for="field-type">Trade Select</label>
+            
+              <div class="form__controls">
+                <div class="select">
+                  <select name="TradeSelect" id="field-type">
+                    <option value="least-days-to-expire">Least Days To Expire</option>
+                    <option value="highest-midpoint">Highest Midpoint</option>
+                    <option value="highest-ask">Highest Ask</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="form__row mt-30">
+            
+              <div class="form__controls">
+                <input type="submit" value="Start Backtest" class="btn search__btn" /> 
+                <a class="link-alt ml-10">Cancel</a>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+

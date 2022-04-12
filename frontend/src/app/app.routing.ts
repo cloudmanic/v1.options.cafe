@@ -24,6 +24,7 @@ import { CreditCardComponent } from './settings/account/upgrade/credit-card/cred
 
 // Backtest
 import { BacktestHomeComponent } from './backtest/home/home.component';
+import { BacktestCreateComponent } from './backtest/create/create.component';
 
 // Reports
 import { CustomReportsComponent } from './reports/custom-reports/custom-reports.component';
@@ -86,6 +87,7 @@ const appRoutes: Routes = [
 
 			// Backtest
 			{ path: 'backtest', component: BacktestHomeComponent, canActivate: [AuthGuard], data: { section: 'backtest', subSection: 'dashboard', action: '' } },
+			{ path: 'backtest/create', component: BacktestCreateComponent, canActivate: [AuthGuard], data: { section: 'backtest', subSection: 'dashboard', action: '' } },
 
 			// Settings
 			{ path: 'settings/account', component: AccountComponent, canActivate: [AuthGuard], data: { section: 'settings', subSection: 'account', action: '' } },

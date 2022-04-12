@@ -18,6 +18,10 @@
 .mt-5 { margin-top: 5px !important; }
 .mt-10 { margin-top: 10px !important; }
 .mt-20 { margin-top: 20px !important; }
+.mt-30 { margin-top: 30px !important; }
+
+.mt-neg-20 { margin-top: -20px !important; }
+.mt-neg-40 { margin-top: -40px !important; }
 
 .mb-3 { margin-bottom: 3px !important; }
 .mb-5 { margin-bottom: 5px !important; }
@@ -32,6 +36,10 @@
 .mr-3 { margin-right: 3px !important; }
 .mr-5 { margin-right: 5px !important; }
 .mr-20 { margin-right: 20px !important; }
+
+.p-20 { padding: 20px !important; }
+.p-30 { padding: 30px !important; }
+.p-40 { padding: 40px !important; }
 
 /* Icons */
 .btn-square.active { background-color: #cfd0d0; }
