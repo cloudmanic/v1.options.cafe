@@ -7,6 +7,7 @@
 package backtesting
 
 import (
+	"math"
 	"time"
 
 	"app.options.cafe/brokers/types"
@@ -48,16 +49,24 @@ func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *m
 		// Get closing price
 		closePrice := t.getClosedPrice(row, options)
 
+		// Benchmark stuff
+		investedBenchmark := math.Floor(backtest.StartingBalance / backtest.BenchmarkStart)
+		investedBenchmarkLeftOver := backtest.StartingBalance - (investedBenchmark * backtest.BenchmarkStart)
+
 		// Close trade at the debitAmount
 		if closePrice <= debitAmount {
+			backtest.EndingBalance = (backtest.EndingBalance - backtest.Positions[key].ClosePrice)
+
 			backtest.Positions[key].Status = "Closed"
 			backtest.Positions[key].ClosePrice = closePrice * 100 * float64(row.Lots)
 			backtest.Positions[key].CloseDate = models.Date{today}
 			backtest.Positions[key].Note = "Triggered at debit amount."
-			backtest.EndingBalance = (backtest.EndingBalance - backtest.Positions[key].ClosePrice)
 			backtest.Positions[key].Balance = backtest.EndingBalance
 			backtest.Positions[key].BenchmarkLast = benchmarkLast
-			backtest.Positions[key].ReturnFromStart = (((backtest.EndingBalance - backtest.StartingBalance) / backtest.StartingBalance) * 100)
+			backtest.Positions[key].ReturnFromStart = helpers.Round((((backtest.EndingBalance - backtest.StartingBalance) / backtest.StartingBalance) * 100), 2)
+			backtest.Positions[key].ReturnPercent = helpers.Round((((backtest.Positions[key].Margin + (backtest.Positions[key].OpenPrice - backtest.Positions[key].ClosePrice) - backtest.Positions[key].Margin) / backtest.Positions[key].Margin) * 100), 2)
+			backtest.Positions[key].BenchmarkBalance = helpers.Round((investedBenchmark*backtest.Positions[key].BenchmarkLast)+investedBenchmarkLeftOver, 2)
+			backtest.Positions[key].BenchmarkReturn = helpers.Round((((backtest.Positions[key].BenchmarkLast - backtest.BenchmarkStart) / backtest.BenchmarkStart) * 100), 2)
 		}
 	}
 
@@ -89,6 +98,10 @@ func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backte
 				continue
 			}
 
+			// Benchmark stuff
+			investedBenchmark := math.Floor(backtest.StartingBalance / backtest.BenchmarkStart)
+			investedBenchmarkLeftOver := backtest.StartingBalance - (investedBenchmark * backtest.BenchmarkStart)
+
 			// Close trade
 			backtest.Positions[key].Status = "Closed"
 			backtest.Positions[key].ClosePrice = closingPrice
@@ -97,7 +110,10 @@ func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backte
 			backtest.Positions[key].Balance -= closingPrice
 			backtest.EndingBalance -= closingPrice
 			backtest.Positions[key].BenchmarkLast = benchmarkLast
-			backtest.Positions[key].ReturnFromStart = (((backtest.EndingBalance - backtest.StartingBalance) / backtest.StartingBalance) * 100)
+			backtest.Positions[key].ReturnFromStart = helpers.Round((((backtest.EndingBalance - backtest.StartingBalance) / backtest.StartingBalance) * 100), 2)
+			backtest.Positions[key].ReturnPercent = helpers.Round((((backtest.Positions[key].Margin + (backtest.Positions[key].OpenPrice - backtest.Positions[key].ClosePrice) - backtest.Positions[key].Margin) / backtest.Positions[key].Margin) * 100), 2)
+			backtest.Positions[key].BenchmarkBalance = helpers.Round((investedBenchmark*backtest.Positions[key].BenchmarkLast)+investedBenchmarkLeftOver, 2)
+			backtest.Positions[key].BenchmarkReturn = helpers.Round((((backtest.Positions[key].BenchmarkLast - backtest.BenchmarkStart) / backtest.BenchmarkStart) * 100), 2)
 		}
 	}
 
@@ -132,11 +148,18 @@ func (t *Base) expirePositions(today time.Time, underlyingLast float64, backtest
 		// If expired close out trade
 		if expired && row.Status == "Open" {
 
+			// Benchmark stuff
+			investedBenchmark := math.Floor(backtest.StartingBalance / backtest.BenchmarkStart)
+			investedBenchmarkLeftOver := backtest.StartingBalance - (investedBenchmark * backtest.BenchmarkStart)
+
 			// Shared for all strats
 			backtest.Positions[key].Status = "Closed"
 			backtest.Positions[key].CloseDate = models.Date{today}
 			backtest.Positions[key].BenchmarkLast = benchmarkLast
-			backtest.Positions[key].ReturnFromStart = (((backtest.EndingBalance - backtest.StartingBalance) / backtest.StartingBalance) * 100)
+			backtest.Positions[key].ReturnFromStart = helpers.Round((((backtest.EndingBalance - backtest.StartingBalance) / backtest.StartingBalance) * 100), 2)
+			backtest.Positions[key].ReturnPercent = helpers.Round((((backtest.Positions[key].Margin + (backtest.Positions[key].OpenPrice - backtest.Positions[key].ClosePrice) - backtest.Positions[key].Margin) / backtest.Positions[key].Margin) * 100), 2)
+			backtest.Positions[key].BenchmarkBalance = helpers.Round((investedBenchmark*backtest.Positions[key].BenchmarkLast)+investedBenchmarkLeftOver, 2)
+			backtest.Positions[key].BenchmarkReturn = helpers.Round((((backtest.Positions[key].BenchmarkLast - backtest.BenchmarkStart) / backtest.BenchmarkStart) * 100), 2)
 
 			// Figure out how to close based on strategy
 			switch row.Strategy {

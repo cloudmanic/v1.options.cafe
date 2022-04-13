@@ -270,34 +270,25 @@ func (t *Base) PrintResults(backtest *models.Backtest) error {
 	table := tablewriter.NewWriter(os.Stdout)
 	csvData := [][]string{{"Open Date", "Close Date", "Spread", "Open", "Close", "Credit", "Return", "Lots", "% Away", "Margin", "Balance", "Return", "Benchmark", "Benchmark Balance", "Benchmark Return", "Status", "Note"}}
 	table.SetHeader([]string{"Open Date", "Close Date", "Spread", "Open", "Close", "Credit", "Return", "Lots", "% Away", "Margin", "Balance", "Return", "Benchmark", "Benchmark Balance", "Benchmark Return", "Status", "Note"})
-	investedBenchmark := math.Floor(backtest.StartingBalance / backtest.BenchmarkStart)
-	investedBenchmarkLeftOver := backtest.StartingBalance - (investedBenchmark * backtest.BenchmarkStart)
 
+	// Build position rows
 	for _, row := range backtest.Positions {
-		// Return based on percent.
-		returnPercent := (((row.Margin + (row.OpenPrice - row.ClosePrice) - row.Margin) / row.Margin) * 100)
-
-		// Benchmark return
-		bReturn := (((row.BenchmarkLast - backtest.BenchmarkStart) / backtest.BenchmarkStart) * 100)
-		bAmountReturn := (investedBenchmark * row.BenchmarkLast) + investedBenchmarkLeftOver
-
-		// Build data string
 		d := []string{
 			row.OpenDate.Format("01/02/2006"),
 			row.CloseDate.Format("01/02/2006"),
 			fmt.Sprintf("%s %s %.2f / %.2f", row.Legs[0].OptionUnderlying, row.Legs[0].OptionExpire.Format("01/02/2006"), row.Legs[0].OptionStrike, row.Legs[1].OptionStrike),
 			fmt.Sprintf("$%.2f", row.OpenPrice),
 			fmt.Sprintf("$%.2f", row.ClosePrice),
-			fmt.Sprintf("$%.2f", ((row.OpenPrice / float64(row.Lots)) / 100)),
-			fmt.Sprintf("%.2f", returnPercent) + "%",
+			fmt.Sprintf("$%.2f", row.Credit),
+			fmt.Sprintf("%.2f", row.ReturnPercent) + "%",
 			fmt.Sprintf("%d", row.Lots),
 			fmt.Sprintf("%.2f", row.PutPrecentAway) + "%",
 			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.Margin))),
 			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.Balance))),
 			fmt.Sprintf("%.2f", row.ReturnFromStart) + "%",
 			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.BenchmarkLast))),
-			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(bAmountReturn))),
-			fmt.Sprintf("%.2f", bReturn) + "%",
+			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.BenchmarkBalance))),
+			fmt.Sprintf("%.2f", row.BenchmarkReturn) + "%",
 			row.Status,
 			row.Note,
 		}

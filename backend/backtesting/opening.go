@@ -129,6 +129,7 @@ func (t *Base) OpenMultiLegCredit(today time.Time, strategy string, backtest *mo
 		Margin:          margin,
 		Legs:            result.Legs,
 		Lots:            lots,
+		Credit:          (openPrice / float64(lots)) / 100,
 		PutPrecentAway:  result.PutPrecentAway,
 		CallPrecentAway: 0,
 		Balance:         (backtest.EndingBalance + openPrice),
