@@ -1,0 +1,155 @@
+//
+// Date: 4/12/2022
+// Author(s): Spicer Matthews (spicer@options.cafe)
+// Copyright: 2022 Cloudmanic Labs, LLC. All rights reserved.
+//
+
+import * as moment from 'moment';
+import { ScreenerResult } from './screener-result';
+
+//
+// Backtest
+//
+export class Backtest 
+{
+  Id: number = 0;
+  UserId: number = 0;
+  StartingBalance: number = 0.00;
+  PositionSize: string = "15-percent";
+  //StartDate:       models.Date{helpers.ParseDateNoError("2022-01-01")},
+  //EndDate:         models.Date{helpers.ParseDateNoError("2022-12-31")},
+  Midpoint: boolean = true;
+  TradeSelect: string = "highest-credit";
+  Benchmark: string = "SPY";
+  //Screen:          screen,
+
+
+
+  // Id: number;
+  // Name: string;
+  // Strategy: string;
+  // Symbol: string;
+  // View: string;
+  // Expanded: boolean = true;  
+  // ListSort: string = "PercentAway";
+  // ListOrder: number = 1;
+  // Items: ScreenerItem[];
+  // Results: ScreenerResult[];
+
+  //
+  // Build from JSON list.
+  //
+  fromJsonList(json: Object[]): Screener[] 
+  {
+    let result = [];
+
+    if (!json) 
+    {
+      return result;
+    }
+
+    for (let i = 0; i < json.length; i++) 
+    {
+      result.push(new Screener().fromJson(json[i]));
+    }
+
+    // Return happy
+    return result;
+  }
+
+  //
+  // Json to Object.
+  //
+  fromJson(json: Object): Screener 
+  {
+    let obj = new Screener();
+
+    obj.Id = json["id"];
+    obj.Name = json["name"];
+    obj.Strategy = json["strategy"];
+    obj.Symbol = json["symbol"];
+    obj.Items = [];
+
+    // Add in the legs.
+    for (let i = 0; i < json["items"].length; i++)
+    {
+      obj.Items.push(new ScreenerItem(json["items"][i].id, json["items"][i].screener_id, json["items"][i].key, json["items"][i].operator, json["items"][i].value_string, json["items"][i].value_number));
+    }
+
+    return obj;
+  }  
+}
+
+//
+// Screener Item
+//
+export class ScreenerItem 
+{
+  Id: number;
+  ScreenerId: number;
+  Key: string;
+  Operator: string;
+  ValueString: string;
+  ValueNumber: number;
+  Settings: ScreenerItemSettings;
+
+  //
+  // Construct.
+  //
+  constructor(id: number, screenerId: number, key: string, operator: string, valueString: string, valueNumber: number)
+  {
+    this.Id = id;
+    this.ScreenerId = screenerId;
+    this.Key = key;
+    this.Operator = operator;
+    this.ValueString = valueString;
+    this.ValueNumber = valueNumber;
+  }
+
+  //
+  // Json to Object.
+  //
+  fromJson(json: Object): ScreenerItem 
+  {
+    let obj = new ScreenerItem(0, 0, '', '', '', 0);
+
+    obj.Id = json["id"];
+    obj.Key = json["key"];
+    obj.ScreenerId = json["screener_id"];
+    obj.Operator = json["operator"];
+    obj.ValueString = json["value_string"];
+    obj.ValueNumber = json["value_number"];
+
+    return obj;
+  } 
+}
+
+//
+// Screener Item Settings
+//
+export class ScreenerItemSettings 
+{
+  Key: string;
+  Name: string;
+  Type: string;
+  Operators: string[];
+  SelectValues: string[];
+  SelectValuesNumber: number[];
+  Step: number;
+
+  //
+  // Construct.
+  //
+  constructor(name: string, key: string, type: string, operators: string[], selectValuesNumber: number[], selectValues: string[], step: number) 
+  {
+    this.Name = name;
+    this.Key = key;
+    this.Type = type;
+    this.Operators = operators;
+    this.SelectValues = selectValues;
+    this.SelectValuesNumber = selectValuesNumber; 
+    this.Step = step
+  }
+}
+
+/* End File */

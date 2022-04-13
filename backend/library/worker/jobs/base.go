@@ -15,6 +15,7 @@ import (
 	"os"
 	"sync"
 
+	"app.options.cafe/backtesting"
 	"app.options.cafe/brokers"
 	"app.options.cafe/brokers/pull"
 	"app.options.cafe/brokers/tradier"
@@ -40,6 +41,7 @@ func init() {
 	// Build standard every day job
 	jobActions = map[string]func(worker.JobRequest) error{
 		"get-market-status": market.GetMarketStatus,
+		"backtest-run-days": backtesting.BacktestDaysWorker,
 	}
 
 	// Build out the broker feed action functions

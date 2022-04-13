@@ -78,6 +78,7 @@ func TestCreateBacktests01(t *testing.T) {
 	st.Expect(t, err, nil)
 	st.Expect(t, w.Code, 200)
 	st.Expect(t, result.Id, b.Id)
+	st.Expect(t, btM.StartingBalance, b.EndingBalance)
 	st.Expect(t, uint(1), b.UserId)
 	st.Expect(t, "SPY", b.Benchmark)
 	st.Expect(t, uint(1), b.Screen.UserId)

@@ -8,8 +8,9 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
-	"app.options.cafe/backtesting"
+	"app.options.cafe/library/queue"
 	"app.options.cafe/models"
 	"github.com/gin-gonic/gin"
 )
@@ -18,7 +19,6 @@ import (
 // CreateBacktest will create and start a new backtest.
 //
 func (t *Controller) CreateBacktest(c *gin.Context) {
-
 	// Setup Backtest obj
 	o := models.Backtest{}
 
@@ -31,6 +31,7 @@ func (t *Controller) CreateBacktest(c *gin.Context) {
 	userId := c.MustGet("userId").(uint)
 	o.UserId = userId
 	o.Screen.UserId = userId
+	o.EndingBalance = o.StartingBalance // They will be the same at the start with no trades
 
 	// Store the backtest
 	nBt, err := t.DB.CreateBacktest(o)
@@ -39,9 +40,8 @@ func (t *Controller) CreateBacktest(c *gin.Context) {
 		return
 	}
 
-	// Setup a new backtesting & run it.
-	bt := backtesting.New(t.DB, int(userId), o.Benchmark)
-	go bt.DoBacktestDays(&o)
+	// Send message to start backtest
+	queue.Write("oc-job", `{"action":"backtest-run-days","user_id":`+strconv.Itoa(int(userId))+`,"backtest_id":`+strconv.Itoa(int(nBt.Id))+`}`)
 
 	// Return happy JSON
 	t.RespondJSON(c, http.StatusCreated, gin.H{"id": nBt.Id})

@@ -7,6 +7,10 @@
 package backtesting
 
 import (
+	"fmt"
+	"log"
+	"math"
+	"math/big"
 	"os"
 	"strconv"
 	"time"
@@ -17,8 +21,11 @@ import (
 	"app.options.cafe/library/helpers"
 	"app.options.cafe/library/queue"
 	"app.options.cafe/library/services"
+	"app.options.cafe/library/worker"
 	"app.options.cafe/models"
 	"app.options.cafe/screener"
+	"github.com/dustin/go-humanize"
+	"github.com/olekukonko/tablewriter"
 
 	screenerCache "app.options.cafe/screener/cache"
 )
@@ -42,6 +49,32 @@ type Job struct {
 	Backtest  *models.Backtest
 	Results   []screener.Result
 	Options   []types.OptionsChainItem
+}
+
+//
+// BacktestDaysWorker will run a backtest days job from the worker queue
+//
+// 	queue.Write("oc-job", `{"action":"backtest-run-days","user_id":`+strconv.Itoa(userID)+`,"backtest_id":`+strconv.Itoa(77)+`}`)
+//
+func BacktestDaysWorker(job worker.JobRequest) error {
+	// Log to console.
+	services.InfoMsg("Starting Backtest " + strconv.Itoa(int(job.BacktestId)))
+
+	// Get the backtest
+	btM, err := job.DB.BacktestGetById(job.BacktestId)
+
+	if err != nil {
+		return err
+	}
+
+	// Setup a new backtesting & run it.
+	bt := New(job.DB, int(btM.UserId), btM.Benchmark)
+	bt.DoBacktestDays(&btM)
+
+	// Log to console.
+	services.InfoMsg("Ending Backtest " + strconv.Itoa(int(job.BacktestId)))
+
+	return nil
 }
 
 //
@@ -80,6 +113,31 @@ func New(db models.Datastore, userID int, benchmark string) Base {
 func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 	// Let's time this backtest
 	start := time.Now()
+
+	// Maybe we are rerunning the backtest so we clear out past data
+	if backtest.Id > 0 {
+		pIds := []uint{}
+
+		for _, row := range backtest.Positions {
+			pIds = append(pIds, row.Id)
+		}
+
+		t.DB.New().Exec("DELETE FROM backtest_positions WHERE id IN (?)", pIds)
+		t.DB.New().Exec("DELETE FROM backtest_positions_symbols WHERE backtest_position_id IN (?)", pIds)
+
+		backtest.Profit = 0.00
+		backtest.Return = 0.00
+		backtest.CAGR = 0.00
+		backtest.TradeCount = 0
+		backtest.TimeElapsed = 0
+		backtest.BenchmarkEnd = 0.00
+		backtest.BenchmarkCAGR = 0.00
+		backtest.EndingBalance = backtest.StartingBalance // No trades means starting and ending are the same
+		backtest.BenchmarkPercent = 0.00
+		backtest.Positions = []models.BacktestPosition{}
+
+		t.DB.New().Save(backtest)
+	}
 
 	// Send up websocket
 	queue.Write("oc-websocket-write", `{"uri":"backtest-start","user_id":`+strconv.Itoa(t.UserID)+`,"body":`+helpers.JsonEncode(backtest.Screen)+`}`)
@@ -168,8 +226,105 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 	// Send up websocket
 	queue.Write("oc-websocket-write", `{"uri":"backtest-end","user_id":`+strconv.Itoa(t.UserID)+`,"body":`+helpers.JsonEncode(backtest.Screen)+`}`)
 
+	// CAGR = (Ending value / Starting value)^(1 / # years) -1
+	s1 := helpers.ParseDateNoError(backtest.StartDate.Format("01/02/2006"))
+	s2 := helpers.ParseDateNoError(backtest.EndDate.Format("01/02/2006"))
+	years := (s2.Sub(s1).Hours() / 24) / 365
+	backtest.CAGR = (math.Pow((backtest.EndingBalance/backtest.StartingBalance), (1/years)) - 1) * 100
+	backtest.BenchmarkCAGR = (math.Pow((backtest.BenchmarkEnd/backtest.BenchmarkStart), (1/years)) - 1) * 100
+
+	// Returns
+	backtest.Return = 0.00
+
+	for _, row := range backtest.Positions {
+		// Only record closed position
+		if row.Status == "Closed" {
+			backtest.Return = row.ReturnFromStart
+		}
+	}
+
+	// Backtest stats
+	backtest.Profit = (backtest.EndingBalance - backtest.StartingBalance)
+	backtest.TradeCount = len(backtest.Positions)
+	backtest.BenchmarkPercent = (((backtest.BenchmarkEnd - backtest.BenchmarkStart) / backtest.BenchmarkStart) * 100)
+
 	// Store how long the backtest took to run.
 	backtest.TimeElapsed = time.Since(start)
+
+	// Save backtest to DB. If we run as a CMD we might not save
+	if backtest.Id > 0 {
+		t.DB.New().Save(backtest)
+	}
+
+	// Display results. Just used for debugging.
+	t.PrintResults(backtest)
+
+	return nil
+}
+
+//
+// PrintResults will print results to the screen. Useful for debugging and running from CLI
+//
+func (t *Base) PrintResults(backtest *models.Backtest) error {
+	plotData := [][]string{}
+	table := tablewriter.NewWriter(os.Stdout)
+	csvData := [][]string{{"Open Date", "Close Date", "Spread", "Open", "Close", "Credit", "Return", "Lots", "% Away", "Margin", "Balance", "Return", "Benchmark", "Benchmark Balance", "Benchmark Return", "Status", "Note"}}
+	table.SetHeader([]string{"Open Date", "Close Date", "Spread", "Open", "Close", "Credit", "Return", "Lots", "% Away", "Margin", "Balance", "Return", "Benchmark", "Benchmark Balance", "Benchmark Return", "Status", "Note"})
+	investedBenchmark := math.Floor(backtest.StartingBalance / backtest.BenchmarkStart)
+	investedBenchmarkLeftOver := backtest.StartingBalance - (investedBenchmark * backtest.BenchmarkStart)
+
+	for _, row := range backtest.Positions {
+		// Return based on percent.
+		returnPercent := (((row.Margin + (row.OpenPrice - row.ClosePrice) - row.Margin) / row.Margin) * 100)
+
+		// Benchmark return
+		bReturn := (((row.BenchmarkLast - backtest.BenchmarkStart) / backtest.BenchmarkStart) * 100)
+		bAmountReturn := (investedBenchmark * row.BenchmarkLast) + investedBenchmarkLeftOver
+
+		// Build data string
+		d := []string{
+			row.OpenDate.Format("01/02/2006"),
+			row.CloseDate.Format("01/02/2006"),
+			fmt.Sprintf("%s %s %.2f / %.2f", row.Legs[0].OptionUnderlying, row.Legs[0].OptionExpire.Format("01/02/2006"), row.Legs[0].OptionStrike, row.Legs[1].OptionStrike),
+			fmt.Sprintf("$%.2f", row.OpenPrice),
+			fmt.Sprintf("$%.2f", row.ClosePrice),
+			fmt.Sprintf("$%.2f", ((row.OpenPrice / float64(row.Lots)) / 100)),
+			fmt.Sprintf("%.2f", returnPercent) + "%",
+			fmt.Sprintf("%d", row.Lots),
+			fmt.Sprintf("%.2f", row.PutPrecentAway) + "%",
+			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.Margin))),
+			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.Balance))),
+			fmt.Sprintf("%.2f", row.ReturnFromStart) + "%",
+			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.BenchmarkLast))),
+			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(bAmountReturn))),
+			fmt.Sprintf("%.2f", bReturn) + "%",
+			row.Status,
+			row.Note,
+		}
+
+		table.Append(d)
+		csvData = append(csvData, d)
+		plotData = append(plotData, []string{row.OpenDate.Format("01/02/2006"), humanize.BigCommaf(big.NewFloat(row.Balance))})
+	}
+	table.Render()
+
+	// Show how long the backtest took.
+	log.Printf("Backtest took %s", backtest.TimeElapsed)
+	log.Println("")
+	log.Println("Summmary")
+	log.Println("-------------")
+	log.Printf("CAGR: %s%%", humanize.BigCommaf(big.NewFloat(backtest.CAGR)))
+	log.Printf("Return: %s%%", humanize.BigCommaf(big.NewFloat(backtest.Return)))
+	log.Printf("Profit: $%s", humanize.BigCommaf(big.NewFloat(backtest.Profit)))
+	log.Printf("Trade Count: %d", backtest.TradeCount)
+	log.Println("")
+	log.Println("Benchmark")
+	log.Println("-------------")
+	log.Printf("Start (%s): %s", backtest.Benchmark, humanize.BigCommaf(big.NewFloat(backtest.BenchmarkStart)))
+	log.Printf("End (%s): %s", backtest.Benchmark, humanize.BigCommaf(big.NewFloat(backtest.BenchmarkEnd)))
+	log.Printf("CAGR (%s): %s%%", backtest.Benchmark, humanize.BigCommaf(big.NewFloat(backtest.BenchmarkCAGR)))
+	log.Printf("Return (%s): %s%%", backtest.Benchmark, humanize.BigCommaf(big.NewFloat(backtest.BenchmarkPercent)))
+	log.Println("")
 
 	return nil
 }

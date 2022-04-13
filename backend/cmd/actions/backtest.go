@@ -7,18 +7,9 @@
 package actions
 
 import (
-	"fmt"
-	"log"
-	"math"
-	"math/big"
-	"os"
-
 	"app.options.cafe/backtesting"
+	"app.options.cafe/library/worker"
 	"app.options.cafe/models"
-	"github.com/olekukonko/tablewriter"
-	"github.com/optionscafe/options-cafe-cli/helpers"
-
-	humanize "github.com/dustin/go-humanize"
 )
 
 //
@@ -30,164 +21,51 @@ import (
 //
 func RunBackTest(db *models.DB, userID int) {
 
-	// Build screener object
-	screen := models.Screener{
-		UserId:   1,
-		Symbol:   "SPY",
-		Strategy: "put-credit-spread",
-		Items: []models.ScreenerItem{
-			{UserId: 1, Key: "short-strike-percent-away", Operator: ">", ValueNumber: 4.5},
-			{UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
-			{UserId: 1, Key: "open-credit", Operator: ">", ValueNumber: 0.18},
-			{UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.50},
-			{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 46},
-			{UserId: 1, Key: "days-to-expire", Operator: ">", ValueNumber: 0},
-			{UserId: 1, Key: "allow-more-than-one-expire", Operator: "=", ValueString: "no"},
-			{UserId: 1, Key: "allow-more-than-one-strike", Operator: "=", ValueString: "no"},
-		},
-	}
+	// Send directly to the worker without a queue.
+	backtesting.BacktestDaysWorker(worker.JobRequest{DB: db, BacktestId: 2})
 
-	// Set backtest
-	btM := models.Backtest{
-		UserId:          uint(userID),
-		StartingBalance: 5000.00,
-		EndingBalance:   5000.00,
-		PositionSize:    "15-percent", // one-at-time, *-percent
-		StartDate:       models.Date{helpers.ParseDateNoError("2022-01-01")},
-		EndDate:         models.Date{helpers.ParseDateNoError("2022-12-31")},
-		Midpoint:        true,
-		TradeSelect:     "least-days-to-expire", // least-days-to-expire, highest-midpoint, highest-ask
-		Benchmark:       "SPY",
-		Screen:          screen,
-	}
+	// Send to the worker queue
+	//queue.Write("oc-job", `{"action":"backtest-run-days","backtest_id":`+strconv.Itoa(2)+`}`)
 
-	// Setup a new backtesting
-	bt := backtesting.New(db, userID, btM.Benchmark)
-
-	// Run the backtest
-	bt.DoBacktestDays(&btM)
-
-	plotData := [][]string{}
-	table := tablewriter.NewWriter(os.Stdout)
-	csvData := [][]string{{"Open Date", "Close Date", "Spread", "Open", "Close", "Credit", "Return", "Lots", "% Away", "Margin", "Balance", "Return", "Benchmark", "Benchmark Balance", "Benchmark Return", "Status", "Note"}}
-	table.SetHeader([]string{"Open Date", "Close Date", "Spread", "Open", "Close", "Credit", "Return", "Lots", "% Away", "Margin", "Balance", "Return", "Benchmark", "Benchmark Balance", "Benchmark Return", "Status", "Note"})
-	closedReturn := 0.00
-	investedBenchmark := math.Floor(btM.StartingBalance / btM.BenchmarkStart)
-	investedBenchmarkLeftOver := btM.StartingBalance - (investedBenchmark * btM.BenchmarkStart)
-
-	for _, row := range btM.Positions {
-		// Only record closed position
-		if row.Status == "Closed" {
-			closedReturn = row.ReturnFromStart
-		}
-
-		// Return based on percent.
-		returnPercent := (((row.Margin + (row.OpenPrice - row.ClosePrice) - row.Margin) / row.Margin) * 100)
-
-		// Benchmark return
-		bReturn := (((row.BenchmarkLast - btM.BenchmarkStart) / btM.BenchmarkStart) * 100)
-		bAmountReturn := (investedBenchmark * row.BenchmarkLast) + investedBenchmarkLeftOver
-
-		// Build data string
-		d := []string{
-			row.OpenDate.Format("01/02/2006"),
-			row.CloseDate.Format("01/02/2006"),
-			fmt.Sprintf("%s %s %.2f / %.2f", row.Legs[0].OptionUnderlying, row.Legs[0].OptionExpire.Format("01/02/2006"), row.Legs[0].OptionStrike, row.Legs[1].OptionStrike),
-			fmt.Sprintf("$%.2f", row.OpenPrice),
-			fmt.Sprintf("$%.2f", row.ClosePrice),
-			fmt.Sprintf("$%.2f", ((row.OpenPrice / float64(row.Lots)) / 100)),
-			fmt.Sprintf("%.2f", returnPercent) + "%",
-			fmt.Sprintf("%d", row.Lots),
-			fmt.Sprintf("%.2f", row.PutPrecentAway) + "%",
-			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.Margin))),
-			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.Balance))),
-			fmt.Sprintf("%.2f", row.ReturnFromStart) + "%",
-			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.BenchmarkLast))),
-			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(bAmountReturn))),
-			fmt.Sprintf("%.2f", bReturn) + "%",
-			row.Status,
-			row.Note,
-		}
-
-		table.Append(d)
-		csvData = append(csvData, d)
-		plotData = append(plotData, []string{row.OpenDate.Format("01/02/2006"), humanize.BigCommaf(big.NewFloat(row.Balance))})
-	}
-	table.Render()
-
-	// CAGR = (Ending value / Starting value)^(1 / # years) -1
-	s1 := helpers.ParseDateNoError(btM.StartDate.Format("01/02/2006"))
-	s2 := helpers.ParseDateNoError(btM.EndDate.Format("01/02/2006"))
-	years := (s2.Sub(s1).Hours() / 24) / 365
-	cagr := (math.Pow((btM.EndingBalance/btM.StartingBalance), (1/years)) - 1) * 100
-	benchmarkCagr := (math.Pow((btM.BenchmarkEnd/btM.BenchmarkStart), (1/years)) - 1) * 100
-
-	// Summary data
-	tradeCount := len(btM.Positions)
-	profit := (btM.EndingBalance - btM.StartingBalance)
-	benchmarkPercent := (((btM.BenchmarkEnd - btM.BenchmarkStart) / btM.BenchmarkStart) * 100)
-
-	// Show how long the backtest took.
-	log.Printf("Backtest took %s", btM.TimeElapsed)
-	log.Println("")
-	log.Println("Summmary")
-	log.Println("-------------")
-	log.Printf("CAGR: %s%%", humanize.BigCommaf(big.NewFloat(cagr)))
-	log.Printf("Return: %s%%", humanize.BigCommaf(big.NewFloat(closedReturn)))
-	log.Printf("Profit: $%s", humanize.BigCommaf(big.NewFloat(profit)))
-	log.Printf("Trade Count: %d", tradeCount)
-	log.Println("")
-	log.Println("Benchmark")
-	log.Println("-------------")
-	log.Printf("Start (%s): %s", btM.Benchmark, humanize.BigCommaf(big.NewFloat(btM.BenchmarkStart)))
-	log.Printf("End (%s): %s", btM.Benchmark, humanize.BigCommaf(big.NewFloat(btM.BenchmarkEnd)))
-	log.Printf("CAGR (%s): %s%%", btM.Benchmark, humanize.BigCommaf(big.NewFloat(benchmarkCagr)))
-	log.Printf("Return (%s): %s%%", btM.Benchmark, humanize.BigCommaf(big.NewFloat(benchmarkPercent)))
-	log.Println("")
-
-	// // ------------------ Export CSV ----------- //
-
-	// file, err := os.Create("/Users/spicer/Downloads/result.csv")
-
-	// if err != nil {
-	// 	spew.Dump(err)
+	// // Build screener object
+	// screen := models.Screener{
+	// 	UserId:   1,
+	// 	Symbol:   "SPY",
+	// 	Strategy: "put-credit-spread",
+	// 	Items: []models.ScreenerItem{
+	// 		{UserId: 1, Key: "short-strike-percent-away", Operator: ">", ValueNumber: 4.5},
+	// 		{UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
+	// 		{UserId: 1, Key: "open-credit", Operator: ">", ValueNumber: 0.18},
+	// 		{UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.50},
+	// 		{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 46},
+	// 		{UserId: 1, Key: "days-to-expire", Operator: ">", ValueNumber: 0},
+	// 		{UserId: 1, Key: "allow-more-than-one-expire", Operator: "=", ValueString: "no"},
+	// 		{UserId: 1, Key: "allow-more-than-one-strike", Operator: "=", ValueString: "no"},
+	// 	},
 	// }
 
-	// defer file.Close()
-
-	// writer := csv.NewWriter(file)
-	// defer writer.Flush()
-
-	// for _, value := range csvData {
-	// 	err := writer.Write(value)
-
-	// 	if err != nil {
-	// 		spew.Dump(err)
-	// 	}
-
+	// // Set backtest
+	// btM := models.Backtest{
+	// 	UserId:          uint(userID),
+	// 	StartingBalance: 5000.00,
+	// 	EndingBalance:   5000.00,
+	// 	PositionSize:    "15-percent", // one-at-time, *-percent
+	// 	StartDate:       models.Date{helpers.ParseDateNoError("2022-01-01")},
+	// 	EndDate:         models.Date{helpers.ParseDateNoError("2022-12-31")},
+	// 	Midpoint:        true,
+	// 	TradeSelect:     "least-days-to-expire", // least-days-to-expire, highest-midpoint, highest-ask
+	// 	Benchmark:       "SPY",
+	// 	Screen:          screen,
 	// }
 
-	// // --------- Graph CSV -------- //
+	// // Setup a new backtesting
+	// bt := backtesting.New(db, userID, btM.Benchmark)
 
-	// file2, err := os.Create("/Users/spicer/Downloads/graph-balance.csv")
+	// // Run the backtest
+	// bt.DoBacktestDays(&btM)
 
-	// if err != nil {
-	// 	spew.Dump(err)
-	// }
-
-	// defer file2.Close()
-
-	// writer = csv.NewWriter(file2)
-	// defer writer.Flush()
-
-	// for _, value := range plotData {
-	// 	err := writer.Write(value)
-
-	// 	if err != nil {
-	// 		spew.Dump(err)
-	// 	}
-
-	// }
+	// // Display results
+	// bt.PrintResults(&btM)
 }
 
 /* End File */

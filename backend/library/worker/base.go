@@ -11,10 +11,11 @@ package worker
 import "app.options.cafe/models"
 
 type JobRequest struct {
-	DB       models.Datastore
-	Action   string `json:"action"`
-	UserId   uint   `json:"user_id"`
-	BrokerId uint   `json:"broker_id"`
+	DB         models.Datastore
+	Action     string `json:"action"`
+	UserId     uint   `json:"user_id"`
+	BrokerId   uint   `json:"broker_id"`
+	BacktestId uint   `json:"backtest_id"`
 }
 
 /* End File */
