@@ -27,7 +27,7 @@ type Backtest struct {
 	Return           float64              `sql:"not null" json:"return"`
 	Profit           float64              `sql:"not null" json:"profit"`
 	TradeCount       int                  `sql:"not null" json:"trade_count"`
-	TradeSelect      string               `sql:"not null;type:ENUM('least-days-to-expire', 'highest-midpoint', 'highest-ask');default:'highest-midpoint'" json:"trade_select"`
+	TradeSelect      string               `sql:"not null;type:ENUM('least-days-to-expire', 'highest-midpoint', 'highest-ask', 'highest-percent-away', 'shortest-percent-away');default:'highest-midpoint'" json:"trade_select"`
 	Midpoint         bool                 `sql:"not null" json:"midpoint"` // Open trade at the midpoint
 	PositionSize     string               `sql:"not null" json:"position_size"`
 	TimeElapsed      time.Duration        `sql:"not null" json:"time_elapsed"`
@@ -73,6 +73,20 @@ func (db *DB) ValidateBacktestScreener(backtest Backtest, userId uint) error {
 
 	// All good in the hood
 	return nil
+}
+
+//
+// BacktestsGetByUserId returns all the backtests for a user.
+//
+func (t *DB) BacktestsGetByUserId(userId uint) ([]Backtest, error) {
+	bts := []Backtest{}
+
+	if t.Where("user_id = ?", userId).Preload("Screen").Preload("Screen.Items").Preload("TradeGroups").Preload("TradeGroups.Positions").Preload("TradeGroups.Positions.Symbol").Find(&bts).RecordNotFound() {
+		return bts, errors.New("[Models:BacktestsGetByUserId] Records not found (#001).")
+	}
+
+	// Return happy
+	return bts, nil
 }
 
 //

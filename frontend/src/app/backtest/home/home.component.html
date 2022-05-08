@@ -1,65 +1,126 @@
 <app-backtest-sub-nav></app-backtest-sub-nav>
 
 <div class="content__inner">
-  <div class="shell shell--size7">
-    <section class="section-quaternary">
-      <div class="section__content">
-        <h3>Backtesting is coming soon!</h3>
+  <div class="shell shell--fluid">
+    <div class="article">
+      <div class="article__head">
+        <h5>Backtests</h5> 
 
-        <p>
-          Help to motivate us by sharing this news.<br>
-          If you share on social media we will give you early access.
-        </p>
+        <a href="#" class="btn">          
+          New Backtest
+        </a>
       </div>
 
-      <div class="socials-alt">
-        <h5>
-          Can you help us spread the word?
-        </h5>
+      <div class="article__body article__body--primary">
+        <div class="table-simple table-simple--primary js-table">
+          <div class="table__body">
 
-        <ul>
-          <li>
-            <a (click)="googleShare()">
-              <i class="ico-gplus"></i>
-            </a>
-          </li>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 200px;">
+                    <ins>Name</ins>
+                  </th>
 
-          <li>
-            <a (click)="facebookShare()">
-              <i class="ico-facebook"></i>
-            </a>
-          </li>
+                  <th style="width: 150px;">
+                    <ins>Start Date</ins>
+                  </th>
 
-          <li>
-            <a (click)="twitterShare()">
-              <i class="ico-twitter"></i>
-            </a>
-          </li>
+                  <th style="width: 150px;">
+                    <ins>End Date</ins>
+                  </th>
 
-        </ul>
-      </div>
+                  <th style="width: 150px;">
+                    <ins>Position Size</ins>
+                  </th>
 
-      <div class="form-subscribe">
+                  <th style="width: 150px;">
+                    <ins>Trade Select</ins>
+                  </th>
 
-        <form action="https://sendy.cloudmanic.com/subscribe" method="POST" accept-charset="utf-8" target="_blank" ngNoForm>
-          <div class="form__head">
-            <h5>Be the first to know when we launch backtesting!</h5>
+                  <th style="width: 150px;">
+                    <ins>Trade Count</ins>
+                  </th>
+
+                  <th>
+                    <ins>Starting Balance</ins>
+                  </th>
+
+                  <th>
+                    <ins>Ending Balance</ins>
+                  </th>
+
+                  <th>
+                    <ins>Profit</ins>
+                  </th>
+
+                  <th>
+                    <ins>Return</ins>
+                  </th>
+
+                  <th>
+                    <ins>CAGR</ins>
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+
+                <tr *ngFor="let row of backtests;"> 
+                  <td>
+                    <a href="">{{ row.Screen.Name }}</a>
+                  </td>
+
+                  <td>
+                    {{ row.StartDate | date:'shortDate' }}
+                  </td>
+
+                  <td>
+                    {{ row.EndDate | date:'shortDate' }}
+                  </td>
+
+                  <td>
+                    {{ row.PositionSize }}
+                  </td>
+
+                  <td>
+                    {{ row.TradeSelect }}
+                  </td>
+
+                  <td>
+                    {{ row.TradeCount }}
+                  </td>
+
+                  <td>
+                    {{ row.StartingBalance | currency:'USD':'symbol':'1.2-2' }}
+                  </td>
+
+                  <td>
+                    {{ row.EndingBalance |currency:'USD':'symbol':'1.2-2' }}
+                  </td>
+
+                  <td>
+                    {{ row.Profit | currency:'USD':'symbol':'1.2-2' }}
+                  </td>
+
+                  <td>
+                    {{ row.Return | number:'1.2-2' }}%
+                  </td>
+
+                  <td>
+                    {{ row.CAGR | number:'1.2-2' }}%
+                  </td>
+
+                </tr>
+              </tbody>
+            </table>
+
           </div>
-
-          <div class="form__body">
-            <label for="f_email">Email</label>
-
-            <div class="form__body-inner">
-              <input type="text" class="form__field" name="email" id="f_email" />
-              <input type="hidden" name="list" value="LfjH763WV07O6rPoO892btsAEQ" />
-              <input type="hidden" name="subform" value="yes" />
-              <button class="btn btn--pink">Submit</button>
-            </div>
-          </div>
-        </form>
-
-
+        </div>
       </div>
-    </section>
+    </div>
+
+
+
   </div>
 </div>

@@ -1,35 +1,33 @@
 //
-// Date: 7/18/2018
+// Date: 5/7/2022
 // Author(s): Spicer Matthews (spicer@options.cafe)
-// Copyright: 2018 Cloudmanic Labs, LLC. All rights reserved.
+// Copyright: 2022 Cloudmanic Labs, LLC. All rights reserved.
 //
 
 import 'rxjs/Rx';
-import * as moment from 'moment';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { Screener } from '../../models/screener';
-import { ScreenerResult } from '../../models/screener-result';
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { Backtest } from 'app/models/backtest';
 
 @Injectable()
-export class ScreenerService  
+export class BacktestService  
 { 
   //
   // Construct.
   //
   constructor(private http: HttpClient) { }
 
-  // //
-  // // Get a list of screens in the system. 
-  // //
-  // get(): Observable<Screener[]> 
-  // {
-  //   return this.http.get<Screener[]>(environment.app_server + '/api/v1/screeners')
-  //     .map((data) => { return new Screener().fromJsonList(data); });
-  // } 
+  //
+  // Get a list of backtests in the system. 
+  //
+  get(): Observable<Backtest[]> 
+  {
+    return this.http.get<Backtest[]>(environment.app_server + '/api/v1/backtests')
+      .map((data) => { return new Backtest().fromJsonList(data); });
+  } 
+
 
   // //
   // // Get screener by id.
@@ -57,7 +55,7 @@ export class ScreenerService
   //
   // Create a new backtest.
   //
-  create(backtest: Backtest): Observable<Backtest> {
+  //create(backtest: Backtest): Observable<Backtest> {
 
     // let body = {
     //   name: screen.Name,
@@ -78,7 +76,7 @@ export class ScreenerService
 
     // return this.http.post<Screener>(environment.app_server + '/api/v1/screeners', body)
     //   .map((data) => { return new Screener().fromJson(data); });
-  }
+  //}
 
   // //
   // // Update screener.

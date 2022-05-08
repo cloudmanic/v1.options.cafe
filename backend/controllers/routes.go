@@ -72,6 +72,7 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 		apiV1.PUT("/watchlists/:id/reorder", t.WatchlistReorder)
 
 		// Backtest
+		apiV1.GET("/backtests", t.GetBacktests)
 		apiV1.POST("/backtest", t.CreateBacktest)
 
 		// Trade Groups

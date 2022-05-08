@@ -5,7 +5,7 @@
 //
 
 import * as moment from 'moment';
-import { ScreenerResult } from './screener-result';
+import { Screener } from './screener';
 
 //
 // Backtest
@@ -14,32 +14,36 @@ export class Backtest
 {
   Id: number = 0;
   UserId: number = 0;
+  StartDate: Date = new Date();
+  EndDate: Date = new Date();
+  EndingBalance: number = 0.00;
   StartingBalance: number = 0.00;
-  PositionSize: string = "15-percent";
-  //StartDate:       models.Date{helpers.ParseDateNoError("2022-01-01")},
-  //EndDate:         models.Date{helpers.ParseDateNoError("2022-12-31")},
-  Midpoint: boolean = true;
-  TradeSelect: string = "highest-credit";
-  Benchmark: string = "SPY";
-  //Screen:          screen,
+  CAGR: number = 0.00;
+  Return: number = 0.00;
+  Profit: number = 0.00;
+  TradeCount: number = 0;
+  TradeSelect: string = '';
+  Midpoint: boolean = false;
+  PositionSize: string = '';
+  Benchmark: string = '';
+  BenchmarkStart: number = 0.00;
+  BenchmarkEnd: number = 0.00;
+  BenchmarkCAGR: number = 0.00;
+  BenchmarkPercent: number = 0.00;
+  Screen: Screener = new Screener();
 
 
 
-  // Id: number;
-  // Name: string;
-  // Strategy: string;
-  // Symbol: string;
-  // View: string;
-  // Expanded: boolean = true;  
-  // ListSort: string = "PercentAway";
-  // ListOrder: number = 1;
-  // Items: ScreenerItem[];
-  // Results: ScreenerResult[];
+
+
+	// TradeGroups      []BacktestTradeGroup `json:"trade_groups"`
+
+
 
   //
   // Build from JSON list.
   //
-  fromJsonList(json: Object[]): Screener[] 
+  fromJsonList(json: Object[]): Backtest[] 
   {
     let result = [];
 
@@ -50,7 +54,7 @@ export class Backtest
 
     for (let i = 0; i < json.length; i++) 
     {
-      result.push(new Screener().fromJson(json[i]));
+      result.push(new Backtest().fromJson(json[i]));
     }
 
     // Return happy
@@ -60,96 +64,32 @@ export class Backtest
   //
   // Json to Object.
   //
-  fromJson(json: Object): Screener 
+  fromJson(json: Object): Backtest 
   {
-    let obj = new Screener();
+    let obj = new Backtest();
 
     obj.Id = json["id"];
-    obj.Name = json["name"];
-    obj.Strategy = json["strategy"];
-    obj.Symbol = json["symbol"];
-    obj.Items = [];
-
-    // Add in the legs.
-    for (let i = 0; i < json["items"].length; i++)
-    {
-      obj.Items.push(new ScreenerItem(json["items"][i].id, json["items"][i].screener_id, json["items"][i].key, json["items"][i].operator, json["items"][i].value_string, json["items"][i].value_number));
-    }
+    obj.UserId = json["user_id"];
+    obj.StartDate = moment(json["start_date"]).toDate();
+    obj.EndDate = moment(json["end_date"]).toDate();
+    obj.EndingBalance = json["ending_balance"];
+    obj.StartingBalance = json["starting_balance"];
+    obj.CAGR = json["cagr"];
+    obj.Return = json["return"];
+    obj.Profit = json["profit"];
+    obj.TradeCount = json["trade_count"];
+    obj.TradeSelect = json["trade_select"];
+    obj.Midpoint = json["midpoint"];
+    obj.PositionSize = json["position_size"];
+    obj.Benchmark = json["benchmark"];
+    obj.BenchmarkStart = json["benchmark_start"];
+    obj.BenchmarkEnd = json["benchmark_end"];
+    obj.BenchmarkCAGR = json["benchmark_cagr"];
+    obj.BenchmarkPercent = json["benchmark_percent"];
+    obj.Screen = new Screener().fromJson(json['screen']);
 
     return obj;
   }  
-}
-
-//
-// Screener Item
-//
-export class ScreenerItem 
-{
-  Id: number;
-  ScreenerId: number;
-  Key: string;
-  Operator: string;
-  ValueString: string;
-  ValueNumber: number;
-  Settings: ScreenerItemSettings;
-
-  //
-  // Construct.
-  //
-  constructor(id: number, screenerId: number, key: string, operator: string, valueString: string, valueNumber: number)
-  {
-    this.Id = id;
-    this.ScreenerId = screenerId;
-    this.Key = key;
-    this.Operator = operator;
-    this.ValueString = valueString;
-    this.ValueNumber = valueNumber;
-  }
-
-  //
-  // Json to Object.
-  //
-  fromJson(json: Object): ScreenerItem 
-  {
-    let obj = new ScreenerItem(0, 0, '', '', '', 0);
-
-    obj.Id = json["id"];
-    obj.Key = json["key"];
-    obj.ScreenerId = json["screener_id"];
-    obj.Operator = json["operator"];
-    obj.ValueString = json["value_string"];
-    obj.ValueNumber = json["value_number"];
-
-    return obj;
-  } 
-}
-
-//
-// Screener Item Settings
-//
-export class ScreenerItemSettings 
-{
-  Key: string;
-  Name: string;
-  Type: string;
-  Operators: string[];
-  SelectValues: string[];
-  SelectValuesNumber: number[];
-  Step: number;
-
-  //
-  // Construct.
-  //
-  constructor(name: string, key: string, type: string, operators: string[], selectValuesNumber: number[], selectValues: string[], step: number) 
-  {
-    this.Name = name;
-    this.Key = key;
-    this.Type = type;
-    this.Operators = operators;
-    this.SelectValues = selectValues;
-    this.SelectValuesNumber = selectValuesNumber; 
-    this.Step = step
-  }
 }
 
 /* End File */

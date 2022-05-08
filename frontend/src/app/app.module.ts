@@ -39,6 +39,7 @@ import { WebsocketService } from './providers/http/websocket.service';
 import { AnalyzeService } from './providers/http/analyze.service';
 import { BrokerEventsService } from './providers/http/broker-events.service';
 import { NotificationsService } from './providers/http/notifications.service';
+import { BacktestService } from './providers/http/backtest.service';
 
 // Layout
 import { SubnavComponent } from './layouts/sub-nav/subnav.component';
@@ -125,7 +126,6 @@ import { environment } from 'environments/environment';
 
 @NgModule({
 	declarations: [
-
 		AppComponent,
 		HighchartsChartComponent,
 
@@ -240,6 +240,7 @@ import { environment } from 'environments/environment';
 		BrokerEventsService,
 		NotificationsService,
 		SettingsService,
+		BacktestService,
 		{ provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
 	],
 

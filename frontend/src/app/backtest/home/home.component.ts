@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+import { Backtest } from 'app/models/backtest';
+import { BacktestService } from 'app/providers/http/backtest.service';
 import { environment } from 'environments/environment';
-
 
 const pageTitle: string = environment.title_prefix + "Backtest";
 
@@ -10,10 +12,12 @@ const pageTitle: string = environment.title_prefix + "Backtest";
 })
 
 export class BacktestHomeComponent implements OnInit {
+	backtests: Backtest[] = [];
+
 	//
 	// Constructor
 	//
-	constructor(private titleService: Title) { }
+	constructor(private titleService: Title, private backtestService: BacktestService) { }
 
 	//
 	// ngOninit
@@ -21,29 +25,20 @@ export class BacktestHomeComponent implements OnInit {
 	ngOnInit() {
 		// Set page title.
 		this.titleService.setTitle(pageTitle);
+
+		// Load page data
+		this.getData();
 	}
 
 	//
-	// Share on twitter
+	// Get list of backtests`
 	//
-	twitterShare() {
-		let tweet = "Options backtesting is coming soon to Options Cafe!";
-		window.open('https://twitter.com/share?text=' + tweet + '&via=options_cafe&url=https://options.cafe&hashtags=OptionsTrading', '', 'menubar=no, toolbar = no, resizable = yes, scrollbars = yes, height = 600, width = 600');
+	getData() {
+		this.backtestService.get().subscribe(data => {
+			this.backtests = data;
+		});
 	}
 
-	//
-	// Share on facebook
-	//
-	facebookShare() {
-		window.open('https://www.facebook.com/sharer/sharer.php?u=https://options.cafe', '', 'menubar=no, toolbar = no, resizable = yes, scrollbars = yes, height = 600, width = 600');
-	}
-
-	//
-	// Share on google
-	//
-	googleShare() {
-		window.open('https://plus.google.com/share?url=https://options.cafe', '', 'menubar=no, toolbar = no, resizable = yes, scrollbars = yes, height = 600, width = 600');
-	}
 }
 
 /* End File */

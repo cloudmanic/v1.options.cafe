@@ -16,6 +16,24 @@ import (
 )
 
 //
+// GetBacktests will return all backtests to a user.
+//
+func (t *Controller) GetBacktests(c *gin.Context) {
+	// Get the user id.
+	userId := c.MustGet("userId").(uint)
+
+	// Get the backtests by user id.
+	bts, err := t.DB.BacktestsGetByUserId(userId)
+
+	if t.RespondError(c, err, httpNoRecordFound) {
+		return
+	}
+
+	// Return happy JSON
+	c.JSON(200, bts)
+}
+
+//
 // CreateBacktest will create and start a new backtest.
 //
 func (t *Controller) CreateBacktest(c *gin.Context) {
