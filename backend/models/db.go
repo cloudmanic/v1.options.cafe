@@ -83,7 +83,6 @@ func doMigrations(db *gorm.DB) {
 	db.AutoMigrate(&Watchlist{})
 	db.AutoMigrate(&WatchlistSymbol{})
 	db.AutoMigrate(&Position{})
-	db.AutoMigrate(&Backtest{})
 	db.AutoMigrate(&Screener{})
 	db.AutoMigrate(&ScreenerItem{})
 	db.AutoMigrate(&TradeGroup{})
@@ -95,7 +94,9 @@ func doMigrations(db *gorm.DB) {
 	db.AutoMigrate(&BrokerAccount{})
 	db.AutoMigrate(&ForgotPassword{})
 	db.AutoMigrate(&BalanceHistory{})
+	db.AutoMigrate(&Backtest{})
 	db.AutoMigrate(&BacktestPosition{})
+	db.AutoMigrate(&BacktestTradeGroup{})
 }
 
 //

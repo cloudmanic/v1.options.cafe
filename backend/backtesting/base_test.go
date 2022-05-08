@@ -14,12 +14,21 @@ import (
 	"app.options.cafe/library/helpers"
 	"app.options.cafe/models"
 	"github.com/nbio/st"
+
+	"github.com/jpfuentes2/go-env"
 )
 
 //
 // TestDoBacktestDays01 - Run a backtest looping through each day
 //
 func TestDoBacktestDays01(t *testing.T) {
+	// Only do this for non-short
+	if testing.Short() {
+		t.Skipf("Skipping TestDoBacktestDays01 test since it requires a env tokens and --short was requested")
+	}
+
+	// Load .env file (MUST CAll GO TEST FROM THE ROOT)
+	env.ReadEnv("../.env")
 
 	// Start the db connection.
 	db, dbName, _ := models.NewTestDB("")
@@ -31,13 +40,13 @@ func TestDoBacktestDays01(t *testing.T) {
 	// Build screener object
 	screen := models.Screener{
 		Symbol:   "SPY",
-		Strategy: "blank",
+		Strategy: "empty",
 	}
 
 	// Run blank backtest
 	err := bt.DoBacktestDays(&models.Backtest{
-		StartDate: models.Date{helpers.ParseDateNoError("2018-01-01")},
-		EndDate:   models.Date{helpers.ParseDateNoError("2019-01-01")},
+		StartDate: models.Date{helpers.ParseDateNoError("2020-01-01")},
+		EndDate:   models.Date{helpers.ParseDateNoError("2020-01-10")},
 		Screen:    screen,
 	})
 	st.Expect(t, err, nil)
@@ -47,9 +56,17 @@ func TestDoBacktestDays01(t *testing.T) {
 // TestGetOptionsByExpirationType01
 //
 func TestGetOptionsByExpirationType01(t *testing.T) {
+	// Only do this for non-short
+	if testing.Short() {
+		t.Skipf("Skipping TestGetOptionsByExpirationType01 test since it requires a env tokens and --short was requested")
+	}
+
+	// Load .env file (MUST CAll GO TEST FROM THE ROOT)
+	env.ReadEnv("../.env")
+
 	// Start the db connection.
-	db, _ := models.NewDB()
-	defer db.Close()
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Setup a new backtesting
 	bt := New(db, 1, "SPY")
@@ -99,6 +116,14 @@ func TestGetOptionsByExpirationType01(t *testing.T) {
 // TestGetExpirationDatesFromOptions
 //
 func TestGetExpirationDatesFromOptions01(t *testing.T) {
+	// Only do this for non-short
+	if testing.Short() {
+		t.Skipf("Skipping TestGetExpirationDatesFromOptions01 test since it requires a env tokens and --short was requested")
+	}
+
+	// Load .env file (MUST CAll GO TEST FROM THE ROOT)
+	env.ReadEnv("../.env")
+
 	// Start the db connection.
 	db, dbName, _ := models.NewTestDB("")
 	defer models.TestingTearDown(db, dbName)
@@ -126,37 +151,6 @@ func TestGetExpirationDatesFromOptions01(t *testing.T) {
 	// Test restults.
 	st.Expect(t, len(dates), 30)
 	st.Expect(t, dates[15].Format("2006-01-02"), "2018-04-20") // hehe 4/20 :)
-}
-
-//
-// TestGetSymbol - Get getting symb struct from DB
-//
-func TestGetSymbol(t *testing.T) {
-	// Start the db connection.
-	db, dbName, _ := models.NewTestDB("")
-	defer models.TestingTearDown(db, dbName)
-
-	// Setup a new backtesting
-	bt := New(db, 1, "SPY")
-
-	// Get test symbol.
-	smb, err := bt.GetSymbol("SPY190418P00269000", "SPY Apr 18 2019 $269.00 Put", "Option")
-
-	// Check results.
-	st.Expect(t, err, nil)
-	st.Expect(t, smb.ShortName, "SPY190418P00269000")
-	st.Expect(t, smb.Name, "SPY Apr 18 2019 $269.00 Put")
-	st.Expect(t, smb.OptionStrike, 269.00)
-
-	// Get test symbol - Make sure it is cached
-	smb2, err := bt.GetSymbol("SPY190418P00269000", "SPY Apr 18 2019 $269.00 Put", "Option")
-
-	// Check results.
-	st.Expect(t, err, nil)
-	st.Expect(t, smb2.Id, smb.Id)
-	st.Expect(t, smb2.ShortName, "SPY190418P00269000")
-	st.Expect(t, smb2.Name, "SPY Apr 18 2019 $269.00 Put")
-	st.Expect(t, smb2.OptionStrike, 269.00)
 }
 
 /* End File */

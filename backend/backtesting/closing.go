@@ -40,7 +40,7 @@ func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *m
 	benchmarkLast := t.getBenchmarkByDate(today)
 
 	// Loop for expired postions
-	for key, row := range backtest.Positions {
+	for key, row := range backtest.TradeGroups {
 
 		if row.Status == "Closed" {
 			continue
@@ -55,18 +55,18 @@ func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *m
 
 		// Close trade at the debitAmount
 		if closePrice <= debitAmount {
-			backtest.EndingBalance = (backtest.EndingBalance - backtest.Positions[key].ClosePrice)
+			backtest.EndingBalance = (backtest.EndingBalance - backtest.TradeGroups[key].ClosePrice)
 
-			backtest.Positions[key].Status = "Closed"
-			backtest.Positions[key].ClosePrice = closePrice * 100 * float64(row.Lots)
-			backtest.Positions[key].CloseDate = models.Date{today}
-			backtest.Positions[key].Note = "Triggered at debit amount."
-			backtest.Positions[key].Balance = backtest.EndingBalance
-			backtest.Positions[key].BenchmarkLast = benchmarkLast
-			backtest.Positions[key].ReturnFromStart = helpers.Round((((backtest.EndingBalance - backtest.StartingBalance) / backtest.StartingBalance) * 100), 2)
-			backtest.Positions[key].ReturnPercent = helpers.Round((((backtest.Positions[key].Margin + (backtest.Positions[key].OpenPrice - backtest.Positions[key].ClosePrice) - backtest.Positions[key].Margin) / backtest.Positions[key].Margin) * 100), 2)
-			backtest.Positions[key].BenchmarkBalance = helpers.Round((investedBenchmark*backtest.Positions[key].BenchmarkLast)+investedBenchmarkLeftOver, 2)
-			backtest.Positions[key].BenchmarkReturn = helpers.Round((((backtest.Positions[key].BenchmarkLast - backtest.BenchmarkStart) / backtest.BenchmarkStart) * 100), 2)
+			backtest.TradeGroups[key].Status = "Closed"
+			backtest.TradeGroups[key].ClosePrice = closePrice * 100 * float64(row.Lots)
+			backtest.TradeGroups[key].CloseDate = models.Date{today}
+			backtest.TradeGroups[key].Note = "Triggered at debit amount."
+			backtest.TradeGroups[key].Balance = backtest.EndingBalance
+			backtest.TradeGroups[key].BenchmarkLast = benchmarkLast
+			backtest.TradeGroups[key].ReturnFromStart = helpers.Round((((backtest.EndingBalance - backtest.StartingBalance) / backtest.StartingBalance) * 100), 2)
+			backtest.TradeGroups[key].ReturnPercent = helpers.Round((((backtest.TradeGroups[key].Margin + (backtest.TradeGroups[key].OpenPrice - backtest.TradeGroups[key].ClosePrice) - backtest.TradeGroups[key].Margin) / backtest.TradeGroups[key].Margin) * 100), 2)
+			backtest.TradeGroups[key].BenchmarkBalance = helpers.Round((investedBenchmark*backtest.TradeGroups[key].BenchmarkLast)+investedBenchmarkLeftOver, 2)
+			backtest.TradeGroups[key].BenchmarkReturn = helpers.Round((((backtest.TradeGroups[key].BenchmarkLast - backtest.BenchmarkStart) / backtest.BenchmarkStart) * 100), 2)
 		}
 	}
 
@@ -76,19 +76,18 @@ func (t *Base) closeOnDebit(today time.Time, underlyingLast float64, backtest *m
 // closeOnShortTouch - If our trade touches the short leg we close
 //
 func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backtest *models.Backtest, options []types.OptionsChainItem) {
-
 	// Get the benchmark last
 	benchmarkLast := t.getBenchmarkByDate(today)
 
 	// Loop for expired postions
-	for key, row := range backtest.Positions {
+	for key, row := range backtest.TradeGroups {
 
 		if row.Status == "Closed" {
 			continue
 		}
 
 		// TODO(Spicer): Currently this only works for PCS. We assume the second leg is the short leg.
-		if underlyingLast <= row.Legs[1].OptionStrike {
+		if underlyingLast <= row.Positions[1].Symbol.OptionStrike {
 
 			// Set closing Closing Price
 			closingPrice := (t.getClosedPrice(row, options) * 100.00 * float64(row.Lots)) - 1
@@ -103,17 +102,17 @@ func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backte
 			investedBenchmarkLeftOver := backtest.StartingBalance - (investedBenchmark * backtest.BenchmarkStart)
 
 			// Close trade
-			backtest.Positions[key].Status = "Closed"
-			backtest.Positions[key].ClosePrice = closingPrice
-			backtest.Positions[key].CloseDate = models.Date{today}
-			backtest.Positions[key].Note = "Trade touched the short leg."
-			backtest.Positions[key].Balance -= closingPrice
+			backtest.TradeGroups[key].Status = "Closed"
+			backtest.TradeGroups[key].ClosePrice = closingPrice
+			backtest.TradeGroups[key].CloseDate = models.Date{today}
+			backtest.TradeGroups[key].Note = "Trade touched the short leg."
+			backtest.TradeGroups[key].Balance -= closingPrice
 			backtest.EndingBalance -= closingPrice
-			backtest.Positions[key].BenchmarkLast = benchmarkLast
-			backtest.Positions[key].ReturnFromStart = helpers.Round((((backtest.EndingBalance - backtest.StartingBalance) / backtest.StartingBalance) * 100), 2)
-			backtest.Positions[key].ReturnPercent = helpers.Round((((backtest.Positions[key].Margin + (backtest.Positions[key].OpenPrice - backtest.Positions[key].ClosePrice) - backtest.Positions[key].Margin) / backtest.Positions[key].Margin) * 100), 2)
-			backtest.Positions[key].BenchmarkBalance = helpers.Round((investedBenchmark*backtest.Positions[key].BenchmarkLast)+investedBenchmarkLeftOver, 2)
-			backtest.Positions[key].BenchmarkReturn = helpers.Round((((backtest.Positions[key].BenchmarkLast - backtest.BenchmarkStart) / backtest.BenchmarkStart) * 100), 2)
+			backtest.TradeGroups[key].BenchmarkLast = benchmarkLast
+			backtest.TradeGroups[key].ReturnFromStart = helpers.Round((((backtest.EndingBalance - backtest.StartingBalance) / backtest.StartingBalance) * 100), 2)
+			backtest.TradeGroups[key].ReturnPercent = helpers.Round((((backtest.TradeGroups[key].Margin + (backtest.TradeGroups[key].OpenPrice - backtest.TradeGroups[key].ClosePrice) - backtest.TradeGroups[key].Margin) / backtest.TradeGroups[key].Margin) * 100), 2)
+			backtest.TradeGroups[key].BenchmarkBalance = helpers.Round((investedBenchmark*backtest.TradeGroups[key].BenchmarkLast)+investedBenchmarkLeftOver, 2)
+			backtest.TradeGroups[key].BenchmarkReturn = helpers.Round((((backtest.TradeGroups[key].BenchmarkLast - backtest.BenchmarkStart) / backtest.BenchmarkStart) * 100), 2)
 		}
 	}
 
@@ -123,12 +122,11 @@ func (t *Base) closeOnShortTouch(today time.Time, underlyingLast float64, backte
 // expirePositions - Loop through to see if we have any positions to expire.
 //
 func (t *Base) expirePositions(today time.Time, underlyingLast float64, backtest *models.Backtest) {
-
 	// Get the benchmark last
 	benchmarkLast := t.getBenchmarkByDate(today)
 
 	// Loop for expired postions
-	for key, row := range backtest.Positions {
+	for key, row := range backtest.TradeGroups {
 
 		if row.Status == "Closed" {
 			continue
@@ -137,9 +135,9 @@ func (t *Base) expirePositions(today time.Time, underlyingLast float64, backtest
 		expired := false
 
 		// See if any of the legs are expired
-		for _, row2 := range row.Legs {
-			if today.Format("2006-01-02") == row2.OptionExpire.Format("2006-01-02") ||
-				today.After(helpers.ParseDateNoError(row2.OptionExpire.Format("2006-01-02"))) {
+		for _, row2 := range row.Positions {
+			if today.Format("2006-01-02") == row2.Symbol.OptionExpire.Format("2006-01-02") ||
+				today.After(helpers.ParseDateNoError(row2.Symbol.OptionExpire.Format("2006-01-02"))) {
 				expired = true
 				break
 			}
@@ -153,41 +151,41 @@ func (t *Base) expirePositions(today time.Time, underlyingLast float64, backtest
 			investedBenchmarkLeftOver := backtest.StartingBalance - (investedBenchmark * backtest.BenchmarkStart)
 
 			// Shared for all strats
-			backtest.Positions[key].Status = "Closed"
-			backtest.Positions[key].CloseDate = models.Date{today}
-			backtest.Positions[key].BenchmarkLast = benchmarkLast
-			backtest.Positions[key].ReturnFromStart = helpers.Round((((backtest.EndingBalance - backtest.StartingBalance) / backtest.StartingBalance) * 100), 2)
-			backtest.Positions[key].ReturnPercent = helpers.Round((((backtest.Positions[key].Margin + (backtest.Positions[key].OpenPrice - backtest.Positions[key].ClosePrice) - backtest.Positions[key].Margin) / backtest.Positions[key].Margin) * 100), 2)
-			backtest.Positions[key].BenchmarkBalance = helpers.Round((investedBenchmark*backtest.Positions[key].BenchmarkLast)+investedBenchmarkLeftOver, 2)
-			backtest.Positions[key].BenchmarkReturn = helpers.Round((((backtest.Positions[key].BenchmarkLast - backtest.BenchmarkStart) / backtest.BenchmarkStart) * 100), 2)
+			backtest.TradeGroups[key].Status = "Closed"
+			backtest.TradeGroups[key].CloseDate = models.Date{today}
+			backtest.TradeGroups[key].BenchmarkLast = benchmarkLast
+			backtest.TradeGroups[key].ReturnFromStart = helpers.Round((((backtest.EndingBalance - backtest.StartingBalance) / backtest.StartingBalance) * 100), 2)
+			backtest.TradeGroups[key].ReturnPercent = helpers.Round((((backtest.TradeGroups[key].Margin + (backtest.TradeGroups[key].OpenPrice - backtest.TradeGroups[key].ClosePrice) - backtest.TradeGroups[key].Margin) / backtest.TradeGroups[key].Margin) * 100), 2)
+			backtest.TradeGroups[key].BenchmarkBalance = helpers.Round((investedBenchmark*backtest.TradeGroups[key].BenchmarkLast)+investedBenchmarkLeftOver, 2)
+			backtest.TradeGroups[key].BenchmarkReturn = helpers.Round((((backtest.TradeGroups[key].BenchmarkLast - backtest.BenchmarkStart) / backtest.BenchmarkStart) * 100), 2)
 
 			// Figure out how to close based on strategy
 			switch row.Strategy {
 
 			// Put credit spread
 			case "put-credit-spread":
-				diff := underlyingLast - row.Legs[1].OptionStrike
+				diff := underlyingLast - row.Positions[1].Symbol.OptionStrike
 
 				// Expired worthless or in the money
 				if diff > 0 {
-					backtest.Positions[key].ClosePrice = 0.00
-					backtest.Positions[key].Note = "Expired worthless."
+					backtest.TradeGroups[key].ClosePrice = 0.00
+					backtest.TradeGroups[key].Note = "Expired worthless."
 				} else {
-					spread := row.Legs[1].OptionStrike - row.Legs[0].OptionStrike
+					spread := row.Positions[1].Symbol.OptionStrike - row.Positions[0].Symbol.OptionStrike
 
 					if (diff * -1) > spread {
-						backtest.Positions[key].ClosePrice = (spread * float64(row.Lots) * 100)
+						backtest.TradeGroups[key].ClosePrice = (spread * float64(row.Lots) * 100)
 					} else {
-						backtest.Positions[key].ClosePrice = ((diff * -1) * float64(row.Lots) * 100)
+						backtest.TradeGroups[key].ClosePrice = ((diff * -1) * float64(row.Lots) * 100)
 					}
 
-					backtest.Positions[key].Note = "Expired in the money."
+					backtest.TradeGroups[key].Note = "Expired in the money."
 				}
 
 			// Unknown strategy
 			default:
-				backtest.Positions[key].ClosePrice = 0.00
-				backtest.Positions[key].Note = "Expired unknown."
+				backtest.TradeGroups[key].ClosePrice = 0.00
+				backtest.TradeGroups[key].Note = "Expired unknown."
 
 			}
 
@@ -201,7 +199,7 @@ func (t *Base) expirePositions(today time.Time, underlyingLast float64, backtest
 //
 // getClosedPrice - Figure out how much it would be to close this trade now
 //
-func (t *Base) getClosedPrice(position models.BacktestPosition, options []types.OptionsChainItem) float64 {
+func (t *Base) getClosedPrice(position models.BacktestTradeGroup, options []types.OptionsChainItem) float64 {
 
 	// TODO(spicer): Make this work for everything. Currently just works for PCS
 	var leg1Chain types.OptionsChainItem
@@ -209,7 +207,7 @@ func (t *Base) getClosedPrice(position models.BacktestPosition, options []types.
 
 	// Loop through until we find first symbol
 	for _, row := range options {
-		if row.Symbol != position.Legs[0].ShortName {
+		if row.Symbol != position.Positions[0].Symbol.ShortName {
 			continue
 		}
 
@@ -220,7 +218,7 @@ func (t *Base) getClosedPrice(position models.BacktestPosition, options []types.
 
 	// Loop through until we find second symbol
 	for _, row := range options {
-		if row.Symbol != position.Legs[1].ShortName {
+		if row.Symbol != position.Positions[1].Symbol.ShortName {
 			continue
 		}
 

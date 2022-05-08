@@ -89,11 +89,13 @@ func New(db models.Datastore, userID int, benchmark string) Base {
 
 	// Build backtest functions - results
 	t.ResultsFuncs = map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem, cache screenerCache.Cache) ([]screener.Result, error){
+		"empty":             t.EmptyResults, // used for testing
 		"put-credit-spread": t.PutCreditSpreadResults,
 	}
 
 	// Build backtest functions - trades
 	t.TradeFuncs = map[string]func(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem){
+		"empty":             t.EmptyTrades, // used for testing
 		"put-credit-spread": t.PutCreditSpreadPlaceTrades,
 	}
 
@@ -118,23 +120,24 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 	if backtest.Id > 0 {
 		pIds := []uint{}
 
-		for _, row := range backtest.Positions {
+		for _, row := range backtest.TradeGroups {
 			pIds = append(pIds, row.Id)
 		}
 
-		t.DB.New().Exec("DELETE FROM backtest_positions WHERE id IN (?)", pIds)
-		t.DB.New().Exec("DELETE FROM backtest_positions_symbols WHERE backtest_position_id IN (?)", pIds)
+		t.DB.New().Exec("DELETE FROM backtest_trade_group WHERE id IN (?)", pIds)
+		//t.DB.New().Exec("DELETE FROM backtest_positions_symbols WHERE backtest_position_id IN (?)", pIds)
 
 		backtest.Profit = 0.00
 		backtest.Return = 0.00
 		backtest.CAGR = 0.00
 		backtest.TradeCount = 0
 		backtest.TimeElapsed = 0
+		backtest.BenchmarkStart = 0.00
 		backtest.BenchmarkEnd = 0.00
 		backtest.BenchmarkCAGR = 0.00
 		backtest.EndingBalance = backtest.StartingBalance // No trades means starting and ending are the same
 		backtest.BenchmarkPercent = 0.00
-		backtest.Positions = []models.BacktestPosition{}
+		backtest.TradeGroups = []models.BacktestTradeGroup{}
 
 		t.DB.New().Save(backtest)
 	}
@@ -236,7 +239,7 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 	// Returns
 	backtest.Return = 0.00
 
-	for _, row := range backtest.Positions {
+	for _, row := range backtest.TradeGroups {
 		// Only record closed position
 		if row.Status == "Closed" {
 			backtest.Return = row.ReturnFromStart
@@ -245,7 +248,7 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 
 	// Backtest stats
 	backtest.Profit = (backtest.EndingBalance - backtest.StartingBalance)
-	backtest.TradeCount = len(backtest.Positions)
+	backtest.TradeCount = len(backtest.TradeGroups)
 	backtest.BenchmarkPercent = (((backtest.BenchmarkEnd - backtest.BenchmarkStart) / backtest.BenchmarkStart) * 100)
 
 	// Store how long the backtest took to run.
@@ -272,11 +275,11 @@ func (t *Base) PrintResults(backtest *models.Backtest) error {
 	table.SetHeader([]string{"Open Date", "Close Date", "Spread", "Open", "Close", "Credit", "Return", "Lots", "% Away", "Margin", "Balance", "Return", "Benchmark", "Benchmark Balance", "Benchmark Return", "Status", "Note"})
 
 	// Build position rows
-	for _, row := range backtest.Positions {
+	for _, row := range backtest.TradeGroups {
 		d := []string{
 			row.OpenDate.Format("01/02/2006"),
 			row.CloseDate.Format("01/02/2006"),
-			fmt.Sprintf("%s %s %.2f / %.2f", row.Legs[0].OptionUnderlying, row.Legs[0].OptionExpire.Format("01/02/2006"), row.Legs[0].OptionStrike, row.Legs[1].OptionStrike),
+			fmt.Sprintf("%s %s %.2f / %.2f", row.Positions[0].Symbol.OptionUnderlying, row.Positions[0].Symbol.OptionExpire.Format("01/02/2006"), row.Positions[0].Symbol.OptionStrike, row.Positions[1].Symbol.OptionStrike),
 			fmt.Sprintf("$%.2f", row.OpenPrice),
 			fmt.Sprintf("$%.2f", row.ClosePrice),
 			fmt.Sprintf("$%.2f", row.Credit),
@@ -304,17 +307,17 @@ func (t *Base) PrintResults(backtest *models.Backtest) error {
 	log.Println("")
 	log.Println("Summmary")
 	log.Println("-------------")
-	log.Printf("CAGR: %s%%", humanize.BigCommaf(big.NewFloat(backtest.CAGR)))
-	log.Printf("Return: %s%%", humanize.BigCommaf(big.NewFloat(backtest.Return)))
-	log.Printf("Profit: $%s", humanize.BigCommaf(big.NewFloat(backtest.Profit)))
+	log.Printf("CAGR: %s%%", humanize.BigCommaf(big.NewFloat(helpers.Round(backtest.CAGR, 2))))
+	log.Printf("Return: %s%%", humanize.BigCommaf(big.NewFloat(helpers.Round(backtest.Return, 2))))
+	log.Printf("Profit: $%s", humanize.BigCommaf(big.NewFloat(helpers.Round(backtest.Profit, 2))))
 	log.Printf("Trade Count: %d", backtest.TradeCount)
 	log.Println("")
 	log.Println("Benchmark")
 	log.Println("-------------")
-	log.Printf("Start (%s): %s", backtest.Benchmark, humanize.BigCommaf(big.NewFloat(backtest.BenchmarkStart)))
-	log.Printf("End (%s): %s", backtest.Benchmark, humanize.BigCommaf(big.NewFloat(backtest.BenchmarkEnd)))
-	log.Printf("CAGR (%s): %s%%", backtest.Benchmark, humanize.BigCommaf(big.NewFloat(backtest.BenchmarkCAGR)))
-	log.Printf("Return (%s): %s%%", backtest.Benchmark, humanize.BigCommaf(big.NewFloat(backtest.BenchmarkPercent)))
+	log.Printf("Start (%s): %s", backtest.Benchmark, humanize.BigCommaf(big.NewFloat(helpers.Round(backtest.BenchmarkStart, 2))))
+	log.Printf("End (%s): %s", backtest.Benchmark, humanize.BigCommaf(big.NewFloat(helpers.Round(backtest.BenchmarkEnd, 2))))
+	log.Printf("CAGR (%s): %s%%", backtest.Benchmark, humanize.BigCommaf(big.NewFloat(helpers.Round(backtest.BenchmarkCAGR, 2))))
+	log.Printf("Return (%s): %s%%", backtest.Benchmark, humanize.BigCommaf(big.NewFloat(helpers.Round(backtest.BenchmarkPercent, 2))))
 	log.Println("")
 
 	return nil

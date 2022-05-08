@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from 'environments/environment';
-import { Title } from '@angular/platform-browser';
+
 
 const pageTitle: string = environment.title_prefix + "Backtest";
 

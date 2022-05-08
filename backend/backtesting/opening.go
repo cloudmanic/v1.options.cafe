@@ -7,6 +7,7 @@
 package backtesting
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 	"strings"
@@ -34,7 +35,9 @@ func (t *Base) OpenMultiLegCredit(today time.Time, strategy string, backtest *mo
 	screenObj := screener.NewScreen(t.DB, &eod.Api{})
 
 	if result.Credit == 0 {
+		fmt.Println("#####")
 		spew.Dump(result)
+		fmt.Println("#####")
 	}
 
 	// Amount of margin left after trade is opened.
@@ -78,18 +81,18 @@ func (t *Base) OpenMultiLegCredit(today time.Time, strategy string, backtest *mo
 
 	// Make sure we do not already have a trade on at this strike.
 	if (err == nil) && (st.ValueString == "no") {
-		for _, row := range backtest.Positions {
+		for _, row := range backtest.TradeGroups {
 			// Only open trades
 			if row.Status != "Open" {
 				continue
 			}
 
-			for _, row2 := range row.Legs {
-				if row2.OptionStrike == result.Legs[0].OptionStrike {
+			for _, row2 := range row.Positions {
+				if row2.Symbol.OptionStrike == result.Legs[0].OptionStrike {
 					return
 				}
 
-				if row2.OptionStrike == result.Legs[1].OptionStrike {
+				if row2.Symbol.OptionStrike == result.Legs[1].OptionStrike {
 					return
 				}
 			}
@@ -101,33 +104,46 @@ func (t *Base) OpenMultiLegCredit(today time.Time, strategy string, backtest *mo
 
 	// Make sure we do not already have a trade on at this expire.
 	if (err == nil) && (st2.ValueString == "no") {
-		for _, row := range backtest.Positions {
+		for _, row := range backtest.TradeGroups {
 			// Only open trades
 			if row.Status != "Open" {
 				continue
 			}
 
-			for _, row2 := range row.Legs {
-				if row2.OptionExpire == result.Legs[0].OptionExpire {
+			for _, row2 := range row.Positions {
+				if row2.Symbol.OptionExpire == result.Legs[0].OptionExpire {
 					return
 				}
 
-				if row2.OptionExpire == result.Legs[1].OptionExpire {
+				if row2.Symbol.OptionExpire == result.Legs[1].OptionExpire {
 					return
 				}
 			}
 		}
 	}
 
+	// Build legs
+	legs := []models.BacktestPosition{}
+
+	for _, row := range result.Legs {
+		legs = append(legs, models.BacktestPosition{
+			UserId:   backtest.UserId,
+			Status:   "Open",
+			SymbolId: row.Id,
+			Symbol:   row,
+			OpenDate: today,
+		})
+	}
+
 	// Add position
-	backtest.Positions = append(backtest.Positions, models.BacktestPosition{
+	backtest.TradeGroups = append(backtest.TradeGroups, models.BacktestTradeGroup{
 		UserId:          backtest.UserId,
 		Strategy:        strategy,
 		Status:          "Open",
 		OpenDate:        models.Date{today},
 		OpenPrice:       openPrice,
 		Margin:          margin,
-		Legs:            result.Legs,
+		Positions:       legs,
 		Lots:            lots,
 		Credit:          (openPrice / float64(lots)) / 100,
 		PutPrecentAway:  result.PutPrecentAway,
@@ -138,7 +154,7 @@ func (t *Base) OpenMultiLegCredit(today time.Time, strategy string, backtest *mo
 	// Update ending balance
 	backtest.EndingBalance = backtest.EndingBalance + openPrice
 
-	//fmt.Println(today.Format("2006-01-02"), " : ", backtest.EndingBalance, " / ", totalMarginNeeded, " / ", margin, " / ", backtest.Positions[len(backtest.Positions)-1].OpenPrice)
+	//fmt.Println(today.Format("2006-01-02"), " : ", backtest.EndingBalance, " / ", totalMarginNeeded, " / ", margin, " / ", backtest.TradeGroups[len(backtest.TradeGroups)-1].Credit)
 }
 
 // -------------- Private Helper Functions ------------------- //
@@ -173,7 +189,7 @@ func (t *Base) openPositionsCount(backtest *models.Backtest) int {
 	var count int = 0
 
 	// Loop through current positons and search for this leg.
-	for _, row := range backtest.Positions {
+	for _, row := range backtest.TradeGroups {
 
 		// Ignored closed trades
 		if row.Status == "Closed" {
@@ -196,7 +212,7 @@ func (t *Base) checkForCurrentPosition(backtest *models.Backtest, result screene
 	// Loop through the legs
 	for _, row := range result.Legs {
 		// Loop through current positons and search for this leg.
-		for _, row2 := range backtest.Positions {
+		for _, row2 := range backtest.TradeGroups {
 
 			// Ignored closed trades
 			if row2.Status == "Closed" {
@@ -204,8 +220,8 @@ func (t *Base) checkForCurrentPosition(backtest *models.Backtest, result screene
 			}
 
 			// Loop through the legs of the positions
-			for _, row3 := range row2.Legs {
-				if row3.ShortName == row.ShortName {
+			for _, row3 := range row2.Positions {
+				if row3.Symbol.ShortName == row.ShortName {
 					return false
 				}
 			}
@@ -224,7 +240,7 @@ func (t *Base) getTotalMarginUsed(backtest *models.Backtest) float64 {
 	total := 0.00
 
 	// Loop for expired postions
-	for _, row := range backtest.Positions {
+	for _, row := range backtest.TradeGroups {
 
 		if row.Status == "Closed" {
 			continue

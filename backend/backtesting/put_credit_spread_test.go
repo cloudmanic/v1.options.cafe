@@ -7,30 +7,29 @@
 package backtesting
 
 import (
-	"fmt"
-	"log"
-	"math/big"
-	"os"
 	"testing"
 
+	"app.options.cafe/library/helpers"
 	"app.options.cafe/models"
-	humanize "github.com/dustin/go-humanize"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"github.com/jpfuentes2/go-env"
 	"github.com/nbio/st"
-	"github.com/olekukonko/tablewriter"
-	"github.com/optionscafe/options-cafe-cli/helpers"
 )
 
 //
 // TestRunPutCreditSpread01 - Run a put credit spread backtest.
 //
 func TestDoPutCreditSpread01(t *testing.T) {
-	// Start the db connection.
-	db, dbName, _ := models.NewTestDB("testing")
-	defer models.TestingTearDown(db, dbName)
+	// Only do this for non-short
+	if testing.Short() {
+		t.Skipf("Skipping TestDoPutCreditSpread01 test since it requires a env tokens and --short was requested")
+	}
 
-	// Setup a new backtesting
-	bt := New(db)
+	// Load .env file (MUST CAll GO TEST FROM THE ROOT)
+	env.ReadEnv("../.env")
+
+	// Start the db connection.
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
 
 	// Build screener object
 	screen := models.Screener{
@@ -53,41 +52,26 @@ func TestDoPutCreditSpread01(t *testing.T) {
 		StartingBalance: 2000.00,
 		EndingBalance:   2000.00,
 		PositionSize:    "10-percent",
-		StartDate:       models.Date{helpers.ParseDateNoError("2018-01-01")},
-		EndDate:         models.Date{helpers.ParseDateNoError("2019-01-01")},
+		StartDate:       models.Date{helpers.ParseDateNoError("2021-01-01")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2021-01-31")},
 		Midpoint:        true,
-		TradeSelect:     "highest-credit",
+		TradeSelect:     "least-days-to-expire",
 		Screen:          screen,
 	}
 
 	// Run blank backtest
+	bt := New(db, 1, "SPY")
 	err := bt.DoBacktestDays(&btM)
 	st.Expect(t, err, nil)
+	st.Expect(t, len(btM.TradeGroups), 19)
+	st.Expect(t, btM.CAGR, 847.4692690693325)
+	st.Expect(t, btM.Return, 13.80)
+	st.Expect(t, btM.Profit, 406.00)
 
-	//spew.Dump(btM)
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Open Date", "Close Date", "Spread", "Open", "Close", "Lots", "% Away", "Margin", "Balance", "Status", "Note"})
-
-	for _, row := range btM.Positions {
-		table.Append([]string{
-			row.OpenDate.Format("01/02/2006"),
-			row.CloseDate.Format("01/02/2006"),
-			fmt.Sprintf("%s %s %.2f / %.2f", row.Legs[0].OptionUnderlying, row.Legs[0].OptionExpire.Format("01/02/2006"), row.Legs[0].OptionStrike, row.Legs[1].OptionStrike),
-			fmt.Sprintf("$%.2f", row.OpenPrice),
-			fmt.Sprintf("$%.2f", row.ClosePrice),
-			fmt.Sprintf("%d", row.Lots),
-			fmt.Sprintf("%.2f", row.PutPrecentAway) + "%",
-			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.Margin))),
-			fmt.Sprintf("$%s", humanize.BigCommaf(big.NewFloat(row.Balance))),
-			row.Status,
-			row.Note,
-		})
-	}
-	table.Render()
-
-	// Show how long the backtest took.
-	log.Printf("Backtest took %s", btM.TimeElapsed)
-
+	st.Expect(t, btM.BenchmarkCAGR, 4.305621689814987)
+	st.Expect(t, btM.BenchmarkPercent, 0.34708099460396774)
+	st.Expect(t, btM.BenchmarkEnd, 370.07)
+	st.Expect(t, btM.BenchmarkStart, 368.79)
 }
 
 /* End File */
