@@ -53,7 +53,7 @@ func RunBackTest(db *models.DB, userID int) {
 	// 	StartDate:       models.Date{helpers.ParseDateNoError("2022-01-01")},
 	// 	EndDate:         models.Date{helpers.ParseDateNoError("2022-12-31")},
 	// 	Midpoint:        true,
-	// 	TradeSelect:     "least-days-to-expire", // least-days-to-expire, highest-midpoint, highest-ask
+	// 	TradeSelect:     "least-days-to-expire", // least-days-to-expire, highest-midpoint, highest-ask, highest-percent-away, shortest-percent-away
 	// 	Benchmark:       "SPY",
 	// 	Screen:          screen,
 	// }

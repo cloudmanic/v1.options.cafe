@@ -104,11 +104,29 @@ func (t *Base) PutCreditSpreadSelectTrade(today time.Time, backtest *models.Back
 		}
 		break
 
+	// Find the highest percent away
+	case "highest-percent-away":
+		for _, row := range tempResults {
+			if row.PutPrecentAway > winner.PutPrecentAway {
+				winner = row
+			}
+		}
+		break
+
+	// Find the shortest percent away
+	case "shortest-percent-away":
+		for key, row := range tempResults {
+			// winner is unknown on first lap
+			if key == 0 {
+				winner = row
+			}
+
+			if row.PutPrecentAway < winner.PutPrecentAway {
+				winner = row
+			}
+		}
+		break
 	}
-
-	// TODO(spicer): The short is furthest away from the current price. (biggest Put % Away)
-
-	// TODO(spicer): The short is furthest away from the current price. (shortest Put % Away)
 
 	return winner, nil
 }

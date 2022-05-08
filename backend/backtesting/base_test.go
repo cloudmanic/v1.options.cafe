@@ -166,7 +166,7 @@ func TestBackTestsSavingToDB01(t *testing.T) {
 	env.ReadEnv("../.env")
 
 	// Start the db connection.
-	db, dbName, _ := models.NewTestDB("testing_db")
+	db, dbName, _ := models.NewTestDB("")
 	defer models.TestingTearDown(db, dbName)
 
 	// Build screener object
