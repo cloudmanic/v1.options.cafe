@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
 import { Backtest } from 'app/models/backtest';
 import { BacktestService } from 'app/providers/http/backtest.service';
 import { environment } from 'environments/environment';
@@ -12,12 +13,13 @@ const pageTitle: string = environment.title_prefix + "Backtest View";
 })
 
 export class BacktestViewComponent implements OnInit {
-	backtests: Backtest[] = [];
+	backtest: Backtest = new Backtest();
+	backtestId: number = 0;
 
 	//
 	// Constructor
 	//
-	constructor(private titleService: Title, private backtestService: BacktestService) { }
+	constructor(private titleService: Title, private backtestService: BacktestService, private route: ActivatedRoute,) { }
 
 	//
 	// ngOninit
@@ -25,6 +27,9 @@ export class BacktestViewComponent implements OnInit {
 	ngOnInit() {
 		// Set page title.
 		this.titleService.setTitle(pageTitle);
+
+		// Backtest Id
+		this.backtestId = this.route.snapshot.params['id'];
 
 		// Load page data
 		this.getData();
@@ -34,8 +39,10 @@ export class BacktestViewComponent implements OnInit {
 	// Get list of backtests`
 	//
 	getData() {
-		this.backtestService.get().subscribe(data => {
-			this.backtests = data;
+		this.backtestService.getById(this.backtestId).subscribe(data => {
+			this.backtest = data;
+
+			console.log(this.backtest)
 		});
 	}
 

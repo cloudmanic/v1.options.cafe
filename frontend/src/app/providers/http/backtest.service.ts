@@ -28,14 +28,13 @@ export class BacktestService
       .map((data) => { return new Backtest().fromJsonList(data); });
   } 
 
-
-  // //
-  // // Get screener by id.
-  // //
-  // getById(id: number): Observable<Screener> {
-  //   return this.http.get<Screener>(environment.app_server + '/api/v1/screeners/' + id)
-  //     .map((data) => { return new Screener().fromJson(data); });
-  // } 
+  //
+  // Get backtest by id.
+  //
+  getById(id: number): Observable<Backtest> {
+    return this.http.get<Backtest>(environment.app_server + '/api/v1/backtest/' + id)
+      .map((data) => { return new Backtest().fromJson(data); });
+  } 
 
   // //
   // // Delete screener by id.

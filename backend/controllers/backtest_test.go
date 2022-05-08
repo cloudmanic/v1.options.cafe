@@ -107,7 +107,221 @@ func TestGetBacktests01(t *testing.T) {
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
+	st.Expect(t, w.Result().StatusCode, 200)
 	st.Expect(t, w.Body.String(), `[{"id":1,"user_id":1,"start_date":"2017-01-01","end_date":"2021-12-31","ending_balance":2000,"starting_balance":2000,"cagr":0,"return":0,"profit":0,"trade_count":0,"trade_select":"shortest-percent-away","midpoint":true,"position_size":"10-percent","time_elapsed":0,"benchmark":"SPY","benchmark_start":0,"benchmark_end":0,"benchmark_cagr":0,"benchmark_percent":0,"screen":{"id":1,"user_id":1,"backtest_id":1,"name":"","strategy":"put-credit-spread","symbol":"SPY","items":[{"id":1,"screener_id":1,"user_id":1,"key":"short-strike-percent-away","operator":"\u003e","value_string":"","value_number":4},{"id":2,"screener_id":1,"user_id":1,"key":"spread-width","operator":"=","value_string":"","value_number":2},{"id":3,"screener_id":1,"user_id":1,"key":"open-credit","operator":"\u003e","value_string":"","value_number":0.18},{"id":4,"screener_id":1,"user_id":1,"key":"open-credit","operator":"\u003c","value_string":"","value_number":0.2},{"id":5,"screener_id":1,"user_id":1,"key":"days-to-expire","operator":"\u003c","value_string":"","value_number":46},{"id":6,"screener_id":1,"user_id":1,"key":"days-to-expire","operator":"\u003e","value_string":"","value_number":0}]},"trade_groups":[]},{"id":2,"user_id":1,"start_date":"2017-01-01","end_date":"2021-12-31","ending_balance":2000,"starting_balance":2000,"cagr":0,"return":0,"profit":0,"trade_count":0,"trade_select":"shortest-percent-away","midpoint":true,"position_size":"20-percent","time_elapsed":0,"benchmark":"XLF","benchmark_start":0,"benchmark_end":0,"benchmark_cagr":0,"benchmark_percent":0,"screen":{"id":2,"user_id":1,"backtest_id":2,"name":"","strategy":"put-credit-spread","symbol":"SPY","items":[{"id":7,"screener_id":2,"user_id":1,"key":"short-strike-percent-away","operator":"\u003e","value_string":"","value_number":4},{"id":8,"screener_id":2,"user_id":1,"key":"spread-width","operator":"=","value_string":"","value_number":2},{"id":9,"screener_id":2,"user_id":1,"key":"open-credit","operator":"\u003e","value_string":"","value_number":0.18},{"id":10,"screener_id":2,"user_id":1,"key":"open-credit","operator":"\u003c","value_string":"","value_number":0.2},{"id":11,"screener_id":2,"user_id":1,"key":"days-to-expire","operator":"\u003c","value_string":"","value_number":46},{"id":12,"screener_id":2,"user_id":1,"key":"days-to-expire","operator":"\u003e","value_string":"","value_number":0}]},"trade_groups":[]}]`)
+}
+
+//
+// TestGetBacktest01 returns one backtest by user.
+//
+func TestGetBacktest01(t *testing.T) {
+	// Start the db connection.
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Load sample data into the database
+	screen1 := models.Screener{
+		UserId:   1,
+		Symbol:   "SPY",
+		Strategy: "put-credit-spread",
+		Items: []models.ScreenerItem{
+			{UserId: 1, Key: "short-strike-percent-away", Operator: ">", ValueNumber: 4.0},
+			{UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
+			{UserId: 1, Key: "open-credit", Operator: ">", ValueNumber: 0.18},
+			{UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.20},
+			{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 46},
+			{UserId: 1, Key: "days-to-expire", Operator: ">", ValueNumber: 0},
+		},
+	}
+
+	screen2 := models.Screener{
+		UserId:   1,
+		Symbol:   "SPY",
+		Strategy: "put-credit-spread",
+		Items: []models.ScreenerItem{
+			{UserId: 1, Key: "short-strike-percent-away", Operator: ">", ValueNumber: 4.0},
+			{UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
+			{UserId: 1, Key: "open-credit", Operator: ">", ValueNumber: 0.18},
+			{UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.20},
+			{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 46},
+			{UserId: 1, Key: "days-to-expire", Operator: ">", ValueNumber: 0},
+		},
+	}
+
+	// Set backtest
+	btM1 := models.Backtest{
+		UserId:          1,
+		StartingBalance: 2000.00,
+		EndingBalance:   2000.00,
+		PositionSize:    "10-percent",
+		StartDate:       models.Date{helpers.ParseDateNoError("2017-01-01")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2021-12-31")},
+		Midpoint:        true,
+		TradeSelect:     "shortest-percent-away",
+		Benchmark:       "SPY",
+		Screen:          screen1,
+	}
+
+	// Set backtest
+	btM2 := models.Backtest{
+		UserId:          1,
+		StartingBalance: 2000.00,
+		EndingBalance:   2000.00,
+		PositionSize:    "20-percent",
+		StartDate:       models.Date{helpers.ParseDateNoError("2017-01-01")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2021-12-31")},
+		Midpoint:        true,
+		TradeSelect:     "shortest-percent-away",
+		Benchmark:       "XLF",
+		Screen:          screen2,
+	}
+
+	db.Save(&btM1)
+	db.Save(&btM2)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("GET", "/api/v1/backtest/2", nil)
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.GET("/api/v1/backtest/:id", c.GetBacktest)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	st.Expect(t, w.Result().StatusCode, 200)
+	st.Expect(t, w.Body.String(), `{"id":2,"user_id":1,"start_date":"2017-01-01","end_date":"2021-12-31","ending_balance":2000,"starting_balance":2000,"cagr":0,"return":0,"profit":0,"trade_count":0,"trade_select":"shortest-percent-away","midpoint":true,"position_size":"20-percent","time_elapsed":0,"benchmark":"XLF","benchmark_start":0,"benchmark_end":0,"benchmark_cagr":0,"benchmark_percent":0,"screen":{"id":2,"user_id":1,"backtest_id":2,"name":"","strategy":"put-credit-spread","symbol":"SPY","items":[{"id":7,"screener_id":2,"user_id":1,"key":"short-strike-percent-away","operator":"\u003e","value_string":"","value_number":4},{"id":8,"screener_id":2,"user_id":1,"key":"spread-width","operator":"=","value_string":"","value_number":2},{"id":9,"screener_id":2,"user_id":1,"key":"open-credit","operator":"\u003e","value_string":"","value_number":0.18},{"id":10,"screener_id":2,"user_id":1,"key":"open-credit","operator":"\u003c","value_string":"","value_number":0.2},{"id":11,"screener_id":2,"user_id":1,"key":"days-to-expire","operator":"\u003c","value_string":"","value_number":46},{"id":12,"screener_id":2,"user_id":1,"key":"days-to-expire","operator":"\u003e","value_string":"","value_number":0}]},"trade_groups":[]}`)
+}
+
+//
+// TestGetBacktest02 returns one backtest by user.
+//
+func TestGetBacktest02(t *testing.T) {
+	// Start the db connection.
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
+
+	// Create controller
+	c := &Controller{DB: db}
+
+	// Load sample data into the database
+	screen1 := models.Screener{
+		UserId:   1,
+		Symbol:   "SPY",
+		Strategy: "put-credit-spread",
+		Items: []models.ScreenerItem{
+			{UserId: 1, Key: "short-strike-percent-away", Operator: ">", ValueNumber: 4.0},
+			{UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
+			{UserId: 1, Key: "open-credit", Operator: ">", ValueNumber: 0.18},
+			{UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.20},
+			{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 46},
+			{UserId: 1, Key: "days-to-expire", Operator: ">", ValueNumber: 0},
+		},
+	}
+
+	screen2 := models.Screener{
+		UserId:   1,
+		Symbol:   "SPY",
+		Strategy: "put-credit-spread",
+		Items: []models.ScreenerItem{
+			{UserId: 1, Key: "short-strike-percent-away", Operator: ">", ValueNumber: 4.0},
+			{UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
+			{UserId: 1, Key: "open-credit", Operator: ">", ValueNumber: 0.18},
+			{UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.20},
+			{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 46},
+			{UserId: 1, Key: "days-to-expire", Operator: ">", ValueNumber: 0},
+		},
+	}
+
+	screen3 := models.Screener{
+		UserId:   1,
+		Symbol:   "SPY",
+		Strategy: "put-credit-spread",
+		Items: []models.ScreenerItem{
+			{UserId: 1, Key: "short-strike-percent-away", Operator: ">", ValueNumber: 4.0},
+			{UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
+			{UserId: 1, Key: "open-credit", Operator: ">", ValueNumber: 0.18},
+			{UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.20},
+			{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 46},
+			{UserId: 1, Key: "days-to-expire", Operator: ">", ValueNumber: 0},
+		},
+	}
+
+	// Set backtest
+	btM1 := models.Backtest{
+		UserId:          1,
+		StartingBalance: 2000.00,
+		EndingBalance:   2000.00,
+		PositionSize:    "10-percent",
+		StartDate:       models.Date{helpers.ParseDateNoError("2017-01-01")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2021-12-31")},
+		Midpoint:        true,
+		TradeSelect:     "shortest-percent-away",
+		Benchmark:       "SPY",
+		Screen:          screen1,
+	}
+
+	// Set backtest
+	btM2 := models.Backtest{
+		UserId:          2,
+		StartingBalance: 2000.00,
+		EndingBalance:   2000.00,
+		PositionSize:    "20-percent",
+		StartDate:       models.Date{helpers.ParseDateNoError("2017-01-01")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2021-12-31")},
+		Midpoint:        true,
+		TradeSelect:     "shortest-percent-away",
+		Benchmark:       "XLF",
+		Screen:          screen2,
+	}
+
+	// Set backtest
+	btM3 := models.Backtest{
+		UserId:          1,
+		StartingBalance: 2000.00,
+		EndingBalance:   2000.00,
+		PositionSize:    "10-percent",
+		StartDate:       models.Date{helpers.ParseDateNoError("2017-01-01")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2021-12-31")},
+		Midpoint:        true,
+		TradeSelect:     "shortest-percent-away",
+		Benchmark:       "SPY",
+		Screen:          screen3,
+	}
+
+	db.Save(&btM1)
+	db.Save(&btM2)
+	db.Save(&btM3)
+
+	// Make a mock request.
+	req, _ := http.NewRequest("GET", "/api/v1/backtest/2", nil)
+	req.Header.Set("Accept", "application/json")
+
+	// Setup GIN Router
+	gin.SetMode("release")
+	gin.DisableConsoleColor()
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) { c.Set("userId", uint(1)) })
+
+	r.GET("/api/v1/backtest/:id", c.GetBacktest)
+
+	// Setup writer.
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	st.Expect(t, w.Result().StatusCode, 400)
+	st.Expect(t, w.Body.String(), `{"error":"No Record Found."}`)
 }
 
 //

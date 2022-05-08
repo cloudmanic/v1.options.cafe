@@ -34,6 +34,31 @@ func (t *Controller) GetBacktests(c *gin.Context) {
 }
 
 //
+// GetBacktest will return one backtest result
+//
+func (t *Controller) GetBacktest(c *gin.Context) {
+	// Get the user id.
+	userId := c.MustGet("userId").(uint)
+
+	// Set as int
+	id, err := strconv.ParseInt(c.Param("id"), 10, 32)
+
+	if t.RespondError(c, err, httpGenericErrMsg) {
+		return
+	}
+
+	// Get the backtests by user id.
+	bt, err := t.DB.BacktestGetByIdAndUserId(uint(id), userId)
+
+	if t.RespondError(c, err, httpNoRecordFound) {
+		return
+	}
+
+	// Return happy JSON
+	c.JSON(200, bt)
+}
+
+//
 // CreateBacktest will create and start a new backtest.
 //
 func (t *Controller) CreateBacktest(c *gin.Context) {

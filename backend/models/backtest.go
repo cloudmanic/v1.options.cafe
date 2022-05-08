@@ -95,7 +95,21 @@ func (t *DB) BacktestsGetByUserId(userId uint) ([]Backtest, error) {
 func (t *DB) BacktestGetById(id uint) (Backtest, error) {
 	bt := Backtest{}
 
-	if t.Preload("Screen").Preload("Positions").Preload("Screen.Items").Preload("Positions.Legs").Where("Id = ?", id).First(&bt).RecordNotFound() {
+	if t.Preload("Screen").Preload("Screen.Items").Preload("TradeGroups").Preload("TradeGroups.Positions").Where("Id = ?", id).First(&bt).RecordNotFound() {
+		return bt, errors.New("Record not found")
+	}
+
+	// Return happy
+	return bt, nil
+}
+
+//
+// BacktestGetByIdAndUserId returns a backtest by id.
+//
+func (t *DB) BacktestGetByIdAndUserId(id uint, userId uint) (Backtest, error) {
+	bt := Backtest{}
+
+	if t.Preload("Screen").Preload("Screen.Items").Preload("TradeGroups").Preload("TradeGroups.Positions").Where("Id = ?", id).Where("user_id = ?", userId).First(&bt).RecordNotFound() {
 		return bt, errors.New("Record not found")
 	}
 

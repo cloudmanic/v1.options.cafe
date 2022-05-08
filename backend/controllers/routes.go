@@ -73,6 +73,7 @@ func (t *Controller) DoRoutes(r *gin.Engine) {
 
 		// Backtest
 		apiV1.GET("/backtests", t.GetBacktests)
+		apiV1.GET("/backtest/:id", t.GetBacktest)
 		apiV1.POST("/backtest", t.CreateBacktest)
 
 		// Trade Groups

@@ -147,6 +147,7 @@ type Datastore interface {
 	BacktestsGetByUserId(userId uint) ([]Backtest, error)
 	CreateBacktest(backtest Backtest) (Backtest, error)
 	ValidateBacktestScreener(backtest Backtest, userId uint) error
+	BacktestGetByIdAndUserId(id uint, userId uint) (Backtest, error)
 }
 
 /* End File */
