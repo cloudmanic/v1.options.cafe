@@ -6,7 +6,7 @@
       <div class="article__head">
         <h5>Backtests</h5> 
 
-        <a href="#" class="btn">          
+        <a routerLink="/backtest/create" class="btn">          
           New Backtest
         </a>
       </div>
@@ -68,7 +68,7 @@
 
                 <tr *ngFor="let row of backtests;"> 
                   <td>
-                    <a href="">{{ row.Screen.Name }}</a>
+                    <a routerLink="/backtest/{{ row.Id }}">{{ row.Screen.Name }}</a>
                   </td>
 
                   <td>

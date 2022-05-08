@@ -56,9 +56,11 @@ import { AuthResetPasswordComponent } from './auth/reset-password/home.component
 import { AuthForgotPasswordComponent } from './auth/forgot-password/home.component';
 
 // Backtest
+import { BacktestViewComponent } from './backtest/view/view.component';
 import { BacktestSubnavComponent } from './backtest/sub-nav/subnav.component';
 import { BacktestHomeComponent } from './backtest/home/home.component';
 import { BacktestCreateComponent } from './backtest/create/create.component';
+import { BacktestComingSoonComponent } from './backtest/coming-soon/coming-soon.component';
 
 // Reports
 import { BaseComponent } from './reports/custom-reports/base/base.component';
@@ -111,7 +113,6 @@ import { LongPutButterflyComponent } from './trading/dashboard/positions/types/l
 import { ScreenerComponent } from './trading/screener/home.component';
 import { AddEditComponent as ScreenerAddEditComponent } from './trading/screener/add-edit/add-edit.component';
 
-
 // Pipes
 import { TableSortPipe } from './pipes/table-sort.pipe';
 
@@ -151,9 +152,11 @@ import { environment } from 'environments/environment';
 		AuthForgotPasswordComponent,
 
 		// Backtest
+		BacktestViewComponent,
 		BacktestSubnavComponent,
 		BacktestHomeComponent,
 		BacktestCreateComponent,
+		BacktestComingSoonComponent,
 
 		// Reports
 		AccountSummaryComponent,

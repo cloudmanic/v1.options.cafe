@@ -23,8 +23,10 @@ import { ExpiredComponent } from './settings/account/expired/expired.component';
 import { CreditCardComponent } from './settings/account/upgrade/credit-card/credit-card.component';
 
 // Backtest
+import { BacktestViewComponent } from './backtest/view/view.component';
 import { BacktestHomeComponent } from './backtest/home/home.component';
 import { BacktestCreateComponent } from './backtest/create/create.component';
+import { BacktestComingSoonComponent } from './backtest/coming-soon/coming-soon.component';
 
 // Reports
 import { CustomReportsComponent } from './reports/custom-reports/custom-reports.component';
@@ -86,8 +88,10 @@ const appRoutes: Routes = [
 			{ path: 'reports/custom/account-returns', component: AccountReturnsComponent, canActivate: [AuthGuard], data: { section: 'reports', subSection: 'custom', action: '' } },
 
 			// Backtest
-			{ path: 'backtest', component: BacktestHomeComponent, canActivate: [AuthGuard], data: { section: 'backtest', subSection: 'dashboard', action: '' } },
+			{ path: 'backtests', component: BacktestHomeComponent, canActivate: [AuthGuard], data: { section: 'backtest', subSection: 'dashboard', action: '' } },
 			{ path: 'backtest/create', component: BacktestCreateComponent, canActivate: [AuthGuard], data: { section: 'backtest', subSection: 'dashboard', action: '' } },
+			{ path: 'backtest/coming-soon', component: BacktestComingSoonComponent, canActivate: [AuthGuard], data: { section: 'backtest', subSection: 'dashboard', action: '' } },
+			{ path: 'backtest/:id', component: BacktestViewComponent, canActivate: [AuthGuard], data: { section: 'backtest', subSection: 'dashboard', action: '' } },
 
 			// Settings
 			{ path: 'settings/account', component: AccountComponent, canActivate: [AuthGuard], data: { section: 'settings', subSection: 'account', action: '' } },
@@ -95,9 +99,7 @@ const appRoutes: Routes = [
 			{ path: 'settings/brokers', component: BrokersComponent, canActivate: [AuthGuard], data: { section: 'settings', subSection: 'brokers', action: '' } },
 
 			// Research
-			{ path: 'research/symbol', component: SymbolComponent, canActivate: [AuthGuard], data: { section: 'research', subSection: 'symbol', action: '' } },
-
-
+			{ path: 'research/symbol', component: SymbolComponent, canActivate: [AuthGuard], data: { section: 'research', subSection: 'symbol', action: '' } },	
 		]
 	},
 

@@ -1,0 +1,65 @@
+<app-backtest-sub-nav></app-backtest-sub-nav>
+
+<div class="content__inner">
+  <div class="shell shell--size7">
+    <section class="section-quaternary">
+      <div class="section__content">
+        <h3>Backtesting is coming soon!</h3>
+
+        <p>
+          Help to motivate us by sharing this news.<br>
+          If you share on social media we will give you early access.
+        </p>
+      </div>
+
+      <div class="socials-alt">
+        <h5>
+          Can you help us spread the word?
+        </h5>
+
+        <ul>
+          <li>
+            <a (click)="googleShare()">
+              <i class="ico-gplus"></i>
+            </a>
+          </li>
+
+          <li>
+            <a (click)="facebookShare()">
+              <i class="ico-facebook"></i>
+            </a>
+          </li>
+
+          <li>
+            <a (click)="twitterShare()">
+              <i class="ico-twitter"></i>
+            </a>
+          </li>
+
+        </ul>
+      </div>
+
+      <div class="form-subscribe">
+
+        <form action="https://sendy.cloudmanic.com/subscribe" method="POST" accept-charset="utf-8" target="_blank" ngNoForm>
+          <div class="form__head">
+            <h5>Be the first to know when we launch backtesting!</h5>
+          </div>
+
+          <div class="form__body">
+            <label for="f_email">Email</label>
+
+            <div class="form__body-inner">
+              <input type="text" class="form__field" name="email" id="f_email" />
+              <input type="hidden" name="list" value="LfjH763WV07O6rPoO892btsAEQ" />
+              <input type="hidden" name="subform" value="yes" />
+              <button class="btn btn--pink">Submit</button>
+            </div>
+          </div>
+        </form>
+
+
+      </div>
+    </section>
+  </div>
+</div>
