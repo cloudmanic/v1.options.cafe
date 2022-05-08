@@ -153,4 +153,95 @@ func TestGetExpirationDatesFromOptions01(t *testing.T) {
 	st.Expect(t, dates[15].Format("2006-01-02"), "2018-04-20") // hehe 4/20 :)
 }
 
+//
+// TestBackTestsSavingToDB01
+//
+func TestBackTestsSavingToDB01(t *testing.T) {
+	// Only do this for non-short
+	if testing.Short() {
+		t.Skipf("Skipping TestDoPutCreditSpread01 test since it requires a env tokens and --short was requested")
+	}
+
+	// Load .env file (MUST CAll GO TEST FROM THE ROOT)
+	env.ReadEnv("../.env")
+
+	// Start the db connection.
+	db, dbName, _ := models.NewTestDB("testing_db")
+	defer models.TestingTearDown(db, dbName)
+
+	// Build screener object
+	screen := models.Screener{
+		UserId:   1,
+		Symbol:   "SPY",
+		Strategy: "put-credit-spread",
+		Items: []models.ScreenerItem{
+			{UserId: 1, Key: "short-strike-percent-away", Operator: ">", ValueNumber: 4.0},
+			{UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
+			{UserId: 1, Key: "open-credit", Operator: ">", ValueNumber: 0.18},
+			{UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.20},
+			{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 46},
+			{UserId: 1, Key: "days-to-expire", Operator: ">", ValueNumber: 0},
+		},
+	}
+
+	// Set backtest
+	btM := models.Backtest{
+		UserId:          1,
+		StartingBalance: 2000.00,
+		EndingBalance:   2000.00,
+		PositionSize:    "10-percent",
+		StartDate:       models.Date{helpers.ParseDateNoError("2021-01-01")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2021-01-10")},
+		Midpoint:        true,
+		TradeSelect:     "least-days-to-expire",
+		Screen:          screen,
+	}
+
+	// Run blank backtest
+	bt := New(db, 1, "SPY")
+	err := bt.DoBacktestDays(&btM)
+	st.Expect(t, err, nil)
+	st.Expect(t, len(btM.TradeGroups), 5)
+	st.Expect(t, btM.CAGR, 743.9440649120804)
+	st.Expect(t, btM.Return, 4.35)
+	st.Expect(t, btM.Profit, 108.00)
+	st.Expect(t, btM.BenchmarkCAGR, 285.21898330004444)
+	st.Expect(t, btM.BenchmarkPercent, 3.3813281271184064)
+	st.Expect(t, btM.BenchmarkEnd, 381.26)
+	st.Expect(t, btM.BenchmarkStart, 368.79)
+
+	// Save the backtest to database.
+	db.Save(&btM)
+
+	// Run again ane make sure the backtest is cleared.
+	btM2 := models.Backtest{
+		Id:              btM.Id,
+		UserId:          1,
+		StartingBalance: 2000.00,
+		EndingBalance:   2000.00,
+		PositionSize:    "10-percent",
+		StartDate:       models.Date{helpers.ParseDateNoError("2021-01-01")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2021-01-10")},
+		Midpoint:        true,
+		TradeSelect:     "least-days-to-expire",
+		Screen:          btM.Screen,
+	}
+
+	// Run blank backtest
+	bt2 := New(db, 1, "SPY")
+	err = bt2.DoBacktestDays(&btM2)
+	st.Expect(t, err, nil)
+
+	// Verify we saved correctly.
+	var countBacktest int64
+	var countBacktestPosition int64
+	var countBacktestTradeGroup int64
+	db.Model(&models.Backtest{}).Count(&countBacktest)
+	db.Model(&models.BacktestPosition{}).Count(&countBacktestPosition)
+	db.Model(&models.BacktestTradeGroup{}).Count(&countBacktestTradeGroup)
+	st.Expect(t, countBacktest, int64(1))
+	st.Expect(t, countBacktestPosition, int64(10))
+	st.Expect(t, countBacktestTradeGroup, int64(5))
+}
+
 /* End File */

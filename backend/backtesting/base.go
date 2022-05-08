@@ -116,31 +116,8 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 	// Let's time this backtest
 	start := time.Now()
 
-	// Maybe we are rerunning the backtest so we clear out past data
-	if backtest.Id > 0 {
-		pIds := []uint{}
-
-		for _, row := range backtest.TradeGroups {
-			pIds = append(pIds, row.Id)
-		}
-
-		t.DB.New().Exec("DELETE FROM backtest_trade_group WHERE id IN (?)", pIds)
-		//t.DB.New().Exec("DELETE FROM backtest_positions_symbols WHERE backtest_position_id IN (?)", pIds)
-
-		backtest.Profit = 0.00
-		backtest.Return = 0.00
-		backtest.CAGR = 0.00
-		backtest.TradeCount = 0
-		backtest.TimeElapsed = 0
-		backtest.BenchmarkStart = 0.00
-		backtest.BenchmarkEnd = 0.00
-		backtest.BenchmarkCAGR = 0.00
-		backtest.EndingBalance = backtest.StartingBalance // No trades means starting and ending are the same
-		backtest.BenchmarkPercent = 0.00
-		backtest.TradeGroups = []models.BacktestTradeGroup{}
-
-		t.DB.New().Save(backtest)
-	}
+	// Clear past backtests
+	t.ClearPastBacktests(backtest)
 
 	// Send up websocket
 	queue.Write("oc-websocket-write", `{"uri":"backtest-start","user_id":`+strconv.Itoa(t.UserID)+`,"body":`+helpers.JsonEncode(backtest.Screen)+`}`)
@@ -263,6 +240,40 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 	t.PrintResults(backtest)
 
 	return nil
+}
+
+//
+// ClearPastBacktests will clear data for past backtests.
+//
+func (t *Base) ClearPastBacktests(backtest *models.Backtest) {
+	// Maybe we are rerunning the backtest so we clear out past data
+	if backtest.Id > 0 {
+		pIds := []uint{}
+
+		bTmp := models.Backtest{Id: backtest.Id}
+		t.DB.New().Preload("TradeGroups").First(&bTmp)
+
+		for _, row := range bTmp.TradeGroups {
+			pIds = append(pIds, row.Id)
+		}
+
+		t.DB.New().Exec("DELETE FROM backtest_trade_groups WHERE backtest_id = ?", backtest.Id)
+		t.DB.New().Exec("DELETE FROM backtest_positions WHERE backtest_trade_group_id IN (?)", pIds)
+
+		backtest.Profit = 0.00
+		backtest.Return = 0.00
+		backtest.CAGR = 0.00
+		backtest.TradeCount = 0
+		backtest.TimeElapsed = 0
+		backtest.BenchmarkStart = 0.00
+		backtest.BenchmarkEnd = 0.00
+		backtest.BenchmarkCAGR = 0.00
+		backtest.EndingBalance = backtest.StartingBalance // No trades means starting and ending are the same
+		backtest.BenchmarkPercent = 0.00
+		backtest.TradeGroups = []models.BacktestTradeGroup{}
+
+		t.DB.New().Save(backtest)
+	}
 }
 
 //

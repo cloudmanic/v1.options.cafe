@@ -67,7 +67,6 @@ func TestDoPutCreditSpread01(t *testing.T) {
 	st.Expect(t, btM.CAGR, 847.4692690693325)
 	st.Expect(t, btM.Return, 13.80)
 	st.Expect(t, btM.Profit, 406.00)
-
 	st.Expect(t, btM.BenchmarkCAGR, 4.305621689814987)
 	st.Expect(t, btM.BenchmarkPercent, 0.34708099460396774)
 	st.Expect(t, btM.BenchmarkEnd, 370.07)
