@@ -5,6 +5,7 @@
 //
 
 import * as moment from 'moment';
+import { BacktestPosition } from './backtest-position';
 
 //
 // BacktestTradeGroup
@@ -16,6 +17,7 @@ export class BacktestTradeGroup
   BacktestId: number = 0;
   Strategy: string = "";
   Status: string = "";
+  SpreadText: string = "";
   OpenDate: Date = new Date();
   CloseDate: Date = new Date();
   OpenPrice: number = 0.00;
@@ -31,7 +33,7 @@ export class BacktestTradeGroup
   BenchmarkBalance: number = 0.00;
   BenchmarkReturn: number = 0.00;
   Lots: number = 0;
-  //Positions = //obj.Id = json["positions"];
+  Positions: BacktestPosition[] = [];
   Note: string = "";
 
   //
@@ -66,6 +68,7 @@ export class BacktestTradeGroup
     obj.UserId = json["user_id"];
     obj.BacktestId = json["backtest_id"];
     obj.Strategy = json["strategy"];
+    obj.SpreadText = json["spread_text"];
     obj.Status = json["status"];
     obj.OpenDate = moment(json["open_date"]).toDate();
     obj.CloseDate = moment(json["close_date"]).toDate();
@@ -82,8 +85,8 @@ export class BacktestTradeGroup
     obj.BenchmarkBalance = json["benchmark_balance"];
     obj.BenchmarkReturn = json["benchmark_return"];
     obj.Lots = json["lots"];
-    //obj.Positions = //obj.Id = json["positions"];
     obj.Note = json["note"];
+    obj.Positions = new BacktestPosition().fromJsonList(json['positions']);
 
     return obj;
   }  

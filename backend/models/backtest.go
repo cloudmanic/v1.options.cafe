@@ -85,6 +85,15 @@ func (t *DB) BacktestsGetByUserId(userId uint) ([]Backtest, error) {
 		return bts, errors.New("[Models:BacktestsGetByUserId] Records not found (#001).")
 	}
 
+	// Loop through and add the symbol to the positions object
+	for key, _ := range bts {
+		for key2, _ := range bts[key].TradeGroups {
+			for key3, row3 := range bts[key].TradeGroups[key2].Positions {
+				t.Model(row3).Related(&bts[key].TradeGroups[key2].Positions[key3].Symbol)
+			}
+		}
+	}
+
 	// Return happy
 	return bts, nil
 }
@@ -99,6 +108,13 @@ func (t *DB) BacktestGetById(id uint) (Backtest, error) {
 		return bt, errors.New("Record not found")
 	}
 
+	// Loop through and add the symbol to the positions object
+	for key, _ := range bt.TradeGroups {
+		for key2, row2 := range bt.TradeGroups[key].Positions {
+			t.Model(row2).Related(&bt.TradeGroups[key].Positions[key2].Symbol)
+		}
+	}
+
 	// Return happy
 	return bt, nil
 }
@@ -111,6 +127,13 @@ func (t *DB) BacktestGetByIdAndUserId(id uint, userId uint) (Backtest, error) {
 
 	if t.Preload("Screen").Preload("Screen.Items").Preload("TradeGroups").Preload("TradeGroups.Positions").Where("Id = ?", id).Where("user_id = ?", userId).First(&bt).RecordNotFound() {
 		return bt, errors.New("Record not found")
+	}
+
+	// Loop through and add the symbol to the positions object
+	for key, _ := range bt.TradeGroups {
+		for key2, row2 := range bt.TradeGroups[key].Positions {
+			t.Model(row2).Related(&bt.TradeGroups[key].Positions[key2].Symbol)
+		}
 	}
 
 	// Return happy

@@ -127,7 +127,7 @@
               <tr *ngFor="let row of backtest.TradeGroups;">
                 <td>{{ row.OpenDate | date:'shortDate' }}</td>
                 <td>{{ row.CloseDate | date:'shortDate' }}</td>
-                <td>Spread</td>
+                <td>{{ row.SpreadText }}</td>
                 <td>{{ row.OpenPrice | currency:'USD':'symbol':'1.2-2' }}</td>
                 <td>{{ row.ClosePrice | currency:'USD':'symbol':'1.2-2' }}</td>
                 <td>{{ row.Credit | currency:'USD':'symbol':'1.2-2' }}</td>

@@ -135,11 +135,15 @@ func (t *Base) OpenMultiLegCredit(today time.Time, strategy string, backtest *mo
 		})
 	}
 
+	// Spread text TODO(spicer): Add a switch statement to customize this string per strategy.
+	spreadText := fmt.Sprintf("%s %s $%.2f / $%.2f", legs[0].Symbol.OptionUnderlying, legs[0].Symbol.OptionExpire.Format("01/02/2006"), legs[0].Symbol.OptionStrike, legs[1].Symbol.OptionStrike)
+
 	// Add position
 	backtest.TradeGroups = append(backtest.TradeGroups, models.BacktestTradeGroup{
 		UserId:          backtest.UserId,
 		Strategy:        strategy,
 		Status:          "Open",
+		SpreadText:      spreadText,
 		OpenDate:        models.Date{today},
 		OpenPrice:       openPrice,
 		Margin:          margin,
