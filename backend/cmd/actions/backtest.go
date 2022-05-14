@@ -22,15 +22,16 @@ import (
 func RunBackTest(db *models.DB, userID int) {
 
 	// Send directly to the worker without a queue.
-	backtesting.BacktestDaysWorker(worker.JobRequest{DB: db, BacktestId: 2})
+	backtesting.BacktestDaysWorker(worker.JobRequest{DB: db, BacktestId: 1})
 
 	// Send to the worker queue
-	//queue.Write("oc-job", `{"action":"backtest-run-days","backtest_id":`+strconv.Itoa(2)+`}`)
+	//queue.Write("oc-job", `{"action":"backtest-run-days","backtest_id":`+strconv.Itoa(3)+`}`)
 
 	// // Build screener object
 	// screen := models.Screener{
 	// 	UserId:   1,
 	// 	Symbol:   "SPY",
+	// 	Name: "SPY Percent Away 45 Days",
 	// 	Strategy: "put-credit-spread",
 	// 	Items: []models.ScreenerItem{
 	// 		{UserId: 1, Key: "short-strike-percent-away", Operator: ">", ValueNumber: 4.5},

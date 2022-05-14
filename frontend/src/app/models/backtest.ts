@@ -5,6 +5,7 @@
 //
 
 import * as moment from 'moment';
+import { BacktestTradeGroup } from './backtest-trade-groups';
 import { Screener } from './screener';
 
 //
@@ -31,15 +32,8 @@ export class Backtest
   BenchmarkCAGR: number = 0.00;
   BenchmarkPercent: number = 0.00;
   Screen: Screener = new Screener();
-
-
-
-
-
-	// TradeGroups      []BacktestTradeGroup `json:"trade_groups"`
-
-
-
+	TradeGroups: BacktestTradeGroup[] = [];
+	
   //
   // Build from JSON list.
   //
@@ -87,6 +81,7 @@ export class Backtest
     obj.BenchmarkCAGR = json["benchmark_cagr"];
     obj.BenchmarkPercent = json["benchmark_percent"];
     obj.Screen = new Screener().fromJson(json['screen']);
+    obj.TradeGroups = new BacktestTradeGroup().fromJsonList(json['trade_groups']);
 
     return obj;
   }  

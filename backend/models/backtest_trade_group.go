@@ -15,9 +15,9 @@ type BacktestTradeGroup struct {
 	Id               uint               `gorm:"primary_key" json:"id"`
 	CreatedAt        time.Time          `sql:"not null" json:"-"`
 	UpdatedAt        time.Time          `sql:"not null" json:"-"`
-	UserId           uint               `sql:"not null" index:UserId" json:"user_id"`
-	BacktestId       uint               `sql:"not null" index:BacktestId" json:"backtest_id"`
-	Strategy         string             `sql:"not null" index:BacktestId" json:"strategy"`
+	UserId           uint               `sql:"not null;index:UserId" json:"user_id"`
+	BacktestId       uint               `sql:"not null;index:BacktestId" json:"backtest_id"`
+	Strategy         string             `sql:"not null" json:"strategy"`
 	Status           string             `sql:"not null;type:ENUM('Open', 'Closed');default:'Open'" json:"status"`
 	OpenDate         Date               `gorm:"type:date" sql:"not null" json:"open_date"`
 	CloseDate        Date               `gorm:"type:date" sql:"not null" json:"close_date"`

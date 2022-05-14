@@ -99,9 +99,6 @@
           </div>
 
         </div>
-
-
-
         
         <div class="table">
           <table>
@@ -119,70 +116,32 @@
                 <th>Margin</th>
                 <th>Balance</th>
                 <th>Return</th>
-                <th>Benchmark</th>
-                <th>Benchmark Balance</th>
-                <th>Benchmark Return</th>
+                <th>{{ backtest.Benchmark }} Close</th>
+                <th>{{ backtest.Benchmark }} Balance</th>
+                <th>{{ backtest.Benchmark }} Return</th>
                 <th>Status</th>
                 <th>Note</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Open Date</td>
-                <td>Close Date</td>
+              <tr *ngFor="let row of backtest.TradeGroups;">
+                <td>{{ row.OpenDate | date:'shortDate' }}</td>
+                <td>{{ row.CloseDate | date:'shortDate' }}</td>
                 <td>Spread</td>
-                <td>Open</td>
-                <td>Close</td>
-                <td>Credit</td>
-                <td>Return</td>
-                <td>Lots</td>
-                <td>% Away</td>
-                <td>Margin</td>
-                <td>Balance</td>
-                <td>Return</td>
-                <td>Benchmark</td>
-                <td>Benchmark Balance</td>
-                <td>Benchmark Return</td>
-                <td>Status</td>
-                <td>Note</td>
-              </tr>
-              <tr>
-                <td>Open Date</td>
-                <td>Close Date</td>
-                <td>Spread</td>
-                <td>Open</td>
-                <td>Close</td>
-                <td>Credit</td>
-                <td>Return</td>
-                <td>Lots</td>
-                <td>% Away</td>
-                <td>Margin</td>
-                <td>Balance</td>
-                <td>Return</td>
-                <td>Benchmark</td>
-                <td>Benchmark Balance</td>
-                <td>Benchmark Return</td>
-                <td>Status</td>
-                <td>Note</td>
-              </tr>
-              <tr>
-                <td>Open Date</td>
-                <td>Close Date</td>
-                <td>Spread</td>
-                <td>Open</td>
-                <td>Close</td>
-                <td>Credit</td>
-                <td>Return</td>
-                <td>Lots</td>
-                <td>% Away</td>
-                <td>Margin</td>
-                <td>Balance</td>
-                <td>Return</td>
-                <td>Benchmark</td>
-                <td>Benchmark Balance</td>
-                <td>Benchmark Return</td>
-                <td>Status</td>
-                <td>Note</td>
+                <td>{{ row.OpenPrice | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td>{{ row.ClosePrice | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td>{{ row.Credit | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td>{{ row.ReturnPercent | number:'1.2-2' }}%</td>
+                <td>{{ row.Lots | number:'1.2-2' }}</td>
+                <td>{{ row.PutPrecentAway | number:'1.2-2' }}%</td>
+                <td>{{ row.Margin | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td>{{ row.Balance | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td>{{ row.ReturnFromStart | number:'1.2-2' }}%</td>
+                <td>{{ row.BenchmarkLast | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td>{{ row.BenchmarkBalance | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td>{{ row.BenchmarkReturn | number:'1.2-2' }}%</td>
+                <td>{{ row.Status }}</td>
+                <td>{{ row.Note }}</td>
               </tr>
             </tbody>
           </table>
