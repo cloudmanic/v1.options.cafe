@@ -165,10 +165,15 @@ input[type="submit"]:disabled { opacity: .3 }
 .select-only-one:after { content: unset; }
 
 /* Backtesting View */
-.backtesting-view .row { display: flex; }
-.backtesting-view .row .block { width: 25%; border: 1px solid #cfd0d0; padding: 20px; margin: 20px 40px; text-align: center; }
-.backtesting-view .row .block .heading { font-size: 20px; font-weight: 700; text-transform: uppercase; margin-bottom: 26px; }
-.backtesting-view .row .block .sub-heading { font-weight: 500; font-size: 20px; color: #2a9eca; margin-left: 10px; }
+.backtesting-view .summary .row { display: flex; }
+.backtesting-view .summary .row .block { width: 25%; border: 1px solid #cfd0d0; padding: 20px; margin: 20px 40px; text-align: center; }
+.backtesting-view .summary .row .block .heading { font-size: 20px; font-weight: 700; text-transform: uppercase; margin-bottom: 26px; }
+.backtesting-view .summary .row .block .sub-heading { font-weight: 500; font-size: 20px; color: #2a9eca; margin-left: 10px; }
+.backtesting-view table { text-align: center; font-size: 14px; }
+.backtesting-view table th { text-align: center; font-weight: 700; font-size: 14px; height: 20px; border-bottom: 1px solid #e6e7e7; padding: 10px 0; }
+.backtesting-view table td { padding: 10px 0; font-weight: 400; }
+.backtesting-view table tr:nth-child(odd) td { background: #e7e8e8; }
+
 
 /* -------------------- Centcom ---------------- */
 .centcom { width: 1200px; margin: 0 auto; display: block; margin-top: 20px; }

@@ -1,14 +1,14 @@
 <app-backtest-sub-nav></app-backtest-sub-nav>
 
 <div class="content__inner">
-  <div class="shell shell--fluid">
+  <div class="shell shell--fluid backtesting-view">
     <div class="article">
       <div class="article__head">
         <h5>View Backtest</h5> 
       </div>
 
       <div class="article__body article__body--primary">
-        <div class="backtesting-view">
+        <div class="summary">
 
           <div class="row">
             <div class="block">
@@ -132,7 +132,7 @@
                 <td>{{ row.ClosePrice | currency:'USD':'symbol':'1.2-2' }}</td>
                 <td>{{ row.Credit | currency:'USD':'symbol':'1.2-2' }}</td>
                 <td>{{ row.ReturnPercent | number:'1.2-2' }}%</td>
-                <td>{{ row.Lots | number:'1.2-2' }}</td>
+                <td>{{ row.Lots | number:'1.0-2' }}</td>
                 <td>{{ row.PutPrecentAway | number:'1.2-2' }}%</td>
                 <td>{{ row.Margin | currency:'USD':'symbol':'1.2-2' }}</td>
                 <td>{{ row.Balance | currency:'USD':'symbol':'1.2-2' }}</td>
