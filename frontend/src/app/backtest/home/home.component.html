@@ -22,15 +22,15 @@
                     <ins>Name</ins>
                   </th>
 
-                  <th style="width: 150px;">
+                  <th style="width: 120px;">
                     <ins>Start Date</ins>
                   </th>
 
-                  <th style="width: 150px;">
+                  <th style="width: 120px;">
                     <ins>End Date</ins>
                   </th>
 
-                  <th style="width: 150px;">
+                  <th style="width: 130px;">
                     <ins>Position Size</ins>
                   </th>
 
@@ -38,7 +38,7 @@
                     <ins>Trade Select</ins>
                   </th>
 
-                  <th style="width: 150px;">
+                  <th style="width: 120px;">
                     <ins>Trade Count</ins>
                   </th>
 
@@ -48,6 +48,10 @@
 
                   <th>
                     <ins>Ending Balance</ins>
+                  </th>
+
+                  <th>
+                    <ins>Win %</ins>
                   </th>
 
                   <th>
@@ -68,7 +72,7 @@
 
                 <tr *ngFor="let row of backtests;"> 
                   <td>
-                    <a routerLink="/backtest/{{ row.Id }}">{{ row.Name }}</a>
+                    <a routerLink="/backtest/{{ row.Id }}">{{ row.Screen.Name }}</a>
                   </td>
 
                   <td>
@@ -96,7 +100,11 @@
                   </td>
 
                   <td>
-                    {{ row.EndingBalance |currency:'USD':'symbol':'1.2-2' }}
+                    {{ row.EndingBalance | currency:'USD':'symbol':'1.2-2' }}
+                  </td>
+
+                  <td>
+                    {{ row.WinRatio | number:'1.2-2' }}%
                   </td>
 
                   <td>

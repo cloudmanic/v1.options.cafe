@@ -8,7 +8,7 @@
 
     <div class="article">
       <div class="article__head">
-        <h5>{{ backtest.Name }}</h5> 
+        <h5>{{ backtest.Screen.Name }}, {{ backtest.StartingBalance | currency:'USD':'symbol':'1.2-2' }}, {{ backtest.TradeSelect }}, {{ backtest.PositionSize }}</h5> 
       </div>
 
       <div class="article__body article__body--primary">

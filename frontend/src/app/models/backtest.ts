@@ -15,7 +15,6 @@ export class Backtest
 {
   Id: number = 0;
   UserId: number = 0;
-  Name: string = "";
   StartDate: Date = new Date();
   EndDate: Date = new Date();
   EndingBalance: number = 0.00;
@@ -66,7 +65,6 @@ export class Backtest
 
     obj.Id = json["id"];
     obj.UserId = json["user_id"];
-    obj.Name = json["name"];
     obj.StartDate = moment(json["start_date"]).toDate();
     obj.EndDate = moment(json["end_date"]).toDate();
     obj.EndingBalance = json["ending_balance"];

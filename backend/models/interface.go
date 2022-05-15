@@ -144,7 +144,7 @@ type Datastore interface {
 
 	// Backtest
 	BacktestGetById(id uint) (Backtest, error)
-	BacktestsGetByUserId(userId uint) ([]Backtest, error)
+	BacktestsGetByUserId(userId uint, limited bool) ([]Backtest, error)
 	CreateBacktest(backtest Backtest) (Backtest, error)
 	ValidateBacktestScreener(backtest Backtest, userId uint) error
 	BacktestGetByIdAndUserId(id uint, userId uint) (Backtest, error)

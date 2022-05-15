@@ -23,7 +23,7 @@ func (t *Controller) GetBacktests(c *gin.Context) {
 	userId := c.MustGet("userId").(uint)
 
 	// Get the backtests by user id.
-	bts, err := t.DB.BacktestsGetByUserId(userId)
+	bts, err := t.DB.BacktestsGetByUserId(userId, true)
 
 	if t.RespondError(c, err, httpNoRecordFound) {
 		return

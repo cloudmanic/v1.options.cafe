@@ -19,7 +19,6 @@ type Backtest struct {
 	CreatedAt        time.Time            `json:"-"`
 	UpdatedAt        time.Time            `json:"-"`
 	UserId           uint                 `sql:"not null;index:UserId" json:"user_id"`
-	Name             string               `sql:"not null" json:"name"`
 	StartDate        Date                 `gorm:"type:date" sql:"not null" json:"start_date"`
 	EndDate          Date                 `gorm:"btype:date" sql:"not null" json:"end_date"`
 	EndingBalance    float64              `sql:"not null" json:"ending_balance"`
@@ -80,19 +79,29 @@ func (db *DB) ValidateBacktestScreener(backtest Backtest, userId uint) error {
 //
 // BacktestsGetByUserId returns all the backtests for a user.
 //
-func (t *DB) BacktestsGetByUserId(userId uint) ([]Backtest, error) {
+func (t *DB) BacktestsGetByUserId(userId uint, limited bool) ([]Backtest, error) {
 	bts := []Backtest{}
 
-	if t.Where("user_id = ?", userId).Preload("Screen").Preload("Screen.Items").Preload("TradeGroups").Preload("TradeGroups.Positions").Preload("TradeGroups.Positions.Symbol").Find(&bts).RecordNotFound() {
-		return bts, errors.New("[Models:BacktestsGetByUserId] Records not found (#001).")
-	}
-
 	// Loop through and add the symbol to the positions object
-	for key, _ := range bts {
-		for key2, _ := range bts[key].TradeGroups {
-			for key3, row3 := range bts[key].TradeGroups[key2].Positions {
-				t.Model(row3).Related(&bts[key].TradeGroups[key2].Positions[key3].Symbol)
+	if !limited {
+		if t.Where("user_id = ?", userId).Preload("Screen").Preload("Screen.Items").Preload("TradeGroups").Preload("TradeGroups.Positions").Preload("TradeGroups.Positions.Symbol").Find(&bts).RecordNotFound() {
+			return bts, errors.New("[Models:BacktestsGetByUserId] Records not found (#001).")
+		}
+
+		for key, _ := range bts {
+			for key2, _ := range bts[key].TradeGroups {
+				for key3, row3 := range bts[key].TradeGroups[key2].Positions {
+					t.Model(row3).Related(&bts[key].TradeGroups[key2].Positions[key3].Symbol)
+				}
 			}
+		}
+	} else {
+		if t.Where("user_id = ?", userId).Preload("Screen").Preload("Screen.Items").Find(&bts).RecordNotFound() {
+			return bts, errors.New("[Models:BacktestsGetByUserId] Records not found (#001).")
+		}
+
+		for key, _ := range bts {
+			bts[key].TradeGroups = []BacktestTradeGroup{}
 		}
 	}
 

@@ -41,8 +41,6 @@ export class BacktestViewComponent implements OnInit {
 	getData() {
 		this.backtestService.getById(this.backtestId).subscribe(data => {
 			this.backtest = data;
-
-			console.log(this.backtest)
 		});
 	}
 

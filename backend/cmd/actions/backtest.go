@@ -22,7 +22,7 @@ import (
 func RunBackTest(db *models.DB, userID int) {
 
 	// Send directly to the worker without a queue.
-	backtesting.BacktestDaysWorker(worker.JobRequest{DB: db, BacktestId: 2})
+	backtesting.BacktestDaysWorker(worker.JobRequest{DB: db, BacktestId: 5})
 
 	// Send to the worker queue
 	//queue.Write("oc-job", `{"action":"backtest-run-days","backtest_id":`+strconv.Itoa(3)+`}`)
@@ -47,7 +47,6 @@ func RunBackTest(db *models.DB, userID int) {
 
 	// // Set backtest
 	// btM := models.Backtest{
-	// 	Name:            "2018 - 2022, PCS, SPY, Highest % Away, 45 Days, $5000, $0.18 Credit, 2 Spread",
 	// 	UserId:          uint(userID),
 	// 	StartingBalance: 5000.00,
 	// 	EndingBalance:   5000.00,
@@ -55,7 +54,7 @@ func RunBackTest(db *models.DB, userID int) {
 	// 	StartDate:       models.Date{helpers.ParseDateNoError("2018-01-01")},
 	// 	EndDate:         models.Date{helpers.ParseDateNoError("2022-12-31")},
 	// 	Midpoint:        true,
-	// 	TradeSelect:     "highest-percent-away", // least-days-to-expire, highest-midpoint, highest-ask, highest-percent-away, shortest-percent-away
+	// 	TradeSelect:     "highest-midpoint", // least-days-to-expire, highest-midpoint, highest-ask, highest-percent-away, shortest-percent-away
 	// 	Benchmark:       "SPY",
 	// 	Screen:          screen,
 	// }
