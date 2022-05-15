@@ -155,14 +155,15 @@ func (t *Base) LongCallButterflySpreadCoreScreen(today time.Time, screen models.
 
 		// We have a winner
 		result = append(result, Result{
-			Day:            types.Date{today},
-			Debit:          helpers.Round(openCost, 2),
-			Bid:            helpers.Round(openCost, 2),
-			Ask:            helpers.Round(closeCost, 2),
-			MidPoint:       helpers.Round(midPoint, 2),
-			UnderlyingLast: underlyingLast,
-			PutPrecentAway: helpers.Round(((1 - row.Strike/underlyingLast) * 100), 2),
-			Legs:           []models.Symbol{legASym, legBSym, legCSym},
+			Day:             types.Date{today},
+			Debit:           helpers.Round(openCost, 2),
+			Bid:             helpers.Round(openCost, 2),
+			Ask:             helpers.Round(closeCost, 2),
+			MidPoint:        helpers.Round(midPoint, 2),
+			UnderlyingLast:  underlyingLast,
+			CallPrecentAway: helpers.Round((((legC.Strike - underlyingLast) / underlyingLast) * 100), 2),
+			PutPrecentAway:  helpers.Round(((1 - row.Strike/underlyingLast) * 100), 2),
+			Legs:            []models.Symbol{legASym, legBSym, legCSym},
 		})
 	}
 
