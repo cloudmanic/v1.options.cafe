@@ -22,10 +22,11 @@ import (
 func RunBackTest(db *models.DB, userID int) {
 
 	// Send directly to the worker without a queue.
-	backtesting.BacktestDaysWorker(worker.JobRequest{DB: db, BacktestId: 5})
+	backtesting.BacktestDaysWorker(worker.JobRequest{DB: db, BacktestId: 9})
 
 	// Send to the worker queue
-	//queue.Write("oc-job", `{"action":"backtest-run-days","backtest_id":`+strconv.Itoa(3)+`}`)
+	// queue.Write("oc-job", `{"action":"backtest-run-days","backtest_id":`+strconv.Itoa(8)+`}`)
+	// queue.Write("oc-job", `{"action":"backtest-run-days","backtest_id":`+strconv.Itoa(9)+`}`)
 
 	// // Build screener object
 	// screen := models.Screener{
@@ -50,11 +51,11 @@ func RunBackTest(db *models.DB, userID int) {
 	// 	UserId:          uint(userID),
 	// 	StartingBalance: 5000.00,
 	// 	EndingBalance:   5000.00,
-	// 	PositionSize:    "15-percent", // one-at-time, *-percent
-	// 	StartDate:       models.Date{helpers.ParseDateNoError("2018-01-01")},
+	// 	PositionSize:    "10-percent", // one-at-time, *-percent
+	// 	StartDate:       models.Date{helpers.ParseDateNoError("2012-01-01")},
 	// 	EndDate:         models.Date{helpers.ParseDateNoError("2022-12-31")},
 	// 	Midpoint:        true,
-	// 	TradeSelect:     "highest-midpoint", // least-days-to-expire, highest-midpoint, highest-ask, highest-percent-away, shortest-percent-away
+	// 	TradeSelect:     "shortest-percent-away", // least-days-to-expire, highest-midpoint, highest-ask, highest-percent-away, shortest-percent-away
 	// 	Benchmark:       "SPY",
 	// 	Screen:          screen,
 	// }

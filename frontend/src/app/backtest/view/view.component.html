@@ -65,17 +65,17 @@
             </div>
 
             <div class="block">
-              <div class="heading">Benchmark Range</div>
+              <div class="heading">{{ backtest.Benchmark }} Range</div>
               <div class="sub-heading">{{ backtest.BenchmarkStart | currency:'USD':'symbol':'1.2-2' }} - {{ backtest.BenchmarkEnd | currency:'USD':'symbol':'1.2-2' }}</div>
             </div>
 
             <div class="block">
-              <div class="heading">Benchmark Return</div>
+              <div class="heading">{{ backtest.Benchmark }} Return</div>
               <div class="sub-heading">{{ backtest.BenchmarkPercent | number:'1.2-2' }}%</div>
             </div>
 
             <div class="block">
-              <div class="heading">Benchmark CAGR</div>
+              <div class="heading">{{ backtest.Benchmark }} CAGR</div>
               <div class="sub-heading">{{ backtest.BenchmarkCAGR | number:'1.2-2' }}%</div>
             </div>
           </div>
