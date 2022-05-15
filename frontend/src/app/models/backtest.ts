@@ -15,11 +15,13 @@ export class Backtest
 {
   Id: number = 0;
   UserId: number = 0;
+  Name: string = "";
   StartDate: Date = new Date();
   EndDate: Date = new Date();
   EndingBalance: number = 0.00;
   StartingBalance: number = 0.00;
   CAGR: number = 0.00;
+  WinRatio: number = 0.00;
   Return: number = 0.00;
   Profit: number = 0.00;
   TradeCount: number = 0;
@@ -64,11 +66,13 @@ export class Backtest
 
     obj.Id = json["id"];
     obj.UserId = json["user_id"];
+    obj.Name = json["name"];
     obj.StartDate = moment(json["start_date"]).toDate();
     obj.EndDate = moment(json["end_date"]).toDate();
     obj.EndingBalance = json["ending_balance"];
     obj.StartingBalance = json["starting_balance"];
     obj.CAGR = json["cagr"];
+    obj.WinRatio = json["win_ratio"];
     obj.Return = json["return"];
     obj.Profit = json["profit"];
     obj.TradeCount = json["trade_count"];

@@ -2,9 +2,13 @@
 
 <div class="content__inner">
   <div class="shell shell--fluid backtesting-view">
+    <div class="back-link">
+      <a routerLink="/backtests">Back to Backtests</a>
+    </div>
+
     <div class="article">
       <div class="article__head">
-        <h5>View Backtest</h5> 
+        <h5>{{ backtest.Name }}</h5> 
       </div>
 
       <div class="article__body article__body--primary">
@@ -84,7 +88,7 @@
 
             <div class="block">
               <div class="heading">Win Ratio</div>
-              <div class="sub-heading">---</div>
+              <div class="sub-heading">{{ backtest.WinRatio | number:'1.2-2' }}%</div>
             </div>
 
             <div class="block">

@@ -165,6 +165,7 @@ input[type="submit"]:disabled { opacity: .3 }
 .select-only-one:after { content: unset; }
 
 /* Backtesting View */
+.backtesting-view .back-link { padding-bottom: 20px; }
 .backtesting-view .summary .row { display: flex; }
 .backtesting-view .summary .row .block { width: 25%; border: 1px solid #cfd0d0; padding: 20px; margin: 20px 40px; text-align: center; }
 .backtesting-view .summary .row .block .heading { font-size: 20px; font-weight: 700; text-transform: uppercase; margin-bottom: 26px; }
@@ -184,4 +185,3 @@ input[type="submit"]:disabled { opacity: .3 }
 
 .centcom .centcom-table { padding: 20px 40px; border: #efefef solid 1px; }
 .centcom .centcom-table tr { text-align: left; }
-

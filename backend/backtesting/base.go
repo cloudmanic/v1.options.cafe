@@ -213,13 +213,18 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 	backtest.CAGR = (math.Pow((backtest.EndingBalance/backtest.StartingBalance), (1/years)) - 1) * 100
 	backtest.BenchmarkCAGR = (math.Pow((backtest.BenchmarkEnd/backtest.BenchmarkStart), (1/years)) - 1) * 100
 
-	// Returns
+	// Returns / win ratio
+	wins := 0
 	backtest.Return = 0.00
 
 	for _, row := range backtest.TradeGroups {
 		// Only record closed position
 		if row.Status == "Closed" {
 			backtest.Return = row.ReturnFromStart
+
+			if row.ReturnPercent > 0 {
+				wins++
+			}
 		}
 	}
 
@@ -227,6 +232,7 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 	backtest.Profit = (backtest.EndingBalance - backtest.StartingBalance)
 	backtest.TradeCount = len(backtest.TradeGroups)
 	backtest.BenchmarkPercent = (((backtest.BenchmarkEnd - backtest.BenchmarkStart) / backtest.BenchmarkStart) * 100)
+	backtest.WinRatio = (float64(wins) / float64(backtest.TradeCount)) * 100
 
 	// Store how long the backtest took to run.
 	backtest.TimeElapsed = time.Since(start)
@@ -264,6 +270,7 @@ func (t *Base) ClearPastBacktests(backtest *models.Backtest) {
 		backtest.Return = 0.00
 		backtest.CAGR = 0.00
 		backtest.TradeCount = 0
+		backtest.WinRatio = 0.00
 		backtest.TimeElapsed = 0
 		backtest.BenchmarkStart = 0.00
 		backtest.BenchmarkEnd = 0.00

@@ -19,11 +19,13 @@ type Backtest struct {
 	CreatedAt        time.Time            `json:"-"`
 	UpdatedAt        time.Time            `json:"-"`
 	UserId           uint                 `sql:"not null;index:UserId" json:"user_id"`
+	Name             string               `sql:"not null" json:"name"`
 	StartDate        Date                 `gorm:"type:date" sql:"not null" json:"start_date"`
 	EndDate          Date                 `gorm:"btype:date" sql:"not null" json:"end_date"`
 	EndingBalance    float64              `sql:"not null" json:"ending_balance"`
 	StartingBalance  float64              `sql:"not null" json:"starting_balance"`
 	CAGR             float64              `sql:"not null" json:"cagr"`
+	WinRatio         float64              `sql:"not null" json:"win_ratio"`
 	Return           float64              `sql:"not null" json:"return"`
 	Profit           float64              `sql:"not null" json:"profit"`
 	TradeCount       int                  `sql:"not null" json:"trade_count"`
