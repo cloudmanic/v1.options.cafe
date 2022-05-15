@@ -89,14 +89,16 @@ func New(db models.Datastore, userID int, benchmark string) Base {
 
 	// Build backtest functions - results
 	t.ResultsFuncs = map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem, cache screenerCache.Cache) ([]screener.Result, error){
-		"empty":             t.EmptyResults, // used for testing
-		"put-credit-spread": t.PutCreditSpreadResults,
+		"empty":                      t.EmptyResults, // used for testing
+		"put-credit-spread":          t.PutCreditSpreadResults,
+		"long-call-butterfly-spread": t.LongCallButterflySpreadResults,
 	}
 
 	// Build backtest functions - trades
 	t.TradeFuncs = map[string]func(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem){
-		"empty":             t.EmptyTrades, // used for testing
-		"put-credit-spread": t.PutCreditSpreadPlaceTrades,
+		"empty":                      t.EmptyTrades, // used for testing
+		"put-credit-spread":          t.PutCreditSpreadPlaceTrades,
+		"long-call-butterfly-spread": t.LongCallButterflySpreadPlaceTrades,
 	}
 
 	// Get benchmark data.

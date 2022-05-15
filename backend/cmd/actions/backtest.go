@@ -8,7 +8,7 @@ package actions
 
 import (
 	"app.options.cafe/backtesting"
-	"app.options.cafe/library/worker"
+	"app.options.cafe/library/helpers"
 	"app.options.cafe/models"
 )
 
@@ -22,11 +22,50 @@ import (
 func RunBackTest(db *models.DB, userID int) {
 
 	// Send directly to the worker without a queue.
-	backtesting.BacktestDaysWorker(worker.JobRequest{DB: db, BacktestId: 9})
+	//backtesting.BacktestDaysWorker(worker.JobRequest{DB: db, BacktestId: 9})
 
 	// Send to the worker queue
 	// queue.Write("oc-job", `{"action":"backtest-run-days","backtest_id":`+strconv.Itoa(8)+`}`)
 	// queue.Write("oc-job", `{"action":"backtest-run-days","backtest_id":`+strconv.Itoa(9)+`}`)
+
+	// Build screener object
+	screen := models.Screener{
+		UserId:   1,
+		Symbol:   "SPY",
+		Name:     "SPY Long Call Butterfly",
+		Strategy: "long-call-butterfly-spread",
+		Items: []models.ScreenerItem{
+			{UserId: 1, Key: "left-strike-percent-away", Operator: ">", ValueNumber: 4.5},
+			{UserId: 1, Key: "right-strike-percent-away", Operator: ">", ValueNumber: 4.5},
+			// {UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
+			// {UserId: 1, Key: "open-credit", Operator: ">", ValueNumber: 0.18},
+			// {UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.50},
+			{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 46},
+			{UserId: 1, Key: "days-to-expire", Operator: ">", ValueNumber: 0},
+			// {UserId: 1, Key: "allow-more-than-one-expire", Operator: "=", ValueString: "no"},
+			// {UserId: 1, Key: "allow-more-than-one-strike", Operator: "=", ValueString: "no"},
+		},
+	}
+
+	// Set backtest
+	btM := models.Backtest{
+		UserId:          uint(userID),
+		StartingBalance: 5000.00,
+		EndingBalance:   5000.00,
+		PositionSize:    "10-percent", // one-at-time, *-percent
+		StartDate:       models.Date{helpers.ParseDateNoError("2022-01-01")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2022-12-31")},
+		Midpoint:        true,
+		//TradeSelect:     "shortest-percent-away", // least-days-to-expire, highest-midpoint, highest-ask, highest-percent-away, shortest-percent-away
+		Benchmark: "SPY",
+		Screen:    screen,
+	}
+
+	// Setup a new backtesting
+	bt := backtesting.New(db, userID, btM.Benchmark)
+
+	// Run the backtest
+	bt.DoBacktestDays(&btM)
 
 	// // Build screener object
 	// screen := models.Screener{
