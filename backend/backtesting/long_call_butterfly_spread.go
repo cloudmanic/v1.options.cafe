@@ -191,15 +191,12 @@ func (t *Base) LongCallButterflySpreadOpenTrade(today time.Time, strategy string
 	// 	fmt.Println("#####")
 	// }
 
-	// // Amount of margin left after trade is opened.
-	// diff := result.Legs[1].OptionStrike - result.Legs[0].OptionStrike
-
-	// Figure out position size
+	// Figure out position size (We just trade one lot when we do this, so set the account balance to like 200% of one lot)
 	if backtest.PositionSize == "one-at-time" {
 		// Get the count of open positions
 		posCount := t.openPositionsCount(backtest)
 
-		// Only open one position at a time. TODO(spicer): make this a config.
+		// Only open one position at a time.
 		if posCount > 0 {
 			return
 		}
@@ -307,7 +304,7 @@ func (t *Base) LongCallButterflySpreadOpenTrade(today time.Time, strategy string
 	// Update ending balance
 	backtest.EndingBalance = backtest.EndingBalance - openPrice
 
-	fmt.Println(today.Format("2006-01-02"), " : ", backtest.EndingBalance, " / ", spreadText, " - ", openPrice)
+	//fmt.Println(today.Format("2006-01-02"), " : ", backtest.EndingBalance, " / ", spreadText, " - ", openPrice)
 }
 
 /* End File */
