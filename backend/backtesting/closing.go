@@ -199,36 +199,31 @@ func (t *Base) expirePositions(today time.Time, underlyingLast float64, backtest
 //
 // getClosedPrice - Figure out how much it would be to close this trade now
 //
-func (t *Base) getClosedPrice(position models.BacktestTradeGroup, options []types.OptionsChainItem) float64 {
+func (t *Base) getClosedPrice(tradegroup models.BacktestTradeGroup, options []types.OptionsChainItem) float64 {
+	// Total to close
+	closePrice := 0.00
 
-	// TODO(spicer): Make this work for everything. Currently just works for PCS
-	var leg1Chain types.OptionsChainItem
-	var leg2Chain types.OptionsChainItem
+	// Loop through the different options and come up with a close price
+	for _, row := range tradegroup.Positions {
+		// Loop through until we find first symbol
+		for _, row2 := range options {
+			// Not found.
+			if row2.Symbol != row.Symbol.ShortName {
+				continue
+			}
 
-	// Loop through until we find first symbol
-	for _, row := range options {
-		if row.Symbol != position.Positions[0].Symbol.ShortName {
-			continue
+			// If Short or long?
+			if row.Qty > 0 {
+				closePrice = closePrice + (row2.Bid * float64(row.Qty))
+				break
+			} else {
+				closePrice = closePrice + (row2.Ask * float64(row.Qty)) // Qty is negative
+				break
+			}
 		}
-
-		// We found it
-		leg1Chain = row
-		break
 	}
 
-	// Loop through until we find second symbol
-	for _, row := range options {
-		if row.Symbol != position.Positions[1].Symbol.ShortName {
-			continue
-		}
-
-		// We found it
-		leg2Chain = row
-		break
-	}
-
-	// Get price to close.
-	return leg2Chain.Ask - leg1Chain.Bid
+	return closePrice
 }
 
 /* End File */

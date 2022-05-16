@@ -15,6 +15,7 @@ import (
 
 	"app.options.cafe/brokers/eod"
 	"app.options.cafe/brokers/types"
+	"app.options.cafe/library/helpers"
 	"app.options.cafe/models"
 	"app.options.cafe/screener"
 
@@ -30,8 +31,8 @@ func (t *Base) LongCallButterflySpreadPlaceTrades(today time.Time, backtest *mod
 		return
 	}
 
-	// // See if we have any positions to close
-	// t.CloseMultiLegCredit(today, results[0].UnderlyingLast, backtest, options)
+	// See if we have any positions to close
+	t.CloseLongCallButterflySpread(today, results[0].UnderlyingLast, backtest, options)
 
 	// Figure which result to open
 	result, err := t.LongCallButterflySpreadSelectTrade(today, backtest, results)
@@ -42,6 +43,95 @@ func (t *Base) LongCallButterflySpreadPlaceTrades(today time.Time, backtest *mod
 	}
 
 	return
+}
+
+//
+// CloseLongCallButterflySpread - Close positions
+//
+func (t *Base) CloseLongCallButterflySpread(today time.Time, underlyingLast float64, backtest *models.Backtest, options []types.OptionsChainItem) {
+
+	// // Close if we touch the short leg
+	// t.closeOnShortTouch(today, underlyingLast, backtest, options)
+
+	// Close if we hit a particular debit
+	t.CloseOnDebit(today, backtest, options)
+
+	// // Expire positions
+	// t.expirePositions(today, underlyingLast, backtest)
+}
+
+//
+// closeOnDebit - Close a trade if it hits our debit trigger
+//
+func (t *Base) CloseOnDebit(today time.Time, backtest *models.Backtest, options []types.OptionsChainItem) {
+	// Take profit amount.
+	takeProfitLessThanPercent := 0.00
+	takeProfitGreaterThanPercent := 0.00
+
+	// Set up a new screener so we can use it's Functions. Figure out when to take profit.
+	screenObj := screener.NewScreen(t.DB, &eod.Api{})
+	items := screenObj.FindFilterItemsByKey("take-profit-percent", backtest.Screen)
+
+	if len(items) < 0 {
+		return
+	}
+
+	for _, row := range items {
+		if row.Operator == ">" {
+			takeProfitGreaterThanPercent = (row.ValueNumber / 100)
+		} else if row.Operator == "<" {
+			takeProfitLessThanPercent = (row.ValueNumber / 100)
+		}
+	}
+
+	// Get the benchmark last
+	benchmarkLast := t.getBenchmarkByDate(today)
+
+	// Loop for expired postions
+	for key, row := range backtest.TradeGroups {
+		// Already closed?
+		if row.Status == "Closed" {
+			continue
+		}
+
+		// Get closing price
+		closePrice := (t.getClosedPrice(row, options) * 100)
+
+		// See if we have a profit.
+		profit := closePrice - row.OpenPrice
+
+		// Trigger profit
+		gtePrice := 0.00
+
+		if takeProfitGreaterThanPercent > 0 {
+			gtePrice = row.OpenPrice * takeProfitGreaterThanPercent
+		}
+
+		ltePrice := row.OpenPrice * 1000000 // random big number
+		if takeProfitLessThanPercent > 0 {
+			ltePrice = row.OpenPrice * takeProfitLessThanPercent
+		}
+
+		// Benchmark stuff
+		investedBenchmark := math.Floor(backtest.StartingBalance / backtest.BenchmarkStart)
+		investedBenchmarkLeftOver := backtest.StartingBalance - (investedBenchmark * backtest.BenchmarkStart)
+
+		// If we have a good profit close the trade.
+		if (profit > gtePrice) && (profit < ltePrice) {
+			backtest.EndingBalance = backtest.EndingBalance + closePrice
+			backtest.TradeGroups[key].Status = "Closed"
+			backtest.TradeGroups[key].ClosePrice = closePrice
+			backtest.TradeGroups[key].CloseDate = models.Date{today}
+			backtest.TradeGroups[key].Note = "Triggered at profit amount."
+			backtest.TradeGroups[key].Balance = backtest.EndingBalance
+			backtest.TradeGroups[key].BenchmarkLast = benchmarkLast
+			backtest.TradeGroups[key].ReturnFromStart = helpers.Round((((backtest.EndingBalance - backtest.StartingBalance) / backtest.StartingBalance) * 100), 2)
+			backtest.TradeGroups[key].ReturnPercent = helpers.Round(((closePrice-row.OpenPrice)/row.OpenPrice)*100, 2)
+			backtest.TradeGroups[key].BenchmarkBalance = helpers.Round((investedBenchmark*backtest.TradeGroups[key].BenchmarkLast)+investedBenchmarkLeftOver, 2)
+			backtest.TradeGroups[key].BenchmarkReturn = helpers.Round((((backtest.TradeGroups[key].BenchmarkLast - backtest.BenchmarkStart) / backtest.BenchmarkStart) * 100), 2)
+		}
+	}
+
 }
 
 //
