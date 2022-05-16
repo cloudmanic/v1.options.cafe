@@ -15,7 +15,6 @@ import (
 	"strconv"
 	"time"
 
-	longstraddle "app.options.cafe/backtesting/long-straddle"
 	"app.options.cafe/brokers/eod"
 	"app.options.cafe/brokers/tradier"
 	"app.options.cafe/brokers/types"
@@ -28,6 +27,8 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/olekukonko/tablewriter"
 
+	longstraddle "app.options.cafe/backtesting/long-straddle"
+	singleoption "app.options.cafe/backtesting/single-option"
 	screenerCache "app.options.cafe/screener/cache"
 )
 
@@ -94,6 +95,7 @@ func New(db models.Datastore, userID int, benchmark string) Base {
 	// Build backtest functions - results
 	t.ResultsFuncs = map[string]func(db models.Datastore, today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem, cache screenerCache.Cache) ([]screener.Result, error){
 		"empty":                      t.EmptyResults, // used for testing
+		"single-option":              singleoption.Results,
 		"long-straddle":              longstraddle.Results,
 		"put-credit-spread":          t.PutCreditSpreadResults,
 		"long-call-butterfly-spread": t.LongCallButterflySpreadResults,
@@ -102,6 +104,7 @@ func New(db models.Datastore, userID int, benchmark string) Base {
 	// Build backtest functions - trades
 	t.TradeFuncs = map[string]func(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem, underlyingLast float64, benchmarkQuotes []types.HistoryQuote){
 		"empty":                      t.EmptyTrades, // used for testing
+		"single-option":              singleoption.Trades,
 		"long-straddle":              longstraddle.Trades,
 		"put-credit-spread":          t.PutCreditSpreadPlaceTrades,
 		"long-call-butterfly-spread": t.LongCallButterflySpreadPlaceTrades,
@@ -250,6 +253,9 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 		t.DB.New().Save(backtest)
 	}
 
+	//spew.Dump(backtest.EndingBalance)
+	//spew.Dump(len(backtest.TradeGroups))
+
 	// Display results. Just used for debugging.
 	t.PrintResults(backtest)
 
@@ -305,7 +311,7 @@ func (t *Base) PrintResults(backtest *models.Backtest) error {
 		d := []string{
 			row.OpenDate.Format("01/02/2006"),
 			row.CloseDate.Format("01/02/2006"),
-			fmt.Sprintf("%s %s %.2f / %.2f", row.Positions[0].Symbol.OptionUnderlying, row.Positions[0].Symbol.OptionExpire.Format("01/02/2006"), row.Positions[0].Symbol.OptionStrike, row.Positions[1].Symbol.OptionStrike),
+			row.SpreadText,
 			fmt.Sprintf("$%.2f", row.OpenPrice),
 			fmt.Sprintf("$%.2f", row.ClosePrice),
 			fmt.Sprintf("$%.2f", row.Credit),

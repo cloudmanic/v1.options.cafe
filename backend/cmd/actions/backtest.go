@@ -32,13 +32,13 @@ func RunBackTest(db *models.DB, userID int) {
 	screen := models.Screener{
 		UserId:   1,
 		Symbol:   "SPY",
-		Name:     "SPY Long Straddle",
-		Strategy: "long-straddle",
+		Name:     "SPY Long Single Option",
+		Strategy: "single-option",
 		Items: []models.ScreenerItem{
 			{UserId: 1, Key: "left-strike-percent-away", Operator: ">", ValueNumber: 4},
 			{UserId: 1, Key: "right-strike-percent-away", Operator: ">", ValueNumber: 4},
 			{UserId: 1, Key: "open-debit", Operator: "<", ValueNumber: 8.00},
-			{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 45},
+			{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 60},
 			{UserId: 1, Key: "days-to-expire", Operator: ">", ValueNumber: 30},
 			{UserId: 1, Key: "take-profit-percent", Operator: ">", ValueNumber: 50},
 		},
