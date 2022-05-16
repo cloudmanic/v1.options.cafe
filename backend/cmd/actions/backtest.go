@@ -51,7 +51,7 @@ func RunBackTest(db *models.DB, userID int) {
 		EndingBalance:   5000.00,
 		PositionSize:    "one-at-time",
 		StartDate:       models.Date{helpers.ParseDateNoError("2021-01-01")},
-		EndDate:         models.Date{helpers.ParseDateNoError("2021-03-31")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2021-12-31")},
 		Midpoint:        false,
 		TradeSelect:     "lowest-ask",
 		Benchmark:       "SPY",

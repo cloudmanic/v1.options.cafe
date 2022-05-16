@@ -99,3 +99,18 @@ func OpenTrade(today time.Time, backtest *models.Backtest, result screener.Resul
 	// Update ending balance
 	backtest.EndingBalance = backtest.EndingBalance - openPrice
 }
+
+//
+// GetOpenTradeCount will return a number of open trades
+//
+func GetOpenTradeCount(backtest *models.Backtest) int {
+	count := 0
+
+	for _, row := range backtest.TradeGroups {
+		if row.Status == "Open" {
+			count++
+		}
+	}
+
+	return count
+}

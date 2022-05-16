@@ -41,7 +41,7 @@ type Base struct {
 	DB              models.Datastore
 	UserID          int
 	BenchmarkQuotes []types.HistoryQuote
-	TradeFuncs      map[string]func(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem, underlyingLast float64)
+	TradeFuncs      map[string]func(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem, underlyingLast float64, benchmarkQuotes []types.HistoryQuote)
 	ResultsFuncs    map[string]func(db models.Datastore, today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem, cache screenerCache.Cache) ([]screener.Result, error)
 }
 
@@ -100,7 +100,7 @@ func New(db models.Datastore, userID int, benchmark string) Base {
 	}
 
 	// Build backtest functions - trades
-	t.TradeFuncs = map[string]func(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem, underlyingLast float64){
+	t.TradeFuncs = map[string]func(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem, underlyingLast float64, benchmarkQuotes []types.HistoryQuote){
 		"empty":                      t.EmptyTrades, // used for testing
 		"long-straddle":              longstraddle.Trades,
 		"put-credit-spread":          t.PutCreditSpreadPlaceTrades,
@@ -208,7 +208,7 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 	// Now that we have a list of all possible trades by day we can go through and "trade".
 	for _, row := range resultsList {
 		// Send the results into a trade function.
-		t.TradeFuncs[backtest.Screen.Strategy](row.Day, backtest, row.Results, row.Options, lastByDate[row.Day.Format("2006-01-02")])
+		t.TradeFuncs[backtest.Screen.Strategy](row.Day, backtest, row.Results, row.Options, lastByDate[row.Day.Format("2006-01-02")], t.BenchmarkQuotes)
 	}
 
 	// Send up websocket

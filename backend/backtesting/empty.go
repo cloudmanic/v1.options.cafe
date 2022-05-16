@@ -19,7 +19,7 @@ import (
 //
 // EmptyTrades is used for testing.
 //
-func (t *Base) EmptyTrades(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem, underlyingLast float64) {
+func (t *Base) EmptyTrades(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem, underlyingLast float64, benchmarkQuotes []types.HistoryQuote) {
 
 	return
 }
