@@ -134,7 +134,7 @@ func (t *Base) PutCreditSpreadSelectTrade(today time.Time, backtest *models.Back
 //
 // PutCreditSpreadResults - Find possible trades for this strategy.
 //
-func (t *Base) PutCreditSpreadResults(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem, cache screenerCache.Cache) ([]screener.Result, error) {
+func (t *Base) PutCreditSpreadResults(db models.Datastore, today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem, cache screenerCache.Cache) ([]screener.Result, error) {
 	// Results that we return.
 	results := []screener.Result{}
 

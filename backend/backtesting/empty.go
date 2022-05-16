@@ -27,7 +27,7 @@ func (t *Base) EmptyTrades(today time.Time, backtest *models.Backtest, results [
 //
 // EmptyResults - Used for testing.
 //
-func (t *Base) EmptyResults(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem, cache screenerCache.Cache) ([]screener.Result, error) {
+func (t *Base) EmptyResults(db models.Datastore, today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem, cache screenerCache.Cache) ([]screener.Result, error) {
 	// Results that we return.
 	results := []screener.Result{}
 

@@ -15,6 +15,7 @@ import (
 	"strconv"
 	"time"
 
+	longstraddle "app.options.cafe/backtesting/long-straddle"
 	"app.options.cafe/brokers/eod"
 	"app.options.cafe/brokers/tradier"
 	"app.options.cafe/brokers/types"
@@ -38,7 +39,7 @@ type Base struct {
 	UserID          int
 	BenchmarkQuotes []types.HistoryQuote
 	TradeFuncs      map[string]func(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem)
-	ResultsFuncs    map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem, cache screenerCache.Cache) ([]screener.Result, error)
+	ResultsFuncs    map[string]func(db models.Datastore, today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem, cache screenerCache.Cache) ([]screener.Result, error)
 }
 
 // Job struct
@@ -88,8 +89,9 @@ func New(db models.Datastore, userID int, benchmark string) Base {
 	}
 
 	// Build backtest functions - results
-	t.ResultsFuncs = map[string]func(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem, cache screenerCache.Cache) ([]screener.Result, error){
+	t.ResultsFuncs = map[string]func(db models.Datastore, today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem, cache screenerCache.Cache) ([]screener.Result, error){
 		"empty":                      t.EmptyResults, // used for testing
+		"long-straddle":              longstraddle.Results,
 		"put-credit-spread":          t.PutCreditSpreadResults,
 		"long-call-butterfly-spread": t.LongCallButterflySpreadResults,
 	}
@@ -97,6 +99,7 @@ func New(db models.Datastore, userID int, benchmark string) Base {
 	// Build backtest functions - trades
 	t.TradeFuncs = map[string]func(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem){
 		"empty":                      t.EmptyTrades, // used for testing
+		"long-straddle":              longstraddle.Trades,
 		"put-credit-spread":          t.PutCreditSpreadPlaceTrades,
 		"long-call-butterfly-spread": t.LongCallButterflySpreadPlaceTrades,
 	}
@@ -344,7 +347,7 @@ func (t *Base) PrintResults(backtest *models.Backtest) error {
 }
 
 //
-// GetOptionsByExpirationType - Loop through and filter out just expire and type
+// GetOptionsByExpirationType - Loop through and filter out just expire and type. TODO(spicer): Kill. This was moved to helpers.
 //
 func (t *Base) GetOptionsByExpirationType(expire types.Date, optionType string, options []types.OptionsChainItem) []types.OptionsChainItem {
 	rt := []types.OptionsChainItem{}
@@ -372,7 +375,7 @@ func (t *Base) GetOptionsByExpirationType(expire types.Date, optionType string, 
 }
 
 //
-// GetExpirationDatesFromOptions - Take complete list of options and return a list of expiration dates.
+// GetExpirationDatesFromOptions - Take complete list of options and return a list of expiration dates. TODO(spicer): Kill. This was moved to helpers.
 //
 func (t *Base) GetExpirationDatesFromOptions(options []types.OptionsChainItem) []types.Date {
 	seen := map[types.Date]bool{}
@@ -445,7 +448,7 @@ func (t *Base) tradeResultsWorker(jobs <-chan Job, results chan<- Job, cache scr
 		}
 
 		// Run backtest strategy function for this backtest
-		job.Results, err = t.ResultsFuncs[job.Backtest.Screen.Strategy](job.Day, job.Backtest, underlyingLast, options, cache)
+		job.Results, err = t.ResultsFuncs[job.Backtest.Screen.Strategy](t.DB, job.Day, job.Backtest, underlyingLast, options, cache)
 
 		if err != nil {
 			services.Info(err)

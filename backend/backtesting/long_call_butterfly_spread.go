@@ -290,7 +290,7 @@ func (t *Base) LongCallButterflySpreadSelectTrade(today time.Time, backtest *mod
 //
 // LongCallButterflySpreadResults - Find possible trades for this strategy.
 //
-func (t *Base) LongCallButterflySpreadResults(today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem, cache screenerCache.Cache) ([]screener.Result, error) {
+func (t *Base) LongCallButterflySpreadResults(db models.Datastore, today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem, cache screenerCache.Cache) ([]screener.Result, error) {
 	// Results that we return.
 	results := []screener.Result{}
 

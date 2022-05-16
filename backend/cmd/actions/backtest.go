@@ -32,14 +32,14 @@ func RunBackTest(db *models.DB, userID int) {
 	screen := models.Screener{
 		UserId:   1,
 		Symbol:   "SPY",
-		Name:     "SPY Long Call Butterfly",
-		Strategy: "long-call-butterfly-spread",
+		Name:     "SPY Long Straddle",
+		Strategy: "long-straddle",
 		Items: []models.ScreenerItem{
 			{UserId: 1, Key: "left-strike-percent-away", Operator: ">", ValueNumber: 4},
 			{UserId: 1, Key: "right-strike-percent-away", Operator: ">", ValueNumber: 4},
 			{UserId: 1, Key: "open-debit", Operator: "<", ValueNumber: 8.00},
-			{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 5},
-			{UserId: 1, Key: "days-to-expire", Operator: ">", ValueNumber: 0},
+			{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 45},
+			{UserId: 1, Key: "days-to-expire", Operator: ">", ValueNumber: 30},
 			{UserId: 1, Key: "take-profit-percent", Operator: ">", ValueNumber: 50},
 		},
 	}
@@ -51,7 +51,7 @@ func RunBackTest(db *models.DB, userID int) {
 		EndingBalance:   5000.00,
 		PositionSize:    "one-at-time",
 		StartDate:       models.Date{helpers.ParseDateNoError("2021-01-01")},
-		EndDate:         models.Date{helpers.ParseDateNoError("2022-12-31")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2021-12-31")},
 		Midpoint:        false,
 		TradeSelect:     "lowest-ask",
 		Benchmark:       "SPY",
@@ -63,6 +63,42 @@ func RunBackTest(db *models.DB, userID int) {
 
 	// Run the backtest
 	bt.DoBacktestDays(&btM)
+
+	// // Build screener object
+	// screen := models.Screener{
+	// 	UserId:   1,
+	// 	Symbol:   "SPY",
+	// 	Name:     "SPY Long Call Butterfly",
+	// 	Strategy: "long-call-butterfly-spread",
+	// 	Items: []models.ScreenerItem{
+	// 		{UserId: 1, Key: "left-strike-percent-away", Operator: ">", ValueNumber: 4},
+	// 		{UserId: 1, Key: "right-strike-percent-away", Operator: ">", ValueNumber: 4},
+	// 		{UserId: 1, Key: "open-debit", Operator: "<", ValueNumber: 8.00},
+	// 		{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 5},
+	// 		{UserId: 1, Key: "days-to-expire", Operator: ">", ValueNumber: 0},
+	// 		{UserId: 1, Key: "take-profit-percent", Operator: ">", ValueNumber: 50},
+	// 	},
+	// }
+
+	// // Set backtest
+	// btM := models.Backtest{
+	// 	UserId:          uint(screen.UserId),
+	// 	StartingBalance: 5000.00,
+	// 	EndingBalance:   5000.00,
+	// 	PositionSize:    "one-at-time",
+	// 	StartDate:       models.Date{helpers.ParseDateNoError("2021-01-01")},
+	// 	EndDate:         models.Date{helpers.ParseDateNoError("2022-12-31")},
+	// 	Midpoint:        false,
+	// 	TradeSelect:     "lowest-ask",
+	// 	Benchmark:       "SPY",
+	// 	Screen:          screen,
+	// }
+
+	// // Setup a new backtesting
+	// bt := backtesting.New(db, userID, btM.Benchmark)
+
+	// // Run the backtest
+	// bt.DoBacktestDays(&btM)
 
 	// // Build screener object
 	// screen := models.Screener{
