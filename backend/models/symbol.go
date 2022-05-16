@@ -27,6 +27,7 @@ type Symbol struct {
 	OptionType       string    `json:"option_type"`
 	OptionExpire     Date      `gorm:"type:date" json:"option_expire"`
 	OptionStrike     float64   `json:"option_strike"`
+	Qty              int       `gorm:"-" json:"-"`  // Only used as a helper field for backtesting
 	PositionOn       bool      `json:"position_on"` // Used to indicate if we already have a position on. Can not totally trust this to always be set. Used in screener mainly
 }
 

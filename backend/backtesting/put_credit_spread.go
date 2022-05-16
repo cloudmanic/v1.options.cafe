@@ -21,7 +21,7 @@ import (
 //
 // PutCreditSpreadPlaceTrades managed trades. Call this after all possible trades are found.
 //
-func (t *Base) PutCreditSpreadPlaceTrades(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem) {
+func (t *Base) PutCreditSpreadPlaceTrades(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem, underlyingLast float64) {
 	// Make sure we have at least one result
 	if len(results) <= 0 {
 		return

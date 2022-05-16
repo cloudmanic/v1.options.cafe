@@ -10,9 +10,8 @@ import (
 	"math"
 	"time"
 
-	"app.options.cafe/backtesting/helpers"
 	"app.options.cafe/brokers/types"
-	libHelpers "app.options.cafe/library/helpers"
+	"app.options.cafe/library/helpers"
 	"app.options.cafe/models"
 	screenerCache "app.options.cafe/screener/cache"
 )
@@ -25,8 +24,8 @@ func (t *Base) LongStraddleCoreScreen(today time.Time, expireDate time.Time, scr
 
 	// Figure out best strike
 	atmStrike := math.RoundToEven(underlyingLast)
-	putOption := helpers.GetOptionByExpirationDateAndStrike(expireDate, atmStrike, "Put", options)
-	callOption := helpers.GetOptionByExpirationDateAndStrike(expireDate, atmStrike, "Call", options)
+	putOption := t.GetOptionByExpirationDateAndStrike(expireDate, atmStrike, "Put", options)
+	callOption := t.GetOptionByExpirationDateAndStrike(expireDate, atmStrike, "Call", options)
 	openCost := putOption.Ask + callOption.Ask
 	closeCost := putOption.Bid + callOption.Bid
 	midPoint := (openCost + closeCost) / 2
@@ -53,10 +52,10 @@ func (t *Base) LongStraddleCoreScreen(today time.Time, expireDate time.Time, scr
 	// We have a winner
 	result = append(result, Result{
 		Day:             types.Date{today},
-		Debit:           libHelpers.Round(openCost, 2),
-		Bid:             libHelpers.Round(openCost, 2),
-		Ask:             libHelpers.Round(closeCost, 2),
-		MidPoint:        libHelpers.Round(midPoint, 2),
+		Debit:           helpers.Round(openCost, 2),
+		Bid:             helpers.Round(openCost, 2),
+		Ask:             helpers.Round(closeCost, 2),
+		MidPoint:        helpers.Round(midPoint, 2),
 		UnderlyingLast:  underlyingLast,
 		CallPrecentAway: 0.00,
 		PutPrecentAway:  0.00,
