@@ -35,30 +35,27 @@ func RunBackTest(db *models.DB, userID int) {
 		Name:     "SPY Long Call Butterfly",
 		Strategy: "long-call-butterfly-spread",
 		Items: []models.ScreenerItem{
-			{UserId: 1, Key: "left-strike-percent-away", Operator: ">", ValueNumber: 4.5},
-			{UserId: 1, Key: "right-strike-percent-away", Operator: ">", ValueNumber: 4.5},
-			// {UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
-			// {UserId: 1, Key: "open-credit", Operator: ">", ValueNumber: 0.18},
-			// {UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.50},
-			{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 46},
+			{UserId: 1, Key: "left-strike-percent-away", Operator: ">", ValueNumber: 4},
+			{UserId: 1, Key: "right-strike-percent-away", Operator: ">", ValueNumber: 4},
+			{UserId: 1, Key: "open-debit", Operator: "<", ValueNumber: 8.00},
+			{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 5},
 			{UserId: 1, Key: "days-to-expire", Operator: ">", ValueNumber: 0},
-			// {UserId: 1, Key: "allow-more-than-one-expire", Operator: "=", ValueString: "no"},
-			// {UserId: 1, Key: "allow-more-than-one-strike", Operator: "=", ValueString: "no"},
+			{UserId: 1, Key: "take-profit-percent", Operator: ">", ValueNumber: 50},
 		},
 	}
 
 	// Set backtest
 	btM := models.Backtest{
-		UserId:          uint(userID),
+		UserId:          uint(screen.UserId),
 		StartingBalance: 5000.00,
 		EndingBalance:   5000.00,
-		PositionSize:    "10-percent", // one-at-time, *-percent
-		StartDate:       models.Date{helpers.ParseDateNoError("2022-01-01")},
+		PositionSize:    "one-at-time",
+		StartDate:       models.Date{helpers.ParseDateNoError("2021-01-01")},
 		EndDate:         models.Date{helpers.ParseDateNoError("2022-12-31")},
-		Midpoint:        true,
-		//TradeSelect:     "shortest-percent-away", // least-days-to-expire, highest-midpoint, highest-ask, highest-percent-away, shortest-percent-away
-		Benchmark: "SPY",
-		Screen:    screen,
+		Midpoint:        false,
+		TradeSelect:     "lowest-ask",
+		Benchmark:       "SPY",
+		Screen:          screen,
 	}
 
 	// Setup a new backtesting

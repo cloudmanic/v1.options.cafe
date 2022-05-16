@@ -26,13 +26,13 @@ import (
 // LongCallButterflySpreadPlaceTrades managed trades. Call this after all possible trades are found.
 //
 func (t *Base) LongCallButterflySpreadPlaceTrades(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem) {
+	// See if we have any positions to close
+	t.CloseLongCallButterflySpread(today, 450.00, backtest, options)
+
 	// Make sure we have at least one result
 	if len(results) <= 0 {
 		return
 	}
-
-	// See if we have any positions to close
-	t.CloseLongCallButterflySpread(today, results[0].UnderlyingLast, backtest, options)
 
 	// Figure which result to open
 	result, err := t.LongCallButterflySpreadSelectTrade(today, backtest, results)
@@ -56,8 +56,71 @@ func (t *Base) CloseLongCallButterflySpread(today time.Time, underlyingLast floa
 	// Close if we hit a particular debit
 	t.CloseOnDebit(today, backtest, options)
 
-	// // Expire positions
-	// t.expirePositions(today, underlyingLast, backtest)
+	// Expire positions
+	t.LongCallButterflySpreadExpirePositions(today, underlyingLast, backtest, options)
+}
+
+//
+// LongCallButterflySpreadExpirePositions - Expire trades
+//
+func (t *Base) LongCallButterflySpreadExpirePositions(today time.Time, underlyingLast float64, backtest *models.Backtest, options []types.OptionsChainItem) {
+	// Get the benchmark last
+	benchmarkLast := t.getBenchmarkByDate(today)
+
+	// Loop for expired postions
+	for key, row := range backtest.TradeGroups {
+		// If closed moved on.
+		if row.Status == "Closed" {
+			continue
+		}
+
+		expired := false
+
+		// See if any of the legs are expired
+		for _, row2 := range row.Positions {
+			if today.Format("2006-01-02") == row2.Symbol.OptionExpire.Format("2006-01-02") ||
+				today.After(helpers.ParseDateNoError(row2.Symbol.OptionExpire.Format("2006-01-02"))) {
+				expired = true
+				break
+			}
+		}
+
+		// If expired close out trade
+		if expired && row.Status == "Open" {
+
+			// Benchmark stuff
+			investedBenchmark := math.Floor(backtest.StartingBalance / backtest.BenchmarkStart)
+			investedBenchmarkLeftOver := backtest.StartingBalance - (investedBenchmark * backtest.BenchmarkStart)
+
+			// Shared for all strats
+			backtest.TradeGroups[key].Status = "Closed"
+			backtest.TradeGroups[key].CloseDate = models.Date{today}
+			backtest.TradeGroups[key].BenchmarkLast = benchmarkLast
+			backtest.TradeGroups[key].ReturnFromStart = helpers.Round((((backtest.EndingBalance - backtest.StartingBalance) / backtest.StartingBalance) * 100), 2)
+			backtest.TradeGroups[key].BenchmarkBalance = helpers.Round((investedBenchmark*backtest.TradeGroups[key].BenchmarkLast)+investedBenchmarkLeftOver, 2)
+			backtest.TradeGroups[key].BenchmarkReturn = helpers.Round((((backtest.TradeGroups[key].BenchmarkLast - backtest.BenchmarkStart) / backtest.BenchmarkStart) * 100), 2)
+
+			// Get closing price
+			closePrice := (t.getClosedPrice(row, options) * 100)
+
+			// See if we have a profit.
+			profit := closePrice - row.OpenPrice
+
+			if profit > 0 {
+				backtest.EndingBalance = backtest.EndingBalance + closePrice
+				backtest.TradeGroups[key].ClosePrice = closePrice
+				backtest.TradeGroups[key].Note = "Took profit on expire day."
+				backtest.TradeGroups[key].Balance = backtest.EndingBalance
+				backtest.TradeGroups[key].BenchmarkLast = benchmarkLast
+				backtest.TradeGroups[key].ReturnFromStart = helpers.Round((((backtest.EndingBalance - backtest.StartingBalance) / backtest.StartingBalance) * 100), 2)
+				backtest.TradeGroups[key].ReturnPercent = helpers.Round(((closePrice-row.OpenPrice)/row.OpenPrice)*100, 2)
+			} else {
+				backtest.TradeGroups[key].ClosePrice = 0.00
+				backtest.TradeGroups[key].Note = "Expired worthless."
+				backtest.TradeGroups[key].ReturnPercent = -100.00
+			}
+		}
+	}
 }
 
 //
@@ -270,15 +333,6 @@ func (t *Base) LongCallButterflySpreadOpenTrade(today time.Time, strategy string
 	// // First see if we already have this position
 	// if !t.checkForCurrentPosition(backtest, result) {
 	// 	return
-	// }
-
-	// // Set up a new screener so we can use it's Functions
-	// screenObj := screener.NewScreen(t.DB, &eod.Api{})
-
-	// if result.Credit == 0 {
-	// 	fmt.Println("#####")
-	// 	spew.Dump(result)
-	// 	fmt.Println("#####")
 	// }
 
 	// Figure out position size (We just trade one lot when we do this, so set the account balance to like 200% of one lot)

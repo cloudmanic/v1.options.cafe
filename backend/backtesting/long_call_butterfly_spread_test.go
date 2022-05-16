@@ -325,7 +325,7 @@ func TestCloseOnDebit01(t *testing.T) {
 		UserId:          uint(screen.UserId),
 		StartingBalance: 5000.00,
 		EndingBalance:   5000.00,
-		PositionSize:    "10-percent",
+		PositionSize:    "one-at-time",
 		StartDate:       models.Date{helpers.ParseDateNoError("2022-01-01")},
 		EndDate:         models.Date{helpers.ParseDateNoError("2022-12-31")},
 		Midpoint:        false,
