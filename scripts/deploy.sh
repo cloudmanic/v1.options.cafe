@@ -20,10 +20,10 @@ env GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o builds/app.options.cafe
 # upx builds/app.options.cafe
 
 # # Build frontend
-# cd ../frontend
+cd ../frontend
 
 # echo "Building Frontend"
-# ng build --prod
+ng build --prod
 
 cd ../scripts
 
