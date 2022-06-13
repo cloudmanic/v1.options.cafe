@@ -6,6 +6,10 @@
 #
 # Deploy the entire app (frontend and backend). We do some compiling locally and then deploy.
 
+export NVM_DIR="$HOME/.nvm"
+  [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+  [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
 # cd to backend
 cd ../backend
 
@@ -20,10 +24,11 @@ env GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o builds/app.options.cafe
 # upx builds/app.options.cafe
 
 # # Build frontend
-# cd ../frontend
+cd ../frontend
 
 # echo "Building Frontend"
-# ng build --prod
+nvm use 12.22.2
+npm run ng build --prod
 
 cd ../scripts
 

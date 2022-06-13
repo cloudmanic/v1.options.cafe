@@ -23,8 +23,8 @@ export class BaseComponent {
 	dateSelect: string = "ytd";
 	startDate: Date = moment(moment().year() + "-01-01").toDate();
 	endDate: Date = moment().toDate();
-	startDateInput: Date = moment(moment().year() + "-01-01").format('YYYY-MM-DD');
-	endDateInput: Date = moment().format('YYYY-MM-DD');
+	startDateInput: String = moment(moment().year() + "-01-01").format('YYYY-MM-DD');
+	endDateInput: String = moment().format('YYYY-MM-DD');
 	dateTimeFrame: TimeFrame;
 	dateTimeframes: TimeFrame[] = Shared.TimeFrames;
 

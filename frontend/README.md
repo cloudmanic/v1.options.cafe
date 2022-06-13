@@ -1,9 +1,15 @@
-# Frontend
+# Frontend For app.options.cafe
 
-## Note On Front Docker
+This is the app for the frontend of app.options.cafe
 
-* ```cd docker && docker-compose run --rm -p 4200:4200 app bash``` then run ```ng serve --host 0.0.0.0```
+Start app locally with `npm run ng serve --host 0.0.0.0`
 
-* Or you can just do ```cd docker && docker-compse up```
+## Production Build
 
-* Now you can visit the app via ```http://localhost:4200/```
+* `npm run ng build --prod`
+
+## Node Version
+
+* We use node version version 12.22.2
+* Use node version manager `nvm use 12.22.2`
+* If you get errors about python try this `npm config set python /usr/local/bin/python3` 

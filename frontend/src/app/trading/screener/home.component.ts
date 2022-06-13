@@ -19,6 +19,8 @@ import { Settings } from 'app/models/settings';
 import { SettingsService } from 'app/providers/http/settings.service';
 import { environment } from 'environments/environment';
 import { Title } from '@angular/platform-browser';
+import { TradeGroupService } from 'app/providers/http/trade-group.service';
+import { DatePipe } from '@angular/common';
 
 const pageTitle: string = environment.title_prefix + "Screener";
 
@@ -36,10 +38,26 @@ export class ScreenerComponent implements OnInit {
 	faCaretRight = faCaretRight;
 	settings: Settings = new Settings();
 
+	// Map of positions we already have on
+	currentStrikes = new Map<number, number>();
+	currentStrikesPuts = new Map<number, number>();
+	currentStrikesCalls = new Map<number, number>();
+	currentExpires = new Map<String, Date>();
+	currentExpiresPuts = new Map<String, Date>();
+	currentExpiresCalls = new Map<String, Date>();
+
+
 	//
 	// Constructor....
 	//
-	constructor(private stateService: StateService, private screenerService: ScreenerService, private tradeService: TradeService, private router: Router, private settingsService: SettingsService, private titleService: Title) {
+	constructor(
+		private stateService: StateService, 
+		private screenerService: ScreenerService, 
+		private tradeService: TradeService, 
+		private router: Router, 
+		private settingsService: SettingsService, 
+		private titleService: Title,
+		private tradeGroupService: TradeGroupService) {
 		// Load settings
 		this.loadSettingsData();
 	}
@@ -57,14 +75,17 @@ export class ScreenerComponent implements OnInit {
 		// Get Data from cache
 		this.screeners = this.stateService.GetScreens();
 
+		// Get tradegroups
+		this.getTradeGroups();
+
 		// Load page data.
 		if (!this.screeners) {
-			startTimer = (1000 * 60);
+			startTimer = (1000 * 60 * 5);
 			this.getScreeners();
 		}
 
-		// Reload the data every 1min after a 1 min delay to start
-		Observable.timer(startTimer, (1000 * 60)).takeUntil(this.destory).subscribe(x => { this.getScreeners(); });
+		// Reload the data every 5min after a 5 min delay to start
+		Observable.timer(startTimer, (1000 * 60 * 5)).takeUntil(this.destory).subscribe(x => { this.getScreeners(); });
 	}
 
 	//
@@ -74,6 +95,37 @@ export class ScreenerComponent implements OnInit {
 		this.destory.next();
 		this.destory.complete();
 	}
+
+	//
+	// Get trade groups
+	//
+	getTradeGroups() {
+		// Get tradegroup data
+		this.tradeGroupService.get(Number(this.stateService.GetStoredActiveAccountId()), 500, 1, 'open_date', 'desc', '', 'Open').subscribe((res) => {
+			let datePipe = new DatePipe('en-US');
+
+			// Build maps of positions we already have on.
+			for (let i = 0; i < res.Data.length; i++) {
+				for (let k = 0; k < res.Data[i].Positions.length; k++) {
+					this.currentExpires.set(datePipe.transform(res.Data[i].Positions[k].Symbol.OptionExpire, 'shortDate'), res.Data[i].Positions[k].Symbol.OptionExpire);
+					this.currentStrikes.set(res.Data[i].Positions[k].Symbol.OptionStrike, res.Data[i].Positions[k].Symbol.OptionStrike);
+
+					// Special map just for puts
+					if(res.Data[i].Positions[k].Symbol.OptionStrike, res.Data[i].Positions[k].Symbol.OptionType == 'Put') {
+						this.currentStrikesPuts.set(res.Data[i].Positions[k].Symbol.OptionStrike, res.Data[i].Positions[k].Symbol.OptionStrike);
+						this.currentExpiresPuts.set(datePipe.transform(res.Data[i].Positions[k].Symbol.OptionExpire, 'shortDate'), res.Data[i].Positions[k].Symbol.OptionExpire);
+					}
+
+					// Special map just for calls
+					if(res.Data[i].Positions[k].Symbol.OptionStrike, res.Data[i].Positions[k].Symbol.OptionType == 'Call') {
+						this.currentStrikesCalls.set(res.Data[i].Positions[k].Symbol.OptionStrike, res.Data[i].Positions[k].Symbol.OptionStrike);
+						this.currentExpiresCalls.set(datePipe.transform(res.Data[i].Positions[k].Symbol.OptionExpire, 'shortDate'), res.Data[i].Positions[k].Symbol.OptionExpire);
+					}
+				}
+			}
+		});
+	}
+
 
 	//
 	// Load settings data.

@@ -31,7 +31,6 @@
         </h5>
 
         <div class="article__head-aside">
-
           <a (click)="viewChange(row, 'grid')" class="btn-square text-align-center ml-10" [ngClass]="{ 'active': (row.View == 'grid') }">
             <fa-icon [icon]="listGrid" class="fa fa-lg"></fa-icon>
           </a>
@@ -86,10 +85,12 @@
             <tbody>
               <tr *ngFor="let row2 of row.Results | tableSort:row.ListSort:row.ListOrder">
                 <td>{{ row2.Legs[0].OptionUnderlying }}</td>
-                <td>{{ row2.Legs[0].OptionExpire | date:'shortDate' }}</td>
                 <td>
-                  <span [ngClass]="{'green': row2.Legs[0].PositionOn}">{{ row2.Legs[0].OptionStrike }}</span> / 
-                  <span [ngClass]="{'green': row2.Legs[1].PositionOn}">{{ row2.Legs[1].OptionStrike }}</span> 
+                  <span [ngClass]="{ 'green': currentExpires.has(row2.Legs[0].OptionExpire | date:'shortDate') }">{{ row2.Legs[0].OptionExpire | date:'shortDate' }}</span>
+                </td>
+                <td>
+                  <span [ngClass]="{ 'green': currentStrikes.has(row2.Legs[0].OptionStrike) }">{{ row2.Legs[0].OptionStrike }}</span> / 
+                  <span [ngClass]="{ 'green': currentStrikes.has(row2.Legs[1].OptionStrike) }">{{ row2.Legs[1].OptionStrike }}</span> 
                 </td>                    
                 <td>{{ row2.PutPrecentAway | number:'1.2-2' }}%</td>
                 <td>{{ row2.Credit | currency:'USD':'symbol':'1.2-2' }}</td>

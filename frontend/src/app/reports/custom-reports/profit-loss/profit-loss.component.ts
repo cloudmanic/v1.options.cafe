@@ -30,8 +30,8 @@ export class ProfitLossComponent extends BaseComponent implements OnInit {
 	groupBy: string = "month";
 	startDate: Date = moment(moment().year() + "-01-01").toDate();
 	endDate: Date = moment().toDate();
-	startDateInput: Date = moment(moment().year() + "-01-01").format('YYYY-MM-DD');
-	endDateInput: Date = moment().format('YYYY-MM-DD');
+	startDateInput: String = moment(moment().year() + "-01-01").format('YYYY-MM-DD');
+	endDateInput: String = moment().format('YYYY-MM-DD');
 
 	listData: ProfitLoss[] = [];
 	Highcharts = Highcharts;
