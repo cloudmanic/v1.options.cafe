@@ -30,9 +30,10 @@ jobs:
       - uses: ravsamhq/notify-slack-action@v1
         if: always()
         with:
-          status: ${{ job.status }} # required
+          status: ${{ job.status }}
+          notify_when: 'failure'
         env:
-          SLACK_WEBHOOK_URL: 'https://hooks.slack.com/services/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' #${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   Build:
     needs: Install
@@ -63,3 +64,11 @@ jobs:
           cd backend
           env GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o builds/app.options.cafe
           ls -lh builds/app.options.cafe
+
+      - uses: ravsamhq/notify-slack-action@v1
+        if: always()
+        with:
+          status: ${{ job.status }}
+          notify_when: 'failure'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
