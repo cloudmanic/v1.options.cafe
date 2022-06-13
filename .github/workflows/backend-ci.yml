@@ -2,7 +2,7 @@ name: Backend CI
 on: push
 
 jobs:
-  Install:
+  Build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -18,6 +18,8 @@ jobs:
           cd backend
           go mod tidy
           ls -lh
+          echo $GOPATH
+          echo $GOHOME
 
   # Build:
   #   needs: Install
