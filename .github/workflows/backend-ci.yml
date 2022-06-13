@@ -5,17 +5,13 @@ jobs:
   Install:
     runs-on: ubuntu-latest
     steps:
-      - uses: ravsamhq/notify-slack-action@v1
-        if: always()
+      - uses: sonots/slack-notice-action@v3
         with:
           status: ${{ job.status }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          notification_title: '{workflow} has {status_message}'
-          message_format: '{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>'
-          footer: 'Linked Repo <{repo_url}|{repo}> | <{workflow_url}|View Workflow>'
-          notify_when: 'failure'
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # required, but GitHub should automatically supply
           SLACK_WEBHOOK_URL: https://hooks.slack.com/services/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
+        if: always() # Pick up events even if the job fails or is canceled.
 
       - name: Checkout
         uses: actions/checkout@v2
