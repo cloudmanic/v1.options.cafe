@@ -17,9 +17,6 @@ jobs:
         run: |
           cd backend
           go mod tidy
-          ls -lh
-          pwd
-          ls -lha $HOME
 
       - name: Cache Go modules
         uses: actions/cache@v2
@@ -57,3 +54,4 @@ jobs:
         run: |
           cd backend
           env GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o builds/app.options.cafe
+          ls -lh builds/app.options.cafe
