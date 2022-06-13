@@ -18,8 +18,8 @@ jobs:
           cd backend
           go mod tidy
           ls -lh
-          echo $GOPATH
-          echo $GOHOME
+          pwd
+          ls -lha $HOME
 
   # Build:
   #   needs: Install
