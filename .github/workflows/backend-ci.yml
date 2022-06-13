@@ -10,8 +10,8 @@ jobs:
         with:
           status: ${{ job.status }} # required
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-    
+          SLACK_WEBHOOK_URL: 'https://hooks.slack.com/services/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' #${{ secrets.SLACK_WEBHOOK_URL }}
+
       - name: Checkout
         uses: actions/checkout@v2
 
