@@ -1,59 +1,59 @@
-name: Frontend CI
-on: push
+# name: Frontend CI
+# on: push
 
-jobs:
-  Install:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+# jobs:
+#   Install:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
 
-      - name: Setup Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: '12.22.2'
+#       - name: Setup Node
+#         uses: actions/setup-node@v2
+#         with:
+#           node-version: '12.22.2'
       
-      - name: Install node modules
-        run: |
-          cd frontend
-          npm install
+#       - name: Install node modules
+#         run: |
+#           cd frontend
+#           npm install
 
-      - name: Cache node modules
-        uses: actions/cache@v2
-        with:
-          path: frontend/node_modules
-          key: node_modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            node_modules-
+#       - name: Cache node modules
+#         uses: actions/cache@v2
+#         with:
+#           path: frontend/node_modules
+#           key: node_modules-${{ hashFiles('package-lock.json') }}
+#           restore-keys: |
+#             node_modules-
 
-      - name: Print Node Version
-        run: node --version
+#       - name: Print Node Version
+#         run: node --version
 
-  Build:
-    needs: Install
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+#   Build:
+#     needs: Install
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
 
-      - name: Setup Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: '12.22.2'
+#       - name: Setup Node
+#         uses: actions/setup-node@v2
+#         with:
+#           node-version: '12.22.2'
 
-      - name: Load node_modules
-        uses: actions/cache@v2
-        with:
-          path: frontend/node_modules
-          key: node_modules-${{ hashFiles('package-lock.json') }}
+#       - name: Load node_modules
+#         uses: actions/cache@v2
+#         with:
+#           path: frontend/node_modules
+#           key: node_modules-${{ hashFiles('package-lock.json') }}
 
-      - name: Print Node Version
-        run: node --version
+#       - name: Print Node Version
+#         run: node --version
 
-      - name: Step
-        run: echo ${{ github.sha }}
+#       - name: Step
+#         run: echo ${{ github.sha }}
 
-      - name: Build Frontend
-        run: |
-          cd frontend
-          npm run ng build --prod
+#       - name: Build Frontend
+#         run: |
+#           cd frontend
+#           npm run ng build --prod
