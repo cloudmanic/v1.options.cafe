@@ -2,7 +2,7 @@ name: Backend CI
 on: push
 
 jobs:
-  Build:
+  Install:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
