@@ -5,13 +5,6 @@ jobs:
   Install:
     runs-on: ubuntu-latest
     steps:
-      - uses: ravsamhq/notify-slack-action@v1
-        if: always()
-        with:
-          status: ${{ job.status }} # required
-        env:
-          SLACK_WEBHOOK_URL: 'https://hooks.slack.com/services/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' #${{ secrets.SLACK_WEBHOOK_URL }}
-
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -33,6 +26,13 @@ jobs:
           key: go_modules-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             go_modules-
+
+      - uses: ravsamhq/notify-slack-action@v1
+        if: always()
+        with:
+          status: ${{ job.status }} # required
+        env:
+          SLACK_WEBHOOK_URL: 'https://hooks.slack.com/services/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' #${{ secrets.SLACK_WEBHOOK_URL }}
 
   Build:
     needs: Install
