@@ -5,14 +5,13 @@ jobs:
   Install:
     runs-on: ubuntu-latest
     steps:
-      - uses: sonots/slack-notice-action@v3
+      - uses: ravsamhq/notify-slack-action@v1
+        if: always()
         with:
-          status: ${{ job.status }}
+          status: ${{ job.status }} # required
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # required, but GitHub should automatically supply
-          SLACK_WEBHOOK_URL: https://hooks.slack.com/services/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
-        if: always() # Pick up events even if the job fails or is canceled.
-
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    
       - name: Checkout
         uses: actions/checkout@v2
 
