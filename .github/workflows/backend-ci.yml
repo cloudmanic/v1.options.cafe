@@ -24,8 +24,8 @@ jobs:
       - name: Cache Go modules
         uses: actions/cache@v2
         with:
-          path: $HOME/go
-          key: go_modules-${{ hashFiles('backend/go.sum') }}
+          path: ~/go/pkg/mod
+          key: go_modules-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             go_modules-
 
@@ -44,8 +44,8 @@ jobs:
       - name: Load Go modules
         uses: actions/cache@v2
         with:
-          path: $HOME/go
-          key: go_modules-${{ hashFiles('backend/go.sum') }}
+          path: ~/go/pkg/mod
+          key: go_modules-${{ hashFiles('**/go.sum') }}
 
       - name: Print Go Version
         run: go version
