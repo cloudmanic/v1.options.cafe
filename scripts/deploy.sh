@@ -28,7 +28,7 @@ cd ../frontend
 
 # echo "Building Frontend"
 nvm use 12.22.2
-ng build --prod
+npm run ng build --prod
 
 cd ../scripts
 

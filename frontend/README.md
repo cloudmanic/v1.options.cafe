@@ -2,7 +2,11 @@
 
 This is the app for the frontend of app.options.cafe
 
-Start app locally with `ng serve --host 0.0.0.0`
+Start app locally with `npm run ng serve --host 0.0.0.0`
+
+## Production Build
+
+* `npm run ng build --prod`
 
 ## Node Version
 
