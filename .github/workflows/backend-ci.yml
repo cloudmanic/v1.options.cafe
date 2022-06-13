@@ -13,7 +13,7 @@ jobs:
         with:
           go-version: '1.17.6'
       
-      - name: Install go modules
+      - name: Install Go modules
         run: |
           cd backend
           go mod tidy
@@ -21,31 +21,39 @@ jobs:
           pwd
           ls -lha $HOME
 
-  # Build:
-  #   needs: Install
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
+      - name: Cache Go modules
+        uses: actions/cache@v2
+        with:
+          path: $HOME/go
+          key: go_modules-${{ hashFiles('backend/go.sum') }}
+          restore-keys: |
+            go_modules-
 
-  #     - name: Setup Node
-  #       uses: actions/setup-node@v2
-  #       with:
-  #         node-version: '12.22.2'
+  Build:
+    needs: Install
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
-  #     - name: Load node_modules
-  #       uses: actions/cache@v2
-  #       with:
-  #         path: frontend/node_modules
-  #         key: node_modules-${{ hashFiles('package-lock.json') }}
+      - name: Setup Golang
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.17.6'
 
-  #     - name: Print Node Version
-  #       run: node --version
+      - name: Load Go modules
+        uses: actions/cache@v2
+        with:
+          path: $HOME/go
+          key: go_modules-${{ hashFiles('backend/go.sum') }}
 
-  #     - name: Step
-  #       run: echo ${{ github.sha }}
+      - name: Print Go Version
+        run: go version
 
-  #     - name: Build Frontend
-  #       run: |
-  #         cd frontend
-  #         npm run ng build --prod
+      - name: Step
+        run: echo ${{ github.sha }}
+
+      - name: Build Backend
+        run: |
+          cd backend
+          env GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o builds/app.options.cafe
