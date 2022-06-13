@@ -16,7 +16,6 @@ jobs:
       - name: Install Go modules
         run: |
           cd backend
-          spicer
           go mod tidy
 
       - name: Cache Go modules
