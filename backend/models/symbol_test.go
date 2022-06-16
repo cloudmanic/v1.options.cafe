@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"app.options.cafe/library/helpers"
-	env "github.com/jpfuentes2/go-env"
 	"github.com/nbio/st"
 )
 
@@ -18,10 +17,6 @@ import (
 // Test - Get all symbols
 //
 func TestGetAllSymbols01(t *testing.T) {
-
-	// Load config file.
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := NewTestDB("")
 	defer TestingTearDown(db, dbName)
@@ -94,10 +89,6 @@ func TestGetAllSymbols01(t *testing.T) {
 // Test - Create a symbol
 //
 func TestCreateNewSymbol01(t *testing.T) {
-
-	// Load config file.
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := NewTestDB("")
 	defer TestingTearDown(db, dbName)
@@ -164,10 +155,6 @@ func TestCreateNewSymbol01(t *testing.T) {
 // Test - Searching symbols
 //
 func TestSearchSymbols01(t *testing.T) {
-
-	// Load config file.
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := NewTestDB("")
 	defer TestingTearDown(db, dbName)
@@ -243,10 +230,6 @@ func TestSearchSymbols01(t *testing.T) {
 // Test - Create New Option Symbol
 //
 func TestCreateNewOptionSymbol01(t *testing.T) {
-
-	// Load config file.
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := NewTestDB("")
 	defer TestingTearDown(db, dbName)
@@ -301,10 +284,6 @@ func TestCreateNewOptionSymbol01(t *testing.T) {
 // Test - GetOptionByParts
 //
 func TestGetOptionByParts01(t *testing.T) {
-
-	// Load config file.
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := NewTestDB("")
 	defer TestingTearDown(db, dbName)
