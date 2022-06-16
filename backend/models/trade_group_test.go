@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
-	env "github.com/jpfuentes2/go-env"
 	"github.com/nbio/st"
 	"github.com/optionscafe/options-cafe-cli/helpers"
 )
@@ -20,10 +19,6 @@ import (
 // Test - GetTradeGroups
 //
 func TestGetTradeGroups01(t *testing.T) {
-
-	// Load config file.
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := NewTestDB("")
 	defer TestingTearDown(db, dbName)
@@ -50,10 +45,6 @@ func TestGetTradeGroups01(t *testing.T) {
 // Test - GetTradeGroupById
 //
 func TestGetTradeGroupById01(t *testing.T) {
-
-	// Load config file.
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := NewTestDB("")
 	defer TestingTearDown(db, dbName)
@@ -127,7 +118,6 @@ func TestGetTradeGroupById01(t *testing.T) {
 // loadTradeGroupTestingData - Load testing data.
 //
 func loadTradeGroupTestingData(db *gorm.DB) {
-
 	// Shared vars we use.
 	ts := time.Date(2017, 10, 29, 17, 20, 01, 507451, time.UTC)
 

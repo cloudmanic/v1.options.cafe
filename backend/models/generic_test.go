@@ -9,7 +9,6 @@ package models
 import (
 	"testing"
 
-	env "github.com/jpfuentes2/go-env"
 	"github.com/nbio/st"
 	"github.com/optionscafe/options-cafe-cli/helpers"
 )
@@ -43,10 +42,6 @@ func TestCreateNewRecord01(t *testing.T) {
 // Test - Get all users
 //
 func TestQuery01(t *testing.T) {
-
-	// Load config file.
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := NewTestDB("")
 	defer TestingTearDown(db, dbName)
@@ -248,10 +243,6 @@ func TestQuery01(t *testing.T) {
 // Test 02 - Paging
 //
 func TestQuery02(t *testing.T) {
-
-	// Load config file.
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := NewTestDB("")
 	defer TestingTearDown(db, dbName)
@@ -420,10 +411,6 @@ func TestQuery02(t *testing.T) {
 // Test - Count
 //
 func TestCount01(t *testing.T) {
-
-	// Load config file.
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := NewTestDB("")
 	defer TestingTearDown(db, dbName)
