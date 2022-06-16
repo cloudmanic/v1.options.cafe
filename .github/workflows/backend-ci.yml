@@ -69,6 +69,11 @@ jobs:
           STRIPE_YEARLY_PLAN: plan_DjnWwzHMV7lhsL
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
           STRIPE_SIGNING_SECRET: ${{ secrets.STRIPE_SIGNING_SECRET }}
+          SENDY_API_KEY: ${{ secrets.SENDY_API_KEY }}
+          SENDY_TRIAL_LIST: U0ftkhdWTYTfJ2KJENw892Zw
+          SENDY_EXPIRED_LIST: nqpFGhdwbxE6ym2JCXpD763g
+          SENDY_SUBSCRIBE_LIST: THdIQhgouYj7e8928ZADQdjg
+          SENDY_NO_BROKER_LIST: 71ZYTpleM25ufqWpbxuclw
           
       - uses: ravsamhq/notify-slack-action@v1
         if: always()
