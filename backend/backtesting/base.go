@@ -257,7 +257,7 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 	//spew.Dump(len(backtest.TradeGroups))
 
 	// Display results. Just used for debugging.
-	t.PrintResults(backtest)
+	//t.PrintResults(backtest)
 
 	return nil
 }
