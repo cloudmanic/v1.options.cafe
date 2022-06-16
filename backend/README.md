@@ -11,6 +11,7 @@
 * ```go test ./...``` from the root of the project
 * ```go test app.options.cafe/backend/library/archive``` (as an example)
 * ```go test -v app.options.cafe/backend/library/archive``` (if you want to see the output of say a println)
+* ```go test -v -run TestCreateActiveSymbol01  ./models/...``` (example of how to run one test)
 
 We have a special database docker image we use for unit testing. This is so we can run many tests all at once. Each test creates
 its own DB. We start this special image with ```scripts/start_testing_db.sh```. The database listens on port 9906. In our unit tests we should get a DB using this.

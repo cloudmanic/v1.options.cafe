@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
-	env "github.com/jpfuentes2/go-env"
 	"github.com/nbio/st"
 	"github.com/optionscafe/options-cafe-cli/helpers"
 )
@@ -21,10 +20,6 @@ import (
 // Test - Get all users
 //
 func TestGetAllUsers01(t *testing.T) {
-
-	// Load config file.
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := NewTestDB("")
 	defer TestingTearDown(db, dbName)
@@ -56,10 +51,6 @@ func TestGetAllUsers01(t *testing.T) {
 // Test - CreateNewUserWithStripe
 //
 func TestCreateNewUserWithStripe01(t *testing.T) {
-
-	// Load config file.
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := NewTestDB("")
 	defer TestingTearDown(db, dbName)
@@ -86,7 +77,7 @@ func TestCreateNewUserWithStripe01(t *testing.T) {
 	st.Expect(t, dbUser.LastName, "Unittester")
 	st.Expect(t, dbUser.Email, "jane+unittest@options.cafe")
 	st.Expect(t, len(dbUser.StripeCustomer), 18)
-	st.Expect(t, len(dbUser.StripeSubscription), 18)
+	st.Expect(t, len(dbUser.StripeSubscription), 28)
 
 	// Clean things up at stripe
 	db.DeleteUserWithStripe(dbUser)
@@ -96,10 +87,6 @@ func TestCreateNewUserWithStripe01(t *testing.T) {
 // Test - GetSubscriptionWithStripe
 //
 func TestGetSubscriptionWithStripe01(t *testing.T) {
-
-	// Load config file.
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := NewTestDB("")
 	defer TestingTearDown(db, dbName)
@@ -126,7 +113,7 @@ func TestGetSubscriptionWithStripe01(t *testing.T) {
 	st.Expect(t, dbUser.LastName, "Unittester")
 	st.Expect(t, dbUser.Email, "jane+unittest@options.cafe")
 	st.Expect(t, len(dbUser.StripeCustomer), 18)
-	st.Expect(t, len(dbUser.StripeSubscription), 18)
+	st.Expect(t, len(dbUser.StripeSubscription), 28)
 
 	// Add a credit card.
 	err = db.UpdateCreditCard(dbUser, "tok_visa")
@@ -151,7 +138,7 @@ func TestGetSubscriptionWithStripe01(t *testing.T) {
 	st.Expect(t, sub.BillingInterval, "month")
 	st.Expect(t, sub.CardBrand, "American Express")
 	st.Expect(t, sub.CardLast4, "8431")
-	st.Expect(t, sub.CardExpYear, 2021)
+	st.Expect(t, sub.CardExpYear, 2023)
 
 	// Clean things up at stripe
 	db.DeleteUserWithStripe(dbUser)
@@ -161,10 +148,6 @@ func TestGetSubscriptionWithStripe01(t *testing.T) {
 // Test - GetSubscriptionWithStripe - No card on file
 //
 func TestGetSubscriptionWithStripe02(t *testing.T) {
-
-	// Load config file.
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := NewTestDB("")
 	defer TestingTearDown(db, dbName)
@@ -191,7 +174,7 @@ func TestGetSubscriptionWithStripe02(t *testing.T) {
 	st.Expect(t, dbUser.LastName, "Unittester")
 	st.Expect(t, dbUser.Email, "jane+unittest@options.cafe")
 	st.Expect(t, len(dbUser.StripeCustomer), 18)
-	st.Expect(t, len(dbUser.StripeSubscription), 18)
+	st.Expect(t, len(dbUser.StripeSubscription), 28)
 
 	// Get subscription with stripe
 	sub, err := db.GetSubscriptionWithStripe(dbUser)
@@ -204,7 +187,7 @@ func TestGetSubscriptionWithStripe02(t *testing.T) {
 	st.Expect(t, sub.BillingInterval, "month")
 	st.Expect(t, sub.CardBrand, "Visa")
 	st.Expect(t, sub.CardLast4, "4242")
-	st.Expect(t, sub.CardExpYear, 2021)
+	st.Expect(t, sub.CardExpYear, 2023)
 
 	// Clean things up at stripe
 	db.DeleteUserWithStripe(dbUser)
@@ -241,10 +224,6 @@ func TestGetInvoiceHistoryWithStripe01(t *testing.T) {
 // Validate an email address
 //
 func TestValidateEmailAddress(t *testing.T) {
-
-	// Load config file.
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := NewTestDB("")
 	defer TestingTearDown(db, dbName)
@@ -276,10 +255,6 @@ func TestValidateEmailAddress(t *testing.T) {
 // Test GenerateRandomBytes returns
 //
 func TestGenerateRandomBytes(t *testing.T) {
-
-	// Load config file.
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := NewTestDB("")
 	defer TestingTearDown(db, dbName)
@@ -299,9 +274,6 @@ func TestGenerateRandomBytes(t *testing.T) {
 // Test GenerateRandomString returns
 //
 func TestGenerateRandomString(t *testing.T) {
-	// Load config file.
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := NewTestDB("")
 	defer TestingTearDown(db, dbName)

@@ -64,6 +64,11 @@ jobs:
         run: |
           cd backend/scripts
           ./run_tests.sh
+        env:
+          STRIPE_MONTHLY_PLAN: plan_DjnVqjDqkRnmOc
+          STRIPE_YEARLY_PLAN: plan_DjnWwzHMV7lhsL
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_SIGNING_SECRET: ${{ secrets.STRIPE_SIGNING_SECRET }}
           
       - uses: ravsamhq/notify-slack-action@v1
         if: always()

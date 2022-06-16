@@ -9,7 +9,6 @@ package models
 import (
 	"testing"
 
-	env "github.com/jpfuentes2/go-env"
 	"github.com/nbio/st"
 )
 
@@ -17,10 +16,6 @@ import (
 // Test - CreateActiveSymbol
 //
 func TestCreateActiveSymbol01(t *testing.T) {
-
-	// Load config file.
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := NewTestDB("")
 	defer TestingTearDown(db, dbName)
@@ -34,17 +29,12 @@ func TestCreateActiveSymbol01(t *testing.T) {
 	st.Expect(t, syb1.Id, uint(1))
 	st.Expect(t, syb2.Id, uint(2))
 	st.Expect(t, syb3.Id, uint(1))
-
 }
 
 //
 // Test - GetActiveSymbolsByUser
 //
 func TestGetActiveSymbolsByUser01(t *testing.T) {
-
-	// Load config file.
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := NewTestDB("")
 	defer TestingTearDown(db, dbName)
