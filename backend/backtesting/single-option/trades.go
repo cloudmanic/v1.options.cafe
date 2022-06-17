@@ -18,7 +18,7 @@ import (
 //
 // Trades will place our trades
 //
-func Trades(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem, underlyingLast float64, benchmarkQuotes []types.HistoryQuote) {
+func Trades(db models.Datastore, today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem, underlyingLast float64, benchmarkQuotes []types.HistoryQuote) {
 	// First look if there are any trades we need to close.
 	Close(today, underlyingLast, backtest, options, benchmarkQuotes)
 

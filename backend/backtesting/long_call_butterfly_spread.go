@@ -25,7 +25,7 @@ import (
 //
 // LongCallButterflySpreadPlaceTrades managed trades. Call this after all possible trades are found.
 //
-func (t *Base) LongCallButterflySpreadPlaceTrades(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem, underlyingLast float64, benchmarkQuotes []types.HistoryQuote) {
+func (t *Base) LongCallButterflySpreadPlaceTrades(db models.Datastore, today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem, underlyingLast float64, benchmarkQuotes []types.HistoryQuote) {
 	// See if we have any positions to close
 	t.CloseLongCallButterflySpread(today, underlyingLast, backtest, options)
 

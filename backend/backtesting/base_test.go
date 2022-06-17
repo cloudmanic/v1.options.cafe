@@ -244,4 +244,181 @@ func TestBackTestsSavingToDB01(t *testing.T) {
 	st.Expect(t, countBacktestTradeGroup, int64(5))
 }
 
+//
+// TestRunPutCreditSpread01 - Run a put credit spread backtest. Testing "least-days-to-expire"
+//
+func TestDoPutCreditSpread01(t *testing.T) {
+	// Only do this for non-short
+	if testing.Short() {
+		t.Skipf("Skipping TestDoPutCreditSpread01 test since it requires a env tokens and --short was requested")
+	}
+
+	// Load .env file (MUST CAll GO TEST FROM THE ROOT)
+	env.ReadEnv("../.env")
+
+	// Start the db connection.
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
+
+	// Build screener object
+	screen := models.Screener{
+		UserId:   1,
+		Symbol:   "SPY",
+		Strategy: "put-credit-spread",
+		Items: []models.ScreenerItem{
+			{UserId: 1, Key: "short-strike-percent-away", Operator: ">", ValueNumber: 4.0},
+			{UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
+			{UserId: 1, Key: "open-credit", Operator: ">", ValueNumber: 0.18},
+			{UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.20},
+			{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 46},
+			{UserId: 1, Key: "days-to-expire", Operator: ">", ValueNumber: 0},
+		},
+	}
+
+	// Set backtest
+	btM := models.Backtest{
+		UserId:          1,
+		StartingBalance: 2000.00,
+		EndingBalance:   2000.00,
+		PositionSize:    "10-percent",
+		StartDate:       models.Date{helpers.ParseDateNoError("2021-01-01")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2021-01-31")},
+		Midpoint:        true,
+		TradeSelect:     "least-days-to-expire",
+		Benchmark:       "SPY",
+		Screen:          screen,
+	}
+
+	// Run blank backtest
+	bt := New(db, 1, btM.Benchmark)
+	err := bt.DoBacktestDays(&btM)
+	st.Expect(t, err, nil)
+	st.Expect(t, len(btM.TradeGroups), 19)
+	st.Expect(t, helpers.Round(btM.CAGR, 2), 842.69)
+	st.Expect(t, btM.Return, 19.15)
+	st.Expect(t, btM.Profit, 405.00)
+	st.Expect(t, helpers.Round(btM.BenchmarkCAGR, 2), 4.31)
+	st.Expect(t, helpers.Round(btM.BenchmarkPercent, 2), 0.35)
+	st.Expect(t, btM.BenchmarkEnd, 370.07)
+	st.Expect(t, btM.BenchmarkStart, 368.79)
+}
+
+//
+// TestRunPutCreditSpread02 - Run a put credit spread backtest. Testing "highest-percent-away"
+//
+func TestDoPutCreditSpread02(t *testing.T) {
+	// Only do this for non-short
+	if testing.Short() {
+		t.Skipf("Skipping TestDoPutCreditSpread02 test since it requires a env tokens and --short was requested")
+	}
+
+	// Load .env file (MUST CAll GO TEST FROM THE ROOT)
+	env.ReadEnv("../.env")
+
+	// Start the db connection.
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
+
+	// Build screener object
+	screen := models.Screener{
+		UserId:   1,
+		Symbol:   "SPY",
+		Strategy: "put-credit-spread",
+		Items: []models.ScreenerItem{
+			{UserId: 1, Key: "short-strike-percent-away", Operator: ">", ValueNumber: 4.0},
+			{UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
+			{UserId: 1, Key: "open-credit", Operator: ">", ValueNumber: 0.18},
+			{UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.20},
+			{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 46},
+			{UserId: 1, Key: "days-to-expire", Operator: ">", ValueNumber: 0},
+		},
+	}
+
+	// Set backtest
+	btM := models.Backtest{
+		UserId:          1,
+		StartingBalance: 2000.00,
+		EndingBalance:   2000.00,
+		PositionSize:    "10-percent",
+		StartDate:       models.Date{helpers.ParseDateNoError("2021-01-01")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2021-01-31")},
+		Midpoint:        true,
+		TradeSelect:     "highest-percent-away",
+		Benchmark:       "SPY",
+		Screen:          screen,
+	}
+
+	// Run blank backtest
+	bt := New(db, 1, btM.Benchmark)
+	err := bt.DoBacktestDays(&btM)
+	st.Expect(t, err, nil)
+	st.Expect(t, len(btM.TradeGroups), 19)
+	st.Expect(t, helpers.Round(btM.CAGR, 2), 819.12)
+	st.Expect(t, btM.Return, 18.90)
+	st.Expect(t, btM.Profit, 400.00)
+	st.Expect(t, helpers.Round(btM.BenchmarkCAGR, 2), 4.31)
+	st.Expect(t, helpers.Round(btM.BenchmarkPercent, 2), 0.35)
+	st.Expect(t, btM.BenchmarkEnd, 370.07)
+	st.Expect(t, btM.BenchmarkStart, 368.79)
+}
+
+//
+// TestRunPutCreditSpread03 - Run a put credit spread backtest. Testing "shortest-percent-away"
+//
+func TestDoPutCreditSpread03(t *testing.T) {
+	// Only do this for non-short
+	if testing.Short() {
+		t.Skipf("Skipping TestDoPutCreditSpread03 test since it requires a env tokens and --short was requested")
+	}
+
+	// Load .env file (MUST CAll GO TEST FROM THE ROOT)
+	env.ReadEnv("../.env")
+
+	// Start the db connection.
+	db, dbName, _ := models.NewTestDB("")
+	defer models.TestingTearDown(db, dbName)
+
+	// Build screener object
+	screen := models.Screener{
+		UserId:   1,
+		Symbol:   "SPY",
+		Strategy: "put-credit-spread",
+		Items: []models.ScreenerItem{
+			{UserId: 1, Key: "short-strike-percent-away", Operator: ">", ValueNumber: 4.0},
+			{UserId: 1, Key: "spread-width", Operator: "=", ValueNumber: 2.00},
+			{UserId: 1, Key: "open-credit", Operator: ">", ValueNumber: 0.18},
+			{UserId: 1, Key: "open-credit", Operator: "<", ValueNumber: 0.20},
+			{UserId: 1, Key: "days-to-expire", Operator: "<", ValueNumber: 46},
+			{UserId: 1, Key: "days-to-expire", Operator: ">", ValueNumber: 0},
+		},
+	}
+
+	// Set backtest
+	btM := models.Backtest{
+		UserId:          1,
+		StartingBalance: 2000.00,
+		EndingBalance:   2000.00,
+		PositionSize:    "10-percent",
+		StartDate:       models.Date{helpers.ParseDateNoError("2021-01-01")},
+		EndDate:         models.Date{helpers.ParseDateNoError("2021-12-31")},
+		Midpoint:        true,
+		TradeSelect:     "shortest-percent-away",
+		Benchmark:       "SPY",
+		Screen:          screen,
+	}
+
+	// Run blank backtest
+	bt := New(db, 1, btM.Benchmark)
+	err := bt.DoBacktestDays(&btM)
+	st.Expect(t, err, nil)
+	st.Expect(t, len(btM.TradeGroups), 208)
+	st.Expect(t, helpers.Round(btM.CAGR, 2), 463.66)
+	st.Expect(t, btM.Return, 455.5)
+	st.Expect(t, btM.Profit, 9220.00)
+	st.Expect(t, helpers.Round(btM.BenchmarkCAGR, 2), 28.88)
+	st.Expect(t, helpers.Round(btM.BenchmarkPercent, 2), 28.79)
+	st.Expect(t, btM.BenchmarkEnd, 474.96)
+	st.Expect(t, btM.BenchmarkStart, 368.79)
+}
+
 /* End File */

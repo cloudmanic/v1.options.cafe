@@ -4,7 +4,7 @@
 // Copyright: 2022 Cloudmanic Labs, LLC. All rights reserved.
 //
 
-package backtesting
+package empty
 
 import (
 	"time"
@@ -19,15 +19,15 @@ import (
 //
 // EmptyTrades is used for testing.
 //
-func (t *Base) EmptyTrades(today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem, underlyingLast float64, benchmarkQuotes []types.HistoryQuote) {
+func Trades(db models.Datastore, today time.Time, backtest *models.Backtest, results []screener.Result, options []types.OptionsChainItem, underlyingLast float64, benchmarkQuotes []types.HistoryQuote) {
 
 	return
 }
 
 //
-// EmptyResults - Used for testing.
+// Results - Used for testing.
 //
-func (t *Base) EmptyResults(db models.Datastore, today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem, cache screenerCache.Cache) ([]screener.Result, error) {
+func Results(db models.Datastore, today time.Time, backtest *models.Backtest, underlyingLast float64, options []types.OptionsChainItem, cache screenerCache.Cache) ([]screener.Result, error) {
 	// Results that we return.
 	results := []screener.Result{}
 
