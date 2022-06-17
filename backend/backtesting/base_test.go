@@ -14,8 +14,6 @@ import (
 	"app.options.cafe/library/helpers"
 	"app.options.cafe/models"
 	"github.com/nbio/st"
-
-	"github.com/jpfuentes2/go-env"
 )
 
 //
@@ -26,9 +24,6 @@ func TestDoBacktestDays01(t *testing.T) {
 	if testing.Short() {
 		t.Skipf("Skipping TestDoBacktestDays01 test since it requires a env tokens and --short was requested")
 	}
-
-	// Load .env file (MUST CAll GO TEST FROM THE ROOT)
-	env.ReadEnv("../.env")
 
 	// Start the db connection.
 	db, dbName, _ := models.NewTestDB("")
@@ -60,9 +55,6 @@ func TestGetOptionsByExpirationType01(t *testing.T) {
 	if testing.Short() {
 		t.Skipf("Skipping TestGetOptionsByExpirationType01 test since it requires a env tokens and --short was requested")
 	}
-
-	// Load .env file (MUST CAll GO TEST FROM THE ROOT)
-	env.ReadEnv("../.env")
 
 	// Start the db connection.
 	db, dbName, _ := models.NewTestDB("")
@@ -121,9 +113,6 @@ func TestGetExpirationDatesFromOptions01(t *testing.T) {
 		t.Skipf("Skipping TestGetExpirationDatesFromOptions01 test since it requires a env tokens and --short was requested")
 	}
 
-	// Load .env file (MUST CAll GO TEST FROM THE ROOT)
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := models.NewTestDB("")
 	defer models.TestingTearDown(db, dbName)
@@ -161,9 +150,6 @@ func TestBackTestsSavingToDB01(t *testing.T) {
 	if testing.Short() {
 		t.Skipf("Skipping TestDoPutCreditSpread01 test since it requires a env tokens and --short was requested")
 	}
-
-	// Load .env file (MUST CAll GO TEST FROM THE ROOT)
-	env.ReadEnv("../.env")
 
 	// Start the db connection.
 	db, dbName, _ := models.NewTestDB("")
@@ -253,9 +239,6 @@ func TestDoPutCreditSpread01(t *testing.T) {
 		t.Skipf("Skipping TestDoPutCreditSpread01 test since it requires a env tokens and --short was requested")
 	}
 
-	// Load .env file (MUST CAll GO TEST FROM THE ROOT)
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := models.NewTestDB("")
 	defer models.TestingTearDown(db, dbName)
@@ -312,9 +295,6 @@ func TestDoPutCreditSpread02(t *testing.T) {
 		t.Skipf("Skipping TestDoPutCreditSpread02 test since it requires a env tokens and --short was requested")
 	}
 
-	// Load .env file (MUST CAll GO TEST FROM THE ROOT)
-	env.ReadEnv("../.env")
-
 	// Start the db connection.
 	db, dbName, _ := models.NewTestDB("")
 	defer models.TestingTearDown(db, dbName)
@@ -370,9 +350,6 @@ func TestDoPutCreditSpread03(t *testing.T) {
 	if testing.Short() {
 		t.Skipf("Skipping TestDoPutCreditSpread03 test since it requires a env tokens and --short was requested")
 	}
-
-	// Load .env file (MUST CAll GO TEST FROM THE ROOT)
-	env.ReadEnv("../.env")
 
 	// Start the db connection.
 	db, dbName, _ := models.NewTestDB("")
