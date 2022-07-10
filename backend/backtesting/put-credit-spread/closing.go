@@ -13,12 +13,14 @@ import (
 	"app.options.cafe/brokers/types"
 	"app.options.cafe/library/helpers"
 	"app.options.cafe/models"
+
+	bthelpers "app.options.cafe/backtesting/helpers"
 )
 
 //
-// CloseMultiLegCredit - Close positions
+// CloseTrades - Close positions
 //
-func CloseMultiLegCredit(today time.Time, underlyingLast float64, backtest *models.Backtest, options []types.OptionsChainItem, benchmarkQuotes []types.HistoryQuote) {
+func CloseTrades(today time.Time, underlyingLast float64, backtest *models.Backtest, options []types.OptionsChainItem, benchmarkQuotes []types.HistoryQuote) {
 	// Close if we touch the short leg
 	closeOnShortTouch(today, underlyingLast, backtest, options, benchmarkQuotes)
 
@@ -41,13 +43,13 @@ func closeOnDebit(today time.Time, underlyingLast float64, backtest *models.Back
 
 	// Loop for expired postions
 	for key, row := range backtest.TradeGroups {
-
+		// If we are closed moved along
 		if row.Status == "Closed" {
 			continue
 		}
 
 		// Get closing price
-		closePrice := getClosedPrice(row, options)
+		closePrice := bthelpers.GetClosedPrice(row, options) * -1
 
 		// Benchmark stuff
 		investedBenchmark := math.Floor(backtest.StartingBalance / backtest.BenchmarkStart)
@@ -55,8 +57,10 @@ func closeOnDebit(today time.Time, underlyingLast float64, backtest *models.Back
 
 		// Close trade at the debitAmount
 		if closePrice <= debitAmount {
-			backtest.EndingBalance = (backtest.EndingBalance - backtest.TradeGroups[key].ClosePrice)
+			// We assume we closed at the debit price not the EOD price
+			closePrice = debitAmount
 
+			backtest.EndingBalance = (backtest.EndingBalance - backtest.TradeGroups[key].ClosePrice)
 			backtest.TradeGroups[key].Status = "Closed"
 			backtest.TradeGroups[key].ClosePrice = closePrice * 100 * float64(row.Lots)
 			backtest.TradeGroups[key].CloseDate = models.Date{today}
@@ -90,7 +94,7 @@ func closeOnShortTouch(today time.Time, underlyingLast float64, backtest *models
 		if underlyingLast <= row.Positions[1].Symbol.OptionStrike {
 
 			// Set closing Closing Price
-			closingPrice := (getClosedPrice(row, options) * 100.00 * float64(row.Lots)) - 1
+			closingPrice := (getClosedPrice(row, options) * 100.00 * float64(row.Lots)) * -1
 
 			// Make sure close price is not bigger than our max risk
 			if closingPrice > row.Margin {
@@ -150,12 +154,15 @@ func expirePositions(today time.Time, underlyingLast float64, backtest *models.B
 			investedBenchmark := math.Floor(backtest.StartingBalance / backtest.BenchmarkStart)
 			investedBenchmarkLeftOver := backtest.StartingBalance - (investedBenchmark * backtest.BenchmarkStart)
 
+			// Cleaner to make vars
+			returnPercent := helpers.Round((((backtest.TradeGroups[key].Margin + (backtest.TradeGroups[key].OpenPrice - backtest.TradeGroups[key].ClosePrice) - backtest.TradeGroups[key].Margin) / backtest.TradeGroups[key].Margin) * 100), 2)
+
 			// Shared for all strats
 			backtest.TradeGroups[key].Status = "Closed"
 			backtest.TradeGroups[key].CloseDate = models.Date{today}
 			backtest.TradeGroups[key].BenchmarkLast = benchmarkLast
 			backtest.TradeGroups[key].ReturnFromStart = helpers.Round((((backtest.EndingBalance - backtest.StartingBalance) / backtest.StartingBalance) * 100), 2)
-			backtest.TradeGroups[key].ReturnPercent = helpers.Round((((backtest.TradeGroups[key].Margin + (backtest.TradeGroups[key].OpenPrice - backtest.TradeGroups[key].ClosePrice) - backtest.TradeGroups[key].Margin) / backtest.TradeGroups[key].Margin) * 100), 2)
+			backtest.TradeGroups[key].ReturnPercent = returnPercent
 			backtest.TradeGroups[key].BenchmarkBalance = helpers.Round((investedBenchmark*backtest.TradeGroups[key].BenchmarkLast)+investedBenchmarkLeftOver, 2)
 			backtest.TradeGroups[key].BenchmarkReturn = helpers.Round((((backtest.TradeGroups[key].BenchmarkLast - backtest.BenchmarkStart) / backtest.BenchmarkStart) * 100), 2)
 

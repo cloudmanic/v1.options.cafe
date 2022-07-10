@@ -25,7 +25,7 @@ import (
 //
 func OpenMultiLegCredit(db models.Datastore, today time.Time, strategy string, backtest *models.Backtest, result screener.Result) {
 	// Default values
-	lots := 1
+	lots := 0
 
 	// First see if we already have this position
 	if !checkForCurrentPosition(backtest, result) {
@@ -56,6 +56,11 @@ func OpenMultiLegCredit(db models.Datastore, today time.Time, strategy string, b
 	} else if strings.Contains(backtest.PositionSize, "percent") { // percent of trade
 		totalToTrade := percentOfAccount(backtest, backtest.PositionSize)
 		lots = int(math.Floor(totalToTrade / (diff * 100.00)))
+	}
+
+	// If lots == 0 we have used all our margin
+	if lots == 0 {
+		return
 	}
 
 	// Figure out open price.
@@ -126,13 +131,21 @@ func OpenMultiLegCredit(db models.Datastore, today time.Time, strategy string, b
 	// Build legs
 	legs := []models.BacktestPosition{}
 
-	for _, row := range result.Legs {
+	for key, row := range result.Legs {
+		q := lots
+
+		// Second leg is the short one
+		if key == 1 {
+			q = q * -1
+		}
+
 		legs = append(legs, models.BacktestPosition{
 			UserId:   backtest.UserId,
 			Status:   "Open",
 			SymbolId: row.Id,
 			Symbol:   row,
 			OpenDate: today,
+			Qty:      q,
 		})
 	}
 

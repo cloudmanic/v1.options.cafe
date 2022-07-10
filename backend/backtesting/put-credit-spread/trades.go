@@ -25,7 +25,7 @@ func Trades(db models.Datastore, today time.Time, backtest *models.Backtest, res
 	}
 
 	// See if we have any positions to close
-	CloseMultiLegCredit(today, results[0].UnderlyingLast, backtest, options, benchmarkQuotes)
+	CloseTrades(today, results[0].UnderlyingLast, backtest, options, benchmarkQuotes)
 
 	// Figure which result to open
 	result, err := SelectTrade(today, backtest, results)

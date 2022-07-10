@@ -229,12 +229,26 @@ func (t *Base) DoBacktestDays(backtest *models.Backtest) error {
 	// Returns / win ratio
 	wins := 0
 	backtest.Return = 0.00
+	highestBalance := backtest.StartingBalance
 
 	for _, row := range backtest.TradeGroups {
 		// Only record closed position
 		if row.Status == "Closed" {
 			backtest.Return = row.ReturnFromStart
 
+			// Deal with highest balance
+			if row.Balance > highestBalance {
+				highestBalance = row.Balance
+			}
+
+			// Deal with max drawdown Note: this only works because the tradegroups are in order
+			drawDown := (highestBalance - row.Balance)
+
+			if drawDown > backtest.MaxDrawdown {
+				backtest.MaxDrawdown = drawDown
+			}
+
+			// Number of wins
 			if row.ReturnPercent > 0 {
 				wins++
 			}
@@ -344,7 +358,9 @@ func (t *Base) PrintResults(backtest *models.Backtest) error {
 	log.Printf("CAGR: %s%%", humanize.BigCommaf(big.NewFloat(helpers.Round(backtest.CAGR, 2))))
 	log.Printf("Return: %s%%", humanize.BigCommaf(big.NewFloat(helpers.Round(backtest.Return, 2))))
 	log.Printf("Profit: $%s", humanize.BigCommaf(big.NewFloat(helpers.Round(backtest.Profit, 2))))
+	log.Printf("Max Drawdown: $%s", humanize.BigCommaf(big.NewFloat(helpers.Round(backtest.MaxDrawdown, 2))))
 	log.Printf("Trade Count: %d", backtest.TradeCount)
+	log.Printf("Win Ratio: %s%%", humanize.BigCommaf(big.NewFloat(helpers.Round(backtest.WinRatio, 2))))
 	log.Println("")
 	log.Println("Benchmark")
 	log.Println("-------------")

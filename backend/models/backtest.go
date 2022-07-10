@@ -27,6 +27,7 @@ type Backtest struct {
 	WinRatio         float64              `sql:"not null" json:"win_ratio"`
 	Return           float64              `sql:"not null" json:"return"`
 	Profit           float64              `sql:"not null" json:"profit"`
+	MaxDrawdown      float64              `sql:"not null" json:"max_drawdown"`
 	TradeCount       int                  `sql:"not null" json:"trade_count"`
 	TradeSelect      string               `sql:"not null;type:ENUM('least-days-to-expire', 'highest-midpoint', 'highest-ask', 'highest-percent-away', 'shortest-percent-away');default:'highest-midpoint'" json:"trade_select"`
 	Midpoint         bool                 `sql:"not null" json:"midpoint"` // Open trade at the midpoint
