@@ -28,9 +28,9 @@ type Time struct {
 // Convert JSON string to a date. Format XXXX-XX-XX
 //
 func (t *Date) UnmarshalJSON(b []byte) error {
-
 	// Remove quotes
 	str := strings.Replace(string(b), "\"", "", -1)
+	str = strings.Replace(str, "T00:00:00.000Z", "", -1)
 
 	// Parse string
 	tt, _ := time.Parse("2006-01-02", str)

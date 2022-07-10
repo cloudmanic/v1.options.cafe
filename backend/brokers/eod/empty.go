@@ -60,6 +60,10 @@ func (t *Api) GetUserProfile() (types.UserProfile, error) {
 	return types.UserProfile{}, nil
 }
 
+func (t *Api) GetGainsByAccountId(accountId string) ([]types.Gain, error) {
+	return []types.Gain{}, nil
+}
+
 func (t *Api) DoRefreshAccessTokenIfNeeded(models.User) error {
 	return nil
 }

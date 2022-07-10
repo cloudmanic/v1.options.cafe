@@ -69,6 +69,10 @@ func (t *Api) DoRefreshAccessTokenIfNeeded(models.User) error {
 	return models.User{}, nil
 }
 
+func (t *Api) GetGainsByAccountId(accountId string) ([]types.Gain, error) {
+	return []types.Gain{}, nil
+}
+
 func (t *Api) GetOptionsExpirationsBySymbol(symb string) ([]string, error) {
 	return []string{}, nil
 }

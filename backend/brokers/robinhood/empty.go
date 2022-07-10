@@ -49,6 +49,10 @@ func (t *Api) GetOrders() ([]types.Order, error) {
 	return []types.Order{}, nil
 }
 
+func (t *Api) GetGainsByAccountId(accountId string) ([]types.Gain, error) {
+	return []types.Gain{}, nil
+}
+
 func (t *Api) GetPositions() ([]types.Position, error) {
 	return []types.Position{}, nil
 }
