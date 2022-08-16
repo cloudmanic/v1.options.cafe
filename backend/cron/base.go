@@ -21,7 +21,6 @@ import (
 // Start....
 //
 func Start(db *models.DB) {
-
 	// Lets get started
 	services.InfoMsg("Cron Started: " + os.Getenv("APP_ENV"))
 
@@ -51,11 +50,9 @@ func Start(db *models.DB) {
 // We use this to keep the database alive.
 //
 func DatabasePing(db *models.DB) {
-
 	// Just run a query to make sure things are active.
 	a := []models.Application{}
 	db.New().Find(&a)
-
 }
 
 /* End File */

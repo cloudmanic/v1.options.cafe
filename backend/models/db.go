@@ -73,6 +73,7 @@ func NewDB() (*DB, error) {
 func doMigrations(db *gorm.DB) {
 	// Migrate the schemas (one per table).
 	db.AutoMigrate(&User{})
+	db.AutoMigrate(&Gain{})
 	db.AutoMigrate(&Broker{})
 	db.AutoMigrate(&Order{})
 	db.AutoMigrate(&Symbol{})

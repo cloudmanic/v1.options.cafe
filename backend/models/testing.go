@@ -99,6 +99,7 @@ func TestingTearDown(db *DB, dbName string) {
 // TruncateAllTables - Clear all tables.
 //
 func TruncateAllTables(db *gorm.DB) {
+	db.Exec("TRUNCATE TABLE gains;")
 	db.Exec("TRUNCATE TABLE users;")
 	db.Exec("TRUNCATE TABLE brokers;")
 	db.Exec("TRUNCATE TABLE settings;")

@@ -20,7 +20,6 @@ import (
 // TestDoBacktestDays01 - Run a backtest looping through each day
 //
 func TestDoBacktestDays01(t *testing.T) {
-
 	// Start the db connection.
 	db, dbName, _ := models.NewTestDB("")
 	defer models.TestingTearDown(db, dbName)

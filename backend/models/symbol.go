@@ -64,7 +64,6 @@ func (t *DB) GetSymbolByShortName(short string) (Symbol, error) {
 // We then build the full name of the option.
 //
 func (t *DB) CreateNewOptionSymbol(short string) (Symbol, error) {
-
 	// Get the parts of the option
 	parts, err := helpers.OptionParse(short)
 
@@ -81,12 +80,10 @@ func (t *DB) CreateNewOptionSymbol(short string) (Symbol, error) {
 // Create a new Symbol entry.
 //
 func (t *DB) CreateNewSymbol(short string, name string, sType string) (Symbol, error) {
-
 	var symb Symbol
 
 	// First make sure we don't already have this symbol
 	if t.Where("short_name = ?", short).First(&symb).RecordNotFound() {
-
 		// Create entry.
 		symb = Symbol{Name: name, ShortName: strings.ToUpper(short), Type: sType}
 
@@ -112,7 +109,6 @@ func (t *DB) CreateNewSymbol(short string, name string, sType string) (Symbol, e
 
 		// Log Symbol creation.
 		services.InfoMsg("[Models:CreateNewSymbol] - Created a new Symbol entry - (" + short + ") " + name)
-
 	}
 
 	// Return the symbol.

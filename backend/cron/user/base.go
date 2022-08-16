@@ -19,7 +19,6 @@ import (
 // Clear expired sessions (access tokens)
 //
 func ClearExpiredSessions(db *models.DB) {
-
 	// Find the Centcom app
 	centcomApp := models.Application{}
 	db.New().Where("name <= ?", "Centcom").Find(&centcomApp)
@@ -47,14 +46,12 @@ func ClearExpiredSessions(db *models.DB) {
 		services.InfoMsg("All expired sessions cleared.")
 
 	}
-
 }
 
 //
 // Expire users from Trials
 //
 func ExpireTrails(db *models.DB) {
-
 	users := []models.User{}
 	db.New().Where("trial_expire <= ? AND status = ? AND stripe_subscription = ?", time.Now(), "Trial", "").Find(&users)
 
