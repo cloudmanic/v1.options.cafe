@@ -18,22 +18,23 @@ services:
       MYSQL_DATABASE: app_options_cafe
       MYSQL_ROOT_PASSWORD: foobar
 
-  # mariadb 10.2 Unit Testing DB
-  mariadb102Testing:
-    image: mariadb:10.2
+  # # mariadb 10.2 Unit Testing DB
+  # Use scripts/start_testing_db.sh instead
+  # mariadb102Testing:
+  #   image: mariadb:10.2
 
-    container_name: mariadb-10.20-testing.app.options.cafe
+  #   container_name: mariadb-10.20-testing.app.options.cafe
 
-    ports:
-      - 127.0.0.1:9917:3306
+  #   ports:
+  #     - 127.0.0.1:9917:3306
 
-    # Memory file system, vs storing to the file system. Maybe don't need just delete container when done.
-    tmpfs:
-      - /var/lib/mysql
+  #   # Memory file system, vs storing to the file system. Maybe don't need just delete container when done.
+  #   tmpfs:
+  #     - /var/lib/mysql
 
-    environment:
-      MYSQL_DATABASE: testing_db
-      MYSQL_ROOT_PASSWORD: foobar
+  #   environment:
+  #     MYSQL_DATABASE: testing_db
+  #     MYSQL_ROOT_PASSWORD: foobar
 
   # Mailhog
   mailhog:

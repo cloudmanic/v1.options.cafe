@@ -27,6 +27,7 @@ func Start(db *models.DB) {
 	// Stuff we do on start as well
 	user.ExpireTrails(db)
 	user.ClearExpiredSessions(db)
+	//user.ImportGainsForUser(db)
 
 	// New Cron instance
 	c := cron.New()

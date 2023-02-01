@@ -19,8 +19,8 @@ import (
 func (t *Api) GetGainsByAccountId(accountId string) ([]types.Gain, error) {
 	var gains []types.Gain
 
-	// Get the JSON - Set big limit to get all data
-	jsonRt, err := t.SendGetRequest("/accounts/" + accountId + "/gainloss?limit=10")
+	// Get the JSON - Set big limit to get all data (TODO: Verify this limit)
+	jsonRt, err := t.SendGetRequest("/accounts/" + accountId + "/gainloss?limit=100000")
 
 	if err != nil {
 		return gains, err

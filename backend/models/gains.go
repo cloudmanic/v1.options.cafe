@@ -6,9 +6,10 @@ import (
 
 type Gain struct {
 	Id              uint      `sql:"not null" gorm:"primary_key"`
-	UserId          uint      `sql:"not null;index:UserId"`
 	CreatedAt       time.Time `sql:"not null"`
 	UpdatedAt       time.Time `sql:"not null"`
+	UserId          uint      `sql:"not null;index:UserId"`
+	TradeId         uint      `sql:"not null;index:TradeId" json:"trade_id"`
 	BrokerAccountId uint      `sql:"not null;index:BrokerAccountId"`
 	SymbolId        uint      `sql:"not null"`
 	Symbol          Symbol    `sql:"not null" json:"symbol"`

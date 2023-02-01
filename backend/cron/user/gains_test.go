@@ -19,14 +19,14 @@ import (
 //
 func TestImportGainsForUser01(t *testing.T) {
 	// Start the db connection.
-	db, dbName, _ := models.NewTestDB("testing_db")
+	db, dbName, _ := models.NewTestDB("")
 	defer models.TestingTearDown(db, dbName)
 
 	// Flush pending mocks after test execution
 	defer gock.Off()
 
 	// Mock account id
-	accountId := "6YA06085"
+	accountId := "XXXXXXXXX"
 
 	// Setup mock request.
 	gock.New("https://api.tradier.com/v1").
@@ -37,25 +37,15 @@ func TestImportGainsForUser01(t *testing.T) {
 	// Run the function we are testing. BodyString above has duplicate data to make sure only the first entry gets saved in DB.
 	ImportGainsForUser(db, models.BrokerAccount{
 		Id:            6,
-		UserId:        2,
+		UserId:        3,
 		AccountNumber: accountId,
 	})
 
-	// // Setup a new backtesting
-	// bt := New(db, 1, "SPY")
+	rt := []models.Gain{}
+	db.New().Find(&rt)
 
-	// // Build screener object
-	// screen := models.Screener{
-	// 	Symbol:   "SPY",
-	// 	Strategy: "blank",
-	// }
-
-	// // Run blank backtest
-	// err := bt.DoBacktestDays(&models.Backtest{
-	// 	StartDate: models.Date{helpers.ParseDateNoError("2018-01-01")},
-	// 	EndDate:   models.Date{helpers.ParseDateNoError("2019-01-01")},
-	// 	Screen:    screen,
-	// })
-	//st.Expect(t, err, nil)
-	st.Expect(t, nil, nil)
+	st.Expect(t, rt[0].BrokerAccountId, uint(6))
+	st.Expect(t, rt[0].UserId, uint(3))
+	st.Expect(t, rt[0].SymbolId, uint(1))
+	st.Expect(t, rt[0].Cost, 26.15)
 }
