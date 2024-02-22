@@ -1,3 +1,7 @@
+## App Support
+
+**This app is no longer in production. Open sourced the code should anyone want to poke at the code.** 
+
 ## App: app.options.cafe
 
 This is the options trading application we offer to customers. Angular2 front-end, Golang backend, Electron desktop application. 
